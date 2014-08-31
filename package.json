@@ -1,0 +1,39 @@
+{
+  "name": "ravel",
+  "version": "0.0.1",
+  "private": true,
+  "author": "Sean McIntyre <smcintyre@xverba.ca>",
+  "description": "Ravel Rapid Application Development Framework",
+  "contributors": [ 
+    {"name": "Sean McIntyre","email": "smcintyre@xverba.ca"} 
+  ],
+  "main":"ravel.js",
+  "dependencies": {
+    "async": "*",
+    "body-parser":"*",
+    "compression":"*",
+    "connect-ensure-login": "*",
+    "connect-flash":"*",
+    "connect-redis":"*",
+    "cookie-parser":"*",
+    "csurf":"*",
+    "ejs": "*",
+    "express": "*",
+    "express-session": "*",
+    "hiredis":"*",
+    "method-override":"*",
+    "multiparty":"*",
+    "mysql":"*",
+    "node-fs":"*",
+    "passport": "*",
+    "passport-google-oauth": "*",
+    "primus.io": "*",
+    "redis":"*",
+    "serve-favicon":"*",
+    "ws":"*"
+  },
+  "devDependencies": {    
+    "chai":"*",
+    "chai-things":"*"
+  }
+}

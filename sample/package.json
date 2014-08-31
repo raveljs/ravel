@@ -1,0 +1,13 @@
+{
+  "name": "ravel_sample_app",
+  "version": "0.0.1",
+  "private": true,
+  "author": "Sean McIntyre <smcintyre@xverba.ca>",
+  "description": "Ravel Rapid Application Development Framework - Sample Application",
+  "contributors": [ 
+    {"name": "Sean McIntyre","email": "smcintyre@xverba.ca"} 
+  ],
+  "main":"app.js",
+  "dependencies": {
+  }
+}
