@@ -38,7 +38,7 @@ ravel.set('get or create user function', function() {
 
 ravel.start();
 
-ravel.modules.sample.tGetNumbers(undefined, undefined, function(err, result) {
+ravel.modules.sample.getNumbers(undefined, function(err, result) {
   console.log(result);
 });
 
