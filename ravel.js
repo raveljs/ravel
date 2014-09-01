@@ -1,14 +1,19 @@
-var ApplicationError = require('./application_error');
-var l = require('lib/log')('ravel');
-var rest = require('lib/simple_rest');
+var path = require('path');
+var ApplicationError = require('./lib/application_error');
+var l = require('./lib/log')('ravel');
+var rest = require('./lib/simple_rest');
 
 module.exports = function() {  
   var Ravel = {
-    _params: {},
+    modules: {},
+    _moduleFactories: {},
     _serviceFactories: {}
   };
   
   var knownParameters = {};
+  var params = {};
+  
+  __dirname = process.cwd();
   
   /**
    * Register a parameter
@@ -29,18 +34,15 @@ module.exports = function() {
    * @return {? | undefined} the parameter value, or undefined if it is not required and not set
    */
   Ravel.get = function(key) {
-    if (Ravel._params[key]) {
-      if (knownParameters[key].required && !Ravel._params[key].value) {
-        throw new ApplicationError.NotFound('Parameter \'' + name + '\' is required.');
-      } else if (!Ravel._params[key].value) {
-        l.w('Parameter \'' + key + '\' is not defined.');
-        return undefined;
-      } else {
-        return Ravel._params[key].value;
-      }
-    } else {
-      l.w('Parameter \'' + key + '\' is not defined.');
+    if (!knownParameters[key]) {
+      throw new ApplicationError.NotFound('Parameter \'' + name + '\' was requested, but is unknown.');
+    } else if (knownParameters[key].required && params[key] === undefined) {
+      throw new ApplicationError.NotFound('Known required parameter \'' + key + '\' was requested, but hasn\'t been defined yet.');
+    } else if (params[key] === undefined) {
+      l.w('Optional parameter \'' + key + '\' was requested, but is not defined.');
       return undefined;
+    } else {
+      return params[key];
     }
   };
   
@@ -54,7 +56,7 @@ module.exports = function() {
    */
   Ravel.set = function(key, value) {
     if (knownParameters[key]) {
-      Ravel._params[key] = value;
+      params[key] = value;
     } else {
       throw new ApplicationError.IllegalValueError('Parameter \'' + key + '\' is not supported.');
     }
@@ -74,15 +76,18 @@ module.exports = function() {
    *
    *
    * @param {String} name The name of the module
-   * @param {String} path The path to the module   
+   * @param {String} modulePath The path to the module   
    * 
    */
-  Ravel.module = function(name, path) {
+  Ravel.module = function(name, modulePath) {
     //if a module with this name has already been regsitered, error out
-    if (Ravel.modules[name]) {
+    if (Ravel._moduleFactories[name]) {
       throw new ApplicationError.DuplicateEntryError('Module with name \'' + name + '\' has already been registered.');
     }
-    Ravel.modules[name] = require(path)(Ravel, require('lib/log')(name));
+    Ravel._moduleFactories[name] = function() {
+      Ravel.modules[name] = require(path.join(__dirname, modulePath))(Ravel, require('./lib/log')(name));
+      Ravel.db.createTransactionEntryPoints(Ravel.modules[name]);
+    }
   };
   
   /**
@@ -137,11 +142,11 @@ module.exports = function() {
             //TODO integrate simple rest, give middleware a callback
             if (serviceBuilder._methods[methodName]) {
               if (serviceBuilder._methods[methodName].secure) {
-                expressApp[methodType](basePath, authorize, serviceBuilder._methods[methodName].middleware);
+                expressApp[methodType](basePath, Ravel.authorize, serviceBuilder._methods[methodName].middleware);
               } else {
                 expressApp[methodType](basePath, serviceBuilder._methods[methodName].middleware);
               }
-            } else if (){
+            } else {
               expressApp[methodType](basePath, function(req, res) {
                 res.send(rest.NOT_IMPLEMENTED);
               });
@@ -165,117 +170,95 @@ module.exports = function() {
    * Start the application
    */
   Ravel.start = function() {
-    var cluster = require('cluster');
-  
-    Ravel.kvstore = require('lib/kvstore')('ravel_prefix', Ravel);
-    //Cluster application. 
-    //- Master forks N workers where N is the number of CPUs on the machine.
-    //- Workers are automatically replaced if they die.
-    //- Sessions are shared between worker nodes via Express's redis session store
-    //- Broadcasting to all connected clients across all worker nodes is handled
-    //  by lib/broadcast.js which leverages Redis pub/sub for inter-worker 
-    //  communication. Each worker is responsible for broadcasting to their own
-    //  connected clients.
-    if (cluster.isMaster) {
-    ////BEGIN CLUSTER MASTER
-      var masterLog = function(msg) {
-        l.l("[MASTER] " + msg);
-      };
+    Ravel.db = require('./lib/database')(Ravel);
+    Ravel.kvstore = require('./lib/kvstore')('ravel_prefix', Ravel);
 
-      //empty key-value cache
-      //kvstore.flushdb();
-
-      // Create a worker for each CPU. allow override via process.env.CLUSTER_SIZE
-      var cpuCount = process.env.CLUSTER_SIZE ? process.env.CLUSTER_SIZE : require('os').cpus().length;
-      masterLog("Starting application cluster with " + cpuCount + " Workers...");
-      for (var i = 0; i < cpuCount; i += 1) {
-        cluster.fork();
-      }
-      
-      // Listen for dying workers
-      cluster.on('exit', function (worker) {
-        // Replace the dead worker
-        masterLog('Worker id=' + worker.id + ' died. Creating replacement Worker.');
-        cluster.fork();
-      });
-    ////END CLUSTER MASTER
-    } else {
-    ////BEGIN CLUSTER WORKER NODE
-      var workerLog = function(msg) {
-        l.l("[WORKER "+cluster.worker.id+"] " + msg);
-      };
-
-      //App dependencies.
-      var express = require('express');
-      var session = require('express-session');
-      var compression = require('compression');
-      var favicon = require('serve-favicon');
-      var cookieParser = require('cookie-parser');
-      var http = require('http'); //https will be provided by reverse proxy
-      var path = require('path');
-      var passport = require('passport');
-      var Primus = require('primus.io');
-      var ExpressRedisStore = require('connect-redis')(session);
-      
-      //configure express
-      var app = express();
-      //configure redis session store
-      var sessionStoreArgs = {
-        host:Ravel.get('redis host'),
-        port:Ravel.get('redis port'),
-        db:0 //we stick to 0 because clustered redis doesn't support multiple dbs
-      };
-      if (Ravel.get('redis password')) {
-        sessionStoreArgs.pass = Ravel.get('redis password');
-      }
-      var expressSessionStore = new ExpressRedisStore(sessionStoreArgs);
-
-      app.set('domain', Ravel.get('node domain'));
-      app.set('port', Ravel.get('node port'));
-      app.set('app domain', Ravel.get('node domain'));
-      app.set('app port', Ravel.get('node port'));
-      app.enable('trust proxy');
-      //configure views
-      app.set('views', path.join(__dirname, Ravel.get('express view directory')));
-      app.set('view engine', Ravel.get('express view engine'));
-      //app.use(require('morgan')('dev')); //uncomment to see HTTP requests
-      app.use(compression());
-      if (Ravel.get('express favicon path')) {
-        app.use(favicon(__dirname + Ravel.get('express favicon path')));
-      }
-      app.use(require('body-parser').json());
-      app.use(require('method-override')());
-      app.use(cookieParser(Ravel.get('express session secret')));
-      app.use(session({
-        store: expressSessionStore,
-        secret:Ravel.get('express session secret'),
-        resave:true,
-        saveUninitialized:true
-      }));
-      //cross-site scripting protection, with mobile app support
-      app.use(require('./lib/csrf')(Ravel));
-      app.use(function(req, res, next){
-        if (req.csrfToken) {
-          res.locals.token = req.csrfToken();
-        }
-        next();
-      });      
-      app.use(express.static(path.join(__dirname, 'public')));
-      app.use(require('connect-flash')());
-      
-      //initialize passport authentication      
-      app.use(passport.initialize());
-      app.use(passport.session());  
-      require('./lib/passport_init.js')(app, lib, passport);
-      var authorize = require('./lib/authorize_request')(lib, kvstore, '/login', false);
-      var authorizeAllowMobileRegistrationOrUpdate = require('./lib/authorize_request')(lib, kvstore, '/login', true);
-      
-      //create registered services using factories
-      for (var serviceName in Ravel._serviceFactories) {
-        Ravel._serviceFactories[serviceName](app);
-      }
-    ////END CLUSTER WORKER NODE
+    //App dependencies.
+    var express = require('express');
+    var session = require('express-session');
+    var compression = require('compression');
+    var favicon = require('serve-favicon');
+    var cookieParser = require('cookie-parser');
+    var http = require('http'); //https will be provided by reverse proxy
+    var path = require('path');
+    var passport = require('passport');
+    var Primus = require('primus.io');
+    var ExpressRedisStore = require('connect-redis')(session);
+    
+    //configure express
+    var app = express();
+    //configure redis session store
+    var sessionStoreArgs = {
+      host:Ravel.get('redis host'),
+      port:Ravel.get('redis port'),
+      db:0 //we stick to 0 because clustered redis doesn't support multiple dbs
+    };
+    if (Ravel.get('redis password')) {
+      sessionStoreArgs.pass = Ravel.get('redis password');
     }
+    var expressSessionStore = new ExpressRedisStore(sessionStoreArgs);
+
+    app.set('domain', Ravel.get('node domain'));
+    app.set('port', Ravel.get('node port'));
+    app.set('app domain', Ravel.get('app domain'));
+    app.set('app port', Ravel.get('app port'));
+    app.enable('trust proxy');
+    //configure views
+    app.set('views', path.join(__dirname, Ravel.get('express view directory')));
+    app.set('view engine', Ravel.get('express view engine'));
+    //app.use(require('morgan')('dev')); //uncomment to see HTTP requests
+    app.use(compression());
+    if (Ravel.get('express favicon path')) {
+      app.use(favicon(__dirname + Ravel.get('express favicon path')));
+    }
+    app.use(require('body-parser').json());
+    app.use(require('method-override')());
+    app.use(cookieParser(Ravel.get('express session secret')));
+    app.use(session({
+      store: expressSessionStore,
+      secret:Ravel.get('express session secret'),
+      resave:true,
+      saveUninitialized:true
+    }));
+    //cross-site scripting protection, with mobile app support
+    app.use(require('./lib/csrf')(Ravel));
+    app.use(function(req, res, next){
+      if (req.csrfToken) {
+        res.locals.token = req.csrfToken();
+      }
+      next();
+    });      
+    app.use(express.static(path.join(__dirname, Ravel.get('express public directory'))));
+    app.use(require('connect-flash')());
+    
+    //initialize passport authentication      
+    app.use(passport.initialize());
+    app.use(passport.session());  
+    require('./lib/passport_init.js')(Ravel, passport);
+    Ravel.authorize = require('./lib/authorize_request')(Ravel, true);
+    
+    //create registered modules using factories
+    for (var moduleName in Ravel._moduleFactories) {
+      Ravel._moduleFactories[moduleName]();
+    }
+    
+    //create registered services using factories
+    for (var serviceName in Ravel._serviceFactories) {
+      Ravel._serviceFactories[serviceName](app);
+    }
+    
+    //Create ExpressJS server
+    var server = http.createServer(app);
+
+    //Pass server to Primus to get it going on the same port
+    //Initialize primus.io with room handling, etc.
+    var primus = new Primus(server, { transformer: 'websockets', parser: 'JSON' });
+    //TODO primus_init produces a configured, cluster-ready broadcasting library
+    //var broadcast = require('./lib/primus_init.js')(app, lib, express, expressSessionStore, primus, db, kvstore);
+    //Start ExpressJS server
+    server.listen(Ravel.get('node port'), function(){
+      l.i("Application server at " + Ravel.get('node domain') + " listening on port " + Ravel.get('node port'));
+    });
   };
   
   //Register known ravel parameters
@@ -291,19 +274,25 @@ module.exports = function() {
   Ravel.registerSimpleParameter('mysql database name', true);
   Ravel.registerSimpleParameter('mysql connection pool size', true);
   //Node/express parameters
+  Ravel.registerSimpleParameter('app domain', true);
+  Ravel.registerSimpleParameter('app port', true);
   Ravel.registerSimpleParameter('node domain', true);
   Ravel.registerSimpleParameter('node port', true);
+  Ravel.registerSimpleParameter('express public directory', true);
   Ravel.registerSimpleParameter('express view directory', true);
   Ravel.registerSimpleParameter('express view engine', true);
   Ravel.registerSimpleParameter('express favicon path');
   Ravel.registerSimpleParameter('express session secret', true);
   //Google OAuth parameters
   Ravel.registerSimpleParameter('google oauth2 web client id', true);
+  Ravel.registerSimpleParameter('google oauth2 web client secret', true);
   Ravel.registerSimpleParameter('google oauth2 android client id');
   Ravel.registerSimpleParameter('google oauth2 ios client id');
+  Ravel.registerSimpleParameter('google oauth2 ios client secret');
   //Passport parameters
   Ravel.registerSimpleParameter('get user function', true);
   Ravel.registerSimpleParameter('get or create user function', true);
+  Ravel.registerSimpleParameter('web authentication failure redirect path');
   
   return Ravel;
-};;
+};
