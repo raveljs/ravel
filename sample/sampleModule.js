@@ -1,7 +1,7 @@
-module.exports = function($Ravel, $E, $L) {
-  return {
-    tGetNumbers: function(tConnection, user, callback) {
-      callback(null, [1,2,3]);
-    }
-  }
+module.exports = function($E, $L, $MethodBuilder) {
+  
+  $MethodBuilder.add('getNumbers', function(tConnection, user, callback) {
+  	callback(null, [1,2,3]);
+  });
+
 };

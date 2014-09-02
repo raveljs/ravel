@@ -87,9 +87,22 @@ module.exports = function() {
     if (moduleFactories[name]) {
       throw new ApplicationError.DuplicateEntryError('Module with name \'' + name + '\' has already been registered.');
     }
+
+    var module = {};
+    var methodBuilder = {      
+      add: function(methodName, handler) {
+        if (module[methodName]) {
+          throw new ApplicationError.DuplicateEntryError('Method with name \'' + methodName + '\' has already been registered.');
+        }
+        var transactionalMethodName = 't' + methodName[0].toUpperCase() + methodName.slice(1,methodName.length);
+        module[transactionalMethodName] = handler;
+        module[methodName] = Ravel.db.createTransactionEntryPoint(module[transactionalMethodName]);
+      }
+    };
+
     moduleFactories[name] = function() {
-      Ravel.modules[name] = require(path.join(__dirname, modulePath))(Ravel, ApplicationError, require('./lib/log')(name));
-      Ravel.db.createTransactionEntryPoints(Ravel.modules[name]);
+      require(path.join(__dirname, modulePath))(ApplicationError, require('./lib/log')(name), methodBuilder);
+      Ravel.modules[name] = module;
     }
   };
   
@@ -109,19 +122,19 @@ module.exports = function() {
     if (serviceFactories[basePath]) {
       throw new ApplicationError.DuplicateEntryError('Service with name \'' + name + '\' has already been registered.');
     }
-    var serviceBuilder = {
+    var endpointBuilder = {
       _methods: {}
     };
     var addMethod = function(method) {
-      serviceBuilder[method] = function(secure, middleware) {
-        if (serviceBuilder._methods[method]) {
+      endpointBuilder[method] = function(secure, middleware) {
+        if (endpointBuilder._methods[method]) {
           throw new ApplicationError.DuplicateEntryError('Method '+method+' has already been registered with service \''+serviceName+'\'');
         }
-        serviceBuilder._methods[method] = {
+        endpointBuilder._methods[method] = {
           secure: secure,
           middleware: middleware
         };
-        return serviceBuilder;
+        return endpointBuilder;
       }
     };    
     addMethod('getAll');
@@ -134,7 +147,7 @@ module.exports = function() {
     addMethod('delete');
 
     serviceFactories[basePath] = function(expressApp) {
-      require(path.join(__dirname, servicePath))(Ravel.modules, ApplicationError, require('./lib/log')(basePath), serviceBuilder, rest);
+      require(path.join(__dirname, servicePath))(ApplicationError, require('./lib/log')(basePath), endpointBuilder, Ravel.modules, rest);
       //process all methods and add to express app
       var buildRoute = function(methodType, methodName) {
         var bp = basePath;
@@ -142,16 +155,16 @@ module.exports = function() {
           bp = path.join(basePath, '/:id');
         }
         //TODO integrate simple rest, give middleware a callback
-        if (serviceBuilder._methods[methodName]) {
-          if (serviceBuilder._methods[methodName].secure) {
+        if (endpointBuilder._methods[methodName]) {
+          if (endpointBuilder._methods[methodName].secure) {
             l.i('Registering secure service endpoint ' + methodType.toUpperCase() + ' ' + bp);
             expressApp[methodType](bp, Ravel.authorize, function(req, res) {
-              serviceBuilder._methods[methodName].middleware(req, res);
+              endpointBuilder._methods[methodName].middleware(req, res);
             });
           } else {
             l.i('Registering public service endpoint ' + methodType.toUpperCase() + ' ' + bp);
             expressApp[methodType](bp, function(req, res) {
-              serviceBuilder._methods[methodName].middleware(req, res);
+              endpointBuilder._methods[methodName].middleware(req, res);
             });
           }
         } else {
