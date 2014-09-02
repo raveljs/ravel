@@ -13,6 +13,9 @@ module.exports = function() {
   var knownParameters = {};
   var params = {};
   
+  //Change __dirname to current working directory of the
+  //app using the ravel library, so that modules can be
+  //loaded with relative paths.
   __dirname = process.cwd();
   
   /**

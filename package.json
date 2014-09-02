@@ -12,7 +12,6 @@
     "async": "*",
     "body-parser":"*",
     "compression":"*",
-    "connect-ensure-login": "*",
     "connect-flash":"*",
     "connect-redis":"*",
     "cookie-parser":"*",
