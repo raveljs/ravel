@@ -26,6 +26,7 @@
     "node-fs":"*",
     "passport": "*",
     "passport-google-oauth": "*",
+    "prototype": "*",
     "primus.io": "*",
     "redis":"*",
     "serve-favicon":"*",

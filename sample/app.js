@@ -33,6 +33,7 @@ $Ravel.set('get or create user function', function() {
 });
 
 $Ravel.module('sample', './sampleModule');
+$Ravel.module('sample2', './sampleModule2');
 
 $Ravel.service('/sample', './sampleService');
 

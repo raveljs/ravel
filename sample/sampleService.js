@@ -1,7 +1,7 @@
-module.exports = function($E, $L, $EndpointBuilder, $Modules, $Rest) {
+module.exports = function($E, $L, $EndpointBuilder, $Rest, sample) {
   
 	$EndpointBuilder.getAll(false, function(req, res) {
-		$Modules.sample.getNumbers(undefined, function(err, result) {
+		sample.getNumbers(undefined, function(err, result) {
 		  $Rest.buildRestResponse(req, res, err, result);
 		});
 	});

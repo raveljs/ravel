@@ -12,6 +12,7 @@ module.exports = function() {
   var serviceFactories = {};
   var knownParameters = {};
   var params = {};
+  var injector = require('./lib/injector')(Ravel, moduleFactories);
   
   //Change __dirname to current working directory of the
   //app using the ravel library, so that modules can be
@@ -71,12 +72,7 @@ module.exports = function() {
    * A module is a pure node.js javascript API consisting of functions with no
    * network-related functionality, suitable for unit-testing.
    *
-   * Module should use an injection format which matches the following:
-   *
-   * module.exports = function(Ravel, l) {
-   *   ...
-   * }
-   *
+   * Module should use injection to get what it needs
    *
    * @param {String} name The name of the module
    * @param {String} modulePath The path to the module   
@@ -100,9 +96,18 @@ module.exports = function() {
       }
     };
 
+    //save uninitialized module to Ravel.modules
+    //so that it can be injected into other 
+    //modules and lazily instantiated
+    Ravel.modules[name] = module;
+
+    //build module instantiation function
     moduleFactories[name] = function() {
-      require(path.join(__dirname, modulePath))(ApplicationError, require('./lib/log')(name), methodBuilder);
-      Ravel.modules[name] = module;
+      var moduleInject = require(path.join(__dirname, modulePath));
+      injector.inject({
+        '$L': require('./lib/log')(name),
+        '$MethodBuilder': methodBuilder
+      },moduleInject);
     }
   };
   
@@ -111,10 +116,8 @@ module.exports = function() {
    *
    * A service is a RESTful endpoint for a single Resource
    *
-   * @param {String} basePath The base path of the Resource
-   * @return {Object} builder a builder for the service, with the
-   *                          following methods:
-   *
+   * @param {String} basePath The base path of the all the Resource's endpoints
+   * @param {String} servicePath the path of the service module to require(...)
    *
    */
   Ravel.service = function(basePath, servicePath) {
@@ -146,8 +149,15 @@ module.exports = function() {
     addMethod('put');
     addMethod('delete');
 
+    //build service instantiation function
     serviceFactories[basePath] = function(expressApp) {
-      require(path.join(__dirname, servicePath))(ApplicationError, require('./lib/log')(basePath), endpointBuilder, Ravel.modules, rest);
+      var serviceInject = require(path.join(__dirname, servicePath));
+      injector.inject({
+        '$L': require('./lib/log')(basePath), 
+        '$EndpointBuilder': endpointBuilder, 
+        '$Modules': Ravel.modules, 
+        '$Rest': rest
+      }, serviceInject);
       //process all methods and add to express app
       var buildRoute = function(methodType, methodName) {
         var bp = basePath;
