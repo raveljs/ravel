@@ -5,11 +5,11 @@ var rest = require('./lib/simple_rest');
 
 module.exports = function() {  
   var Ravel = {
-    modules: {},
-    _moduleFactories: {},
-    _serviceFactories: {}
+    modules: {}
   };
   
+  var moduleFactories = {};
+  var serviceFactories = {};
   var knownParameters = {};
   var params = {};
   
@@ -81,10 +81,10 @@ module.exports = function() {
    */
   Ravel.module = function(name, modulePath) {
     //if a module with this name has already been regsitered, error out
-    if (Ravel._moduleFactories[name]) {
+    if (moduleFactories[name]) {
       throw new ApplicationError.DuplicateEntryError('Module with name \'' + name + '\' has already been registered.');
     }
-    Ravel._moduleFactories[name] = function() {
+    moduleFactories[name] = function() {
       Ravel.modules[name] = require(path.join(__dirname, modulePath))(Ravel, require('./lib/log')(name));
       Ravel.db.createTransactionEntryPoints(Ravel.modules[name]);
     }
@@ -104,7 +104,7 @@ module.exports = function() {
    */
   Ravel.service = function(serviceName, basePath) {
     //if a service with this name has already been regsitered, error out
-    if (Ravel._serviceFactories[serviceName]) {
+    if (serviceFactories[serviceName]) {
       throw new ApplicationError.DuplicateEntryError('Service with name \'' + name + '\' has already been registered.');
     }
     var serviceBuilder = {
@@ -132,7 +132,7 @@ module.exports = function() {
     addMethod('delete');
     serviceBuilder.done = function() {
       //TODO does done need to exist at all?
-      Ravel._serviceFactories[serviceName] = {
+      serviceFactories[serviceName] = {
         basePath: basePath,
         factory: function(expressApp, authorize) {
           //callback takes id for the non-All ones
@@ -238,13 +238,13 @@ module.exports = function() {
     Ravel.authorize = require('./lib/authorize_request')(Ravel, true);
     
     //create registered modules using factories
-    for (var moduleName in Ravel._moduleFactories) {
-      Ravel._moduleFactories[moduleName]();
+    for (var moduleName in moduleFactories) {
+      moduleFactories[moduleName]();
     }
     
     //create registered services using factories
-    for (var serviceName in Ravel._serviceFactories) {
-      Ravel._serviceFactories[serviceName](app);
+    for (var serviceName in serviceFactories) {
+      serviceFactories[serviceName](app);
     }
     
     //Create ExpressJS server

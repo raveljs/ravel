@@ -2,8 +2,6 @@ var Ravel = require('../ravel.js');
 
 var ravel = new Ravel();
 
-ravel.module('sample', './sampleModule');
-
 //FIXME working off of the tapestry-vm parameters for now
 //redis parameters
 ravel.set('redis host', '127.0.0.1');
@@ -35,6 +33,10 @@ ravel.set('get user function', function() {
 ravel.set('get or create user function', function() {
   //TODO implement
 });
+
+ravel.module('sample', './sampleModule');
+
+//ravel.service('sample', )
 
 ravel.start();
 
