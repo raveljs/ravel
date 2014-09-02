@@ -1,7 +1,7 @@
 var path = require('path');
 var ApplicationError = require('./lib/application_error');
 var l = require('./lib/log')('ravel');
-var rest = require('./lib/simple_rest');
+var rest = require('./lib/rest');
 
 module.exports = function() {  
   var Ravel = {
@@ -131,24 +131,30 @@ module.exports = function() {
     addMethod('put');
     addMethod('delete');
     serviceBuilder.done = function() {
-      //TODO does done need to exist at all?
-      serviceFactories[serviceName] = {
-        basePath: basePath,
-        factory: function(expressApp, authorize) {
-          //callback takes id for the non-All ones
+      serviceFactories[serviceName] =  function(expressApp, authorize) {
           //process all methods and add to express app
-
           var buildRoute = function(methodType, methodName) {
+            var bp = basePath;
+            if (methodName === 'get' || methodName === 'post' || methodName === 'put' || methodName === 'delete') {
+              bp = path.join(basePath, '/:id');
+            }
             //TODO integrate simple rest, give middleware a callback
             if (serviceBuilder._methods[methodName]) {
               if (serviceBuilder._methods[methodName].secure) {
-                expressApp[methodType](basePath, Ravel.authorize, serviceBuilder._methods[methodName].middleware);
+                l.i('Registering secure service endpoint ' + methodType.toUpperCase() + ' ' + bp);
+                expressApp[methodType](bp, Ravel.authorize, function(req, res) {
+                  serviceBuilder._methods[methodName].middleware(req, res, rest);
+                });
               } else {
-                expressApp[methodType](basePath, serviceBuilder._methods[methodName].middleware);
+                l.i('Registering public service endpoint ' + methodType.toUpperCase() + ' ' + bp);
+                expressApp[methodType](bp, function(req, res) {
+                  serviceBuilder._methods[methodName].middleware(req, res, rest);
+                });
               }
             } else {
-              expressApp[methodType](basePath, function(req, res) {
-                res.send(rest.NOT_IMPLEMENTED);
+              //l.i('Registering unimplemented service endpoint ' + methodType.toUpperCase() + ' ' + bp);
+              expressApp[methodType](bp, function(req, res) {
+                res.status(rest.NOT_IMPLEMENTED).end();
               });
             }
           };
@@ -162,7 +168,6 @@ module.exports = function() {
           buildRoute('delete', 'delete');
         }
       };
-    };
     return serviceBuilder;
   };
   
@@ -242,11 +247,6 @@ module.exports = function() {
       moduleFactories[moduleName]();
     }
     
-    //create registered services using factories
-    for (var serviceName in serviceFactories) {
-      serviceFactories[serviceName](app);
-    }
-    
     //Create ExpressJS server
     var server = http.createServer(app);
 
@@ -255,6 +255,12 @@ module.exports = function() {
     var primus = new Primus(server, { transformer: 'websockets', parser: 'JSON' });
     //TODO primus_init produces a configured, cluster-ready broadcasting library
     //var broadcast = require('./lib/primus_init.js')(app, lib, express, expressSessionStore, primus, db, kvstore);
+    
+    //create registered services using factories
+    for (var serviceName in serviceFactories) {
+      serviceFactories[serviceName](app);
+    }
+
     //Start ExpressJS server
     server.listen(Ravel.get('node port'), function(){
       l.i("Application server at " + Ravel.get('node domain') + " listening on port " + Ravel.get('node port'));

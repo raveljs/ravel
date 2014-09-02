@@ -36,12 +36,15 @@ ravel.set('get or create user function', function() {
 
 ravel.module('sample', './sampleModule');
 
-//ravel.service('sample', )
+ravel.service('sample', '/sample')
+.getAll(false, function(req, res, rest) {
+	ravel.modules.sample.getNumbers(undefined, function(err, result) {
+	  rest.buildRestResponse(req, res, err, result);
+	});
+})
+.get(false, function(req, res, rest) {
+	rest.buildRestResponse(req, res, null, req.param('id'));
+})
+.done();
 
 ravel.start();
-
-ravel.modules.sample.getNumbers(undefined, function(err, result) {
-  console.log(result);
-});
-
-//console.log(Ravel.modules.sample);
