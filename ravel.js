@@ -88,7 +88,7 @@ module.exports = function() {
       throw new ApplicationError.DuplicateEntryError('Module with name \'' + name + '\' has already been registered.');
     }
     moduleFactories[name] = function() {
-      Ravel.modules[name] = require(path.join(__dirname, modulePath))(Ravel, require('./lib/log')(name));
+      Ravel.modules[name] = require(path.join(__dirname, modulePath))(Ravel, ApplicationError, require('./lib/log')(name));
       Ravel.db.createTransactionEntryPoints(Ravel.modules[name]);
     }
   };
@@ -301,7 +301,6 @@ module.exports = function() {
   //Passport parameters
   Ravel.registerSimpleParameter('get user function', true);
   Ravel.registerSimpleParameter('get or create user function', true);
-  Ravel.registerSimpleParameter('web authentication failure redirect path');
   
   return Ravel;
 };
