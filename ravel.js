@@ -98,16 +98,15 @@ module.exports = function() {
    *
    * A service is a RESTful endpoint for a single Resource
    *
-   * @param {String} serviceName The name of the Service
    * @param {String} basePath The base path of the Resource
    * @return {Object} builder a builder for the service, with the
    *                          following methods:
    *
    *
    */
-  Ravel.service = function(serviceName, basePath) {
+  Ravel.service = function(basePath, servicePath) {
     //if a service with this name has already been regsitered, error out
-    if (serviceFactories[serviceName]) {
+    if (serviceFactories[basePath]) {
       throw new ApplicationError.DuplicateEntryError('Service with name \'' + name + '\' has already been registered.');
     }
     var serviceBuilder = {
@@ -133,45 +132,44 @@ module.exports = function() {
     addMethod('post');
     addMethod('put');
     addMethod('delete');
-    serviceBuilder.done = function() {
-      serviceFactories[serviceName] =  function(expressApp, authorize) {
-          //process all methods and add to express app
-          var buildRoute = function(methodType, methodName) {
-            var bp = basePath;
-            if (methodName === 'get' || methodName === 'post' || methodName === 'put' || methodName === 'delete') {
-              bp = path.join(basePath, '/:id');
-            }
-            //TODO integrate simple rest, give middleware a callback
-            if (serviceBuilder._methods[methodName]) {
-              if (serviceBuilder._methods[methodName].secure) {
-                l.i('Registering secure service endpoint ' + methodType.toUpperCase() + ' ' + bp);
-                expressApp[methodType](bp, Ravel.authorize, function(req, res) {
-                  serviceBuilder._methods[methodName].middleware(req, res, rest);
-                });
-              } else {
-                l.i('Registering public service endpoint ' + methodType.toUpperCase() + ' ' + bp);
-                expressApp[methodType](bp, function(req, res) {
-                  serviceBuilder._methods[methodName].middleware(req, res, rest);
-                });
-              }
-            } else {
-              //l.i('Registering unimplemented service endpoint ' + methodType.toUpperCase() + ' ' + bp);
-              expressApp[methodType](bp, function(req, res) {
-                res.status(rest.NOT_IMPLEMENTED).end();
-              });
-            }
-          };
-          buildRoute('get', 'getAll');
-          buildRoute('post', 'postAll');
-          buildRoute('put', 'putAll');
-          buildRoute('delete', 'deleteAll');
-          buildRoute('get', 'get');
-          buildRoute('post', 'post');
-          buildRoute('put', 'put');
-          buildRoute('delete', 'delete');
+
+    serviceFactories[basePath] = function(expressApp) {
+      require(path.join(__dirname, servicePath))(Ravel.modules, ApplicationError, require('./lib/log')(basePath), serviceBuilder, rest);
+      //process all methods and add to express app
+      var buildRoute = function(methodType, methodName) {
+        var bp = basePath;
+        if (methodName === 'get' || methodName === 'post' || methodName === 'put' || methodName === 'delete') {
+          bp = path.join(basePath, '/:id');
+        }
+        //TODO integrate simple rest, give middleware a callback
+        if (serviceBuilder._methods[methodName]) {
+          if (serviceBuilder._methods[methodName].secure) {
+            l.i('Registering secure service endpoint ' + methodType.toUpperCase() + ' ' + bp);
+            expressApp[methodType](bp, Ravel.authorize, function(req, res) {
+              serviceBuilder._methods[methodName].middleware(req, res);
+            });
+          } else {
+            l.i('Registering public service endpoint ' + methodType.toUpperCase() + ' ' + bp);
+            expressApp[methodType](bp, function(req, res) {
+              serviceBuilder._methods[methodName].middleware(req, res);
+            });
+          }
+        } else {
+          //l.i('Registering unimplemented service endpoint ' + methodType.toUpperCase() + ' ' + bp);
+          expressApp[methodType](bp, function(req, res) {
+            res.status(rest.NOT_IMPLEMENTED).end();
+          });
         }
       };
-    return serviceBuilder;
+      buildRoute('get', 'getAll');
+      buildRoute('post', 'postAll');
+      buildRoute('put', 'putAll');
+      buildRoute('delete', 'deleteAll');
+      buildRoute('get', 'get');
+      buildRoute('post', 'post');
+      buildRoute('put', 'put');
+      buildRoute('delete', 'delete');
+    }
   };
   
   /**
