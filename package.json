@@ -32,7 +32,8 @@
     "serve-favicon":"*",
     "ws":"*"
   },
-  "devDependencies": {    
+  "devDependencies": {
+    "mocha": "*",
     "chai":"*",
     "chai-things":"*"
   }

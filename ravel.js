@@ -12,7 +12,7 @@ module.exports = function() {
   var serviceFactories = {};
   var knownParameters = {};
   var params = {};
-  var injector = require('./lib/injector')(Ravel, moduleFactories);
+  var injector = require('./lib/injector')(Ravel, moduleFactories, module.parent);
   
   //Change __dirname to current working directory of the
   //app using the ravel library, so that modules can be

@@ -1,7 +1,7 @@
-module.exports = function($E, $L, $MethodBuilder) {
+module.exports = function($E, $L, $MethodBuilder, moment) {
   
-  $MethodBuilder.add('getLetters', function(tConnection, user, callback) {
-  	callback(null, ['a','b','c']);
+  $MethodBuilder.add('getFormattedTime', function(tConnection, user, callback) {
+  	callback(null, moment().fromNow());
   });
 
 };
