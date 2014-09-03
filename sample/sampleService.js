@@ -8,6 +8,6 @@ module.exports = function($E, $L, $EndpointBuilder, $Rest, $Broadcast, sample) {
 	
 	$EndpointBuilder.get(false, function(req, res) {
 		$Rest.buildRestResponse(req, res, null, req.param('id'));
-		$Broadcast.emit('test', 'user requested sample', req.param('id'));
+		$Broadcast.emit('/sample', 'user requested sample', req.param('id'));
 	});
 };

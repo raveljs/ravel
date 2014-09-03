@@ -294,8 +294,12 @@ module.exports = function() {
     //Pass server to Primus to get it going on the same port
     //Initialize primus.io with room handling, etc.
     var primus = new Primus(server, { transformer: 'websockets', parser: 'JSON' });
-    //TODO primus_init produces a configured, cluster-ready broadcasting library
-    Ravel.broadcast = require('./lib/primus_init.js')(Ravel, primus, expressSessionStore, rooms);
+    //primus_init produces a configured, cluster-ready broadcasting library
+    var broadcast = require('./lib/primus_init.js')(Ravel, primus, expressSessionStore, rooms);
+    //public version of broadcast, for client use
+    Ravel.broadcast = {
+      emit: broadcast.emit
+    };
         
     //create registered modules using factories
     for (var moduleName in moduleFactories) {

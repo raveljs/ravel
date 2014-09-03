@@ -37,4 +37,8 @@ $Ravel.module('sample2', './sampleModule2');
 
 $Ravel.service('/sample', './sampleService');
 
+$Ravel.room('/sample', function(callback) {
+	callback(null, true);
+});
+
 $Ravel.start();
