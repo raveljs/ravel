@@ -44,7 +44,7 @@ module.exports = function() {
     } else if (knownParameters[key].required && params[key] === undefined) {
       throw new ApplicationError.NotFound('Known required parameter \'' + key + '\' was requested, but hasn\'t been defined yet.');
     } else if (params[key] === undefined) {
-      l.w('Optional parameter \'' + key + '\' was requested, but is not defined.');
+      l.l('Optional parameter \'' + key + '\' was requested, but is not defined.');
       return undefined;
     } else {
       return params[key];
