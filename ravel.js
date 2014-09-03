@@ -130,7 +130,11 @@ module.exports = function() {
       _methods: {}
     };
     var addMethod = function(method) {
-      endpointBuilder[method] = function(secure, middleware) {
+      endpointBuilder[method] = function() {
+        //first argument is whether or not the endpoint requires authentication
+        var secure = arguments[0];
+        //all other arguments are express middleware of the form function(req, res, next?)
+        var middleware = Array.prototype.slice.call(arguments, 1);
         if (endpointBuilder._methods[method]) {
           throw new ApplicationError.DuplicateEntryError('Method '+method+' has already been registered with service \''+serviceName+'\'');
         }
@@ -165,19 +169,17 @@ module.exports = function() {
         if (methodName === 'get' || methodName === 'post' || methodName === 'put' || methodName === 'delete') {
           bp = path.join(basePath, '/:id');
         }
-        //TODO integrate simple rest, give middleware a callback
+        var args = [bp];
         if (endpointBuilder._methods[methodName]) {
           if (endpointBuilder._methods[methodName].secure) {
             l.i('Registering secure service endpoint ' + methodType.toUpperCase() + ' ' + bp);
-            expressApp[methodType](bp, Ravel.authorize, function(req, res) {
-              endpointBuilder._methods[methodName].middleware(req, res);
-            });
+            args.push(Ravel.authorize);
+            args = args.concat(endpointBuilder._methods[methodName].middleware);            
           } else {
             l.i('Registering public service endpoint ' + methodType.toUpperCase() + ' ' + bp);
-            expressApp[methodType](bp, function(req, res) {
-              endpointBuilder._methods[methodName].middleware(req, res);
-            });
+            args = args.concat(endpointBuilder._methods[methodName].middleware);            
           }
+          expressApp[methodType].apply(expressApp, args);
         } else {
           //l.i('Registering unimplemented service endpoint ' + methodType.toUpperCase() + ' ' + bp);
           expressApp[methodType](bp, function(req, res) {
