@@ -106,7 +106,8 @@ module.exports = function() {
       var moduleInject = require(path.join(__dirname, modulePath));
       injector.inject({
         '$L': require('./lib/log')(name),
-        '$MethodBuilder': methodBuilder
+        '$MethodBuilder': methodBuilder,
+        '$KV': Ravel.kvstore
       },moduleInject);
     }
   };
@@ -154,9 +155,9 @@ module.exports = function() {
       var serviceInject = require(path.join(__dirname, servicePath));
       injector.inject({
         '$L': require('./lib/log')(basePath), 
-        '$EndpointBuilder': endpointBuilder, 
-        '$Modules': Ravel.modules, 
-        '$Rest': rest
+        '$EndpointBuilder': endpointBuilder,
+        '$Rest': rest,
+        '$KV': Ravel.kvstore
       }, serviceInject);
       //process all methods and add to express app
       var buildRoute = function(methodType, methodName) {
