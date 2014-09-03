@@ -280,7 +280,7 @@ module.exports = function() {
     //Initialize primus.io with room handling, etc.
     var primus = new Primus(server, { transformer: 'websockets', parser: 'JSON' });
     //TODO primus_init produces a configured, cluster-ready broadcasting library
-    //var broadcast = require('./lib/primus_init.js')(app, lib, express, expressSessionStore, primus, db, kvstore);
+    Ravel.broadcast = require('./lib/primus_init.js')(Ravel, primus, expressSessionStore);
     
     //create registered services using factories
     for (var serviceName in serviceFactories) {
@@ -298,6 +298,7 @@ module.exports = function() {
   Ravel.registerSimpleParameter('redis host', true);
   Ravel.registerSimpleParameter('redis port', true);
   Ravel.registerSimpleParameter('redis password');
+  Ravel.registerSimpleParameter('websocket message cache time');
   //mysql parameters
   Ravel.registerSimpleParameter('mysql host', true);
   Ravel.registerSimpleParameter('mysql port', true);
