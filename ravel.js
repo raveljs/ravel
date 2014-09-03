@@ -174,11 +174,10 @@ module.exports = function() {
           if (endpointBuilder._methods[methodName].secure) {
             l.i('Registering secure service endpoint ' + methodType.toUpperCase() + ' ' + bp);
             args.push(Ravel.authorize);
-            args = args.concat(endpointBuilder._methods[methodName].middleware);            
           } else {
-            l.i('Registering public service endpoint ' + methodType.toUpperCase() + ' ' + bp);
-            args = args.concat(endpointBuilder._methods[methodName].middleware);            
+            l.i('Registering public service endpoint ' + methodType.toUpperCase() + ' ' + bp);            
           }
+          args = args.concat(endpointBuilder._methods[methodName].middleware);
           expressApp[methodType].apply(expressApp, args);
         } else {
           //l.i('Registering unimplemented service endpoint ' + methodType.toUpperCase() + ' ' + bp);
