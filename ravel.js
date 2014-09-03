@@ -177,7 +177,7 @@ module.exports = function() {
             l.i('Registering secure service endpoint ' + methodType.toUpperCase() + ' ' + bp);
             args.push(Ravel.authorize);
           } else {
-            l.i('Registering public service endpoint ' + methodType.toUpperCase() + ' ' + bp);            
+            l.i('Registering public service endpoint ' + methodType.toUpperCase() + ' ' + bp);
           }
           args = args.concat(endpointBuilder._methods[methodName].middleware);
           expressApp[methodType].apply(expressApp, args);
@@ -225,6 +225,7 @@ module.exports = function() {
       regex: new RegExp(roomPattern.replace(/\:(\w+)/g,'(\\w+)')),
       authorize: authorizationFunction
     };
+    l.i('Creating websocket room with pattern ' + roomPattern);
   };
   
   /**
