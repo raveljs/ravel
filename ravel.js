@@ -1,7 +1,6 @@
 var path = require('path');
 var ApplicationError = require('./lib/application_error');
 var l = require('./lib/log')('ravel');
-var rest = require('./lib/rest');
 
 module.exports = function() {  
   var Ravel = {
@@ -13,6 +12,7 @@ module.exports = function() {
   var rooms = {};
   var knownParameters = {};
   var params = {};
+  var rest = require('./lib/rest')(Ravel);
   var injector = require('./lib/injector')(Ravel, moduleFactories, module.parent);
   
   //Change __dirname to current working directory of the
@@ -340,6 +340,7 @@ module.exports = function() {
   Ravel.registerSimpleParameter('express view engine', true);
   Ravel.registerSimpleParameter('express favicon path');
   Ravel.registerSimpleParameter('express session secret', true);
+  Ravel.registerSimpleParameter('disable json vulnerability protection');
   //Google OAuth parameters
   Ravel.registerSimpleParameter('google oauth2 web client id', true);
   Ravel.registerSimpleParameter('google oauth2 web client secret', true);
