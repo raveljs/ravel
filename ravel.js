@@ -14,6 +14,7 @@ module.exports = function() {
   var params = {};
   var rest = require('./lib/rest')(Ravel);
   var injector = require('./lib/injector')(Ravel, moduleFactories, module.parent);
+  var broadcast_middleware = require('./lib/broadcast_middleware')(Ravel);
   
   //Change __dirname to current working directory of the
   //app using the ravel library, so that modules can be
@@ -123,6 +124,7 @@ module.exports = function() {
    *
    */
   Ravel.service = function(basePath, servicePath) {
+    basePath = path.normalize(basePath);
     //if a service with this name has already been regsitered, error out
     if (serviceFactories[basePath]) {
       throw new ApplicationError.DuplicateEntryError('Service with name \'' + basePath + '\' has already been registered.');
@@ -147,7 +149,6 @@ module.exports = function() {
       }
     };    
     addMethod('getAll');
-    addMethod('postAll');
     addMethod('putAll');
     addMethod('deleteAll');    
     addMethod('get');
@@ -168,11 +169,12 @@ module.exports = function() {
       //process all methods and add to express app
       var buildRoute = function(methodType, methodName) {
         var bp = basePath;
-        if (methodName === 'get' || methodName === 'post' || methodName === 'put' || methodName === 'delete') {
+        if (methodName === 'get' || methodName === 'put' || methodName === 'delete') {
           bp = path.join(basePath, '/:id');
         }
         var args = [bp];
         if (endpointBuilder._methods[methodName]) {
+          args.push(broadcast_middleware);
           if (endpointBuilder._methods[methodName].secure) {
             l.i('Registering secure service endpoint ' + methodType.toUpperCase() + ' ' + bp);
             args.push(Ravel.authorize);
@@ -189,13 +191,12 @@ module.exports = function() {
         }
       };
       buildRoute('get', 'getAll');
-      buildRoute('post', 'postAll');
       buildRoute('put', 'putAll');
       buildRoute('delete', 'deleteAll');
       buildRoute('get', 'get');
       buildRoute('post', 'post');
       buildRoute('put', 'put');
-      buildRoute('delete', 'delete');
+      buildRoute('delete', 'delete');      
     }
   };
 
@@ -206,6 +207,7 @@ module.exports = function() {
    * @param {Function} authorizationFunction, of the form function(userId, callback(err, {Boolean}authorized))
    */
   Ravel.room = function(roomPattern, authorizationFunction) {
+    roomPattern = path.normalize(roomPattern);
     //if a service with this name has already been regsitered, error out
     if (rooms[roomPattern]) {
       throw new ApplicationError.DuplicateEntryError('Websocket room with path \'' + roomPattern + '\' has already been registered.');
@@ -249,6 +251,7 @@ module.exports = function() {
     
     //configure express
     var app = express();
+    app.disable('x-powered-by');
     //configure redis session store
     var sessionStoreArgs = {
       host:Ravel.get('redis host'),
@@ -289,7 +292,7 @@ module.exports = function() {
         res.locals.token = req.csrfToken();
       }
       next();
-    });      
+    });
     app.use(express.static(path.join(__dirname, Ravel.get('express public directory'))));
     app.use(require('connect-flash')());
     
