@@ -225,8 +225,6 @@ module.exports = function() {
       regex: new RegExp(roomPattern.replace(/\:(\w+)/g,'(\\w+)')),
       authorize: authorizationFunction
     };
-    var test = require('./lib/websocket_room_resolver')(rooms);
-    console.dir(test.resolve('/sample/1/test/1'));
   };
   
   /**
