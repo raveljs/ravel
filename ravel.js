@@ -10,6 +10,7 @@ module.exports = function() {
   
   var moduleFactories = {};
   var serviceFactories = {};
+  var rooms = {};
   var knownParameters = {};
   var params = {};
   var injector = require('./lib/injector')(Ravel, moduleFactories, module.parent);
@@ -124,7 +125,7 @@ module.exports = function() {
   Ravel.service = function(basePath, servicePath) {
     //if a service with this name has already been regsitered, error out
     if (serviceFactories[basePath]) {
-      throw new ApplicationError.DuplicateEntryError('Service with name \'' + name + '\' has already been registered.');
+      throw new ApplicationError.DuplicateEntryError('Service with name \'' + basePath + '\' has already been registered.');
     }
     var endpointBuilder = {
       _methods: {}
@@ -136,7 +137,7 @@ module.exports = function() {
         //all other arguments are express middleware of the form function(req, res, next?)
         var middleware = Array.prototype.slice.call(arguments, 1);
         if (endpointBuilder._methods[method]) {
-          throw new ApplicationError.DuplicateEntryError('Method '+method+' has already been registered with service \''+serviceName+'\'');
+          throw new ApplicationError.DuplicateEntryError('Method '+method+' has already been registered with service \''+basePath+'\'');
         }
         endpointBuilder._methods[method] = {
           secure: secure,
@@ -161,7 +162,8 @@ module.exports = function() {
         '$L': require('./lib/log')(basePath), 
         '$EndpointBuilder': endpointBuilder,
         '$Rest': rest,
-        '$KV': Ravel.kvstore
+        '$KV': Ravel.kvstore,
+        '$Broadcast': Ravel.broadcast
       }, serviceInject);
       //process all methods and add to express app
       var buildRoute = function(methodType, methodName) {
@@ -194,6 +196,24 @@ module.exports = function() {
       buildRoute('post', 'post');
       buildRoute('put', 'put');
       buildRoute('delete', 'delete');
+    }
+  };
+
+  /**
+   * Registers a websocket room, with a given authorization function and context
+   *
+   * @param {String} roomName the name of the websocket room
+   * @param {Function} authorizationFunction, of the form function(userId, callback(err, {Boolean}authorized))
+   */
+  Ravel.room = function(roomName, authorizationFunction) {
+    //if a service with this name has already been regsitered, error out
+    if (rooms[roomName]) {
+      throw new ApplicationError.DuplicateEntryError('Websocket room with name \'' + roomName + '\' has already been registered.');
+    } else if (typeof authorizationFunction !== 'function') {
+      throw new ApplicationError.IllegalValue('Authorization function for room \'' + roomName + '\' must be a function.');
+    }
+    rooms[roomName] = {
+      authorize: authorizationFunction
     }
   };
   
@@ -268,11 +288,6 @@ module.exports = function() {
     require('./lib/passport_init.js')(Ravel, passport);
     Ravel.authorize = require('./lib/authorize_request')(Ravel, true);
     
-    //create registered modules using factories
-    for (var moduleName in moduleFactories) {
-      moduleFactories[moduleName]();
-    }
-    
     //Create ExpressJS server
     var server = http.createServer(app);
 
@@ -280,8 +295,13 @@ module.exports = function() {
     //Initialize primus.io with room handling, etc.
     var primus = new Primus(server, { transformer: 'websockets', parser: 'JSON' });
     //TODO primus_init produces a configured, cluster-ready broadcasting library
-    Ravel.broadcast = require('./lib/primus_init.js')(Ravel, primus, expressSessionStore);
-    
+    Ravel.broadcast = require('./lib/primus_init.js')(Ravel, primus, expressSessionStore, rooms);
+        
+    //create registered modules using factories
+    for (var moduleName in moduleFactories) {
+      moduleFactories[moduleName]();
+    }
+
     //create registered services using factories
     for (var serviceName in serviceFactories) {
       serviceFactories[serviceName](app);
