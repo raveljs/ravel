@@ -202,19 +202,31 @@ module.exports = function() {
   /**
    * Registers a websocket room, with a given authorization function and context
    *
-   * @param {String} roomName the name of the websocket room
+   * @param {String} roomPattern the name of the websocket room
    * @param {Function} authorizationFunction, of the form function(userId, callback(err, {Boolean}authorized))
    */
-  Ravel.room = function(roomName, authorizationFunction) {
+  Ravel.room = function(roomPattern, authorizationFunction) {
     //if a service with this name has already been regsitered, error out
-    if (rooms[roomName]) {
-      throw new ApplicationError.DuplicateEntryError('Websocket room with name \'' + roomName + '\' has already been registered.');
+    if (rooms[roomPattern]) {
+      throw new ApplicationError.DuplicateEntryError('Websocket room with path \'' + roomPattern + '\' has already been registered.');
     } else if (typeof authorizationFunction !== 'function') {
-      throw new ApplicationError.IllegalValue('Authorization function for room \'' + roomName + '\' must be a function.');
+      throw new ApplicationError.IllegalValue('Authorization function for path \'' + roomPattern + '\' must be a function.');
     }
-    rooms[roomName] = {
+    var params = [];
+    var paramMatcher = new RegExp(/\:(\w+)/g);
+    var paramMatch = paramMatcher.exec(roomPattern);
+    while (paramMatch !== null) {
+      params.push(paramMatch[1]);
+      paramMatch = paramMatcher.exec(roomPattern);
+    }
+    rooms[roomPattern] = {
+      name: roomPattern,
+      params: params,
+      regex: new RegExp(roomPattern.replace(/\:(\w+)/g,'(\\w+)')),
       authorize: authorizationFunction
-    }
+    };
+    var test = require('./lib/websocket_room_resolver')(rooms);
+    console.dir(test.resolve('/sample/1/test/1'));
   };
   
   /**
@@ -295,7 +307,7 @@ module.exports = function() {
     //Initialize primus.io with room handling, etc.
     var primus = new Primus(server, { transformer: 'websockets', parser: 'JSON' });
     //primus_init produces a configured, cluster-ready broadcasting library
-    var broadcast = require('./lib/primus_init.js')(Ravel, primus, expressSessionStore, rooms);
+    var broadcast = require('./lib/primus_init.js')(Ravel, primus, expressSessionStore, require('./lib/websocket_room_resolver')(rooms));
     //public version of broadcast, for client use
     Ravel.broadcast = {
       emit: broadcast.emit
