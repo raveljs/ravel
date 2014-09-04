@@ -1,3 +1,5 @@
+'use strict';
+
 var path = require('path');
 var ApplicationError = require('./lib/application_error');
 var l = require('./lib/log')('ravel');

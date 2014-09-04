@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = function(grunt) {
 	grunt.initConfig({
   	pkg: grunt.file.readJSON('package.json'),
@@ -15,16 +17,20 @@ module.exports = function(grunt) {
 	      latedef:   true,
 	      newcap:    true,
 	      noarg:     true,
+	      noempty:   true,
 	      nonbsp:    true,
 	      nonew:     true,
 	      sub:       true,
 	      undef:     true,
+	      unused:    true,
 	      boss:      true,
 	      eqnull:    true,
 	      node:      true,
 	      jquery:    true,
 	      quotmark: 'single',
 	      camelcase: true,
+	      strict:    true,
+	      indent: 2,
 	      //maxdepth:  4,
 	      globals: {
 	        Primus: true
@@ -34,7 +40,7 @@ module.exports = function(grunt) {
 	  },
 	  watch: {
 	  	api: {
-	  		files: ['lib/**', 'ravel.js'],
+	  		files: ['Gruntfile.js', 'lib/**', 'ravel.js'],
 	  		tasks: ['jshint'],
 	  		options: {
 	  			spawn: false
