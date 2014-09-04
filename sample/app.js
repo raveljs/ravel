@@ -3,7 +3,7 @@ var $Ravel = new require('../ravel.js')();
 //FIXME working off of the tapestry-vm parameters for now. need to port it into a sample vagrant vm
 //redis parameters
 $Ravel.set('redis host', '127.0.0.1');
-$Ravel.set('redis port', 16379);
+$Ravel.set('redis port', '16379');
 $Ravel.set('redis password', 'password');
 //mysql parameters
 $Ravel.set('mysql host', '127.0.0.1');
@@ -40,7 +40,7 @@ $Ravel.module('sample2', './sampleModule2');
 $Ravel.service('/sample', './sampleService');
 
 //Create websocket rooms with path resolution (into params object) and custom auth function
-$Ravel.room('/sample/:sampleId/test/:testId', function(userId, params, callback) {
+$Ravel.room('/sample/:sampleId', function(userId, params, callback) {
 	//should the user be allowed to join the given room?
 	callback(null, true);
 });
