@@ -164,7 +164,9 @@ module.exports = function() {
         '$EndpointBuilder': endpointBuilder,
         '$Rest': rest,
         '$KV': Ravel.kvstore,
-        '$Broadcast': Ravel.broadcast
+        '$Broadcast': Ravel.broadcast,
+        '$Transaction': Ravel.db.transactionCreator //not really a real thing, just a marker 
+                                                 //for the beginning of a transaction
       }, serviceInject);
       //process all methods and add to express app
       var buildRoute = function(methodType, methodName) {
