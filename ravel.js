@@ -14,12 +14,12 @@ module.exports = function() {
   var params = {};
   var rest = require('./lib/rest')(Ravel);
   var injector = require('./lib/injector')(Ravel, moduleFactories, module.parent);
-  var broadcast_middleware = require('./lib/broadcast_middleware')(Ravel);
+  var broadcasMiddleware = require('./lib/broadcast_middleware')(Ravel);
   
-  //Change __dirname to current working directory of the
-  //app using the ravel library, so that modules can be
+  //current working directory of the app using the 
+  //ravel library, so that modules can be
   //loaded with relative paths.
-  __dirname = process.cwd();
+  var cwd = process.cwd();
   
   /**
    * Register a parameter
@@ -29,7 +29,7 @@ module.exports = function() {
   Ravel.registerSimpleParameter = function(key, required) {
     knownParameters[key] = {
       required: required
-    }
+    };
   };
   
   /**
@@ -41,7 +41,7 @@ module.exports = function() {
    */
   Ravel.get = function(key) {
     if (!knownParameters[key]) {
-      throw new ApplicationError.NotFound('Parameter \'' + name + '\' was requested, but is unknown.');
+      throw new ApplicationError.NotFound('Parameter \'' + key + '\' was requested, but is unknown.');
     } else if (knownParameters[key].required && params[key] === undefined) {
       throw new ApplicationError.NotFound('Known required parameter \'' + key + '\' was requested, but hasn\'t been defined yet.');
     } else if (params[key] === undefined) {
@@ -105,13 +105,13 @@ module.exports = function() {
 
     //build module instantiation function
     moduleFactories[name] = function() {
-      var moduleInject = require(path.join(__dirname, modulePath));
+      var moduleInject = require(path.join(cwd, modulePath));
       injector.inject({
         '$L': require('./lib/log')(name),
         '$MethodBuilder': methodBuilder,
         '$KV': Ravel.kvstore
       },moduleInject);
-    }
+    };
   };
   
   /**
@@ -146,7 +146,7 @@ module.exports = function() {
           middleware: middleware
         };
         return endpointBuilder;
-      }
+      };
     };    
     addMethod('getAll');
     addMethod('putAll');
@@ -158,7 +158,7 @@ module.exports = function() {
 
     //build service instantiation function
     serviceFactories[basePath] = function(expressApp) {
-      var serviceInject = require(path.join(__dirname, servicePath));
+      var serviceInject = require(path.join(cwd, servicePath));
       injector.inject({
         '$L': require('./lib/log')(basePath), 
         '$EndpointBuilder': endpointBuilder,
@@ -174,7 +174,7 @@ module.exports = function() {
         }
         var args = [bp];
         if (endpointBuilder._methods[methodName]) {
-          args.push(broadcast_middleware);
+          args.push(broadcasMiddleware);
           if (endpointBuilder._methods[methodName].secure) {
             l.i('Registering secure service endpoint ' + methodType.toUpperCase() + ' ' + bp);
             args.push(Ravel.authorize);
@@ -197,7 +197,7 @@ module.exports = function() {
       buildRoute('post', 'post');
       buildRoute('put', 'put');
       buildRoute('delete', 'delete');      
-    }
+    };
   };
 
   /**
@@ -269,12 +269,12 @@ module.exports = function() {
     app.set('app port', Ravel.get('app port'));
     app.enable('trust proxy');
     //configure views
-    app.set('views', path.join(__dirname, Ravel.get('express view directory')));
+    app.set('views', path.join(cwd, Ravel.get('express view directory')));
     app.set('view engine', Ravel.get('express view engine'));
     //app.use(require('morgan')('dev')); //uncomment to see HTTP requests
     app.use(compression());
     if (Ravel.get('express favicon path')) {
-      app.use(favicon(__dirname + Ravel.get('express favicon path')));
+      app.use(favicon(path.join(cwd, Ravel.get('express favicon path'))));
     }
     app.use(require('body-parser').json());
     app.use(require('method-override')());
@@ -293,7 +293,7 @@ module.exports = function() {
       }
       next();
     });
-    app.use(express.static(path.join(__dirname, Ravel.get('express public directory'))));
+    app.use(express.static(path.join(cwd, Ravel.get('express public directory'))));
     app.use(require('connect-flash')());
     
     //initialize passport authentication      
@@ -327,7 +327,7 @@ module.exports = function() {
 
     //Start ExpressJS server
     server.listen(Ravel.get('node port'), function(){
-      l.i("Application server at " + Ravel.get('node domain') + " listening on port " + Ravel.get('node port'));
+      l.i('Application server at ' + Ravel.get('node domain') + ' listening on port ' + Ravel.get('node port'));
     });
   };
   

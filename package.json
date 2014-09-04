@@ -35,6 +35,10 @@
   "devDependencies": {
     "mocha": "*",
     "chai":"*",
-    "chai-things":"*"
+    "chai-things":"*",
+    "grunt": "*",
+    "grunt-contrib-jshint":"*",
+    "grunt-contrib-watch" : "*",
+    "jshint-stylish": "*"
   }
 }
