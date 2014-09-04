@@ -301,7 +301,7 @@ module.exports = function() {
     //initialize passport authentication      
     app.use(passport.initialize());
     app.use(passport.session());  
-    require('./lib/passport_init.js')(Ravel, passport);
+    require('./lib/passport_init.js')(Ravel, injector, passport);
     Ravel.authorize = require('./lib/authorize_request')(Ravel, true);
     
     //Create ExpressJS server
