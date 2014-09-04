@@ -94,9 +94,7 @@ module.exports = function() {
         if (module[methodName]) {
           throw new ApplicationError.DuplicateEntryError('Method with name \'' + methodName + '\' has already been registered.');
         }
-        var transactionalMethodName = 't' + methodName[0].toUpperCase() + methodName.slice(1,methodName.length);
-        module[transactionalMethodName] = handler;
-        module[methodName] = Ravel.db.createTransactionEntryPoint(module[transactionalMethodName]);
+        module[methodName] = Ravel.db.createTransactionEntryPoint(handler);
       }
     };
 
