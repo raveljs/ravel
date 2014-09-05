@@ -25,21 +25,18 @@ $Ravel.set('express session secret', '7UKBJcbNl5wrTkmcKGNB');
 $Ravel.set('google oauth2 web client id', '1084472114850-2vo5cjdsm8go33ljqoap7k31j07bkohq.apps.googleusercontent.com');
 $Ravel.set('google oauth2 web client secret', 'jSvmQzbWMcE0J9HdR_eDM-QN');
 //Passport parameters
-$Ravel.set('get user function', function($Transaction, userId, done) {
-  //TODO implement in your own app
-  done(new Error('get user function not implemented'), null);
+$Ravel.set('get user function', function($Transaction, users, userId, done) {
+  users.getUser($Transaction.start(), userId, done);
 });
 $Ravel.set('get or create user function', function($Transaction, accessToken, refreshToken, userProfile, done) {
-  //TODO implement in your own app
-  done(new Error('get or create user function not implemented'), null);
+  users.getOrCreateUser($Transaction.start(), 'google', profile, done);
 });
 
 //Import modules (APIs) using path to module file
-$Ravel.module('sample', './sampleModule');
-$Ravel.module('sample2', './sampleModule2');
+$Ravel.module('users', './modules/users');
 
 //Activate REST services using path to service file
-$Ravel.service('/sample', './sampleService');
+$Ravel.service('/sample', './services/sampleService');
 
 //Create websocket rooms with path resolution (into params object) and custom auth function
 $Ravel.room('/sample/:sampleId', function(userId, params, callback) {

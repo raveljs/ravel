@@ -1,6 +1,6 @@
-module.exports = function($E, $L, $EndpointBuilder, $Transaction, $Rest, $Broadcast, sample) {
+module.exports = function($E, $L, $EndpointBuilder, $Transaction, $Rest, $Broadcast) {
   
-	$EndpointBuilder.getAll(false, function(req, res) {
+	/*$EndpointBuilder.getAll(false, function(req, res) {
 		sample.getNumbers($Transaction.enter(), undefined, function(err, result) {
 		  $Rest.buildRestResponse(req, res, err, result);
 		});
@@ -9,5 +9,5 @@ module.exports = function($E, $L, $EndpointBuilder, $Transaction, $Rest, $Broadc
 	$EndpointBuilder.get(true, function(req, res) {
 		$Rest.buildRestResponse(req, res, null, req.param('id'));
 		//$Broadcast.emit('/sample', 'user requested sample', req.param('id'));
-	});
+	});*/
 };
