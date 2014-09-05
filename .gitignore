@@ -1,3 +1,5 @@
 node_modules
 *.sublime-workspace
 npm-debug.log
+.vagrant
+init_test.sql
