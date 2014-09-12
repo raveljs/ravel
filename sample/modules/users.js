@@ -101,7 +101,7 @@ module.exports = function($E, $L, $MethodBuilder, users, async) {
 	  //does the user exist already?
 		users.getUserByProfile(tConnection, authProvider, profile, function(err, existingUser) {
 			if (err instanceof $E.NotFound) {
-				//create user
+				//create user, then return them
 				async.waterfall([
 			  	function(callback) {
 			  		tConnection.query(
@@ -124,7 +124,7 @@ module.exports = function($E, $L, $MethodBuilder, users, async) {
 			} else if (err) {
 				done(err, null);
 			} else {
-				//update user with the current profile
+				//update user with the current profile, then return the user
 				async.waterfall([
 					function(callback) {
 						tConnection.query('UPDATE registered_user ' +

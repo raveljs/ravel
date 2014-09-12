@@ -1,4 +1,4 @@
-module.exports = function($E, $L, $EndpointBuilder, $Transaction, $Rest, $Broadcast) {
+module.exports = function($E, $L, $EndpointBuilder, $Transaction, $Rest) {
   
 	/*$EndpointBuilder.getAll(false, function(req, res) {
 		sample.getNumbers($Transaction.enter(), undefined, function(err, result) {
