@@ -11,6 +11,7 @@ module.exports = function() {
   
   var moduleFactories = {};
   var serviceFactories = {};
+  var routesFactories = {};
   var rooms = {};
   var knownParameters = {};
   var params = {};
@@ -93,8 +94,9 @@ module.exports = function() {
       add: function(methodName, handler) {
         if (module[methodName]) {
           throw new ApplicationError.DuplicateEntryError('Method with name \'' + methodName + '\' has already been registered.');
+        } else {
+          module[methodName] = Ravel.db.createTransactionEntryPoint(handler);
         }
-        module[methodName] = Ravel.db.createTransactionEntryPoint(handler);
       }
     };
 
@@ -112,6 +114,37 @@ module.exports = function() {
         '$KV': Ravel.kvstore
       },moduleInject);
     };
+  };
+
+  /**
+   * Register a bunch of plain GET express middleware (ejs, static, etc.)
+   * with Ravel which will be available, by name, at the given 
+   * base path.
+   * 
+   * @param {String} directoryModulePath the path of the directory module to require(...)
+   */
+  Ravel.routes = function(routeModulePath) {
+    var routes = {
+      _routes: []
+    };    
+    var routeBuilder = {
+      //This will be run in Ravel.start
+      add: function(isSecure, route, middleware) {
+        if (isSecure) {
+          expressApp.get(route, Ravel.authorize, middleware);
+        } else {
+          expressApp.get(route, middleware);
+        }
+      }
+    };
+    routesFactories[basePath] = function(expressApp) {
+      injector.inject({
+        '$L': require('./lib/log')(name),
+        '$RouteBuilder': routeBuilder,
+        '$Broadcast': Ravel.broadcast,
+        '$KV': Ravel.kvstore
+      }, require(path.join(cwd, routeModulePath)));
+    }
   };
   
   /**
@@ -140,12 +173,13 @@ module.exports = function() {
         var middleware = Array.prototype.slice.call(arguments, 1);
         if (endpointBuilder._methods[method]) {
           throw new ApplicationError.DuplicateEntryError('Method '+method+' has already been registered with service \''+basePath+'\'');
+        } else {
+          endpointBuilder._methods[method] = {
+            secure: secure,
+            middleware: middleware
+          };
+          return endpointBuilder;
         }
-        endpointBuilder._methods[method] = {
-          secure: secure,
-          middleware: middleware
-        };
-        return endpointBuilder;
       };
     };    
     addMethod('getAll');
@@ -301,7 +335,7 @@ module.exports = function() {
     //initialize passport authentication      
     app.use(passport.initialize());
     app.use(passport.session());  
-    require('./lib/passport_init.js')(Ravel, injector, passport);
+    require('./lib/passport_init.js')(Ravel, app, injector, passport);
     Ravel.authorize = require('./lib/authorize_request')(Ravel, true);
     
     //Create ExpressJS server
@@ -325,6 +359,11 @@ module.exports = function() {
     //create registered services using factories
     for (var serviceName in serviceFactories) {
       serviceFactories[serviceName](app);
+    }
+
+    //create routes using factories
+    for (var routesName in routesFactories) {
+      routesFactories[routesName](app);
     }
 
     //Start ExpressJS server

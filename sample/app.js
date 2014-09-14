@@ -36,7 +36,7 @@ $Ravel.set('get or create user function', function($Transaction, accessToken, re
 $Ravel.module('users', './modules/users');
 
 //Activate REST services using path to service file
-$Ravel.service('/sample', './services/sampleService');
+//$Ravel.service('/sample', './services/pages');
 
 //Create websocket rooms with path resolution (into params object) and custom auth function
 $Ravel.room('/sample/:sampleId', function(userId, params, callback) {
