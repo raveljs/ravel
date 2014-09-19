@@ -25,6 +25,7 @@ $Ravel.set('express session secret', '7UKBJcbNl5wrTkmcKGNB');
 $Ravel.set('google oauth2 web client id', '1084472114850-2vo5cjdsm8go33ljqoap7k31j07bkohq.apps.googleusercontent.com');
 $Ravel.set('google oauth2 web client secret', 'jSvmQzbWMcE0J9HdR_eDM-QN');
 //Passport parameters
+$Ravel.set('app route', '/');
 $Ravel.set('login route', '/login');
 $Ravel.set('get user function', function($Transaction, users, userId, done) {
   users.getUser($Transaction.start(), userId, done);

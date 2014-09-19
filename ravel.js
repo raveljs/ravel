@@ -416,7 +416,8 @@ module.exports = function() {
   Ravel.registerSimpleParameter('google oauth2 ios client id');
   Ravel.registerSimpleParameter('google oauth2 ios client secret');
   //Passport parameters
-  Ravel.registerSimpleParameter('login route', false);
+  Ravel.registerSimpleParameter('app route', true);
+  Ravel.registerSimpleParameter('login route', true);
   Ravel.registerSimpleParameter('get user function', true);
   Ravel.registerSimpleParameter('get or create user function', true);
   
