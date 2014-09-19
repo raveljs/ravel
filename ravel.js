@@ -124,26 +124,39 @@ module.exports = function() {
    * @param {String} directoryModulePath the path of the directory module to require(...)
    */
   Ravel.routes = function(routeModulePath) {
+    //if a module with this name has already been regsitered, error out
+    if (routesFactories[routeModulePath]) {
+      throw new ApplicationError.DuplicateEntryError('Route module \'' + routeModulePath + '\' has already been registered.');
+    }
     var routes = {
       _routes: []
     };    
     var routeBuilder = {
-      //This will be run in Ravel.start
       add: function(isSecure, route, middleware) {
-        if (isSecure) {
-          expressApp.get(route, Ravel.authorize, middleware);
-        } else {
-          expressApp.get(route, middleware);
-        }
+        routes._routes.push({
+          isSecure:isSecure,
+          route:route,
+          middleware:middleware
+        });
       }
     };
-    routesFactories[basePath] = function(expressApp) {
+    //This will be run in Ravel.start
+    routesFactories[routeModulePath] = function(expressApp) {
       injector.inject({
-        '$L': require('./lib/log')(name),
+        '$L': require('./lib/log')(routeModulePath),
         '$RouteBuilder': routeBuilder,
         '$Broadcast': Ravel.broadcast,
         '$KV': Ravel.kvstore
       }, require(path.join(cwd, routeModulePath)));
+      for (var rk=0;rk<routes._routes.length;rk++) {
+        if (routes._routes[rk].isSecure) {          
+          expressApp.get(routes._routes[rk].route, Ravel.authorize, routes._routes[rk].middleware);
+          l.i('Registering secure route GET ' + routes._routes[rk].route);
+        } else {
+          expressApp.get(routes._routes[rk].route, routes._routes[rk].middleware);
+          l.i('Registering public route GET ' + routes._routes[rk].route);
+        }
+      }
     }
   };
   
@@ -403,6 +416,7 @@ module.exports = function() {
   Ravel.registerSimpleParameter('google oauth2 ios client id');
   Ravel.registerSimpleParameter('google oauth2 ios client secret');
   //Passport parameters
+  Ravel.registerSimpleParameter('login route', false);
   Ravel.registerSimpleParameter('get user function', true);
   Ravel.registerSimpleParameter('get or create user function', true);
   
