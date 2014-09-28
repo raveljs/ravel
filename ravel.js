@@ -132,12 +132,27 @@ module.exports = function() {
       _routes: []
     };    
     var routeBuilder = {
-      add: function(isSecure, route, middleware) {
-        routes._routes.push({
-          isSecure:isSecure,
-          route:route,
-          middleware:middleware
-        });
+      private: function() {
+        return {
+          add: function(route, middleware) {
+            routes._routes.push({
+              isSecure:true,
+              route:route,
+              middleware:middleware
+            });
+          }
+        }
+      },
+      public: function() {
+        return {
+          add: function(route, middleware) {
+            routes._routes.push({
+              isSecure:false,
+              route:route,
+              middleware:middleware
+            });
+          }
+        }
       }
     };
     //This will be run in Ravel.start
