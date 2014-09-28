@@ -10,7 +10,7 @@ module.exports = function() {
   };
   
   var moduleFactories = {};
-  var serviceFactories = {};
+  var resourceFactories = {};
   var routesFactories = {};
   var rooms = {};
   var knownParameters = {};
@@ -161,19 +161,19 @@ module.exports = function() {
   };
   
   /**
-   * Register a service with Ravel
+   * Register a RESTful resource with Ravel
    *
-   * A service is a RESTful endpoint for a single Resource
+   * A resource is a set of RESTful endpoints for a single Resource
    *
    * @param {String} basePath The base path of the all the Resource's endpoints
-   * @param {String} servicePath the path of the service module to require(...)
+   * @param {String} resourcePath the path of the resource module to require(...)
    *
    */
-  Ravel.service = function(basePath, servicePath) {
+  Ravel.resource = function(basePath, resourcePath) {
     basePath = path.normalize(basePath);
-    //if a service with this name has already been regsitered, error out
-    if (serviceFactories[basePath]) {
-      throw new ApplicationError.DuplicateEntryError('Service with name \'' + basePath + '\' has already been registered.');
+    //if a resource with this name has already been regsitered, error out
+    if (resourceFactories[basePath]) {
+      throw new ApplicationError.DuplicateEntryError('Resource with name \'' + basePath + '\' has already been registered.');
     }
     var endpointBuilder = {
       _methods: {}
@@ -185,7 +185,7 @@ module.exports = function() {
         //all other arguments are express middleware of the form function(req, res, next?)
         var middleware = Array.prototype.slice.call(arguments, 1);
         if (endpointBuilder._methods[method]) {
-          throw new ApplicationError.DuplicateEntryError('Method '+method+' has already been registered with service \''+basePath+'\'');
+          throw new ApplicationError.DuplicateEntryError('Method '+method+' has already been registered with resource \''+basePath+'\'');
         } else {
           endpointBuilder._methods[method] = {
             secure: secure,
@@ -204,8 +204,8 @@ module.exports = function() {
     addMethod('delete');
 
     //build service instantiation function
-    serviceFactories[basePath] = function(expressApp) {
-      var serviceInject = require(path.join(cwd, servicePath));
+    resourceFactories[basePath] = function(expressApp) {
+      var resourceInject = require(path.join(cwd, resourcePath));
       injector.inject({
         '$L': require('./lib/log')(basePath), 
         '$EndpointBuilder': endpointBuilder,
@@ -213,8 +213,8 @@ module.exports = function() {
         '$KV': Ravel.kvstore,
         '$Broadcast': Ravel.broadcast,
         '$Transaction': Ravel.db.transactionCreator //not really a real thing, just a marker 
-                                                 //for the beginning of a transaction
-      }, serviceInject);
+                                                    //for the beginning of a transaction
+      }, resourceInject);
       //process all methods and add to express app
       var buildRoute = function(methodType, methodName) {
         var bp = basePath;
@@ -225,15 +225,15 @@ module.exports = function() {
         if (endpointBuilder._methods[methodName]) {
           args.push(broadcasMiddleware);
           if (endpointBuilder._methods[methodName].secure) {
-            l.i('Registering secure service endpoint ' + methodType.toUpperCase() + ' ' + bp);
+            l.i('Registering secure resource endpoint ' + methodType.toUpperCase() + ' ' + bp);
             args.push(Ravel.authorize);
           } else {
-            l.i('Registering public service endpoint ' + methodType.toUpperCase() + ' ' + bp);
+            l.i('Registering public resource endpoint ' + methodType.toUpperCase() + ' ' + bp);
           }
           args = args.concat(endpointBuilder._methods[methodName].middleware);
           expressApp[methodType].apply(expressApp, args);
         } else {
-          //l.i('Registering unimplemented service endpoint ' + methodType.toUpperCase() + ' ' + bp);
+          //l.i('Registering unimplemented resource endpoint ' + methodType.toUpperCase() + ' ' + bp);
           expressApp[methodType](bp, function(req, res) {
             res.status(rest.NOT_IMPLEMENTED).end();
           });
@@ -257,7 +257,7 @@ module.exports = function() {
    */
   Ravel.room = function(roomPattern, authorizationFunction) {
     roomPattern = path.normalize(roomPattern);
-    //if a service with this name has already been regsitered, error out
+    //if a room with this name has already been regsitered, error out
     if (rooms[roomPattern]) {
       throw new ApplicationError.DuplicateEntryError('Websocket room with path \'' + roomPattern + '\' has already been registered.');
     } else if (typeof authorizationFunction !== 'function') {
@@ -369,9 +369,9 @@ module.exports = function() {
       moduleFactories[moduleName]();
     }
 
-    //create registered services using factories
-    for (var serviceName in serviceFactories) {
-      serviceFactories[serviceName](app);
+    //create registered resources using factories
+    for (var resourceName in resourceFactories) {
+      resourceFactories[resourceName](app);
     }
 
     //create routes using factories
