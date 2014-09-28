@@ -190,33 +190,47 @@ module.exports = function() {
     if (resourceFactories[basePath]) {
       throw new ApplicationError.DuplicateEntryError('Resource with name \'' + basePath + '\' has already been registered.');
     }
+    //Build EndpointBuilder service, which will facilitate things like 
+    //$EndpointBuilder.public().getAll(...)
     var endpointBuilder = {
       _methods: {}
     };
-    var addMethod = function(method) {
-      endpointBuilder[method] = function() {
-        //first argument is whether or not the endpoint requires authentication
-        var secure = arguments[0];
-        //all other arguments are express middleware of the form function(req, res, next?)
-        var middleware = Array.prototype.slice.call(arguments, 1);
+    var pub = {}, priv = {};
+    var addMethod = function(obj, method, isSecure) {
+      obj[method] = function() {
+        //all arguments are express middleware of the form function(req, res, next?)
+        var middleware = Array.prototype.slice.call(arguments, 0);
         if (endpointBuilder._methods[method]) {
           throw new ApplicationError.DuplicateEntryError('Method '+method+' has already been registered with resource \''+basePath+'\'');
         } else {
           endpointBuilder._methods[method] = {
-            secure: secure,
+            secure: isSecure,
             middleware: middleware
           };
           return endpointBuilder;
         }
       };
     };    
-    addMethod('getAll');
-    addMethod('putAll');
-    addMethod('deleteAll');    
-    addMethod('get');
-    addMethod('post');
-    addMethod('put');
-    addMethod('delete');
+    addMethod(pub, 'getAll', false);
+    addMethod(pub, 'putAll', false);
+    addMethod(pub, 'deleteAll', false);    
+    addMethod(pub, 'get', false);
+    addMethod(pub, 'post', false);
+    addMethod(pub, 'put', false);
+    addMethod(pub, 'delete', false);
+    addMethod(priv, 'getAll', true);
+    addMethod(priv, 'putAll', true);
+    addMethod(priv, 'deleteAll', true);    
+    addMethod(priv, 'get', true);
+    addMethod(priv, 'post', true);
+    addMethod(priv, 'put', true);
+    addMethod(priv, 'delete', true);
+    endpointBuilder['public'] = function() {
+      return pub;
+    }
+    endpointBuilder['private'] = function() {
+      return priv;
+    }
 
     //build service instantiation function
     resourceFactories[basePath] = function(expressApp) {
