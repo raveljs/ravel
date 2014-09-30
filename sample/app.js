@@ -28,10 +28,10 @@ $Ravel.set('google oauth2 web client secret', 'jSvmQzbWMcE0J9HdR_eDM-QN');
 $Ravel.set('app route', '/');
 $Ravel.set('login route', '/login');
 $Ravel.set('get user function', function($Transaction, users, userId, done) {
-  users.getUser($Transaction.start(), userId, done);
+  users.getUser($Transaction.enter(), userId, done);
 });
 $Ravel.set('get or create user function', function($Transaction, accessToken, refreshToken, userProfile, done) {
-  users.getOrCreateUser($Transaction.start(), 'google', profile, done);
+  users.getOrCreateUser($Transaction.enter(), 'google', profile, done);
 });
 
 //Import modules (APIs) using path to module file
