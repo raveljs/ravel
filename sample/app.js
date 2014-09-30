@@ -8,9 +8,9 @@ $Ravel.set('redis password', 'password');
 //mysql parameters
 $Ravel.set('mysql host', '127.0.0.1');
 $Ravel.set('mysql port', '13306');
-$Ravel.set('mysql user', 'tapestry');
+$Ravel.set('mysql user', 'ravel');
 $Ravel.set('mysql password', 'password');
-$Ravel.set('mysql database name', 'tapestry_test_schema');
+$Ravel.set('mysql database name', 'ravel_test_schema');
 $Ravel.set('mysql connection pool size', '32');
 //Node/express parameters
 $Ravel.set('app domain', 'localhost');
@@ -36,9 +36,10 @@ $Ravel.set('get or create user function', function($Transaction, accessToken, re
 
 //Import modules (APIs) using path to module file
 $Ravel.module('users', './modules/users');
+$Ravel.module('tags', './modules/tags');
 
 //Activate REST services using path to resource file
-//$Ravel.resource('/sample', './services/pages');
+$Ravel.resource('/tags', './resources/tags');
 
 //Create websocket rooms with path resolution (into params object) and custom auth function
 $Ravel.room('/sample/:sampleId', function(userId, params, callback) {

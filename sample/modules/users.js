@@ -14,13 +14,13 @@ module.exports = function($E, $L, $MethodBuilder, users, async) {
 	$MethodBuilder.add('getUserByProfile', function(tConnection, authProvider, profile, done) {
 		var authProviderIdHashed = require('crypto').createHash('sha512').update(profile.id).digest('hex');
 		async.waterfall([
-			function(callback) {
+			function(next) {
 				tConnection.query('SELECT * FROM registered_user WHERE auth_provider=? AND auth_id=?',
-	    		[authProvider, authProviderIdHashed], callback);
+	    		[authProvider, authProviderIdHashed], next);
 			},
-			function(results, callback) {
+			function(results, next) {
 				if (results.length === 0) {
-					callback(new $E.NotFound('Specified user was not found in the database.'), null);
+					next(new $E.NotFound('Specified user was not found in the database.'), null);
 				} else {
 					var user = {
 	          id:results[0].id,
@@ -35,7 +35,7 @@ module.exports = function($E, $L, $MethodBuilder, users, async) {
 	          betaKey:results[0].beta_key,
 	          middleName:undefined
 	        };
-	        callback(null, user);
+	        next(null, user);
 				}
 			}
 		], done);
@@ -53,12 +53,12 @@ module.exports = function($E, $L, $MethodBuilder, users, async) {
 	 */
   $MethodBuilder.add('getUser', function(tConnection, userId, done) {
   	async.waterfall([
-  		function(callback) {
-  			tConnection.query('SELECT * FROM registered_user WHERE id=?', [userId], callback);
+  		function(next) {
+  			tConnection.query('SELECT * FROM registered_user WHERE id=?', [userId], next);
   		},
-  		function(results, callback) {
+  		function(results, next) {
   			if (results.length === 0) {
-	        callback(new $E.NotFound('Specified user was not found in the database.'), null);
+	        next(new $E.NotFound('Specified user was not found in the database.'), null);
 	      } else {
 	      	var user = {
 		        id:results[0].id,
@@ -73,7 +73,7 @@ module.exports = function($E, $L, $MethodBuilder, users, async) {
 		        betaKey:results[0].beta_key,
 		        middleName:undefined
 		      };
-		      callback(null, user);
+		      next(null, user);
 	      }
   		}
 		], done);
@@ -103,7 +103,7 @@ module.exports = function($E, $L, $MethodBuilder, users, async) {
 			if (err instanceof $E.NotFound) {
 				//create user, then return them
 				async.waterfall([
-			  	function(callback) {
+			  	function(next) {
 			  		tConnection.query(
 	            'INSERT INTO registered_user SET ? ',
 	            {
@@ -115,10 +115,10 @@ module.exports = function($E, $L, $MethodBuilder, users, async) {
 	              'given_name':profile.name.givenName,
 	              'family_name':profile.name.familyName,
 	              'picture_url':pictureURL
-	            }, callback);
+	            }, next);
 			  	},
-			  	function(result, callback) {
-			  		users.getUser(tConnection, result.insertId, callback)
+			  	function(result, next) {
+			  		users.getUser(tConnection, result.insertId, next)
 			  	}
 		  	], done);
 			} else if (err) {
@@ -126,7 +126,7 @@ module.exports = function($E, $L, $MethodBuilder, users, async) {
 			} else {
 				//update user with the current profile, then return the user
 				async.waterfall([
-					function(callback) {
+					function(next) {
 						tConnection.query('UPDATE registered_user ' +
 			        'SET ? WHERE auth_provider='+tConnection.escape(authProvider)+' ' +
 			        'AND auth_id='+tConnection.escape(authProviderIdHashed),
@@ -137,9 +137,9 @@ module.exports = function($E, $L, $MethodBuilder, users, async) {
 			          'given_name':profile.name.givenName,
 			          'family_name':profile.name.familyName,
 			          'picture_url':pictureURL
-			        }, callback);
+			        }, next);
 					},
-					function(result, callback) {
+					function(result, next) {
 						users.getUserByProfile(tConnection, authProvider, profile, done);
 					}
 				], done);
