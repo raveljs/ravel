@@ -1,4 +1,5 @@
 var $Ravel = new require('../ravel.js')();
+require('../lib/db/mysql')($Ravel); //TODO this should register mysql as a provider!
 
 //FIXME working off of the tapestry-vm parameters for now. need to port it into a sample vagrant vm
 //redis parameters
@@ -30,7 +31,7 @@ $Ravel.set('login route', '/login');
 $Ravel.set('get user function', function($Transaction, users, userId, done) {
   users.getUser($Transaction.enter(), userId, done);
 });
-$Ravel.set('get or create user function', function($Transaction, accessToken, refreshToken, userProfile, done) {
+$Ravel.set('get or create user function', function($Transaction, users, accessToken, refreshToken, profile, done) {
   users.getOrCreateUser($Transaction.enter(), 'google', profile, done);
 });
 

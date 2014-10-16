@@ -3,10 +3,10 @@ module.exports = function($E, $L, $MethodBuilder, users, tags, async) {
 	/**
 	 * TODO
 	 */
-	$MethodBuilder.add('getTag', function(tConnection, name, done) {
+	$MethodBuilder.add('getTag', function(transaction, name, done) {
 		async.waterfall([
 			function(next) {
-				tConnection.query('SELECT * FROM tag WHERE name=?',
+				transaction.mysql.query('SELECT * FROM tag WHERE name=?',
 	    		[name], next);
 			},
 			function(rows, fields, next) {
@@ -29,10 +29,10 @@ module.exports = function($E, $L, $MethodBuilder, users, tags, async) {
 	/**
 	 * TODO
 	 */
-	$MethodBuilder.add('getTags', function(tConnection, done) {
+	$MethodBuilder.add('getTags', function(transaction, done) {
 		async.waterfall([
 			function(next) {
-				tConnection.query('SELECT * FROM tag', {}, next);
+				transaction.mysql.query('SELECT * FROM tag', {}, next);
 			},
 			function(rows, fields, next) {
 				var tags = [];
@@ -53,11 +53,11 @@ module.exports = function($E, $L, $MethodBuilder, users, tags, async) {
 	/**
 	 * TODO
 	 */
-	$MethodBuilder.add('createTag', function(tConnection, caller, name, done) {		
+	$MethodBuilder.add('createTag', function(transaction, caller, name, done) {		
 		async.waterfall([
 			//check if tag exists already, throw duplicate entry
 			function(next) {
-				tags.getTag(tConnection,name,function(err, tag) {
+				tags.getTag(transaction,name,function(err, tag) {
 					if (tag) {
 						next($E.DuplicateEntry('A tag with name=\''+name+'\' already exists.'), null);
 					} else {
@@ -67,15 +67,15 @@ module.exports = function($E, $L, $MethodBuilder, users, tags, async) {
 			},
 			//insert tag
 			function(existingTag, next) {
-				tConnection.query('INSERT INTO tag SET ? ', {
+				transaction.mysql.query('INSERT INTO tag SET ? ', {
 					name: 'name',
 					creationDate: Date.now(),
 					ownerId:caller.id
 				}, next);
 			},
-			function(result, next) {
+			function(result, fields, next) {
 				$L.i('Created tag \''+name+'\' with id=' + result.insertId);
-				tags.getTag(tConnection,name,next);
+				tags.getTag(transaction,name,next);
 			}
 		], done);
 	});
@@ -83,17 +83,17 @@ module.exports = function($E, $L, $MethodBuilder, users, tags, async) {
 	/**
 	 * TODO
 	 */
-	$MethodBuilder.add('deleteTag', function(tConnection, name, done) {
+	$MethodBuilder.add('deleteTag', function(transaction, name, done) {
 		async.waterfall([
 			//tag must exist already
 			function(next) {
-				tags.getTag(tConnection,name,next);
+				tags.getTag(transaction,name,next);
 			},
 			//delete tag
 			function(existingTag, next) {
-				tConnection.query('DELETE FROM tag WHERE name = ? ', [name], next);
+				transaction.mysql.query('DELETE FROM tag WHERE name = ? ', [name], next);
 			},
-			function(result, next) {
+			function(result, fields, next) {
 				$L.i('Deleted tag \'' + name + '\'');
 				next(null, name);
 			}

@@ -6,7 +6,15 @@ var l = require('./lib/log')('ravel');
 
 module.exports = function() {  
   var Ravel = {
-    modules: {}
+    modules: {},
+    ApplicationError:ApplicationError,
+    Log:l
+  };
+
+  //set up core event emitter
+  Ravel._eventEmitter = new (require('events')).EventEmitter();
+  Ravel.on = function(e, func) {
+    Ravel._eventEmitter.on(e, func);
   };
   
   var moduleFactories = {};
@@ -60,14 +68,14 @@ module.exports = function() {
    *
    * @param {String} key the key for the parameter
    * @param {?} value the value for the parameter
-   * @throws ApplicationError.IllegalValueError if key refers to an unregistered parameter
+   * @throws ApplicationError.IllegalValue if key refers to an unregistered parameter
    * @return {?} the parameter value
    */
   Ravel.set = function(key, value) {
     if (knownParameters[key]) {
       params[key] = value;
     } else {
-      throw new ApplicationError.IllegalValueError('Parameter \'' + key + '\' is not supported.');
+      throw new ApplicationError.IllegalValue('Parameter \'' + key + '\' is not supported.');
     }
   };
   
@@ -86,14 +94,14 @@ module.exports = function() {
   Ravel.module = function(name, modulePath) {
     //if a module with this name has already been regsitered, error out
     if (moduleFactories[name]) {
-      throw new ApplicationError.DuplicateEntryError('Module with name \'' + name + '\' has already been registered.');
+      throw new ApplicationError.DuplicateEntry('Module with name \'' + name + '\' has already been registered.');
     }
 
     var module = {};
     var methodBuilder = {      
       add: function(methodName, handler) {
         if (module[methodName]) {
-          throw new ApplicationError.DuplicateEntryError('Method with name \'' + methodName + '\' has already been registered.');
+          throw new ApplicationError.DuplicateEntry('Method with name \'' + methodName + '\' has already been registered.');
         } else {
           module[methodName] = Ravel.db.createTransactionEntryPoint(handler);
         }
@@ -126,7 +134,7 @@ module.exports = function() {
   Ravel.routes = function(routeModulePath) {
     //if a module with this name has already been regsitered, error out
     if (routesFactories[routeModulePath]) {
-      throw new ApplicationError.DuplicateEntryError('Route module \'' + routeModulePath + '\' has already been registered.');
+      throw new ApplicationError.DuplicateEntry('Route module \'' + routeModulePath + '\' has already been registered.');
     }
     var routes = {
       _routes: []
@@ -141,7 +149,7 @@ module.exports = function() {
               middleware:middleware
             });
           }
-        }
+        };
       },
       public: function() {
         return {
@@ -152,7 +160,7 @@ module.exports = function() {
               middleware:middleware
             });
           }
-        }
+        };
       }
     };
     //This will be run in Ravel.start
@@ -172,7 +180,7 @@ module.exports = function() {
           l.i('Registering public route GET ' + routes._routes[rk].route);
         }
       }
-    }
+    };
   };
   
   /**
@@ -188,7 +196,7 @@ module.exports = function() {
     basePath = path.normalize(basePath);
     //if a resource with this name has already been regsitered, error out
     if (resourceFactories[basePath]) {
-      throw new ApplicationError.DuplicateEntryError('Resource with name \'' + basePath + '\' has already been registered.');
+      throw new ApplicationError.DuplicateEntry('Resource with name \'' + basePath + '\' has already been registered.');
     }
     //Build EndpointBuilder service, which will facilitate things like 
     //$EndpointBuilder.public().getAll(...)
@@ -201,7 +209,7 @@ module.exports = function() {
         //all arguments are express middleware of the form function(req, res, next?)
         var middleware = Array.prototype.slice.call(arguments, 0);
         if (endpointBuilder._methods[method]) {
-          throw new ApplicationError.DuplicateEntryError('Method '+method+' has already been registered with resource \''+basePath+'\'');
+          throw new ApplicationError.DuplicateEntry('Method '+method+' has already been registered with resource \''+basePath+'\'');
         } else {
           endpointBuilder._methods[method] = {
             secure: isSecure,
@@ -227,10 +235,10 @@ module.exports = function() {
     addMethod(priv, 'delete', true);
     endpointBuilder['public'] = function() {
       return pub;
-    }
+    };
     endpointBuilder['private'] = function() {
       return priv;
-    }
+    };
 
     //build service instantiation function
     resourceFactories[basePath] = function(expressApp) {
@@ -288,7 +296,7 @@ module.exports = function() {
     roomPattern = path.normalize(roomPattern);
     //if a room with this name has already been regsitered, error out
     if (rooms[roomPattern]) {
-      throw new ApplicationError.DuplicateEntryError('Websocket room with path \'' + roomPattern + '\' has already been registered.');
+      throw new ApplicationError.DuplicateEntry('Websocket room with path \'' + roomPattern + '\' has already been registered.');
     } else if (typeof authorizationFunction !== 'function') {
       throw new ApplicationError.IllegalValue('Authorization function for path \'' + roomPattern + '\' must be a function.');
     }
@@ -312,6 +320,7 @@ module.exports = function() {
    * Start the application
    */
   Ravel.start = function() {
+    Ravel._eventEmitter.emit('start');
     Ravel.db = require('./lib/database')(Ravel);
     Ravel.kvstore = require('./lib/kvstore')('ravel_prefix', Ravel);
 
@@ -415,18 +424,14 @@ module.exports = function() {
   };
   
   //Register known ravel parameters
+  //database parameters
+  Ravel.registerSimpleParameter('database providers', true);
+  Ravel.set('database providers', []);
   //redis parameters
   Ravel.registerSimpleParameter('redis host', true);
   Ravel.registerSimpleParameter('redis port', true);
   Ravel.registerSimpleParameter('redis password');
   Ravel.registerSimpleParameter('websocket message cache time');
-  //mysql parameters
-  Ravel.registerSimpleParameter('mysql host', true);
-  Ravel.registerSimpleParameter('mysql port', true);
-  Ravel.registerSimpleParameter('mysql user', true);
-  Ravel.registerSimpleParameter('mysql password', true);
-  Ravel.registerSimpleParameter('mysql database name', true);
-  Ravel.registerSimpleParameter('mysql connection pool size', true);
   //Node/express parameters
   Ravel.registerSimpleParameter('app domain', true);
   Ravel.registerSimpleParameter('app port', true);
