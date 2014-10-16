@@ -16,6 +16,9 @@ module.exports = function() {
   Ravel.on = function(e, func) {
     Ravel._eventEmitter.on(e, func);
   };
+
+  //init database provider prototype
+  require('./lib/database_provider')(Ravel);
   
   var moduleFactories = {};
   var resourceFactories = {};
