@@ -1,5 +1,5 @@
 var $Ravel = new require('../ravel.js')();
-require('../lib/db/mysql')($Ravel); //TODO this should register mysql as a provider!
+require('../lib/db/mysql')($Ravel); //register mysql as a database provider
 
 //FIXME working off of the tapestry-vm parameters for now. need to port it into a sample vagrant vm
 //redis parameters
