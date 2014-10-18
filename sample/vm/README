@@ -1,8 +1,0 @@
-1. Install vagrant from http://vagrantup.com
-
-2. To start VM run $ vagrant up . This will take a while the first time, 
-   since it is building the machine
-
-3. Use $ vagrant suspend or $ vagrant halt to suspend or shutdown the machine
-
-4. Use $ vagrant up to resume/start it again

@@ -22,7 +22,6 @@
     "hiredis":"*",
     "method-override":"*",
     "multiparty":"*",
-    "mysql":"*",
     "node-fs":"*",
     "passport": "*",
     "passport-google-oauth": "*",
