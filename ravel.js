@@ -19,7 +19,9 @@ module.exports = function() {
 
   //init database provider prototype
   require('./lib/database_provider')(Ravel);
-  
+  //init authorization provider prototype
+  require('./lib/authorization_provider')(Ravel);
+
   var moduleFactories = {};
   var resourceFactories = {};
   var routesFactories = {};
@@ -427,9 +429,12 @@ module.exports = function() {
   };
   
   //Register known ravel parameters
-  //database parameters
+  //database providers
   Ravel.registerSimpleParameter('database providers', true);
   Ravel.set('database providers', []);
+  //authorization providers
+  Ravel.registerSimpleParameter('authorization providers', true);
+  Ravel.set('authorization providers', []);
   //redis parameters
   Ravel.registerSimpleParameter('redis host', true);
   Ravel.registerSimpleParameter('redis port', true);
