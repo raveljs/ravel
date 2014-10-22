@@ -8,7 +8,11 @@ module.exports = function() {
   var Ravel = {
     modules: {},
     ApplicationError:ApplicationError,
-    Log:l
+    Log:l,
+    //current working directory of the app using the 
+    //ravel library, so that client modules can be
+    //loaded with relative paths.
+    cwd: process.cwd()
   };
   var moduleFactories = {};
   var resourceFactories = {};
@@ -34,55 +38,7 @@ module.exports = function() {
   var injector = require('./lib/injector')(Ravel, moduleFactories, module.parent);
   var broadcastMiddleware = require('./lib/broadcast_middleware')(Ravel);
 
-  //current working directory of the app using the 
-  //ravel library, so that modules can be
-  //loaded with relative paths.
-  var cwd = process.cwd();
-  
-  /**
-   * Register a module with Ravel
-   *
-   * A module is a pure node.js javascript API consisting of functions with no
-   * network-related functionality, suitable for unit-testing.
-   *
-   * Module should use injection to get what it needs
-   *
-   * @param {String} name The name of the module
-   * @param {String} modulePath The path to the module   
-   * 
-   */
-  Ravel.module = function(name, modulePath) {
-    //if a module with this name has already been regsitered, error out
-    if (moduleFactories[name]) {
-      throw new ApplicationError.DuplicateEntry('Module with name \'' + name + '\' has already been registered.');
-    }
-
-    var module = {};
-    var methodBuilder = {      
-      add: function(methodName, handler) {
-        if (module[methodName]) {
-          throw new ApplicationError.DuplicateEntry('Method with name \'' + methodName + '\' has already been registered.');
-        } else {
-          module[methodName] = Ravel.db.createTransactionEntryPoint(handler);
-        }
-      }
-    };
-
-    //save uninitialized module to Ravel.modules
-    //so that it can be injected into other 
-    //modules and lazily instantiated
-    Ravel.modules[name] = module;
-
-    //build module instantiation function
-    moduleFactories[name] = function() {
-      var moduleInject = require(path.join(cwd, modulePath));
-      injector.inject({
-        '$L': require('./lib/log')(name),
-        '$MethodBuilder': methodBuilder,
-        '$KV': Ravel.kvstore
-      },moduleInject);
-    };
-  };
+  require('./lib/module')(Ravel, moduleFactories, injector);
 
   /**
    * Register a bunch of plain GET express middleware (ejs, static, etc.)
@@ -130,7 +86,7 @@ module.exports = function() {
         '$RouteBuilder': routeBuilder,
         '$Broadcast': Ravel.broadcast,
         '$KV': Ravel.kvstore
-      }, require(path.join(cwd, routeModulePath)));
+      }, require(path.join(Ravel.cwd, routeModulePath)));
       for (var rk=0;rk<routes._routes.length;rk++) {
         if (routes._routes[rk].isSecure) {          
           expressApp.get(routes._routes[rk].route, Ravel.authorize, routes._routes[rk].middleware);
@@ -202,7 +158,7 @@ module.exports = function() {
 
     //build service instantiation function
     resourceFactories[basePath] = function(expressApp) {
-      var resourceInject = require(path.join(cwd, resourcePath));
+      var resourceInject = require(path.join(Ravel.cwd, resourcePath));
       injector.inject({
         '$L': require('./lib/log')(basePath), 
         '$EndpointBuilder': endpointBuilder,
@@ -316,12 +272,12 @@ module.exports = function() {
     app.set('app port', Ravel.get('app port'));
     app.enable('trust proxy');
     //configure views
-    app.set('views', path.join(cwd, Ravel.get('express view directory')));
+    app.set('views', path.join(Ravel.cwd, Ravel.get('express view directory')));
     app.set('view engine', Ravel.get('express view engine'));
     //app.use(require('morgan')('dev')); //uncomment to see HTTP requests
     app.use(compression());
     if (Ravel.get('express favicon path')) {
-      app.use(favicon(path.join(cwd, Ravel.get('express favicon path'))));
+      app.use(favicon(path.join(Ravel.cwd, Ravel.get('express favicon path'))));
     }
     app.use(require('body-parser').json());
     app.use(require('method-override')());
@@ -340,7 +296,7 @@ module.exports = function() {
       }
       next();
     });
-    app.use(express.static(path.join(cwd, Ravel.get('express public directory'))));
+    app.use(express.static(path.join(Ravel.cwd, Ravel.get('express public directory'))));
     app.use(require('connect-flash')());
     
     //initialize passport authentication      
