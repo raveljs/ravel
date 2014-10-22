@@ -33,10 +33,8 @@ module.exports = function() {
   require('./lib/authorization_provider')(Ravel);  
   //init parameter system
   require('./lib/params')(Ravel, knownParameters, params);
-  //init utility modules
-  var rest = require('./lib/rest')(Ravel);
-  var injector = require('./lib/injector')(Ravel, moduleFactories, module.parent);
-  var broadcastMiddleware = require('./lib/broadcast_middleware')(Ravel);
+  //init utility modules  
+  var injector = require('./lib/injector')(Ravel, moduleFactories, module.parent);  
 
   //init module registration (Ravel.module)
   require('./lib/module')(Ravel, moduleFactories, injector);
@@ -44,108 +42,8 @@ module.exports = function() {
   //init routes registration (Ravel.routes)
   require('./lib/route')(Ravel, routesFactories, injector);
   
-  /**
-   * Register a RESTful resource with Ravel
-   *
-   * A resource is a set of RESTful endpoints for a single Resource
-   *
-   * @param {String} basePath The base path of the all the Resource's endpoints
-   * @param {String} resourcePath the path of the resource module to require(...)
-   *
-   */
-  Ravel.resource = function(basePath, resourcePath) {
-    basePath = path.normalize(basePath);
-    //if a resource with this name has already been regsitered, error out
-    if (resourceFactories[basePath]) {
-      throw new ApplicationError.DuplicateEntry('Resource with name \'' + basePath + '\' has already been registered.');
-    }
-    //Build EndpointBuilder service, which will facilitate things like 
-    //$EndpointBuilder.public().getAll(...)
-    var endpointBuilder = {
-      _methods: {}
-    };
-    var pub = {}, priv = {};
-    var addMethod = function(obj, method, isSecure) {
-      obj[method] = function() {
-        //all arguments are express middleware of the form function(req, res, next?)
-        var middleware = Array.prototype.slice.call(arguments, 0);
-        if (endpointBuilder._methods[method]) {
-          throw new ApplicationError.DuplicateEntry('Method '+method+' has already been registered with resource \''+basePath+'\'');
-        } else {
-          endpointBuilder._methods[method] = {
-            secure: isSecure,
-            middleware: middleware
-          };
-          return endpointBuilder;
-        }
-      };
-    };    
-    addMethod(pub, 'getAll', false);
-    addMethod(pub, 'putAll', false);
-    addMethod(pub, 'deleteAll', false);    
-    addMethod(pub, 'get', false);
-    addMethod(pub, 'post', false);
-    addMethod(pub, 'put', false);
-    addMethod(pub, 'delete', false);
-    addMethod(priv, 'getAll', true);
-    addMethod(priv, 'putAll', true);
-    addMethod(priv, 'deleteAll', true);    
-    addMethod(priv, 'get', true);
-    addMethod(priv, 'post', true);
-    addMethod(priv, 'put', true);
-    addMethod(priv, 'delete', true);
-    endpointBuilder['public'] = function() {
-      return pub;
-    };
-    endpointBuilder['private'] = function() {
-      return priv;
-    };
-
-    //build service instantiation function
-    resourceFactories[basePath] = function(expressApp) {
-      var resourceInject = require(path.join(Ravel.cwd, resourcePath));
-      injector.inject({
-        '$L': require('./lib/log')(basePath), 
-        '$EndpointBuilder': endpointBuilder,
-        '$Rest': rest,
-        '$KV': Ravel.kvstore,
-        '$Broadcast': Ravel.broadcast,
-        '$Transaction': Ravel.db.transactionCreator //not really a real thing, just a marker 
-                                                    //for the beginning of a transaction
-      }, resourceInject);
-      //process all methods and add to express app
-      var buildRoute = function(methodType, methodName) {
-        var bp = basePath;
-        if (methodName === 'get' || methodName === 'put' || methodName === 'delete') {
-          bp = path.join(basePath, '/:id');
-        }
-        var args = [bp];
-        if (endpointBuilder._methods[methodName]) {
-          args.push(broadcastMiddleware);
-          if (endpointBuilder._methods[methodName].secure) {
-            l.i('Registering secure resource endpoint ' + methodType.toUpperCase() + ' ' + bp);
-            args.push(Ravel.authorize);
-          } else {
-            l.i('Registering public resource endpoint ' + methodType.toUpperCase() + ' ' + bp);
-          }
-          args = args.concat(endpointBuilder._methods[methodName].middleware);
-          expressApp[methodType].apply(expressApp, args);
-        } else {
-          //l.i('Registering unimplemented resource endpoint ' + methodType.toUpperCase() + ' ' + bp);
-          expressApp[methodType](bp, function(req, res) {
-            res.status(rest.NOT_IMPLEMENTED).end();
-          });
-        }
-      };
-      buildRoute('get', 'getAll');
-      buildRoute('put', 'putAll');
-      buildRoute('delete', 'deleteAll');
-      buildRoute('get', 'get');
-      buildRoute('post', 'post');
-      buildRoute('put', 'put');
-      buildRoute('delete', 'delete');      
-    };
-  };
+  //init resource registration (Ravel.resource)
+  require('./lib/resource')(Ravel, resourceFactories, injector);
 
   /**
    * Registers a websocket room, with a given authorization function and context
