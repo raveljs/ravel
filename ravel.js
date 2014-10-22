@@ -10,6 +10,12 @@ module.exports = function() {
     ApplicationError:ApplicationError,
     Log:l
   };
+  var moduleFactories = {};
+  var resourceFactories = {};
+  var routesFactories = {};
+  var rooms = {};
+  var knownParameters = {};
+  var params = {};
 
   //set up core event emitter
   Ravel._eventEmitter = new (require('events')).EventEmitter();
@@ -20,69 +26,18 @@ module.exports = function() {
   //init database provider prototype
   require('./lib/database_provider')(Ravel);
   //init authorization provider prototype
-  require('./lib/authorization_provider')(Ravel);
-
-  var moduleFactories = {};
-  var resourceFactories = {};
-  var routesFactories = {};
-  var rooms = {};
-  var knownParameters = {};
-  var params = {};
+  require('./lib/authorization_provider')(Ravel);  
+  //init parameter system
+  require('./lib/params')(Ravel, knownParameters, params);
+  //init utility modules
   var rest = require('./lib/rest')(Ravel);
   var injector = require('./lib/injector')(Ravel, moduleFactories, module.parent);
-  var broadcasMiddleware = require('./lib/broadcast_middleware')(Ravel);
-  
+  var broadcastMiddleware = require('./lib/broadcast_middleware')(Ravel);
+
   //current working directory of the app using the 
   //ravel library, so that modules can be
   //loaded with relative paths.
   var cwd = process.cwd();
-  
-  /**
-   * Register a parameter
-   * @param {String} key the key for the parameter
-   * @param {Boolean | undefined} required true, iff the parameter is required
-   */
-  Ravel.registerSimpleParameter = function(key, required) {
-    knownParameters[key] = {
-      required: required
-    };
-  };
-  
-  /**
-   * Get a parameter
-   *
-   * @param {String} key the key for the parameter
-   * @throws ApplicationError.NotFound if the parameter is required and not set
-   * @return {? | undefined} the parameter value, or undefined if it is not required and not set
-   */
-  Ravel.get = function(key) {
-    if (!knownParameters[key]) {
-      throw new ApplicationError.NotFound('Parameter \'' + key + '\' was requested, but is unknown.');
-    } else if (knownParameters[key].required && params[key] === undefined) {
-      throw new ApplicationError.NotFound('Known required parameter \'' + key + '\' was requested, but hasn\'t been defined yet.');
-    } else if (params[key] === undefined) {
-      l.l('Optional parameter \'' + key + '\' was requested, but is not defined.');
-      return undefined;
-    } else {
-      return params[key];
-    }
-  };
-  
-  /**
-   * Set a parameter
-   *
-   * @param {String} key the key for the parameter
-   * @param {?} value the value for the parameter
-   * @throws ApplicationError.IllegalValue if key refers to an unregistered parameter
-   * @return {?} the parameter value
-   */
-  Ravel.set = function(key, value) {
-    if (knownParameters[key]) {
-      params[key] = value;
-    } else {
-      throw new ApplicationError.IllegalValue('Parameter \'' + key + '\' is not supported.');
-    }
-  };
   
   /**
    * Register a module with Ravel
@@ -265,7 +220,7 @@ module.exports = function() {
         }
         var args = [bp];
         if (endpointBuilder._methods[methodName]) {
-          args.push(broadcasMiddleware);
+          args.push(broadcastMiddleware);
           if (endpointBuilder._methods[methodName].secure) {
             l.i('Registering secure resource endpoint ' + methodType.toUpperCase() + ' ' + bp);
             args.push(Ravel.authorize);
