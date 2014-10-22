@@ -38,66 +38,11 @@ module.exports = function() {
   var injector = require('./lib/injector')(Ravel, moduleFactories, module.parent);
   var broadcastMiddleware = require('./lib/broadcast_middleware')(Ravel);
 
+  //init module registration (Ravel.module)
   require('./lib/module')(Ravel, moduleFactories, injector);
 
-  /**
-   * Register a bunch of plain GET express middleware (ejs, static, etc.)
-   * with Ravel which will be available, by name, at the given 
-   * base path.
-   * 
-   * @param {String} directoryModulePath the path of the directory module to require(...)
-   */
-  Ravel.routes = function(routeModulePath) {
-    //if a module with this name has already been regsitered, error out
-    if (routesFactories[routeModulePath]) {
-      throw new ApplicationError.DuplicateEntry('Route module \'' + routeModulePath + '\' has already been registered.');
-    }
-    var routes = {
-      _routes: []
-    };    
-    var routeBuilder = {
-      private: function() {
-        return {
-          add: function(route, middleware) {
-            routes._routes.push({
-              isSecure:true,
-              route:route,
-              middleware:middleware
-            });
-          }
-        };
-      },
-      public: function() {
-        return {
-          add: function(route, middleware) {
-            routes._routes.push({
-              isSecure:false,
-              route:route,
-              middleware:middleware
-            });
-          }
-        };
-      }
-    };
-    //This will be run in Ravel.start
-    routesFactories[routeModulePath] = function(expressApp) {
-      injector.inject({
-        '$L': require('./lib/log')(routeModulePath),
-        '$RouteBuilder': routeBuilder,
-        '$Broadcast': Ravel.broadcast,
-        '$KV': Ravel.kvstore
-      }, require(path.join(Ravel.cwd, routeModulePath)));
-      for (var rk=0;rk<routes._routes.length;rk++) {
-        if (routes._routes[rk].isSecure) {          
-          expressApp.get(routes._routes[rk].route, Ravel.authorize, routes._routes[rk].middleware);
-          l.i('Registering secure route GET ' + routes._routes[rk].route);
-        } else {
-          expressApp.get(routes._routes[rk].route, routes._routes[rk].middleware);
-          l.i('Registering public route GET ' + routes._routes[rk].route);
-        }
-      }
-    };
-  };
+  //init routes registration (Ravel.routes)
+  require('./lib/route')(Ravel, routesFactories, injector);
   
   /**
    * Register a RESTful resource with Ravel
