@@ -1,6 +1,5 @@
 'use strict';
 
-var path = require('path');
 var ApplicationError = require('./lib/application_error');
 var l = require('./lib/log')('ravel');
 
@@ -33,7 +32,8 @@ module.exports = function() {
   require('./lib/authorization_provider')(Ravel);  
   //init parameter system
   require('./lib/params')(Ravel, knownParameters, params);
-  //init utility modules  
+  
+  //init dependency injection utility, which is used by most everything else
   var injector = require('./lib/injector')(Ravel, moduleFactories, module.parent);  
 
   //init module registration (Ravel.module)
@@ -45,35 +45,8 @@ module.exports = function() {
   //init resource registration (Ravel.resource)
   require('./lib/resource')(Ravel, resourceFactories, injector);
 
-  /**
-   * Registers a websocket room, with a given authorization function and context
-   *
-   * @param {String} roomPattern the name of the websocket room
-   * @param {Function} authorizationFunction, of the form function(userId, callback(err, {Boolean}authorized))
-   */
-  Ravel.room = function(roomPattern, authorizationFunction) {
-    roomPattern = path.normalize(roomPattern);
-    //if a room with this name has already been regsitered, error out
-    if (rooms[roomPattern]) {
-      throw new ApplicationError.DuplicateEntry('Websocket room with path \'' + roomPattern + '\' has already been registered.');
-    } else if (typeof authorizationFunction !== 'function') {
-      throw new ApplicationError.IllegalValue('Authorization function for path \'' + roomPattern + '\' must be a function.');
-    }
-    var params = [];
-    var paramMatcher = new RegExp(/\:(\w+)/g);
-    var paramMatch = paramMatcher.exec(roomPattern);
-    while (paramMatch !== null) {
-      params.push(paramMatch[1]);
-      paramMatch = paramMatcher.exec(roomPattern);
-    }
-    rooms[roomPattern] = {
-      name: roomPattern,
-      params: params,
-      regex: new RegExp(roomPattern.replace(/\:(\w+)/g,'(\\w+)')),
-      authorize: authorizationFunction
-    };
-    l.i('Creating websocket room with pattern ' + roomPattern);
-  };
+  //init websocket room registration (Ravel.room)
+  require('./lib/room')(Ravel, rooms);
   
   /**
    * Start the application
