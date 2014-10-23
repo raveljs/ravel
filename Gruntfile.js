@@ -35,13 +35,23 @@ module.exports = function(grunt) {
 	      globals: {
 	        Primus: true
 	      },
-	      ignores: ['node_modules/**', 'sample/**']
+	      ignores: ['node_modules/**', 'sample/**', 'docs/**']
 	    }
+	  },
+	  docco: {
+	  	options: {
+	  		layout: 'parallel'
+	  	},
+	  	api: {
+	  		files: {
+	  			src: ['ravel.js', 'lib/**']
+	  		}
+	  	}
 	  },
 	  watch: {
 	  	api: {
 	  		files: ['Gruntfile.js', 'lib/**', 'ravel.js'],
-	  		tasks: ['jshint'],
+	  		tasks: ['jshint', 'docco'],
 	  		options: {
 	  			spawn: false
 	  		}
@@ -51,6 +61,7 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-docco-multi');
 
-  grunt.registerTask('default', ['jshint', 'watch']);
+  grunt.registerTask('default', ['jshint', 'docco', 'watch']);
 };

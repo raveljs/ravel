@@ -3,6 +3,11 @@
 var ApplicationError = require('./lib/application_error');
 var l = require('./lib/log')('ravel');
 
+/**
+ * This module provides Ravel, a lightweight framework
+ * for the rapid creation of MVPs which scale horizontally
+ * with ease and support the latest in web technology.
+ */
 module.exports = function() {  
   var Ravel = {
     modules: {},

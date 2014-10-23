@@ -37,6 +37,7 @@
     "grunt": "*",
     "grunt-contrib-jshint":"*",
     "grunt-contrib-watch" : "*",
-    "jshint-stylish": "*"
+    "jshint-stylish": "*",
+    "grunt-docco-multi":"*"
   }
 }
