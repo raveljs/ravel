@@ -49,7 +49,9 @@ module.exports = function() {
   require('./lib/room')(Ravel, rooms);
   
   /**
-   * Start the application
+   * Starts the application, when the client is finished
+   * supplying parameters and registering modules, resources
+   * routes and rooms.
    */
   Ravel.start = function() {
     Ravel._eventEmitter.emit('start');
