@@ -1,8 +1,5 @@
 'use strict';
 
-var ApplicationError = require('./lib/application_error');
-var l = require('./lib/log')('ravel');
-
 /**
  * This module provides Ravel, a lightweight framework
  * for the rapid creation of MVPs which scale horizontally
@@ -11,8 +8,8 @@ var l = require('./lib/log')('ravel');
 module.exports = function() {  
   var Ravel = {
     modules: {},
-    ApplicationError:ApplicationError,
-    Log:l,
+    ApplicationError:require('./lib/util/application_error'),
+    Log:require('./lib/util/log')('ravel'),
     //current working directory of the app using the 
     //ravel library, so that client modules can be
     //loaded with relative paths.
@@ -32,26 +29,26 @@ module.exports = function() {
   };
 
   //init database provider prototype
-  require('./lib/database_provider')(Ravel);
+  require('./lib/db/database_provider')(Ravel);
   //init authorization provider prototype
-  require('./lib/authorization_provider')(Ravel);  
+  require('./lib/auth/authorization_provider')(Ravel);  
   //init parameter system
-  require('./lib/params')(Ravel, knownParameters, params);
+  require('./lib/core/params')(Ravel, knownParameters, params);
   
   //init dependency injection utility, which is used by most everything else
-  var injector = require('./lib/injector')(Ravel, moduleFactories, module.parent);  
+  var injector = require('./lib/util/injector')(Ravel, moduleFactories, module.parent);  
 
   //init module registration (Ravel.module)
-  require('./lib/module')(Ravel, moduleFactories, injector);
+  require('./lib/core/module')(Ravel, moduleFactories, injector);
 
   //init routes registration (Ravel.routes)
-  require('./lib/route')(Ravel, routesFactories, injector);
+  require('./lib/core/route')(Ravel, routesFactories, injector);
   
   //init resource registration (Ravel.resource)
-  require('./lib/resource')(Ravel, resourceFactories, injector);
+  require('./lib/core/resource')(Ravel, resourceFactories, injector);
 
   //init websocket room registration (Ravel.room)
-  require('./lib/room')(Ravel, rooms);
+  require('./lib/core/room')(Ravel, rooms);
   
   /**
    * Starts the application, when the client is finished
@@ -60,8 +57,8 @@ module.exports = function() {
    */
   Ravel.start = function() {
     Ravel._eventEmitter.emit('start');
-    Ravel.db = require('./lib/database')(Ravel);
-    Ravel.kvstore = require('./lib/kvstore')('ravel_prefix', Ravel);
+    Ravel.db = require('./lib/db/database')(Ravel);
+    Ravel.kvstore = require('./lib/util/kvstore')('ravel_prefix', Ravel);
 
     //App dependencies.
     var express = require('express');
@@ -112,7 +109,7 @@ module.exports = function() {
       saveUninitialized:true
     }));
     //cross-site scripting protection, with mobile app support
-    app.use(require('./lib/csrf')(Ravel));
+    app.use(require('./lib/auth/csrf')(Ravel));
     app.use(function(req, res, next){
       if (req.csrfToken) {
         res.locals.token = req.csrfToken();
@@ -125,8 +122,8 @@ module.exports = function() {
     //initialize passport authentication      
     app.use(passport.initialize());
     app.use(passport.session());  
-    require('./lib/passport_init.js')(Ravel, app, injector, passport);
-    Ravel.authorize = require('./lib/authorize_request')(Ravel, true);
+    require('./lib/auth/passport_init.js')(Ravel, app, injector, passport);
+    Ravel.authorize = require('./lib/auth/authorize_request')(Ravel, true);
     
     //Create ExpressJS server
     var server = http.createServer(app);
@@ -135,7 +132,7 @@ module.exports = function() {
     //Initialize primus.io with room handling, etc.
     var primus = new Primus(server, { transformer: 'websockets', parser: 'JSON' });
     //primus_init produces a configured, cluster-ready broadcasting library
-    var broadcast = require('./lib/primus_init.js')(Ravel, primus, expressSessionStore, require('./lib/websocket_room_resolver')(rooms));
+    var broadcast = require('./lib/auth/primus_init.js')(Ravel, primus, expressSessionStore, require('./lib/util/websocket_room_resolver')(rooms));
     //public version of broadcast, for client use
     Ravel.broadcast = {
       emit: broadcast.emit
@@ -158,7 +155,7 @@ module.exports = function() {
 
     //Start ExpressJS server
     server.listen(Ravel.get('node port'), function(){
-      l.i('Application server at ' + Ravel.get('node domain') + ' listening on port ' + Ravel.get('node port'));
+      Ravel.Log.i('Application server at ' + Ravel.get('node domain') + ' listening on port ' + Ravel.get('node port'));
     });
   };
   
