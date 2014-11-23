@@ -183,12 +183,6 @@ module.exports = function() {
   Ravel.registerSimpleParameter('express favicon path');
   Ravel.registerSimpleParameter('express session secret', true);
   Ravel.registerSimpleParameter('disable json vulnerability protection');
-  //Google OAuth parameters
-  Ravel.registerSimpleParameter('google oauth2 web client id', true);
-  Ravel.registerSimpleParameter('google oauth2 web client secret', true);
-  Ravel.registerSimpleParameter('google oauth2 android client id');
-  Ravel.registerSimpleParameter('google oauth2 ios client id');
-  Ravel.registerSimpleParameter('google oauth2 ios client secret');
   //Passport parameters
   Ravel.registerSimpleParameter('app route', true);
   Ravel.registerSimpleParameter('login route', true);
