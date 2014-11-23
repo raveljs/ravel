@@ -23,7 +23,6 @@
     "method-override":"*",
     "multiparty":"*",
     "node-fs":"*",
-    "on-finished":"*",
     "passport": "*",
     "prototype": "*",
     "primus.io": "*",
