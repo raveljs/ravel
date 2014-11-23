@@ -123,7 +123,8 @@ module.exports = function() {
     app.use(passport.initialize());
     app.use(passport.session());  
     require('./lib/auth/passport_init.js')(Ravel, app, injector, passport);
-    Ravel.authorize = require('./lib/auth/authorize_request')(Ravel, true);
+    Ravel.authorize = require('./lib/auth/authorize_request')(Ravel, false, true);
+    Ravel.authorizeWithRedirect = require('./lib/auth/authorize_request')(Ravel, true, true);
     
     //Create ExpressJS server
     var server = http.createServer(app);
