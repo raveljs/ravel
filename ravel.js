@@ -5,12 +5,12 @@
  * for the rapid creation of MVPs which scale horizontally
  * with ease and support the latest in web technology.
  */
-module.exports = function() {  
+module.exports = function() {
   var Ravel = {
     modules: {},
     ApplicationError:require('./lib/util/application_error'),
     Log:require('./lib/util/log')('ravel'),
-    //current working directory of the app using the 
+    //current working directory of the app using the
     //ravel library, so that client modules can be
     //loaded with relative paths.
     cwd: process.cwd()
@@ -31,25 +31,42 @@ module.exports = function() {
   //init database provider prototype
   require('./lib/db/database_provider')(Ravel);
   //init authorization provider prototype
-  require('./lib/auth/authorization_provider')(Ravel);  
+  require('./lib/auth/authorization_provider')(Ravel);
   //init parameter system
   require('./lib/core/params')(Ravel, knownParameters, params);
-  
+
   //init dependency injection utility, which is used by most everything else
-  var injector = require('./lib/util/injector')(Ravel, moduleFactories, module.parent);  
+  var injector = require('./lib/util/injector')(Ravel, moduleFactories, module.parent);
 
   //init module registration (Ravel.module)
   require('./lib/core/module')(Ravel, moduleFactories, injector);
 
   //init routes registration (Ravel.routes)
   require('./lib/core/route')(Ravel, routesFactories, injector);
-  
+
   //init resource registration (Ravel.resource)
   require('./lib/core/resource')(Ravel, resourceFactories, injector);
 
   //init websocket room registration (Ravel.room)
   require('./lib/core/room')(Ravel, rooms);
-  
+
+  /**
+   * Much like start(), but only initializes modules for
+   * testing purposes. Resources, routes and rooms are
+   * not initialized, and no web server is started.
+   */
+  Ravel.test = function() {
+    Ravel._eventEmitter.emit('start');
+    Ravel.db = require('./lib/db/database')(Ravel);
+    Ravel.set('always rollback transactions', true);
+    Ravel.kvstore = require('./lib/util/kvstore')('ravel_prefix', Ravel);
+
+    //create registered modules using factories
+    for (var moduleName in moduleFactories) {
+      moduleFactories[moduleName]();
+    }
+  }
+
   /**
    * Starts the application, when the client is finished
    * supplying parameters and registering modules, resources
@@ -71,7 +88,7 @@ module.exports = function() {
     var passport = require('passport');
     var Primus = require('primus.io');
     var ExpressRedisStore = require('connect-redis')(session);
-    
+
     //configure express
     var app = express();
     app.disable('x-powered-by');
@@ -118,14 +135,14 @@ module.exports = function() {
     });
     app.use(express.static(path.join(Ravel.cwd, Ravel.get('express public directory'))));
     app.use(require('connect-flash')());
-    
-    //initialize passport authentication      
+
+    //initialize passport authentication
     app.use(passport.initialize());
-    app.use(passport.session());  
+    app.use(passport.session());
     require('./lib/auth/passport_init.js')(Ravel, app, injector, passport);
     Ravel.authorize = require('./lib/auth/authorize_request')(Ravel, false, true);
     Ravel.authorizeWithRedirect = require('./lib/auth/authorize_request')(Ravel, true, true);
-    
+
     //Create ExpressJS server
     var server = http.createServer(app);
 
@@ -138,7 +155,7 @@ module.exports = function() {
     Ravel.broadcast = {
       emit: broadcast.emit
     };
-        
+
     //create registered modules using factories
     for (var moduleName in moduleFactories) {
       moduleFactories[moduleName]();
@@ -159,7 +176,7 @@ module.exports = function() {
       Ravel.Log.i('Application server at ' + Ravel.get('node domain') + ' listening on port ' + Ravel.get('node port'));
     });
   };
-  
+
   //Register known ravel parameters
   //database providers
   Ravel.registerSimpleParameter('database providers', true);
@@ -188,6 +205,6 @@ module.exports = function() {
   Ravel.registerSimpleParameter('login route', true);
   Ravel.registerSimpleParameter('get user function', true);
   Ravel.registerSimpleParameter('get or create user function', true);
-  
+
   return Ravel;
 };
