@@ -60,6 +60,7 @@ module.exports = function() {
     Ravel.db = require('./lib/db/database')(Ravel);
     Ravel.set('always rollback transactions', true);
     Ravel.kvstore = require('./lib/util/kvstore')('ravel_prefix', Ravel);
+    Ravel.kvstore.flushdb();
 
     //create registered modules using factories
     for (var moduleName in moduleFactories) {
