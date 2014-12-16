@@ -66,7 +66,7 @@ module.exports = function() {
     for (var moduleName in moduleFactories) {
       moduleFactories[moduleName]();
     }
-  }
+  };
 
   /**
    * Starts the application, when the client is finished
