@@ -4,8 +4,8 @@
   "private": true,
   "author": "Sean McIntyre <smcintyre@xverba.ca>",
   "description": "Ravel Rapid Application Development Framework",
-  "contributors": [ 
-    {"name": "Sean McIntyre","email": "smcintyre@xverba.ca"} 
+  "contributors": [
+    {"name": "Sean McIntyre","email": "smcintyre@xverba.ca"}
   ],
   "main":"ravel.js",
   "dependencies": {
