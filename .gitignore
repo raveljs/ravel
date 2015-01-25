@@ -4,3 +4,4 @@ npm-debug.log
 .vagrant
 init_test.sql
 docs/*
+lib-cov

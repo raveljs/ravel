@@ -7,7 +7,7 @@
   "contributors": [
     {"name": "Sean McIntyre","email": "smcintyre@xverba.ca"}
   ],
-  "main":"ravel.js",
+  "main":"lib/ravel.js",
   "dependencies": {
     "async": "*",
     "body-parser":"*",
@@ -35,9 +35,13 @@
     "chai":"*",
     "chai-things":"*",
     "grunt": "*",
+    "grunt-contrib-clean": "*",
     "grunt-contrib-jshint":"*",
     "grunt-contrib-watch" : "*",
     "jshint-stylish": "*",
-    "grunt-docco-multi":"*"
+    "grunt-docco-multi":"*",
+    "grunt-mocha-test":"*",
+    "grunt-blanket":"*",
+    "grunt-open":"*"
   }
 }

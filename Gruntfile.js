@@ -5,7 +5,7 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
     jshint: {
       files: {
-        src: ['Gruntfile.js', 'ravel.js', 'lib/**']
+        src: ['Gruntfile.js']
       },
       options: {
         force: true,
@@ -32,10 +32,31 @@ module.exports = function(grunt) {
         strict:    true,
         indent: 2,
         //maxdepth:  4,
-        globals: {
-          Primus: true
+        ignores: ['node_modules/**', 'sample/**', 'docs/**', 'lib-cov']
+      },
+      lib: {
+        files: {
+          src: ['lib/**/*.js']
         },
-        ignores: ['node_modules/**', 'sample/**', 'docs/**']
+        options: {
+          globals: {
+            Primus: true
+          }
+        }
+      },
+      test: {
+        files: {
+          src: ['test/**/*.js']
+        },
+        options: {
+          '-W030': false,
+          globals: {
+            describe: false,
+            beforeEach: false,
+            afterEach: false,
+            it: false
+          }
+        }
       }
     },
     docco: {
@@ -56,12 +77,53 @@ module.exports = function(grunt) {
           spawn: false
         }
       }
+    },
+    clean: {
+      'coverage': ['lib-cov'],
+      'docs': ['docs']
+    },
+    blanket: {
+      coverage: {
+        src: ['ravel.js', 'lib/'],
+        dest: 'lib-cov/'
+      },
+      options: {
+        'data-cover-flags':true
+      }
+    },
+    mochaTest: {
+      ravel: {
+        options: {
+          reporter: 'spec',
+          quiet:false,
+          colors:true
+        },
+        src: ['test/**/*.js']
+      },
+      coverage: {
+        options: {
+          reporter: 'html-cov',
+          quiet: true,
+          captureFile: 'test/coverage.html'
+        },
+        src: ['test/**/*.js']
+      }
+    },
+    open: {
+      coverage: {
+        path: 'test/coverage.html'
+      }
     }
   });
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-docco-multi');
+  grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-mocha-test');
+  grunt.loadNpmTasks('grunt-blanket');
+  grunt.loadNpmTasks('grunt-open');
 
-  grunt.registerTask('default', ['jshint', 'docco', 'watch']);
+  grunt.registerTask('default', ['jshint:lib', 'docco', 'watch']);
+  grunt.registerTask('test', ['clean:coverage', 'jshint', 'blanket', 'mochaTest:ravel', 'mochaTest:coverage', 'open:coverage', 'clean:coverage']);
 };

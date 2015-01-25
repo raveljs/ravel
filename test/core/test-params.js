@@ -1,0 +1,78 @@
+'use strict';
+
+var chai = require('chai');
+var expect = chai.expect;
+chai.use(require('chai-things'));
+
+var Ravel;
+
+describe('core/params', function() {
+  beforeEach(function(done) {
+    Ravel = new require('../../lib-cov/ravel')();
+    done();
+  });
+
+  afterEach(function(done) {
+    Ravel = undefined;
+    done();
+  });
+
+  describe('#Ravel.set', function() {
+    it('should allow clients to set the value of a parameter', function(done) {
+      Ravel.registerSimpleParameter('test param', false);
+      Ravel.set('test param', 'test value');
+      expect(Ravel.get('test param')).to.equal('test value');
+      done();
+    });
+
+    it ('should throw a Ravel.ApplicationError.IllegalValue error when a client attempts to set an unknown parameter', function(done) {
+      try {
+        Ravel.set('unknown param', 'test value');
+      } catch (err) {
+        expect(err).to.be.instanceof(Ravel.ApplicationError.IllegalValue);
+        done();
+      }
+    });
+  });
+
+  describe('#Ravel.get', function() {
+    it('should allow clients to retrieve the value of a set optional parameter', function(done) {
+      Ravel.registerSimpleParameter('test param', false);
+      Ravel.set('test param', 'test value');
+      expect(Ravel.get('test param')).to.equal('test value');
+      done();
+    });
+
+    it('should return undefined when clients attempt to retrieve the value of an unset optional parameter', function(done) {
+      Ravel.registerSimpleParameter('test param', false);
+      expect(Ravel.get('test param')).to.equal(undefined);
+      done();
+    });
+
+    it('should allow clients to retrieve the value of a set required parameter', function(done) {
+      Ravel.registerSimpleParameter('test param', true);
+      Ravel.set('test param', 'test value');
+      expect(Ravel.get('test param')).to.equal('test value');
+      done();
+    });
+
+    it('should throw a Ravel.ApplicationError.NotFound error when clients attempt to retrieve an unregistered parameter', function(done) {
+      try {
+        Ravel.get('test param');
+      } catch (err) {
+        expect(err).to.be.instanceof(Ravel.ApplicationError.NotFound);
+        done();
+      }
+    });
+
+    it('should throw a Ravel.ApplicationError.NotFound error when clients attempt to retrieve the value of an unset required parameter', function(done) {
+      try {
+        Ravel.registerSimpleParameter('test param', true);
+        Ravel.get('test param');
+      } catch (err) {
+        expect(err).to.be.instanceof(Ravel.ApplicationError.NotFound);
+        done();
+      }
+    });
+  });
+});
