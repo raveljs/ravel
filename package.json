@@ -42,6 +42,7 @@
     "grunt-docco-multi":"*",
     "grunt-mocha-test":"*",
     "grunt-blanket":"*",
-    "grunt-open":"*"
+    "grunt-open":"*",
+    "mockery":"*"
   }
 }

@@ -28,6 +28,7 @@ describe('core/params', function() {
     it ('should throw a Ravel.ApplicationError.IllegalValue error when a client attempts to set an unknown parameter', function(done) {
       try {
         Ravel.set('unknown param', 'test value');
+        done(new Error('Should never reach this line.'));
       } catch (err) {
         expect(err).to.be.instanceof(Ravel.ApplicationError.IllegalValue);
         done();
@@ -59,6 +60,7 @@ describe('core/params', function() {
     it('should throw a Ravel.ApplicationError.NotFound error when clients attempt to retrieve an unregistered parameter', function(done) {
       try {
         Ravel.get('test param');
+        done(new Error('Should never reach this line.'));
       } catch (err) {
         expect(err).to.be.instanceof(Ravel.ApplicationError.NotFound);
         done();
@@ -69,6 +71,7 @@ describe('core/params', function() {
       try {
         Ravel.registerSimpleParameter('test param', true);
         Ravel.get('test param');
+        done(new Error('Should never reach this line.'));
       } catch (err) {
         expect(err).to.be.instanceof(Ravel.ApplicationError.NotFound);
         done();
