@@ -11,6 +11,7 @@ var Ravel;
 describe('core/module', function() {
   beforeEach(function(done) {
     Ravel = new require('../../lib-cov/ravel')();
+    Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
     done();
   });
 
@@ -38,13 +39,25 @@ describe('core/module', function() {
       }
     });
 
-    it('the module factory created when registering a module should be able to require the module and inject $MethodBuilder into it', function(done) {
-      var stub = function($MethodBuilder) {
-        expect($MethodBuilder).to.be.ok;
-        expect($MethodBuilder).to.be.an('object');
-        expect($MethodBuilder).to.have.property('add');
-        expect($MethodBuilder['add']).to.be.a('function');
+    it('should produce a module factory which can be used to instantiate the specified module and perform dependency injection', function(done) {
+      var stub = function($E, $L, $KV) {
+        expect($E).to.be.ok;
+        expect($E).to.be.an('object');
+        expect($E).to.equal(Ravel.ApplicationError);
+        expect($L).to.be.ok;
+        expect($L).to.be.an('object');
+        expect($L).to.have.property('l').that.is.a('function');
+        expect($L).to.have.property('i').that.is.a('function');
+        expect($L).to.have.property('w').that.is.a('function');
+        expect($L).to.have.property('e').that.is.a('function');
+        expect($KV).to.be.ok;
+        expect($KV).to.be.an('object');
+        expect($KV).to.equal(Ravel.kvstore);
         done();
+
+        return {
+          method: function() {}
+        }
       };
       Ravel.module('test', 'stub');
       mockery.enable({
@@ -57,4 +70,9 @@ describe('core/module', function() {
       mockery.disable();
     });
   });
+
+  //TODO test DI in any order
+  //TODO test DI including NPM dependencies
+  //TODO test DI with missing dependencies
+  //TODO test modules which aren't functions
 });
