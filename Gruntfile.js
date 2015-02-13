@@ -125,5 +125,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-open');
 
   grunt.registerTask('default', ['jshint:lib', 'docco', 'watch']);
-  grunt.registerTask('test', ['clean:coverage', 'jshint', 'blanket', 'mochaTest:ravel', 'mochaTest:coverage', 'open:coverage', 'clean:coverage']);
+  grunt.registerTask('test-cli', ['clean:coverage', 'jshint', 'blanket', 'mochaTest:ravel', 'mochaTest:coverage', 'clean:coverage']);
+  grunt.registerTask('test', ['test-cli', 'open:coverage']);
+
 };

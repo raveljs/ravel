@@ -8,6 +8,9 @@
     {"name": "Sean McIntyre","email": "smcintyre@xverba.ca"}
   ],
   "main":"lib/ravel.js",
+  "scripts": {
+    "test":"grunt test-cli"
+  },
   "dependencies": {
     "async": "*",
     "body-parser":"*",
