@@ -12,11 +12,20 @@ describe('core/module', function() {
   beforeEach(function(done) {
     Ravel = new require('../../lib-cov/ravel')();
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
+
+    //enable mockery
+    mockery.enable({
+      useCleanCache: true,
+      warnOnReplace: false,
+      warnOnUnregistered: false
+    });
+
     done();
   });
 
   afterEach(function(done) {
     Ravel = undefined;
+    mockery.disable();
     done();
   });
 
@@ -60,44 +69,119 @@ describe('core/module', function() {
         };
       };
       Ravel.module('test', 'stub');
-      mockery.enable({
-        useCleanCache: true,
-        warnOnReplace: false,
-        warnOnUnregistered: false
-      });
       mockery.registerMock(path.join(Ravel.cwd, 'stub'), stub);
       Ravel._moduleFactories['test']();
-      mockery.disable();
     });
-  });
 
-  it('should produce a module factory which facilitates dependency injection of npm modules alongside client modules', function(done) {
-    var stubMoment = {
-      method: function() {}
-    };
-    var stubClientModule = function(moment) {
-      expect(moment).to.be.ok;
-      expect(moment).to.be.an('object');
-      expect(moment).to.equal(stubMoment);
-      done();
+    it('should produce module factories which support dependency injection of client modules', function(done) {
+      var stub1Instance = {
+        medthod:function(){}
+      };
+      var stub1 = function() {
+        return stub1Instance;
+      };
+      var stub2 = function(test) {
+        expect(test).to.be.an('object');
+        expect(test).to.deep.equal(stub1Instance);
+        done();
+        return {};
+      };
+      Ravel.module('test', 'stub1');
+      Ravel.module('test2', 'stub2');
+      mockery.registerMock(path.join(Ravel.cwd, 'stub1'), stub1);
+      mockery.registerMock(path.join(Ravel.cwd, 'stub2'), stub2);
+      Ravel._moduleFactories['test']();
+      Ravel._moduleFactories['test2']();
+    });
 
-      return {
+    it('should produce a module factory which facilitates dependency injection of npm modules', function(done) {
+      var stubMoment = {
         method: function() {}
       };
-    };
-    Ravel.module('test', 'stub');
-    mockery.enable({
-      useCleanCache: true,
-      warnOnReplace: false,
-      warnOnUnregistered: false
-    });
-    mockery.registerMock(path.join(Ravel.cwd, 'stub'), stubClientModule);
-    mockery.registerMock('moment', stubMoment);
-    Ravel._moduleFactories['test']();
-    mockery.disable();
-  });
+      var stubClientModule = function(moment) {
+        expect(moment).to.be.ok;
+        expect(moment).to.be.an('object');
+        expect(moment).to.equal(stubMoment);
+        done();
 
-  //TODO test DI in any order
-  //TODO test DI with missing dependencies
-  //TODO test rejection of modules which aren't functions
+        return {
+          method: function() {}
+        };
+      };
+      Ravel.module('test', 'stub');
+      mockery.registerMock(path.join(Ravel.cwd, 'stub'), stubClientModule);
+      mockery.registerMock('moment', stubMoment);
+      Ravel._moduleFactories['test']();
+    });
+
+    it('should throw an ApplicationError.NotFound when a module factory which utilizes an unknown module/npm dependency is instantiated', function(done) {
+      var stub = function(unknownModule) {
+        expect(unknownModule).to.be.an('object');
+      };
+      Ravel.module('test', 'stub');
+      mockery.registerMock(path.join(Ravel.cwd, 'stub'), stub);
+      try {
+        Ravel._moduleFactories['test']();
+        expect(false).to.be.ok;
+      } catch(err) {
+        expect(err).to.be.instanceof(Ravel.ApplicationError.NotFound);
+        done();
+      }
+    });
+
+    it('should allow clients to register plain modules which are objects instead of factories, bypassing dependency injection', function(done) {
+      var stub = {
+        method: function(){}
+      };
+      Ravel.module('test', 'stub');
+      mockery.registerMock(path.join(Ravel.cwd, 'stub'), stub);
+      Ravel._moduleFactories['test']();
+      expect(Ravel.modules.test).to.deep.equal(stub);
+      done();
+    });
+
+    it('should throw an ApplicationError.IllegalValue when a client attempts to register a module factory which is neither a function nor an object', function(done) {
+      var stub = 'I am not a function or an object';
+      Ravel.module('test', 'stub');
+      mockery.registerMock(path.join(Ravel.cwd, 'stub'), stub);
+      try {
+        Ravel._moduleFactories['test']();
+        expect(false).to.be.ok;
+      } catch(err) {
+        expect(err).to.be.instanceof(Ravel.ApplicationError.IllegalValue);
+        done();
+      }
+    });
+
+    it('should perform dependency injection on module factories which works regardless of the order of specified dependencies.', function(done) {
+      var momentStub = {};
+      mockery.registerMock('moment', momentStub);
+      var stub1 = function($E, moment) {
+        expect($E).to.be.ok;
+        expect($E).to.be.an('object');
+        expect($E).to.equal(Ravel.ApplicationError);
+        expect(moment).to.be.ok;
+        expect(moment).to.be.an('object');
+        expect(moment).to.equal(momentStub);
+        return {};
+      };
+      var stub2 = function(moment, $E) {
+        expect($E).to.be.ok;
+        expect($E).to.be.an('object');
+        expect($E).to.equal(Ravel.ApplicationError);        
+        expect(moment).to.be.ok;
+        expect(moment).to.be.an('object');
+        expect(moment).to.equal(momentStub);
+        done();
+        return {};
+      };
+      Ravel.module('test1', 'stub1');
+      mockery.registerMock(path.join(Ravel.cwd, 'stub1'), stub1);
+      Ravel.module('test2', 'stub2');
+      mockery.registerMock(path.join(Ravel.cwd, 'stub2'), stub2);
+      Ravel._moduleFactories['test1']();
+      Ravel._moduleFactories['test2']();
+    });
+
+  });
 });
