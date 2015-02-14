@@ -1,0 +1,12 @@
+{
+  "extends": "../.jshintrc",  
+  "-W030":     false,
+  "globals": {
+    "describe":   false,
+    "beforeEach": false,
+    "afterEach":  false,
+    "it":         false,
+    "require":    false,
+    "module":     false
+  }
+}

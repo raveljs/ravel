@@ -10,52 +10,17 @@ module.exports = function(grunt) {
       options: {
         force: true,
         reporter:  require('jshint-stylish'),
-        bitwise:   true,
-        eqeqeq:    true,
-        curly:     true,
-        immed:     true,
-        latedef:   true,
-        newcap:    true,
-        noarg:     true,
-        noempty:   true,
-        nonbsp:    true,
-        nonew:     true,
-        sub:       true,
-        undef:     true,
-        unused:    true,
-        boss:      true,
-        eqnull:    true,
-        node:      true,
-        jquery:    true,
-        quotmark: 'single',
-        camelcase: true,
-        strict:    true,
-        indent: 2,
-        //maxdepth:  4,
+        jshintrc: true,
         ignores: ['node_modules/**', 'sample/**', 'docs/**', 'lib-cov']
       },
       lib: {
         files: {
           src: ['lib/**/*.js']
-        },
-        options: {
-          globals: {
-            Primus: true
-          }
         }
       },
       test: {
         files: {
           src: ['test/**/*.js']
-        },
-        options: {
-          '-W030': false,
-          globals: {
-            describe: false,
-            beforeEach: false,
-            afterEach: false,
-            it: false
-          }
         }
       }
     },
@@ -125,7 +90,14 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-open');
 
   grunt.registerTask('default', ['jshint:lib', 'docco', 'watch']);
-  grunt.registerTask('test-cli', ['clean:coverage', 'jshint', 'blanket', 'mochaTest:ravel', 'mochaTest:coverage', 'clean:coverage']);
+  grunt.registerTask('test-cli', [
+    'clean:coverage',
+    'jshint',
+    'blanket',
+    'mochaTest:ravel',
+    'mochaTest:coverage',
+    'clean:coverage'
+  ]);
   grunt.registerTask('test', ['test-cli', 'open:coverage']);
 
 };
