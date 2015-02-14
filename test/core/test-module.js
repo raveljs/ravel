@@ -71,8 +71,33 @@ describe('core/module', function() {
     });
   });
 
+  it('should produce a module factory which facilitates dependency injection of npm modules alongside client modules', function(done) {
+    var stubMoment = {
+      method: function() {}
+    };
+    var stubClientModule = function(moment) {
+      expect(moment).to.be.ok;
+      expect(moment).to.be.an('object');
+      expect(moment).to.equal(stubMoment);
+      done();
+
+      return {
+        method: function() {}
+      };
+    };
+    Ravel.module('test', 'stub');
+    mockery.enable({
+      useCleanCache: true,
+      warnOnReplace: false,
+      warnOnUnregistered: false
+    });
+    mockery.registerMock(path.join(Ravel.cwd, 'stub'), stubClientModule);
+    mockery.registerMock('moment', stubMoment);
+    Ravel._moduleFactories['test']();
+    mockery.disable();
+  });
+
   //TODO test DI in any order
-  //TODO test DI including NPM dependencies
   //TODO test DI with missing dependencies
-  //TODO test modules which aren't functions
+  //TODO test rejection of modules which aren't functions
 });
