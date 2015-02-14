@@ -57,7 +57,7 @@ describe('core/module', function() {
 
         return {
           method: function() {}
-        }
+        };
       };
       Ravel.module('test', 'stub');
       mockery.enable({
