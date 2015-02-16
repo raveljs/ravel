@@ -99,25 +99,25 @@ describe('Ravel', function() {
       Ravel._resourceFactories['/api/test'](app);
     });
 
-    /*it('should facilitate the creation of GET routes via $EndpointBuilder.getAll, but not permit the use of other HTTP verbs', function(done) {
+    /*it('should facilitate the creation of GET routes via $EndpointBuilder.getAll', function(done) {
     });
 
-    it('should facilitate the creation of GET routes via $EndpointBuilder.get, but not permit the use of other HTTP verbs', function(done) {
+    it('should facilitate the creation of GET routes via $EndpointBuilder.get', function(done) {
     });
 
-    it('should facilitate the creation of POST routes via $EndpointBuilder.post, but not permit the use of other HTTP verbs', function(done) {
+    it('should facilitate the creation of POST routes via $EndpointBuilder.post', function(done) {
     });
 
-    it('should facilitate the creation of PUT routes via $EndpointBuilder.put, but not permit the use of other HTTP verbs', function(done) {
+    it('should facilitate the creation of PUT routes via $EndpointBuilder.put', function(done) {
     });
 
-    it('should facilitate the creation of PUT routes via $EndpointBuilder.putAll, but not permit the use of other HTTP verbs', function(done) {
+    it('should facilitate the creation of PUT routes via $EndpointBuilder.putAll', function(done) {
     });
 
-    it('should facilitate the creation of GET routes via $EndpointBuilder.deleteAll, but not permit the use of other HTTP verbs', function(done) {
+    it('should facilitate the creation of GET routes via $EndpointBuilder.deleteAll', function(done) {
     });
 
-    it('should facilitate the creation of GET routes via $EndpointBuilder.delete, but not permit the use of other HTTP verbs', function(done) {
+    it('should facilitate the creation of GET routes via $EndpointBuilder.delete', function(done) {
     });
 
     it('should throw a Ravel.ApplicationError.DuplicateEntry when a method of $EndpointBuilder is used twice', function(done) {
