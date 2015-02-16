@@ -11,6 +11,7 @@ var express = require('express');
 var Ravel;
 
 describe('core/route', function() {
+describe('Ravel', function() {
   beforeEach(function(done) {
     Ravel = new require('../../lib-cov/ravel')();
     Ravel.Log.setLevel('NONE');
@@ -31,7 +32,7 @@ describe('core/route', function() {
     done();
   });
 
-  describe('#Ravel.routes', function() {
+  describe('#routes()', function() {
     it('should permit clients to register route modules for instantiation in Ravel.start', function(done) {
       Ravel.routes('./routes/index_r');
       expect(Ravel._routesFactories).to.have.property('./routes/index_r');
@@ -108,7 +109,7 @@ describe('core/route', function() {
       sinon.stub(app, 'get', function() {
         expect(arguments[0]).to.equal('/app/path');
         expect(arguments[1]).to.equal(middleware1);
-        expect(arguments[2]).to.equal(middleware2);        
+        expect(arguments[2]).to.equal(middleware2);
         done();
       });
       sinon.stub(app, 'post', function() {
@@ -124,4 +125,5 @@ describe('core/route', function() {
       Ravel._routesFactories['stub'](app);
     });
   });
+});
 });

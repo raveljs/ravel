@@ -9,6 +9,7 @@ var path = require('path');
 var Ravel;
 
 describe('core/module', function() {
+describe('Ravel', function() {
   beforeEach(function(done) {
     Ravel = new require('../../lib-cov/ravel')();
     Ravel.Log.setLevel(Ravel.Log.NONE);
@@ -30,7 +31,7 @@ describe('core/module', function() {
     done();
   });
 
-  describe('#Ravel.module', function() {
+  describe('#module()', function() {
     it('should allow clients to register module files for instantiation in Ravel.start, and assign them a name', function(done) {
       Ravel.module('test', 'test');
       expect(Ravel._moduleFactories).to.have.property('test');
@@ -217,4 +218,5 @@ describe('core/module', function() {
     });
 
   });
+});
 });

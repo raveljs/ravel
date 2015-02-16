@@ -50,6 +50,7 @@
     "load-grunt-tasks":"*",
     "mockery":"*",
     "jshint-stylish": "*",
-    "sinon":"*"
+    "sinon":"*",
+    "sinon-chai":"*"
   }
 }

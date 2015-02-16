@@ -7,6 +7,7 @@ chai.use(require('chai-things'));
 var Ravel;
 
 describe('core/params', function() {
+describe('Ravel', function() {
   beforeEach(function(done) {
     Ravel = new require('../../lib-cov/ravel')();
     Ravel.Log.setLevel('NONE');
@@ -18,7 +19,7 @@ describe('core/params', function() {
     done();
   });
 
-  describe('#Ravel.set', function() {
+  describe('#set()', function() {
     it('should allow clients to set the value of a parameter', function(done) {
       Ravel.registerSimpleParameter('test param', false);
       Ravel.set('test param', 'test value');
@@ -37,7 +38,7 @@ describe('core/params', function() {
     });
   });
 
-  describe('#Ravel.get', function() {
+  describe('#get()', function() {
     it('should allow clients to retrieve the value of a set optional parameter', function(done) {
       Ravel.registerSimpleParameter('test param', false);
       Ravel.set('test param', 'test value');
@@ -79,4 +80,5 @@ describe('core/params', function() {
       }
     });
   });
+});
 });
