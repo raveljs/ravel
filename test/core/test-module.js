@@ -151,14 +151,14 @@ describe('Ravel', function() {
       mockery.registerMock(path.join(Ravel.cwd, 'stub'), stub);
       try {
         Ravel._moduleFactories['test']();
-        done(new Error('It should be impossible to register a module factory which is neither a function nor an object.'));
+        done(new Error('It should be impossible to register a module factory which is neither a function nor an object'));
       } catch(err) {
         expect(err).to.be.instanceof(Ravel.ApplicationError.IllegalValue);
         done();
       }
     });
 
-    it('should perform dependency injection on module factories which works regardless of the order of specified dependencies.', function(done) {
+    it('should perform dependency injection on module factories which works regardless of the order of specified dependencies', function(done) {
       var momentStub = {};
       mockery.registerMock('moment', momentStub);
       var stub1 = function($E, moment) {
@@ -188,7 +188,7 @@ describe('Ravel', function() {
       Ravel._moduleFactories['test2']();
     });
 
-    it('should inject the same instance of a module into all modules which reference it.', function(done) {
+    it('should inject the same instance of a module into all modules which reference it', function(done) {
       var stub1 = function() {
         return {
           method:function(){}
@@ -215,6 +215,34 @@ describe('Ravel', function() {
       Ravel._moduleFactories['test']();
       Ravel._moduleFactories['test2']();
       Ravel._moduleFactories['test3']();
+    });
+
+    it('should preserve the scope of module factories in module instances', function(done) {
+      var stub1 = function() {
+        var outOfScope = 'hello';
+        var instance = {
+          goodbye: 'goodbye'
+        };
+        instance.method = function() {
+          return outOfScope + ' ' + this.goodbye;
+        };
+        return instance;
+      };
+      var stub2 = function(test) {
+        return {
+          method: function() {
+            expect(test.method()).to.equal('hello goodbye');
+            done();
+          }
+        };
+      };
+      Ravel.module('test', 'stub1');
+      Ravel.module('test2', 'stub2');
+      mockery.registerMock(path.join(Ravel.cwd, 'stub1'), stub1);
+      mockery.registerMock(path.join(Ravel.cwd, 'stub2'), stub2);
+      Ravel._moduleFactories['test']();
+      Ravel._moduleFactories['test2']();
+      Ravel.modules.test2.method();
     });
 
   });
