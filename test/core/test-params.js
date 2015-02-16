@@ -6,7 +6,6 @@ chai.use(require('chai-things'));
 
 var Ravel;
 
-describe('core/params', function() {
 describe('Ravel', function() {
   beforeEach(function(done) {
     Ravel = new require('../../lib-cov/ravel')();
@@ -80,5 +79,4 @@ describe('Ravel', function() {
       }
     });
   });
-});
 });

@@ -8,7 +8,6 @@ var path = require('path');
 
 var Ravel;
 
-describe('core/module', function() {
 describe('Ravel', function() {
   beforeEach(function(done) {
     Ravel = new require('../../lib-cov/ravel')();
@@ -246,5 +245,4 @@ describe('Ravel', function() {
     });
 
   });
-});
 });

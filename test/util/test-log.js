@@ -9,8 +9,7 @@ var mockery = require('mockery');
 
 var Ravel, intel, intelLogger;
 
-describe('util/log', function() {
-  describe('Ravel.Log', function() {
+describe('Ravel.Log', function() {
   beforeEach(function(done) {
     //we have to completely mock intel because its
     //methods are read-only, so sinon can't touch them :(
@@ -224,5 +223,4 @@ describe('util/log', function() {
       done();
     });
   });
-});
 });

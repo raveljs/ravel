@@ -10,7 +10,6 @@ var express = require('express');
 
 var Ravel;
 
-describe('core/route', function() {
 describe('Ravel', function() {
   beforeEach(function(done) {
     Ravel = new require('../../lib-cov/ravel')();
@@ -71,20 +70,11 @@ describe('Ravel', function() {
         expect($L).to.have.property('warn').that.is.a('function');
         expect($L).to.have.property('error').that.is.a('function');
         expect($L).to.have.property('critical').that.is.a('function');
-        expect($KV).to.be.ok;
-        expect($KV).to.be.an('object');
         expect($KV).to.equal(Ravel.kvstore);
-        expect($KV).to.be.ok;
         expect($RouteBuilder).to.be.an('object');
         expect($RouteBuilder).to.have.property('add').that.is.a('function');
-        expect($Broadcast).to.be.ok;
-        expect($Broadcast).to.be.an('object');
         expect($Broadcast).to.equal(Ravel.broadcast);
-        expect($Private).to.be.ok;
-        expect($Private).to.be.a('function');
         expect($Private).to.equal(Ravel.authorize);
-        expect($PrivateRedirect).to.be.ok;
-        expect($PrivateRedirect).to.be.a('function');
         expect($PrivateRedirect).to.equal(Ravel.authorizeWithRedirect);
         done();
 
@@ -125,5 +115,4 @@ describe('Ravel', function() {
       Ravel._routesFactories['stub'](app);
     });
   });
-});
 });
