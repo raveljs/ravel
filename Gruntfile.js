@@ -47,6 +47,16 @@ module.exports = function(grunt) {
       'coverage': ['lib-cov'],
       'docs': ['docs']
     },
+    env : {
+      options : {
+        add: {
+          LOG_LEVEL: 'trace'
+        }
+      },
+      test : {
+        LOG_LEVEL : 'critical'
+      }
+    },
     blanket: {
       coverage: {
         src: ['ravel.js', 'lib/'],
@@ -88,9 +98,11 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-blanket');
   grunt.loadNpmTasks('grunt-open');
+  grunt.loadNpmTasks('grunt-env');
 
   grunt.registerTask('default', ['jshint:lib', 'docco', 'watch']);
   grunt.registerTask('test-cli', [
+    'env:test',
     'clean:coverage',
     'jshint',
     'blanket',

@@ -9,6 +9,7 @@ var Ravel;
 describe('core/params', function() {
   beforeEach(function(done) {
     Ravel = new require('../../lib-cov/ravel')();
+    Ravel.Log.setLevel('NONE');
     done();
   });
 

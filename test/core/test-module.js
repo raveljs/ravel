@@ -11,6 +11,7 @@ var Ravel;
 describe('core/module', function() {
   beforeEach(function(done) {
     Ravel = new require('../../lib-cov/ravel')();
+    Ravel.Log.setLevel(Ravel.Log.NONE);
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
 
     //enable mockery
@@ -55,10 +56,13 @@ describe('core/module', function() {
         expect($E).to.equal(Ravel.ApplicationError);
         expect($L).to.be.ok;
         expect($L).to.be.an('object');
-        expect($L).to.have.property('l').that.is.a('function');
-        expect($L).to.have.property('i').that.is.a('function');
-        expect($L).to.have.property('w').that.is.a('function');
-        expect($L).to.have.property('e').that.is.a('function');
+        expect($L).to.have.property('trace').that.is.a('function');
+        expect($L).to.have.property('verbose').that.is.a('function');
+        expect($L).to.have.property('debug').that.is.a('function');
+        expect($L).to.have.property('info').that.is.a('function');
+        expect($L).to.have.property('warn').that.is.a('function');
+        expect($L).to.have.property('error').that.is.a('function');
+        expect($L).to.have.property('critical').that.is.a('function');
         expect($KV).to.be.ok;
         expect($KV).to.be.an('object');
         expect($KV).to.equal(Ravel.kvstore);
@@ -168,7 +172,7 @@ describe('core/module', function() {
       var stub2 = function(moment, $E) {
         expect($E).to.be.ok;
         expect($E).to.be.an('object');
-        expect($E).to.equal(Ravel.ApplicationError);        
+        expect($E).to.equal(Ravel.ApplicationError);
         expect(moment).to.be.ok;
         expect(moment).to.be.an('object');
         expect(moment).to.equal(momentStub);
