@@ -1,6 +1,8 @@
 'use strict';
 
 module.exports = function(grunt) {
+  require('load-grunt-tasks')(grunt);
+
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     jshint: {
@@ -90,15 +92,6 @@ module.exports = function(grunt) {
       }
     }
   });
-
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-docco-multi');
-  grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-mocha-test');
-  grunt.loadNpmTasks('grunt-blanket');
-  grunt.loadNpmTasks('grunt-open');
-  grunt.loadNpmTasks('grunt-env');
 
   grunt.registerTask('default', ['jshint:lib', 'docco', 'watch']);
   grunt.registerTask('test-cli', [
