@@ -126,7 +126,7 @@ describe('core/module', function() {
       mockery.registerMock(path.join(Ravel.cwd, 'stub'), stub);
       try {
         Ravel._moduleFactories['test']();
-        expect(false).to.be.ok;
+        done(new Error('It should be impossible to use a module factory which refers to an unknown module or npm dependency'));
       } catch(err) {
         expect(err).to.be.instanceof(Ravel.ApplicationError.NotFound);
         done();
@@ -150,7 +150,7 @@ describe('core/module', function() {
       mockery.registerMock(path.join(Ravel.cwd, 'stub'), stub);
       try {
         Ravel._moduleFactories['test']();
-        expect(false).to.be.ok;
+        done(new Error('It should be impossible to register a module factory which is neither a function nor an object.'));
       } catch(err) {
         expect(err).to.be.instanceof(Ravel.ApplicationError.IllegalValue);
         done();

@@ -48,6 +48,7 @@
     "grunt-mocha-test":"*",
     "grunt-blanket":"*",
     "grunt-open":"*",
-    "mockery":"*"
+    "mockery":"*",
+    "sinon":"*"
   }
 }
