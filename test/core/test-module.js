@@ -79,7 +79,7 @@ describe('core/module', function() {
 
     it('should produce module factories which support dependency injection of client modules', function(done) {
       var stub1Instance = {
-        medthod:function(){}
+        method:function(){}
       };
       var stub1 = function() {
         return stub1Instance;
@@ -185,6 +185,35 @@ describe('core/module', function() {
       mockery.registerMock(path.join(Ravel.cwd, 'stub2'), stub2);
       Ravel._moduleFactories['test1']();
       Ravel._moduleFactories['test2']();
+    });
+
+    it('should inject the same instance of a module into all modules which reference it.', function(done) {
+      var stub1 = function() {
+        return {
+          method:function(){}
+        };
+      };
+      var stub2Test;
+      var stub2 = function(test) {
+        expect(test).to.be.an('object');
+        expect(test).to.have.a.property('method').that.is.a('function');
+        stub2Test = test;
+      };
+      var stub3 = function(test) {
+        expect(test).to.be.an('object');
+        expect(test).to.have.a.property('method').that.is.a('function');
+        expect(test).to.equal(stub2Test);
+        done();
+      };
+      Ravel.module('test', 'stub1');
+      Ravel.module('test2', 'stub2');
+      Ravel.module('test3', 'stub3');
+      mockery.registerMock(path.join(Ravel.cwd, 'stub1'), stub1);
+      mockery.registerMock(path.join(Ravel.cwd, 'stub2'), stub2);
+      mockery.registerMock(path.join(Ravel.cwd, 'stub3'), stub3);
+      Ravel._moduleFactories['test']();
+      Ravel._moduleFactories['test2']();
+      Ravel._moduleFactories['test3']();
     });
 
   });
