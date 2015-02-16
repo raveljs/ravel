@@ -1,6 +1,6 @@
 {
-  "extends": "../.jshintrc",  
-  "maxlen":    80,
+  "extends": "../.jshintrc",
+  "maxlen":    120,
   "globals": {
     "Primus":     true,
     "require":    false,
