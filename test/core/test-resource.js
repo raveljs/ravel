@@ -3,15 +3,28 @@
 var chai = require('chai');
 var expect = chai.expect;
 chai.use(require('chai-things'));
+chai.use(require('sinon-chai'));
 var mockery = require('mockery');
 var path = require('path');
 var sinon = require('sinon');
 var express = require('express');
 
 var Ravel;
+var broadcastMiddleware = function(/*req, res, next*/){};
 
 describe('Ravel', function() {
   beforeEach(function(done) {
+    //enable mockery
+    mockery.enable({
+      useCleanCache: true,
+      warnOnReplace: false,
+      warnOnUnregistered: false
+    });
+
+    mockery.registerMock('../util/broadcast_middleware', function() {
+      return broadcastMiddleware;
+    });
+
     Ravel = new require('../../lib-cov/ravel')();
     Ravel.Log.setLevel('NONE');
     //mock broadcast, kvstore, authorize, authorizeWithRedirect and db.middleware, since they only get created during Ravel.start
@@ -24,13 +37,6 @@ describe('Ravel', function() {
     };
     Ravel.authorize = function() {};
     Ravel.authorizeWithRedirect = function() {};
-
-    //enable mockery
-    mockery.enable({
-      useCleanCache: true,
-      warnOnReplace: false,
-      warnOnUnregistered: false
-    });
     done();
   });
 
@@ -99,28 +105,154 @@ describe('Ravel', function() {
       Ravel._resourceFactories['/api/test'](app);
     });
 
-    /*it('should facilitate the creation of GET routes via $EndpointBuilder.getAll', function(done) {
+    it('should facilitate the creation of GET routes via $EndpointBuilder.getAll', function(done) {
+      var middleware1 = function(/*req, res*/) {};
+      var middleware2 = function(/*req, res*/) {};
+      var stub = function($EndpointBuilder) {
+        $EndpointBuilder.getAll(middleware1, middleware2);
+      };
+      var app = express();
+      var spy = sinon.stub(app, 'get');
+      Ravel.resource('/api/test', 'test');
+      mockery.registerMock(path.join(Ravel.cwd, 'test'), stub);
+      Ravel._resourceFactories['/api/test'](app);
+      expect(spy).to.have.been.calledWith('/api/test', broadcastMiddleware, middleware1, middleware2);
+      done();
     });
 
     it('should facilitate the creation of GET routes via $EndpointBuilder.get', function(done) {
+      var middleware1 = function(/*req, res*/) {};
+      var middleware2 = function(/*req, res*/) {};
+      var stub = function($EndpointBuilder) {
+        $EndpointBuilder.get(middleware1, middleware2);
+      };
+      var app = express();
+      var spy = sinon.stub(app, 'get');
+      Ravel.resource('/api/test', 'test');
+      mockery.registerMock(path.join(Ravel.cwd, 'test'), stub);
+      Ravel._resourceFactories['/api/test'](app);
+      expect(spy).to.have.been.calledWith('/api/test/:id', broadcastMiddleware, middleware1, middleware2);
+      done();
     });
 
     it('should facilitate the creation of POST routes via $EndpointBuilder.post', function(done) {
+      var middleware1 = function(/*req, res*/) {};
+      var middleware2 = function(/*req, res*/) {};
+      var stub = function($EndpointBuilder) {
+        $EndpointBuilder.post(middleware1, middleware2);
+      };
+      var app = express();
+      var spy = sinon.stub(app, 'post');
+      Ravel.resource('/api/test', 'test');
+      mockery.registerMock(path.join(Ravel.cwd, 'test'), stub);
+      Ravel._resourceFactories['/api/test'](app);
+      expect(spy).to.have.been.calledWith('/api/test', broadcastMiddleware, middleware1, middleware2);
+      done();
     });
 
     it('should facilitate the creation of PUT routes via $EndpointBuilder.put', function(done) {
+      var middleware1 = function(/*req, res*/) {};
+      var middleware2 = function(/*req, res*/) {};
+      var stub = function($EndpointBuilder) {
+        $EndpointBuilder.put(middleware1, middleware2);
+      };
+      var app = express();
+      var spy = sinon.stub(app, 'put');
+      Ravel.resource('/api/test', 'test');
+      mockery.registerMock(path.join(Ravel.cwd, 'test'), stub);
+      Ravel._resourceFactories['/api/test'](app);
+      expect(spy).to.have.been.calledWith('/api/test/:id', broadcastMiddleware, middleware1, middleware2);
+      done();
     });
 
     it('should facilitate the creation of PUT routes via $EndpointBuilder.putAll', function(done) {
+      var middleware1 = function(/*req, res*/) {};
+      var middleware2 = function(/*req, res*/) {};
+      var stub = function($EndpointBuilder) {
+        $EndpointBuilder.putAll(middleware1, middleware2);
+      };
+      var app = express();
+      var spy = sinon.stub(app, 'put');
+      Ravel.resource('/api/test', 'test');
+      mockery.registerMock(path.join(Ravel.cwd, 'test'), stub);
+      Ravel._resourceFactories['/api/test'](app);
+      expect(spy).to.have.been.calledWith('/api/test', broadcastMiddleware, middleware1, middleware2);
+      done();
     });
 
     it('should facilitate the creation of GET routes via $EndpointBuilder.deleteAll', function(done) {
+      var middleware1 = function(/*req, res*/) {};
+      var middleware2 = function(/*req, res*/) {};
+      var stub = function($EndpointBuilder) {
+        $EndpointBuilder.deleteAll(middleware1, middleware2);
+      };
+      var app = express();
+      var spy = sinon.stub(app, 'delete');
+      Ravel.resource('/api/test', 'test');
+      mockery.registerMock(path.join(Ravel.cwd, 'test'), stub);
+      Ravel._resourceFactories['/api/test'](app);
+      expect(spy).to.have.been.calledWith('/api/test', broadcastMiddleware, middleware1, middleware2);
+      done();
     });
 
     it('should facilitate the creation of GET routes via $EndpointBuilder.delete', function(done) {
+      var middleware1 = function(/*req, res*/) {};
+      var middleware2 = function(/*req, res*/) {};
+      var stub = function($EndpointBuilder) {
+        $EndpointBuilder.delete(middleware1, middleware2);
+      };
+      var app = express();
+      var spy = sinon.stub(app, 'delete');
+      Ravel.resource('/api/test', 'test');
+      mockery.registerMock(path.join(Ravel.cwd, 'test'), stub);
+      Ravel._resourceFactories['/api/test'](app);
+      expect(spy).to.have.been.calledWith('/api/test/:id', broadcastMiddleware, middleware1, middleware2);
+      done();
     });
 
     it('should throw a Ravel.ApplicationError.DuplicateEntry when a method of $EndpointBuilder is used twice', function(done) {
-    });*/
+      var stub = function($EndpointBuilder) {
+        $EndpointBuilder.get();
+        $EndpointBuilder.get();
+      };
+      var app = express();
+      Ravel.resource('/api/test', 'test');
+      mockery.registerMock(path.join(Ravel.cwd, 'test'), stub);
+      try {
+        Ravel._resourceFactories['/api/test'](app);
+        done(new Error('client should not be able to use a method of $EndpointBuilder twice'));
+      } catch(err) {
+        expect(err).to.be.instanceof(Ravel.ApplicationError.DuplicateEntry);
+        done();
+      }
+    });
+
+    it('should implement stub endpoints for unused HTTP verbs, all of which return a status rest.NOT_IMPLEMENTED', function(done) {
+      var rest = require('../../lib-cov/util/rest')(Ravel);
+      var app = express();
+      var res = {
+        status: function(status) {
+          expect(status).to.equal(rest.NOT_IMPLEMENTED);
+          return {
+            end: function() {}
+          };
+        }
+      };
+      var spy = sinon.spy(res, 'status');
+      var expressHandler = function() {
+        expect(arguments.length).to.equal(2);
+        expect(arguments[1]).to.be.a('function');
+        arguments[1](null, res);
+      };
+      sinon.stub(app, 'get', expressHandler);
+      sinon.stub(app, 'post', expressHandler);
+      sinon.stub(app, 'put', expressHandler);
+      sinon.stub(app, 'delete', expressHandler);
+      Ravel.resource('/api/test', 'test');
+      mockery.registerMock(path.join(Ravel.cwd, 'test'), function() {});
+      Ravel._resourceFactories['/api/test'](app);
+      expect(spy).to.have.callCount(7);
+      done();
+    });
   });
 });
