@@ -90,7 +90,6 @@ describe('Ravel', function() {
         expect($EndpointBuilder).to.have.property('delete').that.is.a('function');
         expect($Rest).to.be.an('object');
         expect($Rest).to.have.property('buildRestResponse').that.is.a('function');
-        expect($Rest).to.have.property('handleRangeGet').that.is.a('function');
         expect($Broadcast).to.equal(Ravel.broadcast);
         expect($Private).to.equal(Ravel.authorize);
         expect($PrivateRedirect).to.equal(Ravel.authorizeWithRedirect);

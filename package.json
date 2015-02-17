@@ -49,6 +49,7 @@
     "grunt-open":"*",
     "load-grunt-tasks":"*",
     "mockery":"*",
+    "node-mocks-http":"*",
     "jshint-stylish": "*",
     "sinon":"*",
     "sinon-chai":"*"
