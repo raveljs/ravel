@@ -35,7 +35,8 @@ describe('util/authorize_request', function() {
   afterEach(function(done) {
     Ravel = undefined;
     authorizeRequest = undefined;
-    authorizeTokenStub = undefined;
+    authorizeTokenStub = undefined;    
+    tokenToProfile = undefined;
     mockery.disable();
     done();
   });
