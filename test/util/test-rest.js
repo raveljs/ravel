@@ -194,8 +194,4 @@ describe('util/rest', function() {
       done();
     });
   });
-
-  describe('#handleRangeGet()', function() {
-
-  });
 });
