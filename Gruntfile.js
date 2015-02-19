@@ -95,9 +95,11 @@ module.exports = function(grunt) {
       }
     },
     coveralls: {
-      options: {
+      full: {
         src: 'test/coverage.lcov',
-        force: false
+        options: {
+          force: true
+        }
       }
     },
     open: {
