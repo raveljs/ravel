@@ -269,6 +269,155 @@ describe('db/database', function() {
   });
 
   describe('#scoped.enter()', function() {
+    it('should populate scoped callback with an empty dictionary of database connection objects when no database providers are registered', function(done) {
+      var scopeForTransaction = sinon.stub();
+      database.scoped.enter(scopeForTransaction);
+      expect(scopeForTransaction).to.have.been.calledWithMatch({});
+      done();
+    });
 
+    it('should populate scoped callback with a dictionary of open database connections when providers are registered', function(done) {
+      //reload database so it picks up database providers
+      Ravel.set('database providers', [mysqlProvider, postgresProvider]);
+      database = require('../../lib-cov/db/database')(Ravel);
+      var mysqlConnection = {}, postgresConnection = {};
+      var mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function(callback) {
+        callback(null, mysqlConnection);
+      });
+      var postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function(callback) {
+        callback(null, postgresConnection);
+      });
+      var scopeForTransaction = sinon.stub();
+      database.scoped.enter(scopeForTransaction);
+      expect(mysqlGetTransactionSpy).to.have.been.called;
+      expect(postgresGetTransactionSpy).to.have.been.called;
+      expect(scopeForTransaction).to.have.been.calledWithMatch({
+        mysql: mysqlConnection,
+        postgres: postgresConnection
+      });
+      done();
+    });
+
+    it('should call actual callback with an error if any of the registered database providers fails to provider a connection', function(done) {
+      //reload database so it picks up database providers
+      Ravel.set('database providers', [mysqlProvider, postgresProvider]);
+      database = require('../../lib-cov/db/database')(Ravel);
+      var mysqlConnection = {};
+      var mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function(callback) {
+        callback(null, mysqlConnection);
+      });
+      var error = new Error();
+      var postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function(callback) {
+        callback(error, null);
+      });
+      var scopeForTransaction = sinon.stub();
+      var actualCallback = sinon.stub();
+      database.scoped.enter(scopeForTransaction, actualCallback);
+      expect(mysqlGetTransactionSpy).to.have.been.called;
+      expect(postgresGetTransactionSpy).to.have.been.called;
+      expect(actualCallback).to.have.been.calledWith(error);
+      done();
+    });
+
+    it('should end all open transactions (close/commit connections) when exitTransaction is called with no errors', function(done) {
+      //reload database so it picks up database providers
+      Ravel.set('database providers', [mysqlProvider, postgresProvider]);
+      database = require('../../lib-cov/db/database')(Ravel);
+      var mysqlConnection = {}, postgresConnection = {};
+      var mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function(callback) {
+        callback(null, mysqlConnection);
+      });
+      var mysqlExitTransactionSpy = sinon.stub(mysqlProvider, 'exitTransaction', function(conn, shouldCommit, callback) {
+        callback(null);
+      });
+      var postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function(callback) {
+        callback(null, postgresConnection);
+      });
+      var postgresExitTransactionSpy = sinon.stub(postgresProvider, 'exitTransaction', function(conn, shouldCommit, callback) {
+        callback(null);
+      });
+      var actualCallback = sinon.stub();
+      database.scoped.enter(function(connections, exitTransaction) {
+        expect(connections).to.deep.equal({
+          mysql: mysqlConnection,
+          postgres: postgresConnection
+        });
+        exitTransaction(null, {});
+      }, actualCallback);
+      expect(mysqlGetTransactionSpy).to.have.been.called;
+      expect(postgresGetTransactionSpy).to.have.been.called;
+      expect(mysqlExitTransactionSpy).to.have.been.calledWith(mysqlConnection, true);
+      expect(postgresExitTransactionSpy).to.have.been.calledWith(postgresConnection, true);
+      expect(actualCallback).to.have.been.calledWith(null);
+      done();
+    });
+
+    it('should end all open transactions (close/rollback connections) when exitTransaction is called with an error', function(done) {
+      //reload database so it picks up database providers
+      Ravel.set('database providers', [mysqlProvider, postgresProvider]);
+      database = require('../../lib-cov/db/database')(Ravel);
+      var mysqlConnection = {}, postgresConnection = {};
+      var mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function(callback) {
+        callback(null, mysqlConnection);
+      });
+      var mysqlExitTransactionSpy = sinon.stub(mysqlProvider, 'exitTransaction', function(conn, shouldCommit, callback) {
+        callback(null);
+      });
+      var postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function(callback) {
+        callback(null, postgresConnection);
+      });
+      var postgresExitTransactionSpy = sinon.stub(postgresProvider, 'exitTransaction', function(conn, shouldCommit, callback) {
+        callback(null);
+      });
+      var actualCallback = sinon.stub();
+      var error = new Error();
+      database.scoped.enter(function(connections, exitTransaction) {
+        expect(connections).to.deep.equal({
+          mysql: mysqlConnection,
+          postgres: postgresConnection
+        });
+        exitTransaction(error);
+      }, actualCallback);
+      expect(mysqlGetTransactionSpy).to.have.been.called;
+      expect(postgresGetTransactionSpy).to.have.been.called;
+      expect(mysqlExitTransactionSpy).to.have.been.calledWith(mysqlConnection, false);
+      expect(postgresExitTransactionSpy).to.have.been.calledWith(postgresConnection, false);
+      expect(actualCallback).to.have.been.calledWith(error);
+      done();
+    });
+
+    it('should actualCallback with a database-related error when any open transactions fail to close/commit after exitTransaction is called with no errors', function(done) {
+      //reload database so it picks up database providers
+      Ravel.set('database providers', [mysqlProvider, postgresProvider]);
+      database = require('../../lib-cov/db/database')(Ravel);
+      var mysqlConnection = {}, postgresConnection = {};
+      var mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function(callback) {
+        callback(null, mysqlConnection);
+      });
+      var mysqlExitTransactionSpy = sinon.stub(mysqlProvider, 'exitTransaction', function(conn, shouldCommit, callback) {
+        callback(null);
+      });
+      var postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function(callback) {
+        callback(null, postgresConnection);
+      });
+      var error = new Error();
+      var postgresExitTransactionSpy = sinon.stub(postgresProvider, 'exitTransaction', function(conn, shouldCommit, callback) {
+        callback(error);
+      });
+      var actualCallback = sinon.stub();
+      database.scoped.enter(function(connections, exitTransaction) {
+        expect(connections).to.deep.equal({
+          mysql: mysqlConnection,
+          postgres: postgresConnection
+        });
+        exitTransaction(null, {});
+      }, actualCallback);
+      expect(mysqlGetTransactionSpy).to.have.been.called;
+      expect(postgresGetTransactionSpy).to.have.been.called;
+      expect(mysqlExitTransactionSpy).to.have.been.calledWith(mysqlConnection, true);
+      expect(postgresExitTransactionSpy).to.have.been.calledWith(postgresConnection, true);
+      expect(actualCallback).to.have.been.calledWith(error);
+      done();
+    });
   });
 });
