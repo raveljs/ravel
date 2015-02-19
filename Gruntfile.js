@@ -84,6 +84,20 @@ module.exports = function(grunt) {
           captureFile: 'test/coverage.html'
         },
         src: ['test/**/*.js']
+      },
+      coverageLcov: {
+        options: {
+          reporter: 'mocha-lcov-reporter',
+          quiet: true,
+          captureFile: 'test/coverage.lcov'
+        },
+        src: ['test/**/*.js']
+      }
+    },
+    coveralls: {
+      options: {
+        src: 'test/coverage.lcov',
+        force: false
       }
     },
     open: {
@@ -101,8 +115,10 @@ module.exports = function(grunt) {
     'blanket',
     'mochaTest:ravel',
     'mochaTest:coverage',
+    'mochaTest:coverageLcov',
     'clean:coverage'
   ]);
   grunt.registerTask('test', ['test-cli', 'open:coverage']);
+  grunt.registerTask('travis', ['test-cli', 'coveralls']);
 
 };

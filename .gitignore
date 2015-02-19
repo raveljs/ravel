@@ -6,3 +6,4 @@ init_test.sql
 docs/*
 lib-cov
 test/coverage.html
+test/coverage.lcov
