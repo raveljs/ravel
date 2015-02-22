@@ -76,7 +76,7 @@ describe('util/rest', function() {
         expect(arguments[0]).to.equal('http://localhost:8080/entity/1');
       };
       var spy = sinon.spy(res, 'send');
-      rest.buildRestResponse(req, res, null, result, rest.CREATED);
+      rest.buildRestResponse(req, res, null, result);
       expect(res).to.have.property('statusCode').that.equals(201);
       expect(res._getData()).to.equal(')]}\',\n' + JSON.stringify(result));
       expect(spy).to.have.been.calledOnce;
