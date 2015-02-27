@@ -2,6 +2,7 @@
 
 module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
+  require('./tasks/debug')(grunt);
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -77,6 +78,15 @@ module.exports = function(grunt) {
         },
         src: ['test/**/*.js']
       },
+      ravelDebug: {
+        options: {
+          reporter: 'spec',
+          quiet:false,
+          colors:true,
+          timeout:60000
+        },
+        src: ['test/**/*.js']
+      },
       coverage: {
         options: {
           reporter: 'html-cov',
@@ -105,6 +115,9 @@ module.exports = function(grunt) {
     open: {
       coverage: {
         path: 'test/coverage.html'
+      },
+      inspector: {
+        path: 'http://127.0.0.1:8080/debug?port=5858'
       }
     }
   });
@@ -116,6 +129,16 @@ module.exports = function(grunt) {
     'jshint',
     'blanket',
     'mochaTest:ravel',
+    'mochaTest:coverage',
+    'mochaTest:coverageLcov',
+    'clean:coverage'
+  ]);
+  grunt.registerTask('test-debug', [
+    'env:test',
+    'clean:coverage',
+    'jshint',
+    'blanket',
+    'mochaTest:ravelDebug',
     'mochaTest:coverage',
     'mochaTest:coverageLcov',
     'clean:coverage'
