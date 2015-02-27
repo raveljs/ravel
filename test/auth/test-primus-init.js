@@ -705,4 +705,137 @@ describe('auth/primus_init', function() {
       });
     });
   });
+
+  describe('spark.on(\'emit\')', function() {
+    it('should callback with Ravel.ApplicationError.IllegalValue if the user does not specify a room', function(done) {
+      require('../../lib-cov/auth/primus_init')(
+        Ravel, Ravel._injector, primus, expressSessionStore, roomResolver);
+      primus.emit('connection', spark);
+      spark.emit('emit', {}, function(err, result) {
+        expect(err).to.be.instanceof(Ravel.ApplicationError.IllegalValue);
+        expect(result).to.be.null;
+        done();
+      });
+    });
+
+    it('should callback with Ravel.ApplicationError.IllegalValue if the user does not specify an event', function(done) {
+      require('../../lib-cov/auth/primus_init')(
+        Ravel, Ravel._injector, primus, expressSessionStore, roomResolver);
+      primus.emit('connection', spark);
+      spark.emit('emit', {room:'/test/1'}, function(err, result) {
+        expect(err).to.be.instanceof(Ravel.ApplicationError.IllegalValue);
+        expect(result).to.be.null;
+        done();
+      });
+    });
+
+    it('should callback with Ravel.ApplicationError.NotFound if the requested room does not exist', function(done) {
+      require('../../lib-cov/auth/primus_init')(
+        Ravel, Ravel._injector, primus, expressSessionStore, roomResolver);
+      primus.emit('connection', spark);
+      spark.emit('emit', {room:'/test/1', event:'test event'}, function(err, result) {
+        expect(err).to.be.instanceof(Ravel.ApplicationError.NotFound);
+        expect(result).to.be.null;
+        done();
+      });
+    });
+
+    it('should callback with an error if the user\'s user id cannot be determined', function(done) {
+      var error = new Error();
+      sinon.stub(roomResolver, 'resolve', function() {
+        return {
+          instance: '/test/1',
+          params: ['1'],
+          room: {
+            name: '/test/:testId',
+            params: ['testId'],
+            regex: new RegExp('/test/(\\w+)/entity/(\\w+)'),
+            authorize: function(userId, done) {
+              expect(userId).to.equal(1);
+              done(null, true);
+            }
+          }
+        };
+      });
+      cookieParser = function(req, o, callback) {
+        req.signedCookies = {'connect.sid':9999999};
+        callback();
+      };
+      sinon.stub(expressSessionStore, 'get', function(sessionId, callback) {
+        callback(error);
+      });
+      require('../../lib-cov/auth/primus_init')(
+        Ravel, Ravel._injector, primus, expressSessionStore, roomResolver);
+      primus.emit('connection', spark);
+      spark.emit('emit', {room:'/test/1', event:'test event'}, function(err, result) {
+        expect(err).to.equal(error);
+        expect(result).to.be.null;
+        done();
+      });
+    });
+
+    it('should callback with an error if the user is not a member of the room', function(done) {
+      sinon.stub(roomResolver, 'resolve', function() {
+        return {
+          instance: '/test/1',
+          params: ['1'],
+          room: {
+            name: '/test/:testId',
+            params: ['testId'],
+            regex: new RegExp('/test/(\\w+)/entity/(\\w+)'),
+            authorize: function(userId, done) {
+              expect(userId).to.equal(1);
+              done(null, true);
+            }
+          }
+        };
+      });
+      spark.userId = 1;
+      var isMemberSpy = sinon.stub(Ravel.kvstore, 'sismember', function() {
+        return false;
+      });
+      require('../../lib-cov/auth/primus_init')(
+        Ravel, Ravel._injector, primus, expressSessionStore, roomResolver);
+      primus.emit('connection', spark);
+      spark.emit('emit', {room:'/test/1', event:'test event'}, function(err, result) {
+        expect(err).to.be.instanceof(Ravel.ApplicationError.Access);
+        expect(result).to.be.null;
+        expect(isMemberSpy).to.have.been.calledWith('ws_room:/test/1', 1);
+        done();
+      });
+    });
+
+    it('should broadacst the message', function(done) {
+      sinon.stub(roomResolver, 'resolve', function() {
+        return {
+          instance: '/test/1',
+          params: ['1'],
+          room: {
+            name: '/test/:testId',
+            params: ['testId'],
+            regex: new RegExp('/test/(\\w+)/entity/(\\w+)'),
+            authorize: function(userId, done) {
+              expect(userId).to.equal(1);
+              done(null, true);
+            }
+          }
+        };
+      });
+      spark.userId = 1;
+      var isMemberSpy = sinon.stub(Ravel.kvstore, 'sismember', function() {
+        return true;
+      });
+      var broadcastSpy = sinon.spy(broadcast, 'emit');
+      require('../../lib-cov/auth/primus_init')(
+        Ravel, Ravel._injector, primus, expressSessionStore, roomResolver);
+      primus.emit('connection', spark);
+      spark.emit('emit', {room:'/test/1', event:'test event', message:'test message'}, function(err, result) {
+        expect(err).to.be.null;
+        expect(result).to.be.ok;
+        expect(isMemberSpy).to.have.been.calledWith('ws_room:/test/1', 1);
+        expect(broadcastSpy).to.have.been.calledWith('ws_room:/test/1', 'test event', 'test message');
+        done();
+      });
+    });
+  });
 });
