@@ -62,7 +62,10 @@ describe('auth/primus_init', function() {
     //mock primus spark
     spark = new EventEmitter();
     spark.headers = {};
-    spark.join = function(room, callback){
+    spark.join = function(room, callback) {
+      callback();
+    };
+    spark.leave = function(room, callback) {
       callback();
     };
     //mock express session store
@@ -403,13 +406,17 @@ describe('auth/primus_init', function() {
         callback(null, {passport:{user:1}});
       });
       var joinSpy = sinon.spy(spark, 'join');
+      var broadcastSpy = sinon.spy(broadcast, 'emit');
       require('../../lib-cov/auth/primus_init')(
         Ravel, Ravel._injector, primus, expressSessionStore, roomResolver);
       primus.emit('connection', spark);
       spark.emit('subscribe', {room:'/test/1'}, function(err) {
         expect(err).to.be.null;
         expect(joinSpy).to.have.been.calledWith('/test/1');
-        doneTest();
+        process.nextTick(function() {
+          expect(broadcastSpy).to.have.been.calledWithMatch('/test/1', 'user connected', {userId: 1}, true);
+          doneTest();
+        });
       });
     });
 
@@ -481,6 +488,86 @@ describe('auth/primus_init', function() {
         expect(cookieParser).to.not.have.been.called;
         expect(joinSpy).to.have.been.calledWith('/test/1');
         doneTest();
+      });
+    });
+  });
+
+  describe('spark.on(\'unsubscribe\')', function() {
+    it('should callback with Ravel.ApplicationError.IllegalValue if the user does not specify a room', function(done) {
+      require('../../lib-cov/auth/primus_init')(
+        Ravel, Ravel._injector, primus, expressSessionStore, roomResolver);
+      primus.emit('connection', spark);
+      spark.emit('unsubscribe', {}, function(err, result) {
+        expect(err).to.be.instanceof(Ravel.ApplicationError.IllegalValue);
+        expect(result).to.be.null;
+        done();
+      });
+    });
+
+    it('should callback with Ravel.ApplicationError.NotFound if the requested room does not exist', function(done) {
+      require('../../lib-cov/auth/primus_init')(
+        Ravel, Ravel._injector, primus, expressSessionStore, roomResolver);
+      primus.emit('connection', spark);
+      spark.emit('unsubscribe', {room:'/test/1'}, function(err, result) {
+        expect(err).to.be.instanceof(Ravel.ApplicationError.NotFound);
+        expect(result).to.be.null;
+        done();
+      });
+    });
+
+    it('should callback with an error if the user\'s user id cannot be determined.', function(done) {
+      var error = new Error();
+      sinon.stub(roomResolver, 'resolve', function() {
+        return {
+          name: '/test/:testId',
+          params: ['testId', 'entityId'],
+          regex: new RegExp('/test/(\\w+)/entity/(\\w+)'),
+          authorize: function(){}
+        };
+      });
+      cookieParser = function(req, o, callback) {
+        req.signedCookies = {'connect.sid':9999999};
+        callback();
+      };
+      sinon.stub(expressSessionStore, 'get', function(sessionId, callback) {
+        callback(error);
+      });
+      require('../../lib-cov/auth/primus_init')(
+        Ravel, Ravel._injector, primus, expressSessionStore, roomResolver);
+      primus.emit('connection', spark);
+      spark.emit('unsubscribe', {room:'/test/1'}, function(err, result) {
+        expect(err).to.equal(error);
+        expect(result).to.be.null;
+        done();
+      });
+    });
+
+    it('should allow users to unsubscribe from rooms', function(done) {
+      sinon.stub(roomResolver, 'resolve', function() {
+        return {
+          instance: '/test/1',
+          params: ['1'],
+          room: {
+            name: '/test/:testId',
+            params: ['testId'],
+            regex: new RegExp('/test/(\\w+)/entity/(\\w+)'),
+            authorize: function(userId, done) {
+              expect(userId).to.equal(1);
+              done(null, true);
+            }
+          }
+        };
+      });
+      spark.userId = 1;
+      var leaveSpy = sinon.spy(spark, 'leave');
+      require('../../lib-cov/auth/primus_init')(
+        Ravel, Ravel._injector, primus, expressSessionStore, roomResolver);
+      primus.emit('connection', spark);
+      spark.emit('unsubscribe', {room:'/test/1'}, function(err, result) {
+        expect(err).to.be.null;
+        expect(result).to.be.true;
+        expect(leaveSpy).to.have.been.calledWith('/test/1');
+        done();
       });
     });
   });
