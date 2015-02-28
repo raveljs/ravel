@@ -86,7 +86,8 @@ describe('auth/primus_init', function() {
       sadd:function(){},
       srem:function(){},
       sismember:function(){},
-      smembers:function(){}
+      smembers:function(){},
+      del:function(){}
     };
     Ravel.Log.setLevel(Ravel.Log.NONE);
     Ravel.set('redis port', 0);
@@ -416,12 +417,15 @@ describe('auth/primus_init', function() {
       });
       var joinSpy = sinon.spy(spark, 'join');
       var broadcastSpy = sinon.spy(broadcast, 'emit');
+      var saddSpy = sinon.spy(Ravel.kvstore, 'sadd');
       require('../../lib-cov/auth/primus_init')(
         Ravel, Ravel._injector, primus, expressSessionStore, roomResolver);
       primus.emit('connection', spark);
       spark.emit('subscribe', {room:'/test/1'}, function(err) {
         expect(err).to.be.null;
         expect(joinSpy).to.have.been.calledWith('/test/1');
+        expect(saddSpy).to.have.been.calledWith('ws_room:/test/1', 1);
+        expect(saddSpy).to.have.been.calledWith('ws_user:1', '/test/1');
         process.nextTick(function() {
           expect(broadcastSpy).to.have.been.calledWithMatch('/test/1', 'user connected', {userId: 1}, true);
           doneTest();
@@ -569,6 +573,7 @@ describe('auth/primus_init', function() {
       });
       spark.userId = 1;
       var leaveSpy = sinon.spy(spark, 'leave');
+      var broadcastSpy = sinon.spy(broadcast, 'emit');
       require('../../lib-cov/auth/primus_init')(
         Ravel, Ravel._injector, primus, expressSessionStore, roomResolver);
       primus.emit('connection', spark);
@@ -576,7 +581,10 @@ describe('auth/primus_init', function() {
         expect(err).to.be.null;
         expect(result).to.be.true;
         expect(leaveSpy).to.have.been.calledWith('/test/1');
-        done();
+        process.nextTick(function() {
+          expect(broadcastSpy).to.have.been.calledWithMatch('/test/1', 'user disconnected', {userId: 1}, true);
+          done();
+        });
       });
     });
   });
@@ -836,6 +844,34 @@ describe('auth/primus_init', function() {
         expect(broadcastSpy).to.have.been.calledWith('ws_room:/test/1', 'test event', 'test message');
         done();
       });
+    });
+  });
+
+  describe('primus.on(\'disconnect\')', function() {
+    it('should remove a user from all their subscribed rooms when they disconnect from primus', function(done) {
+      spark.userId = 1;
+      sinon.stub(Ravel.kvstore, 'sismember', function() {
+        return true;
+      });
+      var rooms = ['/test/1', '/test/2'];
+      var getRoomsSpy = sinon.stub(Ravel.kvstore, 'smembers', function(key, callback) {
+        callback(null, rooms);
+      });
+      var sremSpy = sinon.stub(Ravel.kvstore, 'srem');
+      var delSpy = sinon.stub(Ravel.kvstore, 'del');
+      var broadcastSpy = sinon.spy(broadcast, 'emit');
+      require('../../lib-cov/auth/primus_init')(
+        Ravel, Ravel._injector, primus, expressSessionStore, roomResolver);
+      primus.emit('disconnection', spark);
+      expect(getRoomsSpy).to.have.been.calledWith('ws_user:1');
+      expect(sremSpy).to.have.been.calledWith('ws_room:/test/1', 1);
+      expect(broadcastSpy).to.have.been.calledWithMatch(
+        '/test/1', 'user disconnected', {userId:1}, true);
+      expect(sremSpy).to.have.been.calledWith('ws_room:/test/1', 1);
+      expect(broadcastSpy).to.have.been.calledWithMatch(
+        '/test/1', 'user disconnected', {userId:1}, true);
+      expect(delSpy).to.have.been.calledWith('ws_user:1');
+      done();
     });
   });
 });
