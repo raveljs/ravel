@@ -208,7 +208,7 @@ describe('Ravel.Log', function() {
   describe('on(\'start\')', function() {
     it('should set the default log level on \'start\' if none was specified via Ravel.set(\'log level\')', function(done) {
       var stub = sinon.stub(intel, 'setLevel');
-      Ravel._eventEmitter.emit('post init');
+      Ravel.emit('post init');
       expect(stub).to.have.been.calledOnce;
       expect(stub).to.have.been.calledWith(intel.DEBUG);
       done();
@@ -217,7 +217,7 @@ describe('Ravel.Log', function() {
     it('should set the client selected log level on \'start\' if one was specified via Ravel.set(\'log level\')', function(done) {
       var stub = sinon.stub(intel, 'setLevel');
       Ravel.set('log level', Ravel.Log.ERROR);
-      Ravel._eventEmitter.emit('post init');
+      Ravel.emit('post init');
       expect(stub).to.have.been.calledOnce;
       expect(stub).to.have.been.calledWith(intel.ERROR);
       done();
