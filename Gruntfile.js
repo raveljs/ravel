@@ -76,7 +76,7 @@ module.exports = function(grunt) {
           quiet:false,
           colors:true
         },
-        src: ['test/**/*.js']
+        src: ['test/**/test-*.js']
       },
       ravelDebug: {
         options: {
@@ -85,7 +85,7 @@ module.exports = function(grunt) {
           colors:true,
           timeout:60000
         },
-        src: ['test/**/*.js']
+        src: ['test/**/test-*.js']
       },
       coverage: {
         options: {
@@ -93,7 +93,7 @@ module.exports = function(grunt) {
           quiet: true,
           captureFile: 'test/coverage.html'
         },
-        src: ['test/**/*.js']
+        src: ['test/**/test-*.js']
       },
       coverageLcov: {
         options: {
@@ -101,7 +101,7 @@ module.exports = function(grunt) {
           quiet: true,
           captureFile: 'test/coverage.lcov'
         },
-        src: ['test/**/*.js']
+        src: ['test/**/test-*.js']
       }
     },
     coveralls: {
