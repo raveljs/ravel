@@ -41,6 +41,7 @@ describe('util/csrf', function() {
     authorizeTokenStub = undefined;
     csurfSpy = undefined;
     tokenToProfile = undefined;
+    mockery.deregisterAll();
     mockery.disable();
     done();
   });
@@ -49,7 +50,7 @@ describe('util/csrf', function() {
     it('should pass csrf validation on to csurf if client is a web client', function(done) {
       csrf = require('../../lib-cov/auth/csrf')(Ravel, {});
       var req = httpMocks.createRequest({
-        method: 'GET',
+        method: 'POST',
         url: '/entity',
         headers: {}
       });
@@ -64,7 +65,7 @@ describe('util/csrf', function() {
       csurfSpy = sinon.stub().throws();
       csrf = require('../../lib-cov/auth/csrf')(Ravel, {});
       var req = httpMocks.createRequest({
-        method: 'GET',
+        method: 'POST',
         url: '/entity',
         headers: {}
       });
@@ -80,7 +81,7 @@ describe('util/csrf', function() {
     it('should allow clients to use x-auth-token and x-auth-client to bypass csrf protection if they have a valid token', function(done) {
       csrf = require('../../lib-cov/auth/csrf')(Ravel, {});
       var req = httpMocks.createRequest({
-        method: 'GET',
+        method: 'POST',
         url: '/entity',
         headers: {
           'x-auth-token': 'oauth-token',
@@ -103,7 +104,7 @@ describe('util/csrf', function() {
     it('should prevent clients from using x-auth-token and x-auth-client to bypass csrf protection if their tokens are invalid', function(done) {
       csrf = require('../../lib-cov/auth/csrf')(Ravel, {});
       var req = httpMocks.createRequest({
-        method: 'GET',
+        method: 'POST',
         url: '/entity',
         headers: {
           'x-auth-token': 'oauth-token',

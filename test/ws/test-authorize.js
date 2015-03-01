@@ -10,8 +10,14 @@ var httpMocks = require('node-mocks-http');
 
 var Mocks;
 
-describe('auth/primus_init', function() {
-  beforeEach(function(done) {
+describe('ws/authorize', function() {
+  beforeEach(function(done) {    
+    //enable mockery
+    mockery.enable({
+      useCleanCache: true,
+      warnOnReplace: false,
+      warnOnUnregistered: false
+    });
     require('./before-each')(mockery, function(M) {
       Mocks = M;
       done();
@@ -19,7 +25,7 @@ describe('auth/primus_init', function() {
   });
 
   afterEach(function(done) {
-    mockery.disable();
+    mockery.deregisterAll();mockery.disable();
     done();
   });
 

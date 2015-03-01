@@ -35,7 +35,7 @@ describe('db/database', function() {
 
   afterEach(function(done) {
     Ravel = undefined;
-    mockery.disable();
+    mockery.deregisterAll();mockery.disable();
     done();
   });
 

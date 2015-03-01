@@ -3,11 +3,18 @@
 var chai = require('chai');
 var expect = chai.expect;
 chai.use(require('chai-things'));
+var mockery = require('mockery');
 
 var roomResolver, rooms;
 
 describe('util/websocket_room_resolver', function() {
   beforeEach(function(done) {
+    //enable mockery
+    mockery.enable({
+      useCleanCache: true,
+      warnOnReplace: false,
+      warnOnUnregistered: false
+    });
     rooms = {};
     roomResolver = require('../../lib-cov/util/websocket_room_resolver')(rooms);
     done();
@@ -16,6 +23,7 @@ describe('util/websocket_room_resolver', function() {
   afterEach(function(done) {
     rooms = undefined;
     roomResolver = undefined;
+    mockery.deregisterAll();mockery.disable();
     done();
   });
 

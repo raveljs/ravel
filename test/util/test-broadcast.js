@@ -50,7 +50,7 @@ describe('util/broadcast', function() {
     rooms = undefined;
     roomResolver = undefined;
     broadcast = undefined;
-    mockery.disable();
+    mockery.deregisterAll();mockery.disable();
     done();
   });
 

@@ -11,6 +11,13 @@ var Ravel, passportMock;
 
 describe('auth/passport_init', function() {
   beforeEach(function(done) {
+    //enable mockery
+    mockery.enable({
+      useCleanCache: true,
+      warnOnReplace: false,
+      warnOnUnregistered: false
+    });
+
     passportMock = {
       initialize: function() {
         return function(req, res, next) {
@@ -26,13 +33,6 @@ describe('auth/passport_init', function() {
       deserializeUser: function() {},
     };
 
-    //enable mockery
-    mockery.enable({
-      useCleanCache: true,
-      warnOnReplace: false,
-      warnOnUnregistered: false
-    });
-
     mockery.registerMock('passport', passportMock);
 
     Ravel = new require('../../lib-cov/ravel')();
@@ -45,6 +45,7 @@ describe('auth/passport_init', function() {
   afterEach(function(done) {
     Ravel = undefined;
     passportMock = undefined;
+    mockery.deregisterAll();
     mockery.disable();
     done();
   });
@@ -75,7 +76,7 @@ describe('auth/passport_init', function() {
     var passportInitSpy = sinon.spy(passportMock, 'initialize');
     var passportSessionSpy = sinon.spy(passportMock, 'session');
 
-    Ravel._eventEmitter.emit('post config express', app);
+    Ravel.emit('post config express', app);
     expect(useSpy).to.not.have.been.called;
     expect(passportInitSpy).to.not.have.been.called;
     expect(passportSessionSpy).to.not.have.been.called;
@@ -106,7 +107,7 @@ describe('auth/passport_init', function() {
     var passportInitSpy = sinon.spy(passportMock, 'initialize');
     var passportSessionSpy = sinon.spy(passportMock, 'session');
 
-    Ravel._eventEmitter.emit('post config express', app);
+    Ravel.emit('post config express', app);
     expect(useSpy).to.have.been.called;
     expect(passportInitSpy).to.have.been.called;
     expect(passportSessionSpy).to.have.been.called;
@@ -127,7 +128,7 @@ describe('auth/passport_init', function() {
       });
     });
 
-    Ravel._eventEmitter.emit('post config express', app);
+    Ravel.emit('post config express', app);
   });
 
   it('should use user.id to deserialize users from session cookies', function(done) {
@@ -153,7 +154,7 @@ describe('auth/passport_init', function() {
       });
     });
 
-    Ravel._eventEmitter.emit('post config express', app);
+    Ravel.emit('post config express', app);
   });
 
   it('should delegate \'get or create user\' functionality to the \'get or create user function\'', function(doneTest) {
@@ -177,6 +178,6 @@ describe('auth/passport_init', function() {
     });
     var app = express();
 
-    Ravel._eventEmitter.emit('post config express', app);
+    Ravel.emit('post config express', app);
   });
 });

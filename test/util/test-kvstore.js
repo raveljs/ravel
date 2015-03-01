@@ -12,15 +12,15 @@ var Ravel, kvstore, redisClientStub;
 describe('Ravel', function() {
 
   beforeEach(function(done) {
-    redisClientStub = {
-      auth: function(){}
-    };
     //enable mockery
     mockery.enable({
       useCleanCache: true,
       warnOnReplace: false,
       warnOnUnregistered: false
     });
+    redisClientStub = {
+      auth: function(){}
+    };
     mockery.registerMock('redis', {
       createClient: function() {
         return redisClientStub;
@@ -39,7 +39,7 @@ describe('Ravel', function() {
 
   afterEach(function(done) {
     Ravel = undefined;
-    mockery.disable();
+    mockery.deregisterAll();mockery.disable();
     done();
   });
 

@@ -10,22 +10,21 @@ var Ravel;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
-    Ravel = new require('../../lib-cov/ravel')();
-    Ravel.Log.setLevel(Ravel.Log.NONE);
-
     //enable mockery
     mockery.enable({
       useCleanCache: true,
       warnOnReplace: false,
       warnOnUnregistered: false
     });
+    Ravel = new require('../../lib-cov/ravel')();
+    Ravel.Log.setLevel(Ravel.Log.NONE);
 
     done();
   });
 
   afterEach(function(done) {
     Ravel = undefined;
-    mockery.disable();
+    mockery.deregisterAll();mockery.disable();
     done();
   });
 

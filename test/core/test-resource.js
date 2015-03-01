@@ -9,8 +9,7 @@ var path = require('path');
 var sinon = require('sinon');
 var express = require('express');
 
-var Ravel;
-var broadcastMiddleware = function(/*req, res, next*/){};
+var Ravel, broadcastMiddleware;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
@@ -21,6 +20,7 @@ describe('Ravel', function() {
       warnOnUnregistered: false
     });
 
+    broadcastMiddleware = function(/*req, res, next*/){};
     mockery.registerMock('../util/broadcast_middleware', function() {
       return broadcastMiddleware;
     });
@@ -42,7 +42,8 @@ describe('Ravel', function() {
 
   afterEach(function(done) {
     Ravel = undefined;
-    mockery.disable();
+    broadcastMiddleware = undefined;
+    mockery.deregisterAll();mockery.disable();
     done();
   });
 
