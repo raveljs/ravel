@@ -2,7 +2,16 @@
 
 module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
-  require('./tasks/debug')(grunt);
+
+  var tests = [
+    'test/core/test-*.js',
+    'test/db/test-*.js',
+    'test/util/test-*.js',
+    'test/auth/test-*.js',
+    'test/ws/test-*.js',
+    'test/ravel/test-*.js',
+    'test/**/test-*.js'
+  ];
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -76,7 +85,7 @@ module.exports = function(grunt) {
           quiet:false,
           colors:true
         },
-        src: ['test/**/test-*.js']
+        src: tests
       },
       ravelDebug: {
         options: {
@@ -85,7 +94,7 @@ module.exports = function(grunt) {
           colors:true,
           timeout:60000
         },
-        src: ['test/**/test-*.js']
+        src: tests
       },
       coverage: {
         options: {
@@ -93,7 +102,7 @@ module.exports = function(grunt) {
           quiet: true,
           captureFile: 'test/coverage.html'
         },
-        src: ['test/**/test-*.js']
+        src: tests
       },
       coverageLcov: {
         options: {
@@ -101,7 +110,7 @@ module.exports = function(grunt) {
           quiet: true,
           captureFile: 'test/coverage.lcov'
         },
-        src: ['test/**/test-*.js']
+        src: tests
       }
     },
     coveralls: {

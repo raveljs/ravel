@@ -10,7 +10,13 @@ var mockery = require('mockery');
 var Mocks;
 
 describe('ws/disconnect', function() {
-  beforeEach(function(done) {
+  beforeEach(function(done) {    
+    //enable mockery
+    mockery.enable({
+      useCleanCache: true,
+      warnOnReplace: false,
+      warnOnUnregistered: false
+    });
     require('./before-each')(mockery, function(M) {
       Mocks = M;
       done();
@@ -18,7 +24,7 @@ describe('ws/disconnect', function() {
   });
 
   afterEach(function(done) {
-    mockery.disable();
+    mockery.deregisterAll();mockery.disable();
     done();
   });
 

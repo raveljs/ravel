@@ -8,12 +8,6 @@ var sinon = require('sinon');
 
 module.exports = function(mockery, callback) {
   var Mocks = {};
-  //enable mockery
-  mockery.enable({
-    useCleanCache: true,
-    warnOnReplace: false,
-    warnOnUnregistered: false
-  });
   //mock redis
   Mocks.redisClientStub = {
     auth: function(){}
@@ -32,7 +26,7 @@ module.exports = function(mockery, callback) {
   Mocks.tokenToProfile = {
     tokenToProfile: function(){}
   };
-  mockery.registerMock('./authorize_token', function() {
+  mockery.registerMock('../auth/authorize_token', function() {
     return Mocks.tokenToProfile;
   });
   //mock broadcast

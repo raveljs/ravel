@@ -11,6 +11,13 @@ var Ravel, passportMock;
 
 describe('auth/passport_init', function() {
   beforeEach(function(done) {
+    //enable mockery
+    mockery.enable({
+      useCleanCache: true,
+      warnOnReplace: false,
+      warnOnUnregistered: false
+    });
+
     passportMock = {
       initialize: function() {
         return function(req, res, next) {
@@ -26,13 +33,6 @@ describe('auth/passport_init', function() {
       deserializeUser: function() {},
     };
 
-    //enable mockery
-    mockery.enable({
-      useCleanCache: true,
-      warnOnReplace: false,
-      warnOnUnregistered: false
-    });
-
     mockery.registerMock('passport', passportMock);
 
     Ravel = new require('../../lib-cov/ravel')();
@@ -45,6 +45,7 @@ describe('auth/passport_init', function() {
   afterEach(function(done) {
     Ravel = undefined;
     passportMock = undefined;
+    mockery.deregisterAll();
     mockery.disable();
     done();
   });

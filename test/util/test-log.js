@@ -11,6 +11,12 @@ var Ravel, intel, intelLogger;
 
 describe('Ravel.Log', function() {
   beforeEach(function(done) {
+    //enable mockery
+    mockery.enable({
+      useCleanCache: true,
+      warnOnReplace: false,
+      warnOnUnregistered: false
+    });
     //we have to completely mock intel because its
     //methods are read-only, so sinon can't touch them :(
     intelLogger = {
@@ -46,12 +52,6 @@ describe('Ravel.Log', function() {
       error: function() {},
       critical: function() {}
     };
-    //enable mockery
-    mockery.enable({
-      useCleanCache: true,
-      warnOnReplace: false,
-      warnOnUnregistered: false
-    });
     mockery.registerMock('intel', intel);
     Ravel = new require('../../lib-cov/ravel')();
     done();
@@ -59,7 +59,7 @@ describe('Ravel.Log', function() {
 
   afterEach(function(done) {
     Ravel = undefined;
-    mockery.disable();
+    mockery.deregisterAll();mockery.disable();
     done();
   });
 
@@ -208,7 +208,7 @@ describe('Ravel.Log', function() {
   describe('on(\'start\')', function() {
     it('should set the default log level on \'start\' if none was specified via Ravel.set(\'log level\')', function(done) {
       var stub = sinon.stub(intel, 'setLevel');
-      Ravel.emit('post init');
+      Ravel.emit('pre init');
       expect(stub).to.have.been.calledOnce;
       expect(stub).to.have.been.calledWith(intel.DEBUG);
       done();
@@ -217,7 +217,7 @@ describe('Ravel.Log', function() {
     it('should set the client selected log level on \'start\' if one was specified via Ravel.set(\'log level\')', function(done) {
       var stub = sinon.stub(intel, 'setLevel');
       Ravel.set('log level', Ravel.Log.ERROR);
-      Ravel.emit('post init');
+      Ravel.emit('pre init');
       expect(stub).to.have.been.calledOnce;
       expect(stub).to.have.been.calledWith(intel.ERROR);
       done();

@@ -5,12 +5,20 @@ var expect = chai.expect;
 chai.use(require('chai-things'));
 chai.use(require('sinon-chai'));
 var sinon = require('sinon');
+var mockery = require('mockery');
 var httpMocks = require('node-mocks-http');
 
 var Ravel, rest;
 
 describe('util/rest', function() {
   beforeEach(function(done) {
+    //enable mockery
+    mockery.enable({
+      useCleanCache: true,
+      warnOnReplace: false,
+      warnOnUnregistered: false
+    });
+
     Ravel = new require('../../lib-cov/ravel')();
     Ravel.Log.setLevel('NONE');
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
@@ -22,6 +30,7 @@ describe('util/rest', function() {
   afterEach(function(done) {
     Ravel = undefined;
     rest = undefined;
+    mockery.deregisterAll();mockery.disable();
     done();
   });
 

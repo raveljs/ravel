@@ -3,11 +3,18 @@
 var chai = require('chai');
 var expect = chai.expect;
 chai.use(require('chai-things'));
+var mockery = require('mockery');
 
 var Ravel, provider;
 
 describe('auth/authorization_provider', function() {
   beforeEach(function(done) {
+    //enable mockery
+    mockery.enable({
+      useCleanCache: true,
+      warnOnReplace: false,
+      warnOnUnregistered: false
+    });
     Ravel = new require('../../lib-cov/ravel')();
     Ravel.Log.setLevel('NONE');
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
@@ -18,6 +25,8 @@ describe('auth/authorization_provider', function() {
   afterEach(function(done) {
     Ravel = undefined;
     provider = undefined;
+    mockery.deregisterAll();
+    mockery.disable();
     done();
   });
 

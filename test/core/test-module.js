@@ -10,10 +10,6 @@ var Ravel;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
-    Ravel = new require('../../lib-cov/ravel')();
-    Ravel.Log.setLevel(Ravel.Log.NONE);
-    Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
-
     //enable mockery
     mockery.enable({
       useCleanCache: true,
@@ -21,12 +17,15 @@ describe('Ravel', function() {
       warnOnUnregistered: false
     });
 
+    Ravel = new require('../../lib-cov/ravel')();
+    Ravel.Log.setLevel(Ravel.Log.NONE);
+    Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
     done();
   });
 
   afterEach(function(done) {
     Ravel = undefined;
-    mockery.disable();
+    mockery.deregisterAll();mockery.disable();
     done();
   });
 

@@ -3,11 +3,18 @@
 var chai = require('chai');
 var expect = chai.expect;
 chai.use(require('chai-things'));
+var mockery = require('mockery');
 
 var Ravel;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
+    //enable mockery
+    mockery.enable({
+      useCleanCache: true,
+      warnOnReplace: false,
+      warnOnUnregistered: false
+    });
     Ravel = new require('../../lib-cov/ravel')();
     Ravel.Log.setLevel('NONE');
     done();
@@ -15,6 +22,7 @@ describe('Ravel', function() {
 
   afterEach(function(done) {
     Ravel = undefined;
+    mockery.deregisterAll();mockery.disable();
     done();
   });
 

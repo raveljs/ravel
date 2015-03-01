@@ -56,6 +56,7 @@ describe('auth/authorization_provider', function() {
   afterEach(function(done) {
     Ravel = undefined;
     tokenAuth = undefined;
+    mockery.deregisterAll();
     mockery.disable();
     done();
   });
