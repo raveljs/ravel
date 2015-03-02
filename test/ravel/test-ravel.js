@@ -42,7 +42,15 @@ var usersResource = function($EndpointBuilder, $Rest, users) {
   });
 };
 
-describe('Ravel end-to-end', function() {
+//stub routes
+var routes = function($RouteBuilder) {
+  $RouteBuilder.add('/csrf', function(req, res) {
+    res.status(200).send(req.csrfToken());
+  });
+};
+
+
+describe('Ravel end-to-end test', function() {
   before(function(done) {
     done();
   });
@@ -79,15 +87,18 @@ describe('Ravel end-to-end', function() {
         mockery.registerMock(path.join(Ravel.cwd, 'users'), users);
         Ravel.resource('/api/user', 'usersResource');
         mockery.registerMock(path.join(Ravel.cwd, 'usersResource'), usersResource);
+        Ravel.routes('routes');
+        mockery.registerMock(path.join(Ravel.cwd, 'routes'), routes);
         Ravel.init();
         agent = request.agent(Ravel._server);
         done();
       });
 
-      after(function() {
+      after(function(done) {
         Ravel = undefined;
         mockery.deregisterAll();
         mockery.disable();
+        done();
       });
 
       it('should respond with the list of registered users', function(done) {
@@ -111,15 +122,33 @@ describe('Ravel end-to-end', function() {
         .end(done);
       });
 
-      it('should respond with HTTP 403 NOT AUTHORIZED for bad or missing csrf tokens', function(done) {
+      it('should respond with HTTP 403 FORBIDDEN for bad or missing csrf tokens', function(done) {
         agent
-        .delete('/api/user/2')
+        .post('/api/user')
         .expect(403)
+        .end(done);
+      });
+
+      var token;
+      it('should respond with a csrf token from the mock route', function(done) {
+        agent
+        .get('/csrf')
+        .expect(200)
+        .end(function(err, res) {
+          token = res.text;
+          done();
+        });
+      });
+
+      it('should allow clients to POST with a valid csrf token', function(done) {
+        agent
+        .post('/api/user')
+        .set('x-csrf-token', token)
+        .expect(501)
         .end(done);
       });
     });
   });
-
-  //TODO test that express stuff is being set correctly?
+  
   //TODO end-to-end test websocket stuff
 });
