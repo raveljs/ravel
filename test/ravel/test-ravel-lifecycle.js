@@ -32,10 +32,7 @@ describe('Ravel', function() {
     Ravel.set('redis host', 'localhost');
     Ravel.set('redis port', 5432);
     Ravel.set('redis password', 'password');
-    Ravel.set('app domain', 'localhost');
-    Ravel.set('app port', '9080');
-    Ravel.set('node domain', 'localhost');
-    Ravel.set('node port', '9080');
+    Ravel.set('port', '9080');
     Ravel.set('express public directory', 'public');
     Ravel.set('express view directory', 'ejs');
     Ravel.set('express view engine', 'ejs');
@@ -110,10 +107,6 @@ describe('Ravel', function() {
       //var enableSpy = sinon.spy(expressAppMock, 'enable');
       Ravel.init();
 
-      expect(setSpy).to.have.been.calledWith('domain', Ravel.get('node domain'));
-      expect(setSpy).to.have.been.calledWith('port', Ravel.get('node port'));
-      expect(setSpy).to.have.been.calledWith('app domain', Ravel.get('app domain'));
-      expect(setSpy).to.have.been.calledWith('app port', Ravel.get('app port'));
       expect(setSpy).to.have.been.calledWith('views', path.join(Ravel.cwd, Ravel.get('express view directory')));
       expect(setSpy).to.have.been.calledWith('view engine', Ravel.get('express view engine'));
       expect(expressMock.static).to.have.been.calledWith(path.join(Ravel.cwd, Ravel.get('express public directory')));
@@ -140,7 +133,7 @@ describe('Ravel', function() {
         callback();
       });
       Ravel.listen();
-      expect(listenSpy).to.have.been.calledWith(Ravel.get('node port'));
+      expect(listenSpy).to.have.been.calledWith(Ravel.get('port'));
       done();
     });
   });

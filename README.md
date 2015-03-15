@@ -149,6 +149,13 @@ Like before, we need to register our resource:
 
 Routes are used to serve content such as EJS/Jade templates. Assuming you have a template index file at views/index.ejs:
 
+*views/index.ejs*
+
+    <!DOCTYPE html/>
+    <html>
+      <!-- Put whatever content or EJS stuff you want here -->
+    </html>
+
 *routes/index_r.js*
 
     module.exports = function($E, $L, $RouteBuilder) {
@@ -163,8 +170,8 @@ Once again, register the routes:
 
     var Ravel = require('ravel');
     //Since we're using EJS, we need to tell Ravel some things
-    $Ravel.set('express view directory', 'views');
-    $Ravel.set('express view engine', 'ejs');
+    Ravel.set('express view directory', 'views');
+    Ravel.set('express view engine', 'ejs');
     //...we're still getting to this part
 
     Ravel.module('cities', './modules/cities');
@@ -179,9 +186,8 @@ Websocket Rooms are topic *patterns* which represent a collection of topics to w
 *app.js*
 
     var Ravel = require('ravel');
-    //Since we're using EJS, we need to tell Ravel some things
-    $Ravel.set('express view directory', 'views');
-    $Ravel.set('express view engine', 'ejs');
+    Ravel.set('express view directory', 'views');
+    Ravel.set('express view engine', 'ejs');
     //...we're still getting to this part
 
     Ravel.module('cities', './modules/cities');
@@ -199,7 +205,38 @@ Websocket Rooms are topic *patterns* which represent a collection of topics to w
 
 ### Ravel.init() and Ravel.listen()
 
-TODO
+After defining all the basic components of a Ravel application, we need to initialize it with Ravel.init(). This step configures Express, Primus and other base technologies, and instantiates your defined Modules, Resources, Routes and Rooms.
+
+After Ravel.init(), a *post init* event is emitted which can be used as a hook (via Ravel.on()) to perform other startup logic before spinning up the actual web server with Ravel.listen().
+
+We've been avoiding some mandatory Ravel.set() parameters up until now, including Redis connection parameters and a session secret, so let's add them in now.
+
+*app.js*
+
+    var Ravel = require('ravel');
+    Ravel.set('express view directory', 'views');
+    Ravel.set('express view engine', 'ejs');
+    //Here are those extra parameters we mentioned before
+    Ravel.set('redis host', 'localhost');
+    Ravel.set('redis port', 5432);
+    Ravel.set('express session secret', 'a very random string');
+
+    Ravel.module('cities', './modules/cities');
+    Ravel.resource('/cities', './resources/city');
+    Ravel.routes('./routes/index_r.js');
+
+    Ravel.room('/chatroom/:chatroomId', function(userId, params, callback) {
+      callback(null, true);
+    });
+
+    //Instantiate and configure everything
+    Ravel.init();
+    //Anything listening to post init via Ravel.on('post init') will fire here
+
+    //Now, we actually start the web server
+    Ravel.listen();
+
+That's it! Assuming redis is running at the given host and port, your server should start and you should be able to access the /cities endpoint at [localhost:8080/cities](http://localhost:8080/cities)
 
 
 ## A more complex example
