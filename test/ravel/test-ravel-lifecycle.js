@@ -83,6 +83,10 @@ describe('Ravel', function() {
     favicon.returns(function(req, res, next){});
     mockery.registerMock('serve-favicon', favicon);
 
+    mockery.registerMock(path.join(Ravel.cwd, 'node_modules', 'ejs'), {
+      __express: function() {}
+    });
+
     done();
   });
 

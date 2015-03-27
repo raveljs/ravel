@@ -76,7 +76,10 @@ describe('Ravel end-to-end test', function() {
         Ravel.set('port', '9080');
         Ravel.set('express public directory', 'public');
         Ravel.set('express view directory', 'ejs');
-        Ravel.set('express view engine', 'ejs');
+        Ravel.set('express view engine', 'ejs');        
+        mockery.registerMock(path.join(Ravel.cwd, 'node_modules', 'ejs'), {
+          __express: function() {}
+        });
         Ravel.set('express session secret', 'mysecret');
         Ravel.set('disable json vulnerability protection', true);
 
