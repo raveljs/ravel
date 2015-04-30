@@ -21,6 +21,7 @@ describe('Ravel', function() {
       createClient: function() {
         redisClientStub = new (require('events').EventEmitter)();
         redisClientStub.auth = function(){};
+        redisClientStub.end = function(){};
         return redisClientStub;
       },
     };
