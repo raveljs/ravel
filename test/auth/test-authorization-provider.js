@@ -15,9 +15,20 @@ describe('auth/authorization_provider', function() {
       warnOnReplace: false,
       warnOnUnregistered: false
     });
+
+    //mock Ravel.kvstore, since we're not actually starting Ravel.
+    var redisMock = {
+      createClient: function() {
+        var redisClientStub = new (require('events').EventEmitter)();
+        redisClientStub.auth = function(){};
+        return redisClientStub;
+      },
+    };
+    mockery.registerMock('redis', redisMock);
+
     Ravel = new require('../../lib-cov/ravel')();
     Ravel.Log.setLevel('NONE');
-    Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
+
     provider = new Ravel.AuthorizationProvider('name');
     done();
   });
