@@ -36,7 +36,7 @@
     "primus.io": "3.1.2",
     "redis":"0.12.1",
     "serve-favicon":"2.2.0",
-    "ws":"0.7.1"
+    "engine.io":"1.5.1"
   },
   "devDependencies": {
     "chai":"2.0.0",

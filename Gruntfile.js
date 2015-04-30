@@ -83,7 +83,8 @@ module.exports = function(grunt) {
         options: {
           reporter: 'spec',
           quiet:false,
-          colors:true
+          colors:true,
+          timeout: 10000
         },
         src: tests
       },

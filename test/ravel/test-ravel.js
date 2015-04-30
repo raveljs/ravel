@@ -73,13 +73,13 @@ describe('Ravel end-to-end test', function() {
         Ravel.set('log level', Ravel.Log.NONE);
         Ravel.set('redis host', 'localhost');
         Ravel.set('redis port', 5432);
-        Ravel.set('app domain', 'localhost');
-        Ravel.set('app port', '9080');
-        Ravel.set('node domain', 'localhost');
-        Ravel.set('node port', '9080');
+        Ravel.set('port', '9080');
         Ravel.set('express public directory', 'public');
         Ravel.set('express view directory', 'ejs');
-        Ravel.set('express view engine', 'ejs');
+        Ravel.set('express view engine', 'ejs');        
+        mockery.registerMock(path.join(Ravel.cwd, 'node_modules', 'ejs'), {
+          __express: function() {}
+        });
         Ravel.set('express session secret', 'mysecret');
         Ravel.set('disable json vulnerability protection', true);
 
@@ -149,6 +149,6 @@ describe('Ravel end-to-end test', function() {
       });
     });
   });
-  
+
   //TODO end-to-end test websocket stuff
 });
