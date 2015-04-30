@@ -76,7 +76,7 @@ describe('Ravel end-to-end test', function() {
         Ravel.set('port', '9080');
         Ravel.set('express public directory', 'public');
         Ravel.set('express view directory', 'ejs');
-        Ravel.set('express view engine', 'ejs');        
+        Ravel.set('express view engine', 'ejs');
         mockery.registerMock(path.join(Ravel.cwd, 'node_modules', 'ejs'), {
           __express: function() {}
         });
@@ -144,6 +144,51 @@ describe('Ravel end-to-end test', function() {
         agent
         .post('/api/user')
         .set('x-csrf-token', token)
+        .expect(501)
+        .end(done);
+      });
+    });
+
+    describe('basic api server without csrf', function() {
+      before(function(done) {
+        //enable mockery
+        mockery.enable({
+          useCleanCache: true,
+          warnOnReplace: false,
+          warnOnUnregistered: false
+        });
+        mockery.registerMock('redis', redis);
+        Ravel = new require('../../lib-cov/ravel')();
+        Ravel.set('log level', Ravel.Log.NONE);
+        Ravel.set('redis host', 'localhost');
+        Ravel.set('redis port', 5432);
+        Ravel.set('port', '9080');
+        Ravel.set('disable csrf protection', true);
+        mockery.registerMock(path.join(Ravel.cwd, 'node_modules', 'ejs'), {
+          __express: function() {}
+        });
+        Ravel.set('express session secret', 'mysecret');
+        Ravel.set('disable json vulnerability protection', true);
+
+        Ravel.module('users', 'users');
+        mockery.registerMock(path.join(Ravel.cwd, 'users'), users);
+        Ravel.resource('/api/user', 'usersResource');
+        mockery.registerMock(path.join(Ravel.cwd, 'usersResource'), usersResource);
+        Ravel.init();
+        agent = request.agent(Ravel._server);
+        done();
+      });
+
+      after(function(done) {
+        Ravel = undefined;
+        mockery.deregisterAll();
+        mockery.disable();
+        done();
+      });
+
+      it('should allow clients to POST without a csrf token', function(done) {
+        agent
+        .post('/api/user')
         .expect(501)
         .end(done);
       });
