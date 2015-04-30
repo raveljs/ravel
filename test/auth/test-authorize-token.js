@@ -8,7 +8,7 @@ var sinon = require('sinon');
 
 var Ravel, tokenAuth, profile, testProvider;
 
-describe('auth/authorization_provider', function() {
+describe('auth/authorize_token', function() {
   beforeEach(function(done) {
     //enable mockery
     mockery.enable({
@@ -16,21 +16,24 @@ describe('auth/authorization_provider', function() {
       warnOnReplace: false,
       warnOnUnregistered: false
     });
-    mockery.registerMock('redis', {
-      createClient: function(){
-        return {
-          auth: function(){}
-        };
+    //mock Ravel.kvstore, since we're not actually starting Ravel.
+    var redisMock = {
+      createClient: function() {
+        var redisClientStub = new (require('events').EventEmitter)();
+        redisClientStub.auth = function(){};
+        redisClientStub.get = function(){};
+        redisClientStub.setex = function(){};
+        return redisClientStub;
       },
-    });
+    };
+    mockery.registerMock('redis', redisMock);
 
     Ravel = new require('../../lib-cov/ravel')();
     Ravel.Log.setLevel(Ravel.Log.NONE);
     Ravel.set('redis port', 0);
     Ravel.set('redis host', 'localhost');
     Ravel.set('redis password', 'password');
-    //we'll use sinon to stub in kvstore methods as required
-    Ravel.kvstore = require('../../lib-cov/util/kvstore')('ravel_prefix', Ravel);
+    Ravel.kvstore = require('../../lib-cov/util/kvstore')(Ravel);
 
     tokenAuth = new require('../../lib-cov/auth/authorize_token')(Ravel);
 
@@ -49,7 +52,6 @@ describe('auth/authorization_provider', function() {
     var providers = Ravel.get('authorization providers');
     providers.push(testProvider);
     Ravel.set('authorization providers', providers);
-
     done();
   });
 
