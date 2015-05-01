@@ -34,7 +34,7 @@ module.exports = function(mockery, callback) {
     emit: function(){},
     getMissedMessages: function(){}
   };
-  mockery.registerMock('../util/broadcast', function() {
+  mockery.registerMock('../ws/util/broadcast', function() {
     return Mocks.broadcast;
   });
   //mock primus

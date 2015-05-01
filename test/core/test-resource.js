@@ -21,7 +21,7 @@ describe('Ravel', function() {
     });
 
     broadcastMiddleware = function(/*req, res, next*/){};
-    mockery.registerMock('../util/broadcast_middleware', function() {
+    mockery.registerMock('../ws/util/broadcast_middleware', function() {
       return broadcastMiddleware;
     });
 
