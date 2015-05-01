@@ -9,6 +9,7 @@ module.exports = function(grunt) {
     'test/util/test-*.js',
     'test/auth/test-*.js',
     'test/ws/test-*.js',
+    'test/ws/util/test-*.js',
     'test/ravel/test-*.js',
     'test/**/test-*.js'
   ];
