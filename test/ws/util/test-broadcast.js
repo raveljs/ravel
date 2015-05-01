@@ -9,7 +9,7 @@ var EventEmitter = require('events').EventEmitter;
 
 var Ravel, broadcast, roomResolver, rooms, primus, primusRoom, redisClientStub;
 
-describe('util/broadcast', function() {
+describe('ws/util/broadcast', function() {
   beforeEach(function(done) {
     //enable mockery
     mockery.enable({
@@ -27,13 +27,19 @@ describe('util/broadcast', function() {
       auth: function(){},
       select: function(){}
     };
-    Ravel = new require('../../lib-cov/ravel')();
+    Ravel = new require('../../../lib-cov/ravel')();
     Ravel.Log.setLevel(Ravel.Log.NONE);
     Ravel.set('redis port', 0);
     Ravel.set('redis host', 'localhost');
     Ravel.set('redis password', 'password');
     rooms = {};
-    roomResolver = require('../../lib-cov/util/websocket_room_resolver')(rooms);
+    rooms['/entites/users/:userId'] = {
+      name: '/entites/users/:userId',
+      params: ['userId'],
+      regex: /\/entities\/users\/(\w+)/,
+      authorize: function(){}
+    };
+    roomResolver = require('../../../lib-cov/ws/util/websocket_room_resolver')(rooms);
     primusRoom = {
       send: function() {}
     };
@@ -60,21 +66,33 @@ describe('util/broadcast', function() {
       redisClientStub.subscribe = function() {};
       redisClientStub.on = new EventEmitter().on;
       var spy = sinon.spy(redisClientStub, 'subscribe');
-      broadcast = require('../../lib-cov/util/broadcast')(Ravel, primus, roomResolver);
+      broadcast = require('../../../lib-cov/ws/util/broadcast')(Ravel, primus, roomResolver);
       expect(spy).to.have.been.calledWith('tapestry_broadcast:');
       done();
     });
 
-    it('should emit messages to redis.publish', function(done) {
+    it('should not emit messages to redis.publish if the room does not exist', function(done) {
       redisClientStub.publish = function() {};
       redisClientStub.subscribe = function() {};
       redisClientStub.on = new EventEmitter().on;
       var spy = sinon.spy(redisClientStub, 'publish');
-      broadcast = require('../../lib-cov/util/broadcast')(Ravel, primus, roomResolver);
+      broadcast = require('../../../lib-cov/ws/util/broadcast')(Ravel, primus, roomResolver);
       var payload = {};
-      broadcast.emit('/user/1', 'test event', payload, true);
+      broadcast.emit('/entities/things/1', 'test event', payload, true);
+      expect(spy).to.not.have.been.called;
+      done();
+    });
+
+    it('should emit messages to redis.publish if the room exists', function(done) {
+      redisClientStub.publish = function() {};
+      redisClientStub.subscribe = function() {};
+      redisClientStub.on = new EventEmitter().on;
+      var spy = sinon.spy(redisClientStub, 'publish');
+      broadcast = require('../../../lib-cov/ws/util/broadcast')(Ravel, primus, roomResolver);
+      var payload = {};
+      broadcast.emit('/entities/users/1', 'test event', payload, true);
       expect(spy).to.have.been.calledWith('tapestry_broadcast:', JSON.stringify({
-        room: '/user/1',
+        room: '/entities/users/1',
         msg: {
           event: 'test event',
           data: payload
@@ -100,19 +118,19 @@ describe('util/broadcast', function() {
       sinon.stub(Date, 'now', function() {
         return 1234567890; //fake timestamp
       });
-      broadcast = require('../../lib-cov/util/broadcast')(Ravel, primus, roomResolver);
+      broadcast = require('../../../lib-cov/ws/util/broadcast')(Ravel, primus, roomResolver);
       var payload = {};
-      broadcast.emit('/user/1', 'test event', payload, false);
+      broadcast.emit('/entities/users/1', 'test event', payload, false);
       var message = {
         event: 'test event',
         data: payload
       };
       expect(zaddSpy).to.have.been.calledWithMatch(
-        ['ravel_broadcast_emit:/user/1',
+        ['ravel_broadcast_emit:/entities/users/1',
         String(Date.now()),
         JSON.stringify(message)]);
       expect(zremrangebyscoreSpy).to.have.been.calledWith(
-        'ravel_broadcast_emit:/user/1',
+        'ravel_broadcast_emit:/entities/users/1',
         '-inf',
         String(Date.now()-Ravel.get('websocket message cache time'))
       );
@@ -133,9 +151,9 @@ describe('util/broadcast', function() {
       redisClientStub.on = new EventEmitter().on;
       Ravel.kvstore = redisClientStub;
       var spy = sinon.spy(Ravel.Log, 'error');
-      broadcast = require('../../lib-cov/util/broadcast')(Ravel, primus, roomResolver);
+      broadcast = require('../../../lib-cov/ws/util/broadcast')(Ravel, primus, roomResolver);
       var payload = {};
-      broadcast.emit('/user/1', 'test event', payload, false);
+      broadcast.emit('/entities/users/1', 'test event', payload, false);
       expect(spy).to.have.been.calledWith(error);
       done();
     });
@@ -153,9 +171,9 @@ describe('util/broadcast', function() {
       redisClientStub.on = new EventEmitter().on;
       Ravel.kvstore = redisClientStub;
       var spy = sinon.spy(Ravel.Log, 'error');
-      broadcast = require('../../lib-cov/util/broadcast')(Ravel, primus, roomResolver);
+      broadcast = require('../../../lib-cov/ws/util/broadcast')(Ravel, primus, roomResolver);
       var payload = {};
-      broadcast.emit('/user/1', 'test event', payload, false);
+      broadcast.emit('/entities/users/1', 'test event', payload, false);
       expect(spy).to.have.been.calledWith(error);
       done();
     });
@@ -178,7 +196,7 @@ describe('util/broadcast', function() {
         expect(sendSpy).to.have.been.calledWith('broadcast', message.msg);
         done();
       };
-      broadcast = require('../../lib-cov/util/broadcast')(Ravel, primus, roomResolver);
+      broadcast = require('../../../lib-cov/ws/util/broadcast')(Ravel, primus, roomResolver);
     });
   });
 
@@ -195,7 +213,7 @@ describe('util/broadcast', function() {
         return 2000000; //fake timestamp
       });
       var zrangebyscoreSpy = sinon.spy(redisClientStub, 'zrangebyscore');
-      broadcast = require('../../lib-cov/util/broadcast')(Ravel, primus, roomResolver);
+      broadcast = require('../../../lib-cov/ws/util/broadcast')(Ravel, primus, roomResolver);
       broadcast.getMissedMessages('/user/1', 2, function(err, messages) {
         expect(zrangebyscoreSpy).to.not.have.been.called;
         expect(messages).to.be.not.ok;
@@ -219,7 +237,7 @@ describe('util/broadcast', function() {
         return 2000000; //fake timestamp
       });
       var zrangebyscoreSpy = sinon.spy(redisClientStub, 'zrangebyscore');
-      broadcast = require('../../lib-cov/util/broadcast')(Ravel, primus, roomResolver);
+      broadcast = require('../../../lib-cov/ws/util/broadcast')(Ravel, primus, roomResolver);
       broadcast.getMissedMessages('/user/1', 2000000-1, function(err, messages) {
         expect(err).to.be.null;
         expect(zrangebyscoreSpy).to.have.been.calledWith(['ravel_broadcast_emit:/user/1', 2000000-1, '+inf']);
@@ -241,7 +259,7 @@ describe('util/broadcast', function() {
       sinon.stub(Date, 'now', function() {
         return 2000000; //fake timestamp
       });
-      broadcast = require('../../lib-cov/util/broadcast')(Ravel, primus, roomResolver);
+      broadcast = require('../../../lib-cov/ws/util/broadcast')(Ravel, primus, roomResolver);
       broadcast.getMissedMessages('/user/1', 2000000-1, function(err, messages) {
         expect(err).to.be.instanceof(Error);
         expect(messages).to.be.not.ok;
