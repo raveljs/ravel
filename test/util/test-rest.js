@@ -7,6 +7,7 @@ chai.use(require('sinon-chai'));
 var sinon = require('sinon');
 var mockery = require('mockery');
 var httpMocks = require('node-mocks-http');
+var httpCodes = require('../../lib-cov/util/http_codes');
 
 var Ravel, rest;
 
@@ -103,7 +104,7 @@ describe('util/rest', function() {
         end: 5,
         count: 10
       };
-      rest.buildRestResponse({}, res, null, result, rest.PARTIAL_CONTENT, options);
+      rest.buildRestResponse({}, res, null, result, httpCodes.PARTIAL_CONTENT, options);
       expect(res).to.have.property('statusCode').that.equals(206);
       expect(res._getData()).to.equal(')]}\',\n' + JSON.stringify(result));
       expect(sendSpy).to.have.been.calledOnce;
@@ -113,7 +114,7 @@ describe('util/rest', function() {
       res = httpMocks.createResponse();
       sendSpy = sinon.spy(res, 'send');
       headerSpy = sinon.spy(res, 'setHeader');
-      rest.buildRestResponse({}, res, null, result, rest.PARTIAL_CONTENT, {
+      rest.buildRestResponse({}, res, null, result, httpCodes.PARTIAL_CONTENT, {
         start: 0
       });
       expect(res).to.have.property('statusCode').that.equals(206);
@@ -187,7 +188,7 @@ describe('util/rest', function() {
       var res = httpMocks.createResponse();
       var spy = sinon.spy(res, 'end');
       rest.buildRestResponse({}, res, new Ravel.ApplicationError.IllegalValue(), null);
-      expect(res).to.have.property('statusCode').that.equals(404);
+      expect(res).to.have.property('statusCode').that.equals(400);
       expect(res._getData()).to.equal('');
       expect(spy).to.have.been.calledOnce;
       done();

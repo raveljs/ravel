@@ -227,12 +227,12 @@ describe('Ravel', function() {
       }
     });
 
-    it('should implement stub endpoints for unused HTTP verbs, all of which return a status rest.NOT_IMPLEMENTED', function(done) {
-      var rest = require('../../lib-cov/util/rest')(Ravel);
+    it('should implement stub endpoints for unused HTTP verbs, all of which return a status httpCodes.NOT_IMPLEMENTED', function(done) {
+      var httpCodes = require('../../lib-cov/util/http_codes');
       var app = express();
       var res = {
         status: function(status) {
-          expect(status).to.equal(rest.NOT_IMPLEMENTED);
+          expect(status).to.equal(httpCodes.NOT_IMPLEMENTED);
           return {
             end: function() {}
           };
