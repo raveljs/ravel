@@ -84,7 +84,7 @@ To register and name your module, we need a top-level *app.js* file:
 
 *app.js*
 
-    var Ravel = require('ravel');
+    var Ravel = new require('ravel')();
     //...we'll initialize Ravel with some important parameters later
 
     // supply the name for the module, and its path
@@ -137,7 +137,7 @@ Like before, we need to register our resource:
 
 *app.js*
 
-    var Ravel = require('ravel');
+    var Ravel = new require('ravel')();
     //...we're still getting to this part
 
     Ravel.module('cities', './modules/cities');
@@ -168,7 +168,7 @@ Once again, register the routes:
 
 *app.js*
 
-    var Ravel = require('ravel');
+    var Ravel = new require('ravel')();
     //Since we're using EJS, we need to tell Ravel some things
     Ravel.set('express view directory', 'views');
     Ravel.set('express view engine', 'ejs');
@@ -185,7 +185,7 @@ Websocket Rooms are topic *patterns* which represent a collection of topics to w
 
 *app.js*
 
-    var Ravel = require('ravel');
+    var Ravel = new require('ravel')();
     Ravel.set('express view directory', 'views');
     Ravel.set('express view engine', 'ejs');
     //...we're still getting to this part
@@ -213,7 +213,7 @@ We've been avoiding some mandatory Ravel.set() parameters up until now, includin
 
 *app.js*
 
-    var Ravel = require('ravel');
+    var Ravel = new require('ravel')();
     Ravel.set('express view directory', 'views');
     Ravel.set('express view engine', 'ejs');
     //Here are those extra parameters we mentioned before
