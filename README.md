@@ -7,7 +7,7 @@ Forge past a tangle of node.js modules. Make a cool app.
 
 Ravel is a tiny, sometimes-opinionated foundation for rapidly creating complex, highly-scalable [node](https://github.com/joyent/node) applications.
 
-Layered on top of such fantastic technologies as [Express](https://github.com/strongloop/express), [Primus](https://github.com/primus/primus), [Passport](https://github.com/jaredhanson/passport), [Intel](https://github.com/seanmonstar/intel) and [Redis](https://github.com/antirez/redis), Ravel aims to provide a pre-baked, well-tested and highly modular solution for constructing many enterprise web applications by providing:
+Layered on top of such fantastic technologies as [Express](https://github.com/strongloop/express), [Primus](https://github.com/primus/primus), [Passport](https://github.com/jaredhanson/passport), [Intel](https://github.com/seanmonstar/intel) and [Redis](https://github.com/antirez/redis), Ravel aims to provide a pre-baked, well-tested and highly modular solution for constructing enterprise web applications by providing:
 
  - Dependency injection
  - A set of well-defined architectural components
@@ -241,7 +241,7 @@ That's it! Assuming redis is running at the given host and port, your server sho
 
 ## A more complex example
 
-*"You mentioned transactions! Authentication and authorization! CSRF protection! Mobile-ready APIs! Front-end model synchronization! Get on with the show, already!" --Some Impatient Guy*
+*"You mentioned transactions! Authentication and authorization! Mobile-ready APIs! Front-end model synchronization! Get on with the show, already!" --Some Impatient Guy*
 
 TODO
 
