@@ -241,7 +241,7 @@ That's it! Assuming redis is running at the given host and port, your server sho
 
 ## A more complex example
 
-*"You mentioned transactions! Authentication and authorization! CSRF protection! Mobile-ready APIs! Front-end model synchronization! Get on with the show, already!" --Some Impatient Guy*
+*"You mentioned transactions! Authentication and authorization! Mobile-ready APIs! Front-end model synchronization! Get on with the show, already!" --Some Impatient Guy*
 
 TODO
 
