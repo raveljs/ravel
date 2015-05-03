@@ -53,7 +53,7 @@ Business logic sits in plain old node.js modules, which are generally not networ
 *modules/cities.js*
 
     // Ravel error and logging services $E and $L can
-    // be injected alongside your other modules and
+    // be injected alongside your own modules and
     // npm dependencies. No require statements or
     // relative paths!
     module.exports = function($E, $L, async) {
@@ -87,8 +87,9 @@ To register and name your module, we need a top-level *app.js* file:
     var Ravel = new require('ravel')();
     //...we'll initialize Ravel with some important parameters later
 
-    // supply the name for the module, and its path
-    Ravel.module('cities', './modules/cities');
+    // supply the path to this module. you'll be able to inject
+    // it into other modules using the name 'cities'
+    Ravel.module('./modules/cities');
 
 ### Then, define a Resource
 
@@ -97,13 +98,16 @@ Resources help you build Express-like endpoints which expose your business logic
 *resources/city.js*
 
     // Resources support dependency injection too!
-    // $EndpointBuilder is unique to resources, and
+    // $Resource is unique to resources, and
     // notice that we have injected our cities
     // module by name.
-    module.exports = function($E, $L, $EndpointBuilder, $Rest, cities) {
-      // will become /cities when we register this
-      // Resource with the base path /cities
-      $EndpointBuilder.getAll(function(req, res) {
+    module.exports = function($E, $L, $Resource, $Rest, cities) {
+
+      // Register this Resource with the base path /cities
+      $Resource.bind('/cities');
+
+      // will become GET /cities
+      $Resource.getAll(function(req, res) {
         cities.getCities(function(err, result) {
           // $Rest makes it easy to build RESTful responses with
           // proper status codes, headers, etc. More on this later.
@@ -111,9 +115,8 @@ Resources help you build Express-like endpoints which expose your business logic
         });
       });
 
-      // will become /cities/:id when we register
-      // this Resource with the base path /cities
-      $EndpointBuilder.get(
+      // will become GET /cities/:id
+      $Resource.get(
         function(req, res, next) {
           //some middleware
           next();
@@ -140,9 +143,9 @@ Like before, we need to register our resource:
     var Ravel = new require('ravel')();
     //...we're still getting to this part
 
-    Ravel.module('cities', './modules/cities');
+    Ravel.module('./modules/cities');
     // Specify the base endpoint (/cities), and the location of the resource module
-    Ravel.resource('/cities', './resources/city');
+    Ravel.resource('./resources/city');
 
 
 ### Add a Route for good measure
@@ -174,8 +177,8 @@ Once again, register the routes:
     Ravel.set('express view engine', 'ejs');
     //...we're still getting to this part
 
-    Ravel.module('cities', './modules/cities');
-    Ravel.resource('/cities', './resources/city');
+    Ravel.module('./modules/cities');
+    Ravel.resource('./resources/city');
     //Just specify the location of the routes and Ravel will load them
     Ravel.routes('./routes/index_r.js');
 
@@ -190,8 +193,8 @@ Websocket Rooms are topic *patterns* which represent a collection of topics to w
     Ravel.set('express view engine', 'ejs');
     //...we're still getting to this part
 
-    Ravel.module('cities', './modules/cities');
-    Ravel.resource('/cities', './resources/city');
+    Ravel.module('./modules/cities');
+    Ravel.resource('./resources/city');
     Ravel.routes('./routes/index_r.js');
 
     //define a chat room pattern representing
@@ -221,8 +224,8 @@ We've been avoiding some mandatory Ravel.set() parameters up until now, includin
     Ravel.set('redis port', 5432);
     Ravel.set('express session secret', 'a very random string');
 
-    Ravel.module('cities', './modules/cities');
-    Ravel.resource('/cities', './resources/city');
+    Ravel.module('./modules/cities');
+    Ravel.resource('./resources/city');
     Ravel.routes('./routes/index_r.js');
 
     Ravel.room('/chatroom/:chatroomId', function(userId, params, callback) {
