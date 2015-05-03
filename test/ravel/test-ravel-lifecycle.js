@@ -59,14 +59,16 @@ describe('Ravel', function() {
     };
 
     //stub resource
-    var usersResource = function($EndpointBuilder, $Rest, users) {
-      $EndpointBuilder.getAll(function(req, res) {
+    var usersResource = function($Resource, $Rest, users) {
+      $Resource.bind('/api/user');
+      
+      $Resource.getAll(function(req, res) {
         users.getAllUsers(function(err, result) {
           $Rest.buildRestResponse(req, res, err, result);
         });
       });
 
-      $EndpointBuilder.get(function(req, res) {
+      $Resource.get(function(req, res) {
         users.getUser(req.params['id'], function(err, result) {
           $Rest.buildRestResponse(req, res, err, result);
         });
@@ -75,7 +77,7 @@ describe('Ravel', function() {
 
     Ravel.module('users', 'users');
     mockery.registerMock(path.join(Ravel.cwd, 'users'), users);
-    Ravel.resource('/api/user', 'usersResource');
+    Ravel.resource('usersResource');
     mockery.registerMock(path.join(Ravel.cwd, 'usersResource'), usersResource);
 
     //jshint unused:false
