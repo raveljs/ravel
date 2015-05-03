@@ -42,10 +42,10 @@ describe('Ravel', function() {
         done();
         return {};
       };
-      Ravel.module('test', 'stub1');
-      Ravel.module('test2', 'stub2');
-      mockery.registerMock(path.join(Ravel.cwd, 'stub1'), stub1);
-      mockery.registerMock(path.join(Ravel.cwd, 'stub2'), stub2);
+      Ravel.module('test');
+      Ravel.module('test2');
+      mockery.registerMock(path.join(Ravel.cwd, 'test'), stub1);
+      mockery.registerMock(path.join(Ravel.cwd, 'test2'), stub2);
       Ravel._moduleFactories['test']();
       Ravel._injector.inject({}, stub2);
     });
@@ -64,8 +64,8 @@ describe('Ravel', function() {
           method: function() {}
         };
       };
-      Ravel.module('test', 'stub');
-      mockery.registerMock(path.join(Ravel.cwd, 'stub'), stubClientModule);
+      Ravel.module('test');
+      mockery.registerMock(path.join(Ravel.cwd, 'test'), stubClientModule);
       mockery.registerMock('moment', stubMoment);
       Ravel._injector.inject({}, stubClientModule);
     });
@@ -74,8 +74,8 @@ describe('Ravel', function() {
       var stub = function(unknownModule) {
         expect(unknownModule).to.be.an('object');
       };
-      Ravel.module('test', 'stub');
-      mockery.registerMock(path.join(Ravel.cwd, 'stub'), stub);
+      Ravel.module('test');
+      mockery.registerMock(path.join(Ravel.cwd, 'test'), stub);
       try {
         Ravel._injector.inject({}, stub);
         done(new Error('It should be impossible to inject an unknown module or npm dependency'));
@@ -94,8 +94,8 @@ describe('Ravel', function() {
         expect(pseudoModule).to.equal(moduleMap.pseudoModule);
         done();
       };
-      Ravel.module('test', 'stub');
-      mockery.registerMock(path.join(Ravel.cwd, 'stub'), stub);
+      Ravel.module('test');
+      mockery.registerMock(path.join(Ravel.cwd, 'test'), stub);
       Ravel._injector.inject(moduleMap, stub);
     });
   });

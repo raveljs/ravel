@@ -53,7 +53,7 @@ Business logic sits in plain old node.js modules, which are generally not networ
 *modules/cities.js*
 
     // Ravel error and logging services $E and $L can
-    // be injected alongside your other modules and
+    // be injected alongside your own modules and
     // npm dependencies. No require statements or
     // relative paths!
     module.exports = function($E, $L, async) {
@@ -87,8 +87,9 @@ To register and name your module, we need a top-level *app.js* file:
     var Ravel = new require('ravel')();
     //...we'll initialize Ravel with some important parameters later
 
-    // supply the name for the module, and its path
-    Ravel.module('cities', './modules/cities');
+    // supply the path to this module. you'll be able to inject
+    // it into other modules using the name 'cities'
+    Ravel.module('./modules/cities');
 
 ### Then, define a Resource
 
@@ -142,7 +143,7 @@ Like before, we need to register our resource:
     var Ravel = new require('ravel')();
     //...we're still getting to this part
 
-    Ravel.module('cities', './modules/cities');
+    Ravel.module('./modules/cities');
     // Specify the base endpoint (/cities), and the location of the resource module
     Ravel.resource('./resources/city');
 
@@ -176,7 +177,7 @@ Once again, register the routes:
     Ravel.set('express view engine', 'ejs');
     //...we're still getting to this part
 
-    Ravel.module('cities', './modules/cities');
+    Ravel.module('./modules/cities');
     Ravel.resource('./resources/city');
     //Just specify the location of the routes and Ravel will load them
     Ravel.routes('./routes/index_r.js');
@@ -192,7 +193,7 @@ Websocket Rooms are topic *patterns* which represent a collection of topics to w
     Ravel.set('express view engine', 'ejs');
     //...we're still getting to this part
 
-    Ravel.module('cities', './modules/cities');
+    Ravel.module('./modules/cities');
     Ravel.resource('./resources/city');
     Ravel.routes('./routes/index_r.js');
 
@@ -223,7 +224,7 @@ We've been avoiding some mandatory Ravel.set() parameters up until now, includin
     Ravel.set('redis port', 5432);
     Ravel.set('express session secret', 'a very random string');
 
-    Ravel.module('cities', './modules/cities');
+    Ravel.module('./modules/cities');
     Ravel.resource('./resources/city');
     Ravel.routes('./routes/index_r.js');
 
