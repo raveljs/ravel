@@ -108,11 +108,9 @@ Resources help you build Express-like endpoints which expose your business logic
 
       // will become GET /cities
       $Resource.getAll(function(req, res) {
-        cities.getCities(function(err, result) {
-          // $Rest makes it easy to build RESTful responses with
-          // proper status codes, headers, etc. More on this later.
-          $Rest.buildRestResponse(req, res, err, result);
-        });
+        // $Rest makes it easy to build RESTful responses with
+        // proper status codes, headers, etc. More on this later.
+        cities.getCities($Rest.respond(req, res));
       });
 
       // will become GET /cities/:id
@@ -122,9 +120,7 @@ Resources help you build Express-like endpoints which expose your business logic
           next();
         },
         function(req, res) {
-          cities.getCity(req.params['id'], function(err, result) {
-            $Rest.buildRestResponse(req, res, err, result);
-          });
+          cities.getCity(req.params['id'], $Rest.respond(req, res));
         }
       );
 

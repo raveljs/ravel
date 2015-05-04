@@ -89,7 +89,7 @@ describe('Ravel', function() {
         expect($Resource).to.have.property('post').that.is.a('function');
         expect($Resource).to.have.property('delete').that.is.a('function');
         expect($Rest).to.be.an('object');
-        expect($Rest).to.have.property('buildRestResponse').that.is.a('function');
+        expect($Rest).to.have.property('respond').that.is.a('function');
         expect($Broadcast).to.equal(Ravel.broadcast);
         expect($Private).to.equal(Ravel.authorize);
         expect($PrivateRedirect).to.equal(Ravel.authorizeWithRedirect);
