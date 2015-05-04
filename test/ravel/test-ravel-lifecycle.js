@@ -63,15 +63,11 @@ describe('Ravel', function() {
       $Resource.bind('/api/user');
 
       $Resource.getAll(function(req, res) {
-        users.getAllUsers(function(err, result) {
-          $Rest.buildRestResponse(req, res, err, result);
-        });
+        users.getAllUsers($Rest.respond(req, res));
       });
 
       $Resource.get(function(req, res) {
-        users.getUser(req.params['id'], function(err, result) {
-          $Rest.buildRestResponse(req, res, err, result);
-        });
+        users.getUser(req.params['id'], $Rest.respond(req, res));
       });
     };
 
