@@ -42,8 +42,8 @@ var usersResource = function($Resource, $Rest, users) {
 
 //stub routes
 var routes = function($RouteBuilder) {
-  $RouteBuilder.add('/csrf', function(req, res) {
-    res.status(200).send(req.csrfToken());
+  $RouteBuilder.add('/test', function(req, res) {
+    res.status(200).send({});
   });
 };
 
@@ -117,6 +117,13 @@ describe('Ravel end-to-end test', function() {
         agent
         .get('/api/user/3')
         .expect(404)
+        .end(done);
+      });
+
+      it('should respond with an empty object on the route', function(done) {
+        agent
+        .get('/test')
+        .expect(200, JSON.stringify({}))
         .end(done);
       });
     });
