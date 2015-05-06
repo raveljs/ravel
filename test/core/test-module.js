@@ -81,6 +81,18 @@ describe('Ravel', function() {
       Ravel._moduleFactories['test']();
     });
 
+    it('should convert hyphenated module names into camel case automatically', function(done) {
+      var stub = function() {
+        return {};
+      };
+      Ravel.module('./my-test-module.js');
+      mockery.registerMock(path.join(Ravel.cwd, 'my-test-module.js'), stub);
+      expect(Ravel._moduleFactories).to.have.property('myTestModule');
+      expect(Ravel._moduleFactories['myTestModule']).to.be.a('function');
+      Ravel._moduleFactories['myTestModule']();
+      done();
+    });
+
     it('should produce module factories which support dependency injection of client modules', function(done) {
       var stub1Instance = {
         method:function(){}
