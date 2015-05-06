@@ -61,6 +61,8 @@ Business logic sits in plain old node.js modules, which are generally not networ
       var c = ['Toronto', 'New York', 'Chicago'];
 
       Cities.getAllCities = function(callback) {
+        // pretend we used async for something here
+        // since we magically injected it above
         callback(null, c);
       };
 
@@ -90,6 +92,8 @@ To register and name your module, we need a top-level *app.js* file:
     // supply the path to this module. you'll be able to inject
     // it into other modules using the name 'cities'
     Ravel.module('./modules/cities');
+
+Note: Modules with filenames including hyphens are made available for injection via camel case  ('./modules/my-module.js' would be available as 'myModule').
 
 ### Then, define a Resource
 
