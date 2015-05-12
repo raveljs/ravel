@@ -81,12 +81,12 @@ describe('Ravel end-to-end test', function() {
         Ravel.set('express session secret', 'mysecret');
         Ravel.set('disable json vulnerability protection', true);
 
-        Ravel.module('users');
         mockery.registerMock(path.join(Ravel.cwd, 'users'), users);
-        Ravel.resource('usersResource');
+        Ravel.module('users');
         mockery.registerMock(path.join(Ravel.cwd, 'usersResource'), usersResource);
-        Ravel.routes('routes');
+        Ravel.resource('usersResource');
         mockery.registerMock(path.join(Ravel.cwd, 'routes'), routes);
+        Ravel.routes('routes');
         Ravel.init();
         agent = request.agent(Ravel._server);
         done();

@@ -71,10 +71,10 @@ describe('Ravel', function() {
       });
     };
 
-    Ravel.module('users');
     mockery.registerMock(path.join(Ravel.cwd, 'users'), users);
-    Ravel.resource('usersResource');
+    Ravel.module('users');
     mockery.registerMock(path.join(Ravel.cwd, 'usersResource'), usersResource);
+    Ravel.resource('usersResource');
 
     //jshint unused:false
     favicon = sinon.stub();
