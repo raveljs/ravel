@@ -60,6 +60,10 @@ Business logic sits in plain old node.js modules, which are generally not networ
       var Cities = {};
       var c = ['Toronto', 'New York', 'Chicago'];
 
+      //Warning: Since dependency injection only takes
+      //place during Ravel.init, trying to use functions
+      //from your modules here won't work properly.
+
       Cities.getAllCities = function(callback) {
         // pretend we used async for something here
         // since we magically injected it above

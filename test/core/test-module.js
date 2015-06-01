@@ -31,6 +31,7 @@ describe('Ravel', function() {
 
   describe('#module()', function() {
     it('should allow clients to register module files for instantiation in Ravel.start', function(done) {
+      mockery.registerMock(path.join(Ravel.cwd, './modules/test'), function(){});
       Ravel.module('./modules/test');
       expect(Ravel._moduleFactories).to.have.property('test');
       expect(Ravel._moduleFactories['test']).to.be.a('function');
@@ -38,6 +39,7 @@ describe('Ravel', function() {
     });
 
     it('should allow clients to register module files with an extension and still derive the correct name', function(done) {
+      mockery.registerMock(path.join(Ravel.cwd, './modules/test.js'), function(){});
       Ravel.module('./modules/test.js');
       expect(Ravel._moduleFactories).to.have.property('test');
       expect(Ravel._moduleFactories['test']).to.be.a('function');
@@ -45,6 +47,8 @@ describe('Ravel', function() {
     });
 
     it('should throw a Ravel.ApplicationError.DuplicateEntry error when clients attempt to register multiple modules with the same name', function(done) {
+      mockery.registerMock(path.join(Ravel.cwd, './modules/test'), function(){});
+      mockery.registerMock(path.join(Ravel.cwd, './more_modules/test'), function(){});
       var shouldThrow = function() {
         Ravel.module('./modules/test');
         Ravel.module('./more_modules/test');
@@ -76,8 +80,8 @@ describe('Ravel', function() {
           method: function() {}
         };
       };
-      Ravel.module('./test');
       mockery.registerMock(path.join(Ravel.cwd, 'test'), stub);
+      Ravel.module('./test');
       Ravel._moduleFactories['test']();
     });
 
@@ -85,8 +89,8 @@ describe('Ravel', function() {
       var stub = function() {
         return {};
       };
-      Ravel.module('./my-test-module.js');
       mockery.registerMock(path.join(Ravel.cwd, 'my-test-module.js'), stub);
+      Ravel.module('./my-test-module.js');
       expect(Ravel._moduleFactories).to.have.property('myTestModule');
       expect(Ravel._moduleFactories['myTestModule']).to.be.a('function');
       Ravel._moduleFactories['myTestModule']();
@@ -106,10 +110,10 @@ describe('Ravel', function() {
         done();
         return {};
       };
-      Ravel.module('./modules/test');
-      Ravel.module('./modules/test2');
       mockery.registerMock(path.join(Ravel.cwd, './modules/test'), stub1);
       mockery.registerMock(path.join(Ravel.cwd, './modules/test2'), stub2);
+      Ravel.module('./modules/test');
+      Ravel.module('./modules/test2');
       Ravel._moduleFactories['test']();
       Ravel._moduleFactories['test2']();
     });
@@ -128,9 +132,9 @@ describe('Ravel', function() {
           method: function() {}
         };
       };
-      Ravel.module('./test');
       mockery.registerMock(path.join(Ravel.cwd, './test'), stubClientModule);
       mockery.registerMock('moment', stubMoment);
+      Ravel.module('./test');
       Ravel._moduleFactories['test']();
     });
 
@@ -138,8 +142,8 @@ describe('Ravel', function() {
       var stub = function(unknownModule) {
         expect(unknownModule).to.be.an('object');
       };
-      Ravel.module('./test');
       mockery.registerMock(path.join(Ravel.cwd, './test'), stub);
+      Ravel.module('./test');
       var shouldThrow = function() {
         Ravel._moduleFactories['test']();
       };
@@ -151,19 +155,18 @@ describe('Ravel', function() {
       var stub = {
         method: function(){}
       };
-      Ravel.module('./test');
       mockery.registerMock(path.join(Ravel.cwd, './test'), stub);
-      Ravel._moduleFactories['test']();
+      Ravel.module('./test');
+      expect(Ravel._moduleFactories).to.not.have.property('test');
       expect(Ravel.modules.test).to.deep.equal(stub);
       done();
     });
 
     it('should throw an ApplicationError.IllegalValue when a client attempts to register a module factory which is neither a function nor an object', function(done) {
       var stub = 'I am not a function or an object';
-      Ravel.module('./test');
       mockery.registerMock(path.join(Ravel.cwd, './test'), stub);
       var shouldThrow = function() {
-        Ravel._moduleFactories['test']();
+        Ravel.module('./test');
       };
       expect(shouldThrow).to.throw(Ravel.ApplicationError.IllegalValue);
       done();
@@ -191,10 +194,10 @@ describe('Ravel', function() {
         done();
         return {};
       };
-      Ravel.module('./test1');
       mockery.registerMock(path.join(Ravel.cwd, './test1'), stub1);
-      Ravel.module('./test2');
       mockery.registerMock(path.join(Ravel.cwd, './test2'), stub2);
+      Ravel.module('./test1');
+      Ravel.module('./test2');
       Ravel._moduleFactories['test1']();
       Ravel._moduleFactories['test2']();
     });
@@ -217,12 +220,12 @@ describe('Ravel', function() {
         expect(test).to.equal(stub2Test);
         done();
       };
-      Ravel.module('./test');
-      Ravel.module('./test2');
-      Ravel.module('./test3');
       mockery.registerMock(path.join(Ravel.cwd, './test'), stub1);
       mockery.registerMock(path.join(Ravel.cwd, './test2'), stub2);
       mockery.registerMock(path.join(Ravel.cwd, './test3'), stub3);
+      Ravel.module('./test');
+      Ravel.module('./test2');
+      Ravel.module('./test3');
       Ravel._moduleFactories['test']();
       Ravel._moduleFactories['test2']();
       Ravel._moduleFactories['test3']();
@@ -247,10 +250,10 @@ describe('Ravel', function() {
           }
         };
       };
-      Ravel.module('./test');
-      Ravel.module('./test2');
       mockery.registerMock(path.join(Ravel.cwd, './test'), stub1);
       mockery.registerMock(path.join(Ravel.cwd, './test2'), stub2);
+      Ravel.module('./test');
+      Ravel.module('./test2');
       Ravel._moduleFactories['test']();
       Ravel._moduleFactories['test2']();
       Ravel.modules.test2.method();
