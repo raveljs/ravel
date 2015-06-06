@@ -99,6 +99,12 @@ To register and name your module, we need a top-level *app.js* file:
 
 Note: Modules with filenames including hyphens are made available for injection via camel case  ('./modules/my-module.js' would be available as 'myModule').
 
+Another note: Modules also support array notation for injecting npm dependencies which have invalid js variables names (such as 'bad.module'). To use this notation, define your module like this:
+
+    module.exports = ['bad.module', function(badModule) {
+      ...
+    }];
+
 ### Then, define a Resource
 
 Resources help you build Express-like endpoints which expose your business logic, support middleware and adhere to the REST specification.

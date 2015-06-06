@@ -98,5 +98,37 @@ describe('Ravel', function() {
       Ravel.module('test');
       Ravel._injector.inject(moduleMap, stub);
     });
+
+    it('should support array notation for declaring dependencies which are not valid js variable names', function(done) {
+      var stubBadName = {
+        method: function() {}
+      };
+      var stubClientInstance = {
+        method:function(){}
+      };
+      var stubClientModule = function() {
+        return stubClientInstance;
+      };
+      var anotherStubClientModule = ['bad.module', 'myModule', function(bad, myModule) {
+        expect(bad).to.be.ok;
+        expect(bad).to.be.an('object');
+        expect(bad).to.equal(stubBadName);
+        expect(myModule).to.be.ok;
+        expect(myModule).to.be.an('object');
+        expect(myModule).to.deep.equal(stubClientInstance);
+        done();
+
+        return {
+          method: function() {}
+        };
+      }];
+      mockery.registerMock(path.join(Ravel.cwd, 'my-module.js'), stubClientModule);
+      mockery.registerMock(path.join(Ravel.cwd, 'test'), anotherStubClientModule);
+      mockery.registerMock('bad.module', stubBadName);
+      Ravel.module('my-module.js');
+      Ravel.module('test');
+      Ravel._moduleFactories['myModule']();
+      Ravel._injector.inject({}, anotherStubClientModule);
+    });
   });
 });
