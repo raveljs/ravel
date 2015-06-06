@@ -138,6 +138,26 @@ describe('Ravel', function() {
       Ravel._moduleFactories['test']();
     });
 
+    it('should support array notation for specifying module dependencies which use invalid js variable names', function(done) {
+      var stubBadName = {
+        method: function() {}
+      };
+      var stubClientModule = ['bad.name', function(badName) {
+        expect(badName).to.be.ok;
+        expect(badName).to.be.an('object');
+        expect(badName).to.equal(stubBadName);
+        done();
+
+        return {
+          method: function() {}
+        };
+      }];
+      mockery.registerMock(path.join(Ravel.cwd, './test'), stubClientModule);
+      mockery.registerMock('bad.name', stubBadName);
+      Ravel.module('./test');
+      Ravel._moduleFactories['test']();
+    });
+
     it('should throw an ApplicationError.NotFound when a module factory which utilizes an unknown module/npm dependency is instantiated', function(done) {
       var stub = function(unknownModule) {
         expect(unknownModule).to.be.an('object');
