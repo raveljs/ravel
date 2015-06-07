@@ -126,70 +126,70 @@ describe('util/rest', function() {
 
     it('should respond with HTTP 404 NOT FOUND when ApplicationError.NotFound is passed as err', function(done) {
       var res = httpMocks.createResponse();
-      var spy = sinon.spy(res, 'end');
-      rest.respond({}, res)(new Ravel.ApplicationError.NotFound(), null);
+      var spy = sinon.spy(res, 'send');
+      rest.respond({}, res)(new Ravel.ApplicationError.NotFound('a message'), null);
       expect(res).to.have.property('statusCode').that.equals(404);
-      expect(res._getData()).to.equal('');
+      expect(res._getData()).to.equal('NotFoundError: a message');
       expect(spy).to.have.been.calledOnce;
       done();
     });
 
     it('should respond with HTTP 403 Forbidden when ApplicationError.Access is passed as err', function(done) {
       var res = httpMocks.createResponse();
-      var spy = sinon.spy(res, 'end');
+      var spy = sinon.spy(res, 'send');
       rest.respond({}, res)(new Ravel.ApplicationError.Access(), null);
       expect(res).to.have.property('statusCode').that.equals(403);
-      expect(res._getData()).to.equal('');
+      expect(res._getData()).to.equal('AccessError: ');
       expect(spy).to.have.been.calledOnce;
       done();
     });
 
     it('should respond with HTTP 405 METHOD NOT ALLOWED when ApplicationError.NotAllowed is passed as err', function(done) {
       var res = httpMocks.createResponse();
-      var spy = sinon.spy(res, 'end');
+      var spy = sinon.spy(res, 'send');
       rest.respond({}, res)(new Ravel.ApplicationError.NotAllowed(), null);
       expect(res).to.have.property('statusCode').that.equals(405);
-      expect(res._getData()).to.equal('');
+      expect(res._getData()).to.equal('NotAllowedError: ');
       expect(spy).to.have.been.calledOnce;
       done();
     });
 
     it('should respond with HTTP 501 NOT IMPLEMENTED when ApplicationError.NotImplemented is passed as err', function(done) {
       var res = httpMocks.createResponse();
-      var spy = sinon.spy(res, 'end');
-      rest.respond({}, res)(new Ravel.ApplicationError.NotImplemented(), null);
+      var spy = sinon.spy(res, 'send');
+      rest.respond({}, res)(new Ravel.ApplicationError.NotImplemented('a message'), null);
       expect(res).to.have.property('statusCode').that.equals(501);
-      expect(res._getData()).to.equal('');
+      expect(res._getData()).to.equal('NotImplementedError: a message');
       expect(spy).to.have.been.calledOnce;
       done();
     });
 
     it('should respond with HTTP 409 CONFLICT when ApplicationError.DuplicateEntry is passed as err', function(done) {
       var res = httpMocks.createResponse();
-      var spy = sinon.spy(res, 'end');
+      var spy = sinon.spy(res, 'send');
       rest.respond({}, res)(new Ravel.ApplicationError.DuplicateEntry(), null);
       expect(res).to.have.property('statusCode').that.equals(409);
-      expect(res._getData()).to.equal('');
+      expect(res._getData()).to.equal('DuplicateEntryError: ');
       expect(spy).to.have.been.calledOnce;
       done();
     });
 
     it('should respond with HTTP 416 REQUESTED_RANGE_NOT_SATISFIABLE when ApplicationError.RangeOutOfBounds is passed as err', function(done) {
       var res = httpMocks.createResponse();
-      var spy = sinon.spy(res, 'end');
+      var spy = sinon.spy(res, 'send');
       rest.respond({}, res)(new Ravel.ApplicationError.RangeOutOfBounds(), null);
       expect(res).to.have.property('statusCode').that.equals(416);
-      expect(res._getData()).to.equal('');
+      expect(res._getData()).to.equal('RangeOutOfBoundsError: ');
       expect(spy).to.have.been.calledOnce;
       done();
     });
 
     it('should respond with HTTP 404 NOT FOUND when ApplicationError.IllegalValue is passed as err', function(done) {
       var res = httpMocks.createResponse();
-      var spy = sinon.spy(res, 'end');
+      var spy = sinon.spy(res, 'send');
       rest.respond({}, res)(new Ravel.ApplicationError.IllegalValue(), null);
       expect(res).to.have.property('statusCode').that.equals(400);
-      expect(res._getData()).to.equal('');
+      expect(res._getData()).to.equal('IllegalValueError: ');
       expect(spy).to.have.been.calledOnce;
       done();
     });
