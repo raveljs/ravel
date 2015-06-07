@@ -107,7 +107,7 @@ Another note: Modules also support array notation for injecting npm dependencies
 
 ### Then, define a Resource
 
-Resources help you build Express-like endpoints which expose your business logic, support middleware and adhere to the REST specification.
+Resources are a special kind of module which help you build REST endpoints to expose your business logic. They support Express middleware and are designed to make it easy to adhere to the proper REST semantics.
 
 *resources/city.js*
 
