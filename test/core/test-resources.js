@@ -22,8 +22,9 @@ describe('Ravel', function() {
     fs = require('fs');
     mockery.registerMock('fs', fs);
     err = null;
-    mockery.registerMock('recursive-readdir', function(basePath, callback) {
-      callback(err, ['resources/test1.js', 'resources/test2.js', 'resources/.jshintrc']);
+    mockery.registerMock('fs-readdir-recursive', function(basePath) {
+      /*jshint unused:false*/
+      return ['resources/test1.js', 'resources/test2.js', 'resources/.jshintrc'];
     });
 
     Ravel = new require('../../lib-cov/ravel')();
@@ -71,19 +72,6 @@ describe('Ravel', function() {
 
       var spy = sinon.spy(Ravel.resources);
       expect(spy).to.throw(Ravel.ApplicationError.IllegalValue);
-      done();
-    });
-
-    it('should throw any error from recursive-readdir if one occurred', function(done) {
-      err = new Error();
-      stub = sinon.stub(fs, 'lstatSync', function() {
-        return {
-          isDirectory: function(){return true;}
-        };
-      });
-      var spy = sinon.spy(Ravel.resources);
-      expect(spy).to.throw(Error);
-      err = null;
       done();
     });
   });
