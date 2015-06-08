@@ -25,7 +25,8 @@ describe('Ravel', function() {
 
   afterEach(function(done) {
     Ravel = undefined;
-    mockery.deregisterAll();mockery.disable();
+    mockery.deregisterAll();
+    mockery.disable();
     done();
   });
 
