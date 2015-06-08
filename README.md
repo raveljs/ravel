@@ -105,6 +105,8 @@ Another note: Modules also support array notation for injecting npm dependencies
       ...
     }];
 
+Yet another note: You can recursively import a directory of modules via Ravel.modules('/modules/directory/path')!
+
 ### Then, define a Resource
 
 Resources are a special kind of module which help you build REST endpoints to expose your business logic. They support Express middleware and are designed to make it easy to adhere to the proper REST semantics.
@@ -157,6 +159,7 @@ Like before, we need to register our resource:
     // Specify the base endpoint (/cities), and the location of the resource module
     Ravel.resource('./resources/city');
 
+Note: You can recursively import a directory of resources via Ravel.resources('/resources/directory/path')!
 
 ### Add a Route for good measure
 
