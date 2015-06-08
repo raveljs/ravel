@@ -24,7 +24,7 @@ describe('Ravel', function() {
     err = null;
     mockery.registerMock('fs-readdir-recursive', function(basePath) {
       /*jshint unused:false*/
-      return ['resources/test1.js', 'resources/test2.js', 'resources/.jshintrc'];
+      return ['test1.js', 'test2.js', '.jshintrc'];
     });
 
     Ravel = new require('../../lib-cov/ravel')();
