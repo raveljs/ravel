@@ -23,7 +23,7 @@ describe('Ravel', function() {
     mockery.registerMock('fs', fs);
     err = null;
     mockery.registerMock('recursive-readdir', function(basePath, callback) {
-      callback(err, ['modules/test1.js', 'modules/test2.js', 'modules/.jshintrc']);
+      callback(err, ['resources/test1.js', 'resources/test2.js', 'resources/.jshintrc']);
     });
 
     Ravel = new require('../../lib-cov/ravel')();
@@ -43,22 +43,22 @@ describe('Ravel', function() {
   });
 
 
-  describe('#modules()', function() {
-    it('should allow clients to recursively register module files for instantiation in Ravel.start, ignoring non-js files', function(done) {
+  describe('#resources()', function() {
+    it('should allow clients to recursively register resource files for instantiation in Ravel.start, ignoring non-js files', function(done) {
       stub = sinon.stub(fs, 'lstatSync', function() {
         return {
           isDirectory: function(){return true;}
         };
       });
 
-      mockery.registerMock(path.join(Ravel.cwd, './modules/test1.js'), function(){});
-      mockery.registerMock(path.join(Ravel.cwd, './modules/test2.js'), function(){});
-      Ravel.modules('./modules');
-      expect(Ravel._moduleFactories).to.have.property('test1');
-      expect(Ravel._moduleFactories['test1']).to.be.a('function');
-      expect(Ravel._moduleFactories).to.have.property('test2');
-      expect(Ravel._moduleFactories['test2']).to.be.a('function');
-      expect(Ravel._moduleFactories).to.not.have.property('.jshintrc');
+      mockery.registerMock(path.join(Ravel.cwd, './resources/test1.js'), function(){});
+      mockery.registerMock(path.join(Ravel.cwd, './resources/test2.js'), function(){});
+      Ravel.resources('./resources');
+      expect(Ravel._resourceFactories).to.have.property('resources/test1.js');
+      expect(Ravel._resourceFactories['resources/test1.js']).to.be.a('function');
+      expect(Ravel._resourceFactories).to.have.property('resources/test2.js');
+      expect(Ravel._resourceFactories['resources/test2.js']).to.be.a('function');
+      expect(Ravel._resourceFactories).to.not.have.property('.jshintrc');
       done();
     });
 
@@ -69,7 +69,7 @@ describe('Ravel', function() {
         };
       });
 
-      var spy = sinon.spy(Ravel.modules);
+      var spy = sinon.spy(Ravel.resources);
       expect(spy).to.throw(Ravel.ApplicationError.IllegalValue);
       done();
     });
@@ -81,7 +81,7 @@ describe('Ravel', function() {
           isDirectory: function(){return true;}
         };
       });
-      var spy = sinon.spy(Ravel.modules);
+      var spy = sinon.spy(Ravel.resources);
       expect(spy).to.throw(Error);
       err = null;
       done();
