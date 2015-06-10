@@ -1,6 +1,6 @@
 {
   "name": "ravel",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "author": "Sean McIntyre <smcintyre@xverba.ca>",
   "description": "Ravel Rapid Application Development Framework",
   "contributors": [
@@ -9,7 +9,7 @@
   "license":"MIT",
   "repository" :{
     "type" : "git",
-    "url" : "https://github.com/Ghnuberath/ravel.git"
+    "url" : "https://github.com/raveljs/ravel.git"
   },
   "main":"lib/ravel.js",
   "scripts": {
