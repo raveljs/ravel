@@ -97,7 +97,7 @@ To register and name your module, we need a top-level *app.js* file:
     // it into other modules using the name 'cities'
     Ravel.module('./modules/cities');
 
-Note: Modules with filenames including hyphens are made available for injection via camel case  ('./modules/my-module.js' would be available as 'myModule').
+Note: Modules with filenames including hyphens are made available for injection via camel case  (e.g. './modules/my-module.js' would be available as 'myModule').
 
 Another note: Modules also support array notation for injecting npm dependencies which have invalid js variables names (such as 'bad.module'). To use this notation, define your module like this:
 
