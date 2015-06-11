@@ -1,0 +1,29 @@
+{
+  "name": "generator-ravel",
+  "version": "0.1.0",
+  "description": "Forge past a tangle of node.js modules. Make a cool app.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "files": [
+    "app",
+    "router"
+  ],
+  "keywords": [
+    "yeoman-generator"
+  ],
+  "dependencies": {
+    "yeoman-generator": "^0.17.7"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raveljs/ravel.git"
+  },
+  "author": "Lyon Lay",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/raveljs/ravel/issues"
+  },
+  "homepage": "https://github.com/raveljs/ravel#readme"
+}
