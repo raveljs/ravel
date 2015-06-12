@@ -132,6 +132,49 @@ describe('Ravel', function() {
       done();
     });
 
+    it('should instantiate modules in dependency order', function(done) {
+      var instantiatedModules = {};
+      var stub1 = function() {
+        /*jshint unused:false*/
+        instantiatedModules['test'] = true;
+        expect(instantiatedModules).to.not.have.property('test2');
+        expect(instantiatedModules).to.not.have.property('test3');
+        expect(instantiatedModules).to.not.have.property('test4');
+        return {};
+      };
+      var stub2 = function(test, test4) {
+        /*jshint unused:false*/
+        instantiatedModules['test2'] = true;
+        expect(instantiatedModules).to.have.property('test');
+        expect(instantiatedModules).to.not.have.property('test3');
+        expect(instantiatedModules).to.have.property('test4');
+        return {};
+      };
+      var stub3 = function(test2) {
+        /*jshint unused:false*/
+        instantiatedModules['test3'] = true;
+        expect(instantiatedModules).to.have.property('test2');
+        return {};
+      };
+      var stub4 = function(test) {
+        /*jshint unused:false*/
+        instantiatedModules['test4'] = true;
+        expect(instantiatedModules).to.not.have.property('test2');
+        expect(instantiatedModules).to.have.property('test');
+        return {};
+      };
+      mockery.registerMock(path.join(Ravel.cwd, './modules/test'), stub1);
+      mockery.registerMock(path.join(Ravel.cwd, './modules/test2'), stub2);
+      mockery.registerMock(path.join(Ravel.cwd, './modules/test3'), stub3);
+      mockery.registerMock(path.join(Ravel.cwd, './modules/test4'), stub4);
+      Ravel.module('./modules/test');
+      Ravel.module('./modules/test2');
+      Ravel.module('./modules/test3');
+      Ravel.module('./modules/test4');
+      Ravel.emit('pre module init');
+      done();
+    });
+
     it('should detect basic cyclical dependencies between client modules', function(done) {
       var stub1 = function(test2) {
         /*jshint unused:false*/
