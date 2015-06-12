@@ -79,6 +79,14 @@ module.exports = function(grunt) {
         'data-cover-flags':true
       }
     },
+    copy: {
+      lib : {
+        expand: true,
+        cwd:'lib',
+        src: ['./**'],
+        dest: 'lib-cov'
+      },
+    },
     mochaTest: {
       ravel: {
         options: {
@@ -148,10 +156,8 @@ module.exports = function(grunt) {
     'env:test',
     'clean:coverage',
     'jshint',
-    'blanket',
+    'copy:lib',
     'mochaTest:ravelDebug',
-    'mochaTest:coverage',
-    'mochaTest:coverageLcov',
     'clean:coverage'
   ]);
   grunt.registerTask('test', ['test-cli', 'open:coverage']);
