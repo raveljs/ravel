@@ -48,7 +48,7 @@ Websocket 'rooms' which users may subscribe to, supporting authorization functio
 
 ### Make a Module
 
-Business logic sits in plain old node.js modules, which are generally not network-aware. Ravel modules are most powerful when they are factory functions which support **Dependency Injection**, though plain object modules are supported as well.
+Business logic sits in plain old node.js modules, which are generally not network-aware. Ravel modules are most powerful when they are factory functions which support **Dependency Injection**, though plain object modules are supported as well. Cyclical dependencies are automatically detected and prevented between modules using dependency injection.
 
 *modules/cities.js*
 
@@ -59,10 +59,6 @@ Business logic sits in plain old node.js modules, which are generally not networ
     module.exports = function($E, $L, async) {
       var Cities = {};
       var c = ['Toronto', 'New York', 'Chicago'];
-
-      //Warning: Since dependency injection only takes
-      //place during Ravel.init, trying to use functions
-      //from your modules here won't work properly.
 
       Cities.getAllCities = function(callback) {
         // pretend we used async for something here
