@@ -83,7 +83,7 @@ describe('Ravel', function() {
       };
       mockery.registerMock(path.join(Ravel.cwd, 'test'), stub);
       Ravel.module('./test');
-      Ravel._moduleFactories['test']();
+      Ravel.emit('pre module init');
     });
 
     it('should convert hyphenated module names into camel case automatically', function(done) {
@@ -115,8 +115,73 @@ describe('Ravel', function() {
       mockery.registerMock(path.join(Ravel.cwd, './modules/test2'), stub2);
       Ravel.module('./modules/test');
       Ravel.module('./modules/test2');
-      Ravel._moduleFactories['test']();
-      Ravel._moduleFactories['test2']();
+      Ravel.emit('pre module init');
+    });
+
+    it('should not allow client modules to depend on themselves', function(done) {
+      var stub = function(test) {
+        /*jshint unused:false*/
+        return {};
+      };
+      mockery.registerMock(path.join(Ravel.cwd, './modules/test'), stub);
+      Ravel.module('./modules/test');
+      var test = function() {
+        Ravel.emit('pre module init');
+      };
+      expect(test).to.throw(Ravel.ApplicationError.Default);
+      done();
+    });
+
+    it('should detect basic cyclical dependencies between client modules', function(done) {
+      var stub1 = function(test2) {
+        /*jshint unused:false*/
+        return {};
+      };
+      var stub2 = function(test) {
+        /*jshint unused:false*/
+        return {};
+      };
+      mockery.registerMock(path.join(Ravel.cwd, './modules/test'), stub1);
+      mockery.registerMock(path.join(Ravel.cwd, './modules/test2'), stub2);
+      Ravel.module('./modules/test');
+      Ravel.module('./modules/test2');
+      var test = function() {
+        Ravel.emit('pre module init');
+      };
+      expect(test).to.throw(Ravel.ApplicationError.General);
+      done();
+    });
+
+    it('should detect complex cyclical dependencies between client modules', function(done) {
+      var stub1 = function() {
+        /*jshint unused:false*/
+        return {};
+      };
+      var stub2 = function(test, test4) {
+        /*jshint unused:false*/
+        return {};
+      };
+      var stub3 = function(test2) {
+        /*jshint unused:false*/
+        return {};
+      };
+      var stub4 = function(test3) {
+        /*jshint unused:false*/
+        return {};
+      };
+      mockery.registerMock(path.join(Ravel.cwd, './modules/test'), stub1);
+      mockery.registerMock(path.join(Ravel.cwd, './modules/test2'), stub2);
+      mockery.registerMock(path.join(Ravel.cwd, './modules/test3'), stub3);
+      mockery.registerMock(path.join(Ravel.cwd, './modules/test4'), stub4);
+      Ravel.module('./modules/test');
+      Ravel.module('./modules/test2');
+      Ravel.module('./modules/test3');
+      Ravel.module('./modules/test4');
+      var test = function() {
+        Ravel.emit('pre module init');
+      };
+      expect(test).to.throw(Ravel.ApplicationError.General);
+      done();
     });
 
     it('should produce a module factory which facilitates dependency injection of npm modules', function(done) {
@@ -136,7 +201,7 @@ describe('Ravel', function() {
       mockery.registerMock(path.join(Ravel.cwd, './test'), stubClientModule);
       mockery.registerMock('moment', stubMoment);
       Ravel.module('./test');
-      Ravel._moduleFactories['test']();
+      Ravel.emit('pre module init');
     });
 
     it('should support array notation for specifying module dependencies which use invalid js variable names', function(done) {
@@ -156,7 +221,7 @@ describe('Ravel', function() {
       mockery.registerMock(path.join(Ravel.cwd, './test'), stubClientModule);
       mockery.registerMock('bad.name', stubBadName);
       Ravel.module('./test');
-      Ravel._moduleFactories['test']();
+      Ravel.emit('pre module init');
     });
 
     it('should throw an ApplicationError.NotFound when a module factory which utilizes an unknown module/npm dependency is instantiated', function(done) {
@@ -219,8 +284,7 @@ describe('Ravel', function() {
       mockery.registerMock(path.join(Ravel.cwd, './test2'), stub2);
       Ravel.module('./test1');
       Ravel.module('./test2');
-      Ravel._moduleFactories['test1']();
-      Ravel._moduleFactories['test2']();
+      Ravel.emit('pre module init');
     });
 
     it('should inject the same instance of a module into all modules which reference it', function(done) {
@@ -247,9 +311,7 @@ describe('Ravel', function() {
       Ravel.module('./test');
       Ravel.module('./test2');
       Ravel.module('./test3');
-      Ravel._moduleFactories['test']();
-      Ravel._moduleFactories['test2']();
-      Ravel._moduleFactories['test3']();
+      Ravel.emit('pre module init');
     });
 
     it('should preserve the scope of module factories in module instances', function(done) {
@@ -275,8 +337,7 @@ describe('Ravel', function() {
       mockery.registerMock(path.join(Ravel.cwd, './test2'), stub2);
       Ravel.module('./test');
       Ravel.module('./test2');
-      Ravel._moduleFactories['test']();
-      Ravel._moduleFactories['test2']();
+      Ravel.emit('pre module init');
       Ravel.modules.test2.method();
     });
 
