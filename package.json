@@ -36,7 +36,7 @@
     "redis":"0.12.1",
     "serve-favicon":"2.2.0",
     "engine.io":"1.5.1",
-    "upath": "^0.1.5"
+    "upath": "0.1.5"
   },
   "devDependencies": {
     "chai":"2.3.0",
