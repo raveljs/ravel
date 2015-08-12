@@ -101,7 +101,10 @@ Another note: Modules also support array notation for injecting npm dependencies
       ...
     }];
 
-Yet another note: You can recursively import a directory of modules via Ravel.modules('/modules/directory/path')!
+Yet another note: You can recursively import a directory of modules via:
+```js
+Ravel.modules('/modules/directory/path');
+```
 
 ### Then, define a Resource
 
@@ -155,7 +158,10 @@ Like before, we need to register our resource:
     // Specify the base endpoint (/cities), and the location of the resource module
     Ravel.resource('./resources/city');
 
-Note: You can recursively import a directory of resources via Ravel.resources('/resources/directory/path')!
+Note: You can recursively import a directory of resources via:
+```js
+Ravel.resources('/resources/directory/path');
+```
 
 ### Add a Route for good measure
 
