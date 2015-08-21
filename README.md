@@ -52,11 +52,11 @@ Business logic sits in plain old node.js modules, which are generally not networ
 
 *modules/cities.js*
 
-    // Ravel error and logging services $E and $L can
-    // be injected alongside your own modules and
-    // npm dependencies. No require statements or
-    // relative paths!
-    module.exports = function($E, $L, async) {
+    // Ravel error and logging services $E, $L and
+    // $Params can be injected alongside your own
+    // modules and npm dependencies. No require
+    // statements or relative paths!
+    module.exports = function($E, $L, $Params, async) {
       var Cities = {};
       var c = ['Toronto', 'New York', 'Chicago'];
 
@@ -116,7 +116,7 @@ Resources are a special kind of module which help you build REST endpoints to ex
     // $Resource is unique to resources, and
     // notice that we have injected our cities
     // module by name.
-    module.exports = function($E, $L, $Resource, $Rest, cities) {
+    module.exports = function($E, $L, $Params, $Resource, $Rest, cities) {
 
       // Register this Resource with the base path /cities
       $Resource.bind('/cities');
