@@ -59,7 +59,7 @@ describe('Ravel', function() {
     });
 
     it('should produce a module factory which can be used to instantiate the specified module and perform dependency injection', function(done) {
-      var stub = function($E, $L, $KV) {
+      var stub = function($E, $L, $KV, $Params) {
         expect($E).to.be.ok;
         expect($E).to.be.an('object');
         expect($E).to.equal(Ravel.ApplicationError);
@@ -75,6 +75,12 @@ describe('Ravel', function() {
         expect($KV).to.be.ok;
         expect($KV).to.be.an('object');
         expect($KV).to.equal(Ravel.kvstore);
+        expect($Params).to.have.property('get').that.is.a('function');
+        expect($Params).to.have.property('get').that.equals(Ravel.get);
+        expect($Params).to.have.property('set').that.is.a('function');
+        expect($Params).to.have.property('set').that.equals(Ravel.set);
+        expect($Params).to.have.property('registerSimpleParameter').that.is.a('function');
+        expect($Params).to.have.property('registerSimpleParameter').that.equals(Ravel.registerSimpleParameter);
         done();
 
         return {

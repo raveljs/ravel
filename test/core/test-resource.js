@@ -65,7 +65,7 @@ describe('Ravel', function() {
     });
 
     it('should produce a factory function which can be used to instantiate the specified resource module and perform dependency injection with specific, resource-related services', function(done) {
-      var stub = function($E, $L, $KV, $Resource, $Rest, $Broadcast, $Private, $PrivateRedirect, $MiddlewareTransaction) {
+      var stub = function($E, $L, $KV, $Params, $Resource, $Rest, $Broadcast, $Private, $PrivateRedirect, $MiddlewareTransaction) {
         expect($E).to.equal(Ravel.ApplicationError);
         expect($L).to.be.an('object');
         expect($L).to.have.property('trace').that.is.a('function');
@@ -79,6 +79,14 @@ describe('Ravel', function() {
         expect($KV).to.be.an('object');
         expect($KV).to.equal(Ravel.kvstore);
         expect($KV).to.be.ok;
+        expect($Params).to.be.ok;
+        expect($Params).to.be.an('object');
+        expect($Params).to.have.property('get').that.is.a('function');
+        expect($Params).to.have.property('get').that.equals(Ravel.get);
+        expect($Params).to.have.property('set').that.is.a('function');
+        expect($Params).to.have.property('set').that.equals(Ravel.set);
+        expect($Params).to.have.property('registerSimpleParameter').that.is.a('function');
+        expect($Params).to.have.property('registerSimpleParameter').that.equals(Ravel.registerSimpleParameter);
         expect($Resource).to.be.an('object');
         expect($Resource).to.have.property('bind').that.is.a('function');
         expect($Resource).to.have.property('getAll').that.is.a('function');
