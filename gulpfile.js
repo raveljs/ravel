@@ -8,16 +8,18 @@ const del = require('del');
 
 const TESTS = [
   // 'test/core/test-*.js',
+  'test/core/test-module.js',
+  'test/core/test-modules.js',
   'test/core/test-params.js',
   // 'test/db/test-*.js',
   // 'test/util/test-*.js',
   'test/util/test-log.js',
+  'test/util/test-injector.js',
   // 'test/auth/test-*.js',
   // 'test/ws/test-*.js',
   // 'test/ws/util/test-*.js',
   // 'test/ravel/test-*.js',
   // 'test/**/test-*.js'
-  'test/test-next.js'
 ];
 
 gulp.task('lint', function() {
@@ -48,6 +50,22 @@ gulp.task('cover', ['lint'], function() {
                includeUntested: true
              }))
              .pipe(plugins.istanbul.hookRequire());
+});
+
+//necessary to locate issues in code, due to https://github.com/gotwarlost/istanbul/issues/274
+gulp.task('test-no-cov', function () {
+  const env = plugins.env.set({
+    LOG_LEVEL : 'critical'
+  });
+  return gulp.src(TESTS)
+    .pipe(env)
+    .pipe(plugins.mocha({
+      reporter: 'spec',
+      quiet:false,
+      colors:true,
+      timeout: 10000
+    }))
+    .pipe(env.reset);
 });
 
 gulp.task('test', ['cover'], function () {
@@ -83,8 +101,8 @@ gulp.task('coveralls', ['test'], function() {
              .pipe(plugins.coveralls());
 });
 
-gulp.task('show-coverage', ['test'], function() {
-  return gulp.src('./reports/ravels.html')
+gulp.task('show-coverage', function() {
+  return gulp.src('./reports/index.html')
              .pipe(plugins.open());
 });
 

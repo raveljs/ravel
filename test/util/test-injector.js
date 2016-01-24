@@ -1,12 +1,12 @@
 'use strict';
 
-var chai = require('chai');
-var expect = chai.expect;
+const chai = require('chai');
+const expect = chai.expect;
 chai.use(require('chai-things'));
-var mockery = require('mockery');
-var path = require('path');
+const mockery = require('mockery');
+const path = require('path');
 
-var Ravel;
+let Ravel;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
@@ -16,7 +16,7 @@ describe('Ravel', function() {
       warnOnReplace: false,
       warnOnUnregistered: false
     });
-    Ravel = new require('../../lib/ravel')();
+    Ravel = new (require('../../lib/ravel'))();
     Ravel.Log.setLevel(Ravel.Log.NONE);
 
     done();
@@ -30,39 +30,64 @@ describe('Ravel', function() {
 
   describe('._injector#inject()', function() {
     it('should facilitate dependency injection of client modules into other client modules', function(done) {
-      var stub1Instance = {
-        method:function(){}
+      const Stub1 = class {
+        method() {}
       };
-      var stub1 = function() {
-        return stub1Instance;
+      const stub1Instance = new Stub1();
+      const Stub2 = class {
+        static get inject() {
+          return ['test'];
+        }
+        constructor(test) {
+          expect(test).to.be.an('object');
+          expect(test).to.deep.equal(stub1Instance);
+          done();
+        }
       };
-      var stub2 = function(test) {
-        expect(test).to.be.an('object');
-        expect(test).to.deep.equal(stub1Instance);
-        done();
-        return {};
-      };
-      mockery.registerMock(path.join(Ravel.cwd, 'test'), stub1);
-      mockery.registerMock(path.join(Ravel.cwd, 'test2'), stub2);
+      mockery.registerMock(path.join(Ravel.cwd, 'test'), Stub1);
+      mockery.registerMock(path.join(Ravel.cwd, 'test2'), Stub2);
       Ravel.module('test');
       Ravel.module('test2');
       Ravel._moduleFactories['test']();
-      Ravel._injector.inject({}, stub2);
+      Ravel._injector.inject({}, Stub2);
+    });
+
+
+
+    it('should throw an ApplicationError.IllegalValue if the static injector property is not an Array', function(done) {
+      const Stub = class {
+        static get inject() {
+          return 'test';
+        }
+        constructor(test) {
+          expect(test).to.be.undefined;
+          done();
+        }
+      };
+      mockery.registerMock(path.join(Ravel.cwd, 'test'), Stub);
+      const test = function() {
+        Ravel.module('test');
+        Ravel._moduleFactories['test']();
+      };
+      expect(test).to.throw(Ravel.ApplicationError.IllegalValue);
+      done();
     });
 
     it('should facilitate dependency injection of npm modules into client modules', function(done) {
-      var stubMoment = {
+      const stubMoment = {
         method: function() {}
       };
-      var stubClientModule = function(moment) {
-        expect(moment).to.be.ok;
-        expect(moment).to.be.an('object');
-        expect(moment).to.equal(stubMoment);
-        done();
-
-        return {
-          method: function() {}
-        };
+      const stubClientModule = class {
+        static get inject() {
+          return ['moment'];
+        }
+        constructor(moment) {
+          expect(moment).to.be.ok;
+          expect(moment).to.be.an('object');
+          expect(moment).to.equal(stubMoment);
+          done();
+        }
+        method() {}
       };
       mockery.registerMock(path.join(Ravel.cwd, 'test'), stubClientModule);
       mockery.registerMock('moment', stubMoment);
@@ -71,8 +96,13 @@ describe('Ravel', function() {
     });
 
     it('should throw an ApplicationError.NotFound when attempting to inject an unknown module/npm dependency', function(done) {
-      var stub = function(unknownModule) {
-        expect(unknownModule).to.be.an('object');
+      const stub = class {
+        static get inject() {
+          return ['unknownModule'];
+        }
+        constructor(unknownModule) {
+          expect(unknownModule).to.be.an('object');
+        }
       };
       mockery.registerMock(path.join(Ravel.cwd, 'test'), stub);
       Ravel.module('test');
@@ -86,13 +116,18 @@ describe('Ravel', function() {
     });
 
     it('should support a module map which allows different Ravel services to make pseudo-modules available for injection. One of these, $E, is always available.', function(done) {
-      var moduleMap = {
+      const moduleMap = {
         pseudoModule: {}
       };
-      var stub = function($E, pseudoModule) {
-        expect($E).to.equal(Ravel.ApplicationError);
-        expect(pseudoModule).to.equal(moduleMap.pseudoModule);
-        done();
+      const stub = class {
+        static get inject() {
+          return ['$E', 'pseudoModule'];
+        }
+        constructor($E, pseudoModule) {
+          expect($E).to.equal(Ravel.ApplicationError);
+          expect(pseudoModule).to.equal(moduleMap.pseudoModule);
+          done();
+        }
       };
       mockery.registerMock(path.join(Ravel.cwd, 'test'), stub);
       Ravel.module('test');
@@ -100,35 +135,35 @@ describe('Ravel', function() {
     });
 
     it('should support array notation for declaring dependencies which are not valid js variable names', function(done) {
-      var stubBadName = {
+      const stubBadName = {
         method: function() {}
       };
-      var stubClientInstance = {
-        method:function(){}
+      const StubClientModule = class {
+        method() {}
       };
-      var stubClientModule = function() {
-        return stubClientInstance;
+      const stubClientInstance = new StubClientModule();
+      const AnotherStubClientModule = class {
+        static get inject() {
+          return ['bad.module', 'myModule'];
+        }
+        constructor(bad, myModule) {
+          expect(bad).to.be.ok;
+          expect(bad).to.be.an('object');
+          expect(bad).to.equal(stubBadName);
+          expect(myModule).to.be.ok;
+          expect(myModule).to.be.an('object');
+          expect(myModule).to.deep.equal(stubClientInstance);
+          done();
+        }
+        method() {}
       };
-      var anotherStubClientModule = ['bad.module', 'myModule', function(bad, myModule) {
-        expect(bad).to.be.ok;
-        expect(bad).to.be.an('object');
-        expect(bad).to.equal(stubBadName);
-        expect(myModule).to.be.ok;
-        expect(myModule).to.be.an('object');
-        expect(myModule).to.deep.equal(stubClientInstance);
-        done();
-
-        return {
-          method: function() {}
-        };
-      }];
-      mockery.registerMock(path.join(Ravel.cwd, 'my-module.js'), stubClientModule);
-      mockery.registerMock(path.join(Ravel.cwd, 'test'), anotherStubClientModule);
+      mockery.registerMock(path.join(Ravel.cwd, 'my-module.js'), StubClientModule);
+      mockery.registerMock(path.join(Ravel.cwd, 'test'), AnotherStubClientModule);
       mockery.registerMock('bad.module', stubBadName);
       Ravel.module('my-module.js');
       Ravel.module('test');
       Ravel._moduleFactories['myModule']();
-      Ravel._injector.inject({}, anotherStubClientModule);
+      Ravel._injector.inject({}, AnotherStubClientModule);
     });
   });
 });

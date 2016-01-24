@@ -19,6 +19,8 @@
   "dependencies": {
     "async": "0.9.0",
     "body-parser":"*1.12.3",
+    "babel-core":"6.4.5",
+    "babel-plugin-transform-decorators": "6.4.0",
     "compression":"1.4.3",
     "connect-flash":"0.1.1",
     "connect-redis":"2.3.0",
@@ -31,7 +33,6 @@
     "intel":"1.0.0",
     "node-fs":"0.1.7",
     "passport": "0.2.1",
-    "prototype": "0.0.5",
     "primus.io": "3.1.2",
     "redis":"0.12.1",
     "serve-favicon":"2.2.0",
