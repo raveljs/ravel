@@ -7,9 +7,9 @@ var Ravel, httpCodes;
 
 describe('util/application_error', function() {
   beforeEach(function(done) {
-    Ravel = new require('../../lib-cov/ravel')();
+    Ravel = new require('../../lib/ravel')();
     Ravel.Log.setLevel('NONE');
-    httpCodes = require('../../lib-cov/util/http_codes');
+    httpCodes = require('../../lib/util/http_codes');
     done();
   });
 

@@ -58,7 +58,7 @@ module.exports = function(mockery, callback) {
     resolve: function(){return undefined;}
   };
 
-  Mocks.Ravel = new require('../../lib-cov/ravel')();
+  Mocks.Ravel = new require('../../lib/ravel')();
   Mocks.Ravel.db = {
     scoped: function(){},
     middleware: function(){}

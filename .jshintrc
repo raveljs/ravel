@@ -15,11 +15,11 @@
   "boss":      true,
   "eqnull":    true,
   "node":      true,
-  "jquery":    true,
   "quotmark": "single",
   "camelcase": true,
   "strict":    true,
   "indent":    2,
+  "esnext":    true,
   "globals": {
     "require":    false,
     "module":     false

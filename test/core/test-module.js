@@ -17,7 +17,7 @@ describe('Ravel', function() {
       warnOnUnregistered: false
     });
 
-    Ravel = new require('../../lib-cov/ravel')();
+    Ravel = new require('../../lib/ravel')();
     Ravel.Log.setLevel(Ravel.Log.NONE);
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
     done();

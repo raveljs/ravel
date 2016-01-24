@@ -1,6 +1,6 @@
 {
   "name": "ravel",
-  "version": "0.6.3",
+  "version": "0.7.0",
   "author": "Sean McIntyre <smcintyre@xverba.ca>",
   "description": "Ravel Rapid Application Development Framework",
   "contributors": [
@@ -13,8 +13,8 @@
   },
   "main":"lib/ravel.js",
   "scripts": {
-    "test":"grunt travis",
-    "debug":"node-debug $(which grunt) test-debug"
+    "test":"gulp travis",
+    "debug":"node-debug $(which gulp) test"
   },
   "dependencies": {
     "async": "0.9.0",
@@ -42,20 +42,7 @@
     "chai":"2.3.0",
     "chai-things":"0.2.0",
     "chai-as-promised":"5.0.0",
-    "grunt": "0.4.5",
-    "grunt-blanket":"0.0.8",
-    "grunt-contrib-copy": "0.6.0",
-    "grunt-contrib-clean": "0.6.0",
-    "grunt-contrib-jshint":"0.11.2",
-    "grunt-contrib-watch" : "0.6.1",
-    "grunt-coveralls" : "1.0.0",
-    "grunt-docco-multi":"0.0.2",
-    "grunt-env": "0.4.4",
-    "grunt-mocha-test":"0.12.7",
-    "grunt-open":"0.2.3",
-    "jshint-stylish": "1.0.1",
-    "load-grunt-tasks":"3.1.0",
-    "mocha": "2.2.4",
+    "mocha": "2.3.4",
     "mocha-lcov-reporter":"0.0.2",
     "mockery":"1.4.0",
     "node-inspector":"0.10.0",
@@ -63,6 +50,21 @@
     "redis-mock":"0.4.8",
     "sinon":"1.14.1",
     "sinon-chai":"2.7.0",
-    "supertest":"0.15.0"
+    "supertest":"0.15.0",
+    "jshint": "2.9.1",
+    "jshint-stylish": "1.0.1",
+
+    "del": "2.2.0",
+    "gulp": "3.9.0",
+    "gulp-coveralls": "0.1.4",
+    "gulp-docco": "0.0.4",
+    "gulp-env": "0.4.0",
+    "istanbul": "0.4.2",
+    "isparta": "4.0.0",
+    "gulp-istanbul": "0.10.3",
+    "gulp-jshint": "2.0.0",
+    "gulp-load-plugins": "1.2.0",
+    "gulp-mocha": "2.2.0",
+    "gulp-open": "1.0.0"
   }
 }

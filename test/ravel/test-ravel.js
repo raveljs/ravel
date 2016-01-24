@@ -67,7 +67,7 @@ describe('Ravel end-to-end test', function() {
           warnOnUnregistered: false
         });
         mockery.registerMock('redis', redis);
-        Ravel = new require('../../lib-cov/ravel')();
+        Ravel = new require('../../lib/ravel')();
         Ravel.set('log level', Ravel.Log.NONE);
         Ravel.set('redis host', 'localhost');
         Ravel.set('redis port', 5432);

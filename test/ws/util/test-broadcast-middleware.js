@@ -18,7 +18,7 @@ describe('ws/util/broadcast_middleware', function() {
       warnOnUnregistered: false
     });
 
-    Ravel = new require('../../../lib-cov/ravel')();
+    Ravel = new require('../../../lib/ravel')();
     Ravel.Log.setLevel(Ravel.Log.NONE);
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
     Ravel.broadcast = {
@@ -26,7 +26,7 @@ describe('ws/util/broadcast_middleware', function() {
     };
     emitSpy = sinon.spy(Ravel.broadcast, 'emit');
 
-    broadcastMiddleware = require('../../../lib-cov/ws/util/broadcast_middleware')(Ravel);
+    broadcastMiddleware = require('../../../lib/ws/util/broadcast_middleware')(Ravel);
     done();
   });
 

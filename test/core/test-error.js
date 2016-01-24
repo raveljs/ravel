@@ -8,7 +8,7 @@ var httpCodes = require('../../lib/util/http_codes');
 
 describe('Ravel', function() {
   beforeEach(function(done) {
-    Ravel = new require('../../lib-cov/ravel')();
+    Ravel = new require('../../lib/ravel')();
     Ravel.Log.setLevel(Ravel.Log.NONE);
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
     done();

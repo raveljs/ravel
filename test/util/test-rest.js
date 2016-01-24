@@ -7,7 +7,7 @@ chai.use(require('sinon-chai'));
 var sinon = require('sinon');
 var mockery = require('mockery');
 var httpMocks = require('node-mocks-http');
-var httpCodes = require('../../lib-cov/util/http_codes');
+var httpCodes = require('../../lib/util/http_codes');
 
 var Ravel, rest;
 
@@ -20,11 +20,11 @@ describe('util/rest', function() {
       warnOnUnregistered: false
     });
 
-    Ravel = new require('../../lib-cov/ravel')();
+    Ravel = new require('../../lib/ravel')();
     Ravel.Log.setLevel('NONE');
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
 
-    rest = require('../../lib-cov/util/rest')(Ravel);
+    rest = require('../../lib/util/rest')(Ravel);
     done();
   });
 

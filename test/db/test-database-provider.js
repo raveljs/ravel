@@ -16,7 +16,7 @@ describe('db/database_provider', function() {
       warnOnUnregistered: false
     });
 
-    Ravel = new require('../../lib-cov/ravel')();
+    Ravel = new require('../../lib/ravel')();
     Ravel.Log.setLevel('NONE');
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
     provider = new Ravel.DatabaseProvider('name');

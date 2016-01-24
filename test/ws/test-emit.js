@@ -30,7 +30,7 @@ describe('auth/primus_init', function() {
 
   describe('spark.on(\'emit\')', function() {
     it('should callback with Ravel.ApplicationError.IllegalValue if the user does not specify a room', function(done) {
-      require('../../lib-cov/ws/primus_init')(
+      require('../../lib/ws/primus_init')(
         Mocks.Ravel, Mocks.Ravel._injector, Mocks.primus, Mocks.expressSessionStore, Mocks.roomResolver);
       Mocks.primus.emit('connection', Mocks.spark);
       Mocks.spark.emit('emit', {}, function(err, result) {
@@ -41,7 +41,7 @@ describe('auth/primus_init', function() {
     });
 
     it('should callback with Ravel.ApplicationError.IllegalValue if the user does not specify an event', function(done) {
-      require('../../lib-cov/ws/primus_init')(
+      require('../../lib/ws/primus_init')(
         Mocks.Ravel, Mocks.Ravel._injector, Mocks.primus, Mocks.expressSessionStore, Mocks.roomResolver);
       Mocks.primus.emit('connection', Mocks.spark);
       Mocks.spark.emit('emit', {room:'/test/1'}, function(err, result) {
@@ -52,7 +52,7 @@ describe('auth/primus_init', function() {
     });
 
     it('should callback with Ravel.ApplicationError.NotFound if the requested room does not exist', function(done) {
-      require('../../lib-cov/ws/primus_init')(
+      require('../../lib/ws/primus_init')(
         Mocks.Ravel, Mocks.Ravel._injector, Mocks.primus, Mocks.expressSessionStore, Mocks.roomResolver);
       Mocks.primus.emit('connection', Mocks.spark);
       Mocks.spark.emit('emit', {room:'/test/1', event:'test event'}, function(err, result) {
@@ -86,7 +86,7 @@ describe('auth/primus_init', function() {
       sinon.stub(Mocks.expressSessionStore, 'get', function(sessionId, callback) {
         callback(error);
       });
-      require('../../lib-cov/ws/primus_init')(
+      require('../../lib/ws/primus_init')(
         Mocks.Ravel, Mocks.Ravel._injector, Mocks.primus, Mocks.expressSessionStore, Mocks.roomResolver);
       Mocks.primus.emit('connection', Mocks.spark);
       Mocks.spark.emit('emit', {room:'/test/1', event:'test event'}, function(err, result) {
@@ -116,7 +116,7 @@ describe('auth/primus_init', function() {
       var isMemberSpy = sinon.stub(Mocks.Ravel.kvstore, 'sismember', function() {
         return false;
       });
-      require('../../lib-cov/ws/primus_init')(
+      require('../../lib/ws/primus_init')(
         Mocks.Ravel, Mocks.Ravel._injector, Mocks.primus, Mocks.expressSessionStore, Mocks.roomResolver);
       Mocks.primus.emit('connection', Mocks.spark);
       Mocks.spark.emit('emit', {room:'/test/1', event:'test event'}, function(err, result) {
@@ -148,7 +148,7 @@ describe('auth/primus_init', function() {
         return true;
       });
       var broadcastSpy = sinon.spy(Mocks.broadcast, 'emit');
-      require('../../lib-cov/ws/primus_init')(
+      require('../../lib/ws/primus_init')(
         Mocks.Ravel, Mocks.Ravel._injector, Mocks.primus, Mocks.expressSessionStore, Mocks.roomResolver);
       Mocks.primus.emit('connection', Mocks.spark);
       Mocks.spark.emit('emit', {room:'/test/1', event:'test event', message:'test message'}, function(err, result) {

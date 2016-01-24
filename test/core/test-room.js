@@ -17,10 +17,10 @@ describe('Ravel', function() {
     });
 
     rooms = {};
-    Ravel = new require('../../lib-cov/ravel')();
+    Ravel = new require('../../lib/ravel')();
     Ravel.Log.setLevel(Ravel.Log.NONE);
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
-    require('../../lib-cov/core/room')(Ravel, rooms);
+    require('../../lib/core/room')(Ravel, rooms);
     done();
   });
 

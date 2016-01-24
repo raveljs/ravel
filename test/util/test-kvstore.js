@@ -26,13 +26,13 @@ describe('Ravel', function() {
       },
     };
     mockery.registerMock('redis', redisMock);
-    Ravel = new require('../../lib-cov/ravel')();
+    Ravel = new require('../../lib/ravel')();
     Ravel.Log.setLevel(Ravel.Log.NONE);
     Ravel.set('redis port', 0);
     Ravel.set('redis host', 'localhost');
     Ravel.set('redis password', 'password');
 
-    kvstore = require('../../lib-cov/util/kvstore')(Ravel);
+    kvstore = require('../../lib/util/kvstore')(Ravel);
 
     done();
   });

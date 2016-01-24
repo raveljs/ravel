@@ -16,7 +16,7 @@ describe('ws/util/websocket_room_resolver', function() {
       warnOnUnregistered: false
     });
     rooms = {};
-    roomResolver = require('../../../lib-cov/ws/util/websocket_room_resolver')(rooms);
+    roomResolver = require('../../../lib/ws/util/websocket_room_resolver')(rooms);
     done();
   });
 

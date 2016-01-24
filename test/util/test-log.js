@@ -53,7 +53,7 @@ describe('Ravel.Log', function() {
       critical: function() {}
     };
     mockery.registerMock('intel', intel);
-    Ravel = new require('../../lib-cov/ravel')();
+    Ravel = new require('../../lib/ravel')();
     done();
   });
 

@@ -19,12 +19,12 @@ describe('db/database', function() {
       warnOnUnregistered: false
     });
 
-    Ravel = new require('../../lib-cov/ravel')();
+    Ravel = new require('../../lib/ravel')();
     Ravel.Log.setLevel('NONE');
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
 
     //load database module
-    database = require('../../lib-cov/db/database')(Ravel);
+    database = require('../../lib/db/database')(Ravel);
 
     //mock a couple of providers for us to use
     mysqlProvider = new Ravel.DatabaseProvider('mysql');
@@ -55,7 +55,7 @@ describe('db/database', function() {
     it('should populate req.transaction with a dictionary of open database connections when providers are registered', function(done) {
       //reload database so it picks up database providers
       Ravel.set('database providers', [mysqlProvider, postgresProvider]);
-      database = require('../../lib-cov/db/database')(Ravel);
+      database = require('../../lib/db/database')(Ravel);
       //mock stuff
       var req = httpMocks.createRequest({
         method: 'GET',
@@ -83,7 +83,7 @@ describe('db/database', function() {
     it('should respond with HTTP 500 INTERNAL SERVER ERROR if any of the registered database providers fails to provider a connection', function(done) {
       //reload database so it picks up database providers
       Ravel.set('database providers', [mysqlProvider, postgresProvider]);
-      database = require('../../lib-cov/db/database')(Ravel);
+      database = require('../../lib/db/database')(Ravel);
       //mock stuff
       var req = httpMocks.createRequest({
         method: 'GET',
@@ -111,7 +111,7 @@ describe('db/database', function() {
     it('should end all open transactions (close/commit connections) when res.end() is called with a status of 200', function(done) {
       //reload database so it picks up database providers
       Ravel.set('database providers', [mysqlProvider, postgresProvider]);
-      database = require('../../lib-cov/db/database')(Ravel);
+      database = require('../../lib/db/database')(Ravel);
       //mock stuff
       var req = httpMocks.createRequest({
         method: 'GET',
@@ -151,7 +151,7 @@ describe('db/database', function() {
     it('should end all open transactions (close/commit connections) when res.end() is called with a status of 201', function(done) {
       //reload database so it picks up database providers
       Ravel.set('database providers', [mysqlProvider, postgresProvider]);
-      database = require('../../lib-cov/db/database')(Ravel);
+      database = require('../../lib/db/database')(Ravel);
       //mock stuff
       var req = httpMocks.createRequest({
         method: 'GET',
@@ -191,7 +191,7 @@ describe('db/database', function() {
     it('should end all open transactions (close/rollback connections) when res.end() is called with a status >= 300', function(done) {
       //reload database so it picks up database providers
       Ravel.set('database providers', [mysqlProvider, postgresProvider]);
-      database = require('../../lib-cov/db/database')(Ravel);
+      database = require('../../lib/db/database')(Ravel);
       //mock stuff
       var req = httpMocks.createRequest({
         method: 'GET',
@@ -231,7 +231,7 @@ describe('db/database', function() {
     it('should respond with HTTP 500 INTERNAL SERVER ERROR when any open transactions fail to close/commit when res.end() is called', function(done) {
       //reload database so it picks up database providers
       Ravel.set('database providers', [mysqlProvider, postgresProvider]);
-      database = require('../../lib-cov/db/database')(Ravel);
+      database = require('../../lib/db/database')(Ravel);
       //mock stuff
       var req = httpMocks.createRequest({
         method: 'GET',
@@ -279,7 +279,7 @@ describe('db/database', function() {
     it('should populate scoped callback with a dictionary of open database connections when providers are registered', function(done) {
       //reload database so it picks up database providers
       Ravel.set('database providers', [mysqlProvider, postgresProvider]);
-      database = require('../../lib-cov/db/database')(Ravel);
+      database = require('../../lib/db/database')(Ravel);
       var mysqlConnection = {}, postgresConnection = {};
       var mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function(callback) {
         callback(null, mysqlConnection);
@@ -301,7 +301,7 @@ describe('db/database', function() {
     it('should call actual callback with an error if any of the registered database providers fails to provider a connection', function(done) {
       //reload database so it picks up database providers
       Ravel.set('database providers', [mysqlProvider, postgresProvider]);
-      database = require('../../lib-cov/db/database')(Ravel);
+      database = require('../../lib/db/database')(Ravel);
       var mysqlConnection = {};
       var mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function(callback) {
         callback(null, mysqlConnection);
@@ -322,7 +322,7 @@ describe('db/database', function() {
     it('should end all open transactions (close/commit connections) when exitTransaction is called with no errors', function(done) {
       //reload database so it picks up database providers
       Ravel.set('database providers', [mysqlProvider, postgresProvider]);
-      database = require('../../lib-cov/db/database')(Ravel);
+      database = require('../../lib/db/database')(Ravel);
       var mysqlConnection = {}, postgresConnection = {};
       var mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function(callback) {
         callback(null, mysqlConnection);
@@ -355,7 +355,7 @@ describe('db/database', function() {
     it('should end all open transactions (close/rollback connections) when exitTransaction is called with an error', function(done) {
       //reload database so it picks up database providers
       Ravel.set('database providers', [mysqlProvider, postgresProvider]);
-      database = require('../../lib-cov/db/database')(Ravel);
+      database = require('../../lib/db/database')(Ravel);
       var mysqlConnection = {}, postgresConnection = {};
       var mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function(callback) {
         callback(null, mysqlConnection);
@@ -389,7 +389,7 @@ describe('db/database', function() {
     it('should actualCallback with a database-related error when any open transactions fail to close/commit after exitTransaction is called with no errors', function(done) {
       //reload database so it picks up database providers
       Ravel.set('database providers', [mysqlProvider, postgresProvider]);
-      database = require('../../lib-cov/db/database')(Ravel);
+      database = require('../../lib/db/database')(Ravel);
       var mysqlConnection = {}, postgresConnection = {};
       var mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function(callback) {
         callback(null, mysqlConnection);

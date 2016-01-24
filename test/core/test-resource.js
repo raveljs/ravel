@@ -25,7 +25,7 @@ describe('Ravel', function() {
       return broadcastMiddleware;
     });
 
-    Ravel = new require('../../lib-cov/ravel')();
+    Ravel = new require('../../lib/ravel')();
     Ravel.Log.setLevel('NONE');
     //mock broadcast, kvstore, authorize, authorizeWithRedirect and db.middleware, since they only get created during Ravel.start
     Ravel.broadcast = {
@@ -291,7 +291,7 @@ describe('Ravel', function() {
     });
 
     it('should implement stub endpoints for unused HTTP verbs, all of which return a status httpCodes.NOT_IMPLEMENTED', function(done) {
-      var httpCodes = require('../../lib-cov/util/http_codes');
+      var httpCodes = require('../../lib/util/http_codes');
       var app = express();
       var res = {
         status: function(status) {

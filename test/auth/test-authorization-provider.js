@@ -26,7 +26,7 @@ describe('auth/authorization_provider', function() {
     };
     mockery.registerMock('redis', redisMock);
 
-    Ravel = new require('../../lib-cov/ravel')();
+    Ravel = new require('../../lib/ravel')();
     Ravel.Log.setLevel('NONE');
 
     provider = new Ravel.AuthorizationProvider('name');

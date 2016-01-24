@@ -60,7 +60,7 @@ describe('ws/authorize', function() {
         });
       };
 
-      require('../../lib-cov/ws/primus_init')(
+      require('../../lib/ws/primus_init')(
         Mocks.Ravel, Mocks.Ravel._injector, Mocks.primus, Mocks.expressSessionStore, Mocks.roomResolver);
     });
 
@@ -91,7 +91,7 @@ describe('ws/authorize', function() {
         });
       };
 
-      require('../../lib-cov/ws/primus_init')(
+      require('../../lib/ws/primus_init')(
         Mocks.Ravel, Mocks.Ravel._injector, Mocks.primus, Mocks.expressSessionStore, Mocks.roomResolver);
     });
 
@@ -121,7 +121,7 @@ describe('ws/authorize', function() {
         });
       };
 
-      require('../../lib-cov/ws/primus_init')(
+      require('../../lib/ws/primus_init')(
         Mocks.Ravel, Mocks.Ravel._injector, Mocks.primus, Mocks.expressSessionStore, Mocks.roomResolver);
     });
 
@@ -155,7 +155,7 @@ describe('ws/authorize', function() {
         });
       };
 
-      require('../../lib-cov/ws/primus_init')(
+      require('../../lib/ws/primus_init')(
         Mocks.Ravel, Mocks.Ravel._injector, Mocks.primus, Mocks.expressSessionStore, Mocks.roomResolver);
     });
 
@@ -182,7 +182,7 @@ describe('ws/authorize', function() {
         });
       };
 
-      require('../../lib-cov/ws/primus_init')(
+      require('../../lib/ws/primus_init')(
         Mocks.Ravel, Mocks.Ravel._injector, Mocks.primus, Mocks.expressSessionStore, Mocks.roomResolver);
     });
 
@@ -216,7 +216,7 @@ describe('ws/authorize', function() {
         });
       };
 
-      require('../../lib-cov/ws/primus_init')(
+      require('../../lib/ws/primus_init')(
         Mocks.Ravel, Mocks.Ravel._injector, Mocks.primus, Mocks.expressSessionStore, Mocks.roomResolver);
     });
   });

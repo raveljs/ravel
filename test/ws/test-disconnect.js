@@ -41,7 +41,7 @@ describe('ws/disconnect', function() {
       var sremSpy = sinon.stub(Mocks.Ravel.kvstore, 'srem');
       var delSpy = sinon.stub(Mocks.Ravel.kvstore, 'del');
       var broadcastSpy = sinon.spy(Mocks.broadcast, 'emit');
-      require('../../lib-cov/ws/primus_init')(
+      require('../../lib/ws/primus_init')(
         Mocks.Ravel, Mocks.Ravel._injector, Mocks.primus, Mocks.expressSessionStore, Mocks.roomResolver);
       Mocks.primus.emit('disconnection', Mocks.spark);
       expect(getRoomsSpy).to.have.been.calledWith('ws_user:1');

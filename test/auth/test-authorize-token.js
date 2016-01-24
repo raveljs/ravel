@@ -28,14 +28,14 @@ describe('auth/authorize_token', function() {
     };
     mockery.registerMock('redis', redisMock);
 
-    Ravel = new require('../../lib-cov/ravel')();
+    Ravel = new require('../../lib/ravel')();
     Ravel.Log.setLevel(Ravel.Log.NONE);
     Ravel.set('redis port', 0);
     Ravel.set('redis host', 'localhost');
     Ravel.set('redis password', 'password');
-    Ravel.kvstore = require('../../lib-cov/util/kvstore')(Ravel);
+    Ravel.kvstore = require('../../lib/util/kvstore')(Ravel);
 
-    tokenAuth = new require('../../lib-cov/auth/authorize_token')(Ravel);
+    tokenAuth = new require('../../lib/auth/authorize_token')(Ravel);
 
     //mock up an authorization provider for our tests
     profile = {};

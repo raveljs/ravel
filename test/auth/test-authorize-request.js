@@ -25,10 +25,10 @@ describe('util/authorize_request', function() {
       return tokenToProfile;
     };
     mockery.registerMock('./authorize_token', authorizeTokenStub);
-    Ravel = new require('../../lib-cov/ravel')();
+    Ravel = new require('../../lib/ravel')();
     Ravel.Log.setLevel('NONE');
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
-    authorizeRequest = require('../../lib-cov/auth/authorize_request')(Ravel, false, false);
+    authorizeRequest = require('../../lib/auth/authorize_request')(Ravel, false, false);
     done();
   });
 
@@ -44,7 +44,7 @@ describe('util/authorize_request', function() {
 
   describe('middleware', function() {
     it('should use passport\'s req.isAuthenticated() to check users by default, calling next() if users are authorized by passport', function(done) {
-      authorizeRequest = require('../../lib-cov/auth/authorize_request')(Ravel, false, false);
+      authorizeRequest = require('../../lib/auth/authorize_request')(Ravel, false, false);
       var req = httpMocks.createRequest({
         method: 'GET',
         url: '/entity',
@@ -63,7 +63,7 @@ describe('util/authorize_request', function() {
     });
 
     it('should use passport\'s req.isAuthenticated() to check users by default, sending HTTP 401 UNAUTHORIZED if users are unauthorized', function(done) {
-      authorizeRequest = require('../../lib-cov/auth/authorize_request')(Ravel, false, false);
+      authorizeRequest = require('../../lib/auth/authorize_request')(Ravel, false, false);
       var req = httpMocks.createRequest({
         method: 'GET',
         url: '/entity',
@@ -85,7 +85,7 @@ describe('util/authorize_request', function() {
     });
 
     it('should use passport\'s req.isAuthenticated() to check users by default, redirecting to the login page if users are unauthorized and redirects are enabled', function(done) {
-      authorizeRequest = require('../../lib-cov/auth/authorize_request')(Ravel, true, false);
+      authorizeRequest = require('../../lib/auth/authorize_request')(Ravel, true, false);
       Ravel.set('login route', '/login');
       var req = httpMocks.createRequest({
         method: 'GET',
@@ -107,7 +107,7 @@ describe('util/authorize_request', function() {
     });
 
     it('should use x-auth-token and x-auth-client headers to authorize mobile clients', function(done) {
-      authorizeRequest = require('../../lib-cov/auth/authorize_request')(Ravel, false, false);
+      authorizeRequest = require('../../lib/auth/authorize_request')(Ravel, false, false);
       var req = httpMocks.createRequest({
         method: 'GET',
         url: '/entity',
@@ -137,7 +137,7 @@ describe('util/authorize_request', function() {
     });
 
     it('should use x-auth-token and x-auth-client headers to authorize mobile clients, failing with HTTP 401 UNAUTHORIZED if the user does not exist and registration is disabled', function(done) {
-      authorizeRequest = require('../../lib-cov/auth/authorize_request')(Ravel, false, false);
+      authorizeRequest = require('../../lib/auth/authorize_request')(Ravel, false, false);
       var req = httpMocks.createRequest({
         method: 'GET',
         url: '/entity',
@@ -169,7 +169,7 @@ describe('util/authorize_request', function() {
     });
 
     it('use x-auth-token and x-auth-client headers to authorize mobile clients, failing with HTTP 401 UNAUTHORIZED if the token cannot be validated or translated into a profile', function(done) {
-      authorizeRequest = require('../../lib-cov/auth/authorize_request')(Ravel, false, false);
+      authorizeRequest = require('../../lib/auth/authorize_request')(Ravel, false, false);
       var req = httpMocks.createRequest({
         method: 'GET',
         url: '/entity',
@@ -197,7 +197,7 @@ describe('util/authorize_request', function() {
     });
 
     it('use x-auth-token and x-auth-client headers to authorize mobile clients, registering users if that functionality is enabled and they don\'t already exist', function(done) {
-      authorizeRequest = require('../../lib-cov/auth/authorize_request')(Ravel, false, true);
+      authorizeRequest = require('../../lib/auth/authorize_request')(Ravel, false, true);
       var req = httpMocks.createRequest({
         method: 'GET',
         url: '/entity',
@@ -227,7 +227,7 @@ describe('util/authorize_request', function() {
     });
 
     it('use x-auth-token and x-auth-client headers to authorize mobile clients, responding with HTTP 401 UNAUTHORIZED if user registration is enabled and registration fails', function(done) {
-      authorizeRequest = require('../../lib-cov/auth/authorize_request')(Ravel, false, true);
+      authorizeRequest = require('../../lib/auth/authorize_request')(Ravel, false, true);
       var req = httpMocks.createRequest({
         method: 'GET',
         url: '/entity',

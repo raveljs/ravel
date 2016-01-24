@@ -16,7 +16,7 @@ describe('Ravel', function() {
       warnOnReplace: false,
       warnOnUnregistered: false
     });
-    Ravel = new require('../../lib-cov/ravel')();
+    Ravel = new require('../../lib/ravel')();
     Ravel.Log.setLevel(Ravel.Log.NONE);
 
     done();
