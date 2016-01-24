@@ -8,8 +8,10 @@ const del = require('del');
 
 const TESTS = [
   // 'test/core/test-*.js',
+  'test/core/test-params.js',
   // 'test/db/test-*.js',
   // 'test/util/test-*.js',
+  'test/util/test-log.js',
   // 'test/auth/test-*.js',
   // 'test/ws/test-*.js',
   // 'test/ws/util/test-*.js',
@@ -21,7 +23,8 @@ const TESTS = [
 gulp.task('lint', function() {
   return gulp.src(['./lib/**/*.js', './test/**/*.js', 'gulpfile.js'])
              .pipe(plugins.jshint())
-             .pipe(plugins.jshint.reporter(stylish));
+             .pipe(plugins.jshint.reporter(stylish))
+             .pipe(plugins.jshint.reporter('fail'));
 });
 
 gulp.task('docco', function() {
@@ -69,7 +72,7 @@ gulp.task('test', ['cover'], function () {
     .pipe(env.reset);
 });
 
-gulp.task('watch', function() {
+gulp.task('watch', ['lint'], function() {
   gulp.watch(['./lib/**/*.js'], ['lint']);
   gulp.watch(['gulpfile.js', './test/**/*.js'], ['lint']);
 });
@@ -90,7 +93,7 @@ gulp.task('show-docs', ['docco'], function() {
              .pipe(plugins.open());
 });
 
-gulp.task('default', ['lint', 'watch']);
+gulp.task('default', ['watch']);
 gulp.task('travis', ['coveralls']);
 //
 // gulp.task('debug', () => {

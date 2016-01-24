@@ -16,7 +16,7 @@ describe('Ravel', function() {
     //   warnOnUnregistered: false
     // });
     Ravel = new (require('../lib/ravel'))();
-    //Ravel.Log.setLevel('NONE');
+    Ravel.Log.setLevel('NONE');
     done();
   });
 
@@ -28,7 +28,6 @@ describe('Ravel', function() {
 
   describe('#constructor()', function() {
     it('should allow clients to create a new Ravel server', function(done) {
-      console.dir(Ravel);
       done();
     });
   });
