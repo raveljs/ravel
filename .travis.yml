@@ -1,6 +1,16 @@
 language: node_js
 sudo: false
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - g++-4.8
 node_js:
-  - "stable"
+  - "4.2"
+  - "5.5"
 before_install:
+  - if [[ $TRAVIS_OS_NAME == "linux" ]]; then export CXX=g++-4.8; fi
+  - $CXX --version
+  - npm install
   - "npm install -g grunt-cli"
