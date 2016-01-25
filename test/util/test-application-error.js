@@ -1,13 +1,13 @@
 'use strict';
 
-var chai = require('chai');
-var expect = chai.expect;
+const chai = require('chai');
+const expect = chai.expect;
 
-var Ravel, httpCodes;
+let Ravel, httpCodes;
 
 describe('util/application_error', function() {
   beforeEach(function(done) {
-    Ravel = new require('../../lib/ravel')();
+    Ravel = new (require('../../lib/ravel'))();
     Ravel.Log.setLevel('NONE');
     httpCodes = require('../../lib/util/http_codes');
     done();
@@ -23,91 +23,91 @@ describe('util/application_error', function() {
     it('should provide .General', function(done) {
       expect(Ravel.ApplicationError).to.have.a.property('General')
         .that.is.a('function');
-      var err = new Ravel.ApplicationError.General('test');
+      const err = new Ravel.ApplicationError.General('test');
       expect(err).to.be.an.instanceof(Error);
       expect(err).to.have.a.property('message').that.equals('test');
       expect(err).to.have.a.property('code').that.equals(httpCodes.INTERNAL_SERVER_ERROR);
-        done();
+      done();
     });
 
     it('should provide .Access', function(done) {
       expect(Ravel.ApplicationError).to.have.a.property('Access')
         .that.is.a('function');
-      var err = new Ravel.ApplicationError.Access('test');
+      const err = new Ravel.ApplicationError.Access('test');
       expect(err).to.be.an.instanceof(Ravel.ApplicationError.General);
       expect(err).to.have.a.property('message').that.equals('test');
       expect(err).to.have.a.property('code').that.equals(httpCodes.FORBIDDEN);
-        done();
+      done();
     });
 
     it('should provide .Authorization', function(done) {
       expect(Ravel.ApplicationError).to.have.a.property('Authorization')
         .that.is.a('function');
-      var err = new Ravel.ApplicationError.Authorization('test');
+      const err = new Ravel.ApplicationError.Authorization('test');
       expect(err).to.be.an.instanceof(Ravel.ApplicationError.General);
       expect(err).to.have.a.property('message').that.equals('test');
       expect(err).to.have.a.property('code').that.equals(httpCodes.UNAUTHORIZED);
-        done();
+      done();
     });
 
     it('should provide .DuplicateEntry', function(done) {
       expect(Ravel.ApplicationError).to.have.a.property('DuplicateEntry')
         .that.is.a('function');
-      var err = new Ravel.ApplicationError.DuplicateEntry('test');
+      const err = new Ravel.ApplicationError.DuplicateEntry('test');
       expect(err).to.be.an.instanceof(Ravel.ApplicationError.General);
       expect(err).to.have.a.property('message').that.equals('test');
       expect(err).to.have.a.property('code').that.equals(httpCodes.CONFLICT);
-        done();
+      done();
     });
 
     it('should provide .IllegalValue', function(done) {
       expect(Ravel.ApplicationError).to.have.a.property('IllegalValue')
         .that.is.a('function');
-      var err = new Ravel.ApplicationError.IllegalValue('test');
+      const err = new Ravel.ApplicationError.IllegalValue('test');
       expect(err).to.be.an.instanceof(Ravel.ApplicationError.General);
       expect(err).to.have.a.property('message').that.equals('test');
       expect(err).to.have.a.property('code').that.equals(httpCodes.BAD_REQUEST);
-        done();
+      done();
     });
 
     it('should provide .NotAllowed', function(done) {
       expect(Ravel.ApplicationError).to.have.a.property('NotAllowed')
         .that.is.a('function');
-      var err = new Ravel.ApplicationError.NotAllowed('test');
+      const err = new Ravel.ApplicationError.NotAllowed('test');
       expect(err).to.be.an.instanceof(Ravel.ApplicationError.General);
       expect(err).to.have.a.property('message').that.equals('test');
       expect(err).to.have.a.property('code').that.equals(httpCodes.METHOD_NOT_ALLOWED);
-        done();
+      done();
     });
 
     it('should provide .NotFound', function(done) {
       expect(Ravel.ApplicationError).to.have.a.property('NotFound')
         .that.is.a('function');
-      var err = new Ravel.ApplicationError.NotFound('test');
+      const err = new Ravel.ApplicationError.NotFound('test');
       expect(err).to.be.an.instanceof(Ravel.ApplicationError.General);
       expect(err).to.have.a.property('message').that.equals('test');
       expect(err).to.have.a.property('code').that.equals(httpCodes.NOT_FOUND);
-        done();
+      done();
     });
 
     it('should provide .NotImplemented', function(done) {
       expect(Ravel.ApplicationError).to.have.a.property('NotImplemented')
         .that.is.a('function');
-      var err = new Ravel.ApplicationError.NotImplemented('test');
+      const err = new Ravel.ApplicationError.NotImplemented('test');
       expect(err).to.be.an.instanceof(Ravel.ApplicationError.General);
       expect(err).to.have.a.property('message').that.equals('test');
       expect(err).to.have.a.property('code').that.equals(httpCodes.NOT_IMPLEMENTED);
-        done();
+      done();
     });
 
     it('should provide .RangeOutOfBounds', function(done) {
       expect(Ravel.ApplicationError).to.have.a.property('RangeOutOfBounds')
         .that.is.a('function');
-      var err = new Ravel.ApplicationError.RangeOutOfBounds('test');
+      const err = new Ravel.ApplicationError.RangeOutOfBounds('test');
       expect(err).to.be.an.instanceof(Ravel.ApplicationError.General);
       expect(err).to.have.a.property('message').that.equals('test');
       expect(err).to.have.a.property('code').that.equals(httpCodes.REQUESTED_RANGE_NOT_SATISFIABLE);
-        done();
+      done();
     });
 
   });

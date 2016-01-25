@@ -2,9 +2,10 @@
   "extends": "../.jshintrc",
   "maxlen":    120,
   "globals": {
-    "Ravel":      true,
-    "Primus":     true,
-    "require":    false,
-    "module":     false
+    "Ravel":       true,
+    "Primus":      true,
+    "constructor": false,
+    "require":     false,
+    "module":      false
   }
 }

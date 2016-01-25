@@ -8,6 +8,8 @@ const del = require('del');
 
 const TESTS = [
   // 'test/core/test-*.js',
+  'test/core/test-application-error.js',
+  'test/core/test-error.js',
   'test/core/test-module.js',
   'test/core/test-modules.js',
   'test/core/test-params.js',
@@ -53,7 +55,7 @@ gulp.task('cover', ['lint'], function() {
 });
 
 //necessary to locate issues in code, due to https://github.com/gotwarlost/istanbul/issues/274
-gulp.task('test-no-cov', function () {
+gulp.task('test-no-cov', ['lint'], function () {
   const env = plugins.env.set({
     LOG_LEVEL : 'critical'
   });
