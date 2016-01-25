@@ -18,6 +18,7 @@ const TESTS = [
   'test/util/test-log.js',
   'test/util/test-injector.js',
   'test/util/test-inject.js',
+  'test/util/test-rest.js',
   // 'test/auth/test-*.js',
   // 'test/ws/test-*.js',
   // 'test/ws/util/test-*.js',

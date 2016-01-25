@@ -1,15 +1,15 @@
 'use strict';
 
-var chai = require('chai');
-var expect = chai.expect;
+const chai = require('chai');
+const expect = chai.expect;
 chai.use(require('chai-things'));
 chai.use(require('sinon-chai'));
-var sinon = require('sinon');
-var mockery = require('mockery');
-var httpMocks = require('node-mocks-http');
-var httpCodes = require('../../lib/util/http_codes');
+const sinon = require('sinon');
+const mockery = require('mockery');
+const httpMocks = require('node-mocks-http');
+const httpCodes = require('../../lib/util/http_codes');
 
-var Ravel, rest;
+let Ravel, rest;
 
 describe('util/rest', function() {
   beforeEach(function(done) {
@@ -20,11 +20,11 @@ describe('util/rest', function() {
       warnOnUnregistered: false
     });
 
-    Ravel = new require('../../lib/ravel')();
+    Ravel = new (require('../../lib/ravel'))();
     Ravel.Log.setLevel('NONE');
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
 
-    rest = require('../../lib/util/rest')(Ravel);
+    rest = new (require('../../lib/util/rest'))(Ravel);
     done();
   });
 
@@ -37,8 +37,8 @@ describe('util/rest', function() {
 
   describe('#respond()', function() {
     it('should produce a response with HTTP 204 NO CONTENT if no json payload is supplied', function (done) {
-      var res = httpMocks.createResponse();
-      var spy = sinon.spy(res, 'end');
+      const res = httpMocks.createResponse();
+      const spy = sinon.spy(res, 'end');
       rest.respond({}, res)(null, null);
       expect(res).to.have.property('statusCode').that.equals(204);
       expect(res._getData()).to.equal('');
@@ -47,9 +47,9 @@ describe('util/rest', function() {
     });
 
     it('should produce a response with HTTP 200 OK containing a string body if a json payload is supplied', function (done) {
-      var result = {};
-      var res = httpMocks.createResponse();
-      var spy = sinon.spy(res, 'send');
+      const result = {};
+      const res = httpMocks.createResponse();
+      const spy = sinon.spy(res, 'send');
       rest.respond({}, res)(null, result);
       expect(res).to.have.property('statusCode').that.equals(200);
       expect(res._getData()).to.equal(')]}\',\n' + JSON.stringify(result));
@@ -59,9 +59,9 @@ describe('util/rest', function() {
 
     it('should produce a response with HTTP 200 OK containing a json body if a json payload is supplied and \'disable json vulnerability protection\' is true', function(done) {
       Ravel.set('disable json vulnerability protection', true);
-      var result = {};
-      var res = httpMocks.createResponse();
-      var spy = sinon.spy(res, 'send');
+      const result = {};
+      const res = httpMocks.createResponse();
+      const spy = sinon.spy(res, 'send');
       rest.respond({}, res)(null, result);
       expect(res).to.have.property('statusCode').that.equals(200);
       expect(res._getData()).to.equal(result);
@@ -70,22 +70,22 @@ describe('util/rest', function() {
     });
 
     it('should produce a response with HTTP 201 CREATED and an appropriate location header if a json body containing a property \'id\' is supplied along with an okCode of CREATED', function(done) {
-      var req = httpMocks.createRequest({
+      const req = httpMocks.createRequest({
         method: 'POST',
         url: '/entity',
         headers: {
           origin: 'http://localhost:8080/'
         }
       });
-      var result = {
+      const result = {
         id:1
       };
-      var res = httpMocks.createResponse();
+      const res = httpMocks.createResponse();
       res.location = function() {
         expect(arguments.length).to.equal(1);
         expect(arguments[0]).to.equal('http://localhost:8080/entity/1');
       };
-      var spy = sinon.spy(res, 'send');
+      const spy = sinon.spy(res, 'send');
       rest.respond(req, res)(null, result);
       expect(res).to.have.property('statusCode').that.equals(201);
       expect(res._getData()).to.equal(')]}\',\n' + JSON.stringify(result));
@@ -94,12 +94,12 @@ describe('util/rest', function() {
     });
 
     it('should produce a response with HTTP 206 PARTIAL CONTENT if it is supplied as an okCode along with options.start, options.end and options.count', function(done) {
-      var result = [];
+      const result = [];
       //test proper options
-      var res = httpMocks.createResponse();
-      var sendSpy = sinon.spy(res, 'send');
-      var headerSpy = sinon.spy(res, 'setHeader');
-      var options = {
+      let res = httpMocks.createResponse();
+      let sendSpy = sinon.spy(res, 'send');
+      let headerSpy = sinon.spy(res, 'setHeader');
+      const options = {
         start: 0,
         end: 5,
         count: 10
@@ -125,8 +125,8 @@ describe('util/rest', function() {
     });
 
     it('should respond with HTTP 404 NOT FOUND when ApplicationError.NotFound is passed as err', function(done) {
-      var res = httpMocks.createResponse();
-      var spy = sinon.spy(res, 'send');
+      const res = httpMocks.createResponse();
+      const spy = sinon.spy(res, 'send');
       rest.respond({}, res)(new Ravel.ApplicationError.NotFound('a message'), null);
       expect(res).to.have.property('statusCode').that.equals(404);
       expect(res._getData()).to.equal('NotFoundError: a message');
@@ -135,8 +135,8 @@ describe('util/rest', function() {
     });
 
     it('should respond with HTTP 403 Forbidden when ApplicationError.Access is passed as err', function(done) {
-      var res = httpMocks.createResponse();
-      var spy = sinon.spy(res, 'send');
+      const res = httpMocks.createResponse();
+      const spy = sinon.spy(res, 'send');
       rest.respond({}, res)(new Ravel.ApplicationError.Access(), null);
       expect(res).to.have.property('statusCode').that.equals(403);
       expect(res._getData()).to.equal('AccessError: ');
@@ -145,8 +145,8 @@ describe('util/rest', function() {
     });
 
     it('should respond with HTTP 405 METHOD NOT ALLOWED when ApplicationError.NotAllowed is passed as err', function(done) {
-      var res = httpMocks.createResponse();
-      var spy = sinon.spy(res, 'send');
+      const res = httpMocks.createResponse();
+      const spy = sinon.spy(res, 'send');
       rest.respond({}, res)(new Ravel.ApplicationError.NotAllowed(), null);
       expect(res).to.have.property('statusCode').that.equals(405);
       expect(res._getData()).to.equal('NotAllowedError: ');
@@ -155,8 +155,8 @@ describe('util/rest', function() {
     });
 
     it('should respond with HTTP 501 NOT IMPLEMENTED when ApplicationError.NotImplemented is passed as err', function(done) {
-      var res = httpMocks.createResponse();
-      var spy = sinon.spy(res, 'send');
+      const res = httpMocks.createResponse();
+      const spy = sinon.spy(res, 'send');
       rest.respond({}, res)(new Ravel.ApplicationError.NotImplemented('a message'), null);
       expect(res).to.have.property('statusCode').that.equals(501);
       expect(res._getData()).to.equal('NotImplementedError: a message');
@@ -165,8 +165,8 @@ describe('util/rest', function() {
     });
 
     it('should respond with HTTP 409 CONFLICT when ApplicationError.DuplicateEntry is passed as err', function(done) {
-      var res = httpMocks.createResponse();
-      var spy = sinon.spy(res, 'send');
+      const res = httpMocks.createResponse();
+      const spy = sinon.spy(res, 'send');
       rest.respond({}, res)(new Ravel.ApplicationError.DuplicateEntry(), null);
       expect(res).to.have.property('statusCode').that.equals(409);
       expect(res._getData()).to.equal('DuplicateEntryError: ');
@@ -175,8 +175,8 @@ describe('util/rest', function() {
     });
 
     it('should respond with HTTP 416 REQUESTED_RANGE_NOT_SATISFIABLE when ApplicationError.RangeOutOfBounds is passed as err', function(done) {
-      var res = httpMocks.createResponse();
-      var spy = sinon.spy(res, 'send');
+      const res = httpMocks.createResponse();
+      const spy = sinon.spy(res, 'send');
       rest.respond({}, res)(new Ravel.ApplicationError.RangeOutOfBounds(), null);
       expect(res).to.have.property('statusCode').that.equals(416);
       expect(res._getData()).to.equal('RangeOutOfBoundsError: ');
@@ -185,8 +185,8 @@ describe('util/rest', function() {
     });
 
     it('should respond with HTTP 404 NOT FOUND when ApplicationError.IllegalValue is passed as err', function(done) {
-      var res = httpMocks.createResponse();
-      var spy = sinon.spy(res, 'send');
+      const res = httpMocks.createResponse();
+      const spy = sinon.spy(res, 'send');
       rest.respond({}, res)(new Ravel.ApplicationError.IllegalValue(), null);
       expect(res).to.have.property('statusCode').that.equals(400);
       expect(res._getData()).to.equal('IllegalValueError: ');
@@ -195,8 +195,8 @@ describe('util/rest', function() {
     });
 
     it('should respond with HTTP 500 INTERNAL SERVER ERROR when an unknown Error type is passed as err', function(done) {
-      var res = httpMocks.createResponse();
-      var spy = sinon.spy(res, 'end');
+      const res = httpMocks.createResponse();
+      const spy = sinon.spy(res, 'end');
       rest.respond({}, res)(new Error(), null);
       expect(res).to.have.property('statusCode').that.equals(500);
       expect(res._getData()).to.equal('');
