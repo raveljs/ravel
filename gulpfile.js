@@ -3,10 +3,13 @@
 //TODO remove when harmony_rest_parameters is enabled by default
 require('harmonize')(['harmony_rest_parameters']);
 
+//TODO remove when decorators land in node
+require('babel-register');
+
 const gulp = require('gulp');
 const plugins = require( 'gulp-load-plugins' )();
 const stylish = require('jshint-stylish');
-const isparta = require('isparta');
+// const isparta = require('isparta');
 const del = require('del');
 
 const TESTS = [
@@ -51,7 +54,7 @@ gulp.task('clean', function() {
 gulp.task('cover', ['lint'], function() {
   return gulp.src(['./lib/**/*.js'])
              .pipe(plugins.istanbul({
-               instrumenter: isparta.Instrumenter,
+              //  instrumenter: isparta.Instrumenter,
                includeUntested: true
              }))
              .pipe(plugins.istanbul.hookRequire());
