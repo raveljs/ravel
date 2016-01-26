@@ -11,7 +11,6 @@ const del = require('del');
 
 const TESTS = [
   // 'test/core/test-*.js',
-  'test/core/test-application-error.js',
   'test/core/test-error.js',
   'test/core/test-module.js',
   'test/core/test-modules.js',
@@ -20,11 +19,7 @@ const TESTS = [
   'test/core/test-resources.js',
   'test/core/test-routes.js',
   // 'test/db/test-*.js',
-  // 'test/util/test-*.js',
-  'test/util/test-log.js',
-  'test/util/test-injector.js',
-  'test/util/test-inject.js',
-  'test/util/test-rest.js',
+  'test/util/test-*.js',
   // 'test/auth/test-*.js',
   // 'test/ws/test-*.js',
   // 'test/ws/util/test-*.js',

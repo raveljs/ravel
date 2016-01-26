@@ -30,9 +30,6 @@ describe('Ravel', function() {
     Ravel.Log.setLevel(Ravel.Log.NONE);
     Ravel.set('redis port', 0);
     Ravel.set('redis host', 'localhost');
-    Ravel.set('redis password', 'password');
-
-    kvstore = require('../../lib/util/kvstore')(Ravel);
 
     done();
   });
@@ -47,6 +44,21 @@ describe('Ravel', function() {
 
     describe('reconnection', function() {
       it('should seamlessly create a new redis client when an \'end\' event is received from the original', function(done) {
+        kvstore = require('../../lib/util/kvstore')(Ravel);
+        expect(kvstore).to.have.a.property('auth').that.is.a('function');
+
+        const origKvstoreAuth = kvstore.auth;
+        const spy = sinon.spy(redisMock, 'createClient');
+        //fake disconnection
+        redisClientStub.emit('end');
+        expect(spy).to.have.been.calledOnce;
+        expect(kvstore.auth).to.not.equal(origKvstoreAuth);
+        done();
+      });
+
+      it('should support auth', function(done) {
+        Ravel.set('redis password', 'password');
+        kvstore = require('../../lib/util/kvstore')(Ravel);
         expect(kvstore).to.have.a.property('auth').that.is.a('function');
 
         const origKvstoreAuth = kvstore.auth;
