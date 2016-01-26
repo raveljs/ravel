@@ -1,11 +1,11 @@
 'use strict';
 
-var chai = require('chai');
-var expect = chai.expect;
+const chai = require('chai');
+const expect = chai.expect;
 chai.use(require('chai-things'));
-var mockery = require('mockery');
+const mockery = require('mockery');
 
-var Ravel, provider;
+let Ravel, provider;
 
 describe('db/database_provider', function() {
   beforeEach(function(done) {
@@ -16,7 +16,7 @@ describe('db/database_provider', function() {
       warnOnUnregistered: false
     });
 
-    Ravel = new require('../../lib/ravel')();
+    Ravel = new (require('../../lib/ravel'))();
     Ravel.Log.setLevel('NONE');
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
     provider = new Ravel.DatabaseProvider('name');

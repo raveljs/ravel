@@ -1,11 +1,11 @@
 'use strict';
 
-var chai = require('chai');
-var expect = chai.expect;
+const chai = require('chai');
+const expect = chai.expect;
 chai.use(require('chai-things'));
-var mockery = require('mockery');
+const mockery = require('mockery');
 
-var Ravel, rooms;
+let Ravel, rooms;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
@@ -17,7 +17,7 @@ describe('Ravel', function() {
     });
 
     rooms = {};
-    Ravel = new require('../../lib/ravel')();
+    Ravel = new (require('../../lib/ravel'))();
     Ravel.Log.setLevel(Ravel.Log.NONE);
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
     require('../../lib/core/room')(Ravel, rooms);
@@ -54,7 +54,7 @@ describe('Ravel', function() {
     });
 
     it('should permit clients to register rooms which support path parameters and authorization functions', function(done) {
-      var authorizationFunction = function(userId, done) {
+      const authorizationFunction = function(userId, done) {
         done(null, true);
       };
       Ravel.room('/test/:testId/entity/:entityId', authorizationFunction);
@@ -64,7 +64,7 @@ describe('Ravel', function() {
         regex: new RegExp('/test/(\\w+)/entity/(\\w+)'),
         authorize: authorizationFunction
       });
-      var match = '/test/1/entity/2'.match(rooms['/test/:testId/entity/:entityId'].regex);
+      const match = '/test/1/entity/2'.match(rooms['/test/:testId/entity/:entityId'].regex);
       expect(match[0]).to.equal('/test/1/entity/2');
       expect(match[1]).to.equal('1');
       expect(match[2]).to.equal('2');

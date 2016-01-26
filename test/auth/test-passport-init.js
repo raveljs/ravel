@@ -1,13 +1,13 @@
 'use strict';
 
-var chai = require('chai');
-var expect = chai.expect;
+const chai = require('chai');
+const expect = chai.expect;
 chai.use(require('chai-things'));
-var mockery = require('mockery');
-var sinon = require('sinon');
-var express = require('express');
+const mockery = require('mockery');
+const sinon = require('sinon');
+const express = require('express');
 
-var Ravel, passportMock;
+let Ravel, passportMock;
 
 describe('auth/passport_init', function() {
   beforeEach(function(done) {
@@ -35,7 +35,7 @@ describe('auth/passport_init', function() {
 
     mockery.registerMock('passport', passportMock);
 
-    Ravel = new require('../../lib/ravel')();
+    Ravel = new (require('../../lib/ravel'))();
     Ravel.Log.setLevel(Ravel.Log.NONE);
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
 
@@ -71,10 +71,10 @@ describe('auth/passport_init', function() {
   });
 
   it('should not initialize passport and replace $Private and $PrivateRedirect with stubs that throw Ravel.ApplicationError.NotImplemented if no authorization providers are registered', function(done) {
-    var app = express();
-    var useSpy = sinon.spy(app, 'use');
-    var passportInitSpy = sinon.spy(passportMock, 'initialize');
-    var passportSessionSpy = sinon.spy(passportMock, 'session');
+    const app = express();
+    const useSpy = sinon.spy(app, 'use');
+    const passportInitSpy = sinon.spy(passportMock, 'initialize');
+    const passportSessionSpy = sinon.spy(passportMock, 'session');
 
     Ravel.emit('post config express', app);
     expect(useSpy).to.not.have.been.called;
@@ -98,14 +98,14 @@ describe('auth/passport_init', function() {
   });
 
   it('should initialize passport and sessions for express', function(done) {
-    var initStub = sinon.stub();
+    const initStub = sinon.stub();
     Ravel.set('authorization providers', [{
       init: initStub
     }]);
-    var app = express();
-    var useSpy = sinon.spy(app, 'use');
-    var passportInitSpy = sinon.spy(passportMock, 'initialize');
-    var passportSessionSpy = sinon.spy(passportMock, 'session');
+    const app = express();
+    const useSpy = sinon.spy(app, 'use');
+    const passportInitSpy = sinon.spy(passportMock, 'initialize');
+    const passportSessionSpy = sinon.spy(passportMock, 'session');
 
     Ravel.emit('post config express', app);
     expect(useSpy).to.have.been.called;
@@ -119,7 +119,7 @@ describe('auth/passport_init', function() {
     Ravel.set('authorization providers', [{
       init: sinon.stub()
     }]);
-    var app = express();
+    const app = express();
 
     sinon.stub(passportMock, 'serializeUser', function(serializerFn) {
       serializerFn({id:9876}, function(err, result) {
@@ -138,14 +138,14 @@ describe('auth/passport_init', function() {
     Ravel.db = {
       scoped: function(){}
     };
-    var profile = {
+    const profile = {
       id: 9876
     };
     Ravel.set('get user function', function(userId, $ScopedTransaction, done) {
       expect(userId).to.equal(9876);
       done(null, profile);
     });
-    var app = express();
+    const app = express();
 
     sinon.stub(passportMock, 'deserializeUser', function(deserializerFn) {
       deserializerFn(9876, function(err, result) {
@@ -161,7 +161,7 @@ describe('auth/passport_init', function() {
     Ravel.db = {
       scoped: function(){}
     };
-    var databaseProfile = {
+    const databaseProfile = {
       id: 9876,
       name: 'Sean McIntyre'
     };
@@ -176,7 +176,7 @@ describe('auth/passport_init', function() {
     Ravel.set('get or create user function', function(accessToken, refreshToken, profile, $ScopedTransaction, done) {
       done(null, databaseProfile);
     });
-    var app = express();
+    const app = express();
 
     Ravel.emit('post config express', app);
   });

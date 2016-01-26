@@ -3,11 +3,11 @@
 /**
  * Common mocking logic for all primus-related tests
  */
-var EventEmitter = require('events').EventEmitter;
-var sinon = require('sinon');
+const EventEmitter = require('events').EventEmitter;
+const sinon = require('sinon');
 
 module.exports = function(mockery, callback) {
-  var Mocks = {};
+  const Mocks = {};
   //mock redis
   Mocks.redisClientStub = {
     auth: function(){}
@@ -58,7 +58,7 @@ module.exports = function(mockery, callback) {
     resolve: function(){return undefined;}
   };
 
-  Mocks.Ravel = new require('../../lib/ravel')();
+  Mocks.Ravel = new (require('../../lib/ravel'))();
   Mocks.Ravel.db = {
     scoped: function(){},
     middleware: function(){}

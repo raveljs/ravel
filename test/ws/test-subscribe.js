@@ -1,13 +1,13 @@
 'use strict';
 
-var chai = require('chai');
-var expect = chai.expect;
+const chai = require('chai');
+const expect = chai.expect;
 chai.use(require('chai-things'));
 chai.use(require('sinon-chai'));
-var sinon = require('sinon');
-var mockery = require('mockery');
+const sinon = require('sinon');
+const mockery = require('mockery');
 
-var Mocks;
+let Mocks;
 
 describe('auth/primus_init', function() {
   beforeEach(function(done) {    
@@ -52,7 +52,7 @@ describe('auth/primus_init', function() {
     });
 
     it('should callback with an error if the user\'s user id cannot be determined.', function(done) {
-      var error = new Error();
+      const error = new Error();
       sinon.stub(Mocks.roomResolver, 'resolve', function() {
         return {
           instance: '/test/1',
@@ -141,9 +141,9 @@ describe('auth/primus_init', function() {
       sinon.stub(Mocks.expressSessionStore, 'get', function(sessionId, callback) {
         callback(null, {passport:{user:1}});
       });
-      var joinSpy = sinon.spy(Mocks.spark, 'join');
-      var broadcastSpy = sinon.spy(Mocks.broadcast, 'emit');
-      var saddSpy = sinon.spy(Mocks.Ravel.kvstore, 'sadd');
+      const joinSpy = sinon.spy(Mocks.spark, 'join');
+      const broadcastSpy = sinon.spy(Mocks.broadcast, 'emit');
+      const saddSpy = sinon.spy(Mocks.Ravel.kvstore, 'sadd');
       require('../../lib/ws/primus_init')(
         Mocks.Ravel, Mocks.Ravel._injector, Mocks.primus, Mocks.expressSessionStore, Mocks.roomResolver);
       Mocks.primus.emit('connection', Mocks.spark);
@@ -175,7 +175,7 @@ describe('auth/primus_init', function() {
           }
         };
       });
-      var messages = [];
+      const messages = [];
       sinon.stub(Mocks.broadcast, 'getMissedMessages', function(roomName, lastDisconnectTime, callback){
         callback(null, messages);
       });
@@ -186,7 +186,7 @@ describe('auth/primus_init', function() {
       sinon.stub(Mocks.expressSessionStore, 'get', function(sessionId, callback) {
         callback(null, {passport:{user:1}});
       });
-      var joinSpy = sinon.spy(Mocks.spark, 'join');
+      const joinSpy = sinon.spy(Mocks.spark, 'join');
       require('../../lib/ws/primus_init')(
         Mocks.Ravel, Mocks.Ravel._injector, Mocks.primus, Mocks.expressSessionStore, Mocks.roomResolver);
       Mocks.primus.emit('connection', Mocks.spark);
@@ -215,8 +215,8 @@ describe('auth/primus_init', function() {
         };
       });
       Mocks.cookieParser = sinon.stub();
-      var getSessionSpy = sinon.spy(Mocks.expressSessionStore, 'get');
-      var joinSpy = sinon.spy(Mocks.spark, 'join');
+      const getSessionSpy = sinon.spy(Mocks.expressSessionStore, 'get');
+      const joinSpy = sinon.spy(Mocks.spark, 'join');
       Mocks.spark.userId = 1;
       require('../../lib/ws/primus_init')(
         Mocks.Ravel, Mocks.Ravel._injector, Mocks.primus, Mocks.expressSessionStore, Mocks.roomResolver);

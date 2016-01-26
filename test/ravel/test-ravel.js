@@ -1,18 +1,18 @@
 'use strict';
 
-var chai = require('chai');
+const chai = require('chai');
 chai.use(require('chai-things'));
 chai.use(require('chai-as-promised'));
-var mockery = require('mockery');
-var path = require('path');
-var redis = require('redis-mock');
-var request = require('supertest');
+const mockery = require('mockery');
+const upath = require('upath');
+const redis = require('redis-mock');
+const request = require('supertest');
 
-var Ravel, agent;
+let Ravel, agent;
 
-var u = [{id:1, name:'Joe'}, {id:2, name:'Jane'}];
+const u = [{id:1, name:'Joe'}, {id:2, name:'Jane'}];
 //stub module
-var users = function($E) {
+const users = function($E) {
   return {
     getAllUsers: function(callback) {
       callback(null, u);
@@ -28,7 +28,7 @@ var users = function($E) {
 };
 
 //stub resource
-var usersResource = function($Resource, $Rest, users) {
+const usersResource = function($Resource, $Rest, users) {
   $Resource.bind('/api/user');
 
   $Resource.getAll(function(req, res) {
@@ -41,7 +41,7 @@ var usersResource = function($Resource, $Rest, users) {
 };
 
 //stub routes
-var routes = function($RouteBuilder) {
+const routes = function($RouteBuilder) {
   $RouteBuilder.add('/test', function(req, res) {
     res.status(200).send({});
   });
@@ -67,7 +67,7 @@ describe('Ravel end-to-end test', function() {
           warnOnUnregistered: false
         });
         mockery.registerMock('redis', redis);
-        Ravel = new require('../../lib/ravel')();
+        Ravel = new (require('../../lib/ravel'))();
         Ravel.set('log level', Ravel.Log.NONE);
         Ravel.set('redis host', 'localhost');
         Ravel.set('redis port', 5432);
@@ -75,17 +75,17 @@ describe('Ravel end-to-end test', function() {
         Ravel.set('express public directory', 'public');
         Ravel.set('express view directory', 'ejs');
         Ravel.set('express view engine', 'ejs');
-        mockery.registerMock(path.join(Ravel.cwd, 'node_modules', 'ejs'), {
+        mockery.registerMock(upath.join(Ravel.cwd, 'node_modules', 'ejs'), {
           __express: function() {}
         });
         Ravel.set('express session secret', 'mysecret');
         Ravel.set('disable json vulnerability protection', true);
 
-        mockery.registerMock(path.join(Ravel.cwd, 'users'), users);
+        mockery.registerMock(upath.join(Ravel.cwd, 'users'), users);
         Ravel.module('users');
-        mockery.registerMock(path.join(Ravel.cwd, 'usersResource'), usersResource);
+        mockery.registerMock(upath.join(Ravel.cwd, 'usersResource'), usersResource);
         Ravel.resource('usersResource');
-        mockery.registerMock(path.join(Ravel.cwd, 'routes'), routes);
+        mockery.registerMock(upath.join(Ravel.cwd, 'routes'), routes);
         Ravel.routes('routes');
         Ravel.init();
         agent = request.agent(Ravel._server);

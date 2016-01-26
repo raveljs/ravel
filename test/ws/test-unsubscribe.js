@@ -1,13 +1,13 @@
 'use strict';
 
-var chai = require('chai');
-var expect = chai.expect;
+const chai = require('chai');
+const expect = chai.expect;
 chai.use(require('chai-things'));
 chai.use(require('sinon-chai'));
-var sinon = require('sinon');
-var mockery = require('mockery');
+const sinon = require('sinon');
+const mockery = require('mockery');
 
-var Mocks;
+let Mocks;
 
 describe('auth/primus_init', function() {
   beforeEach(function(done) {    
@@ -52,7 +52,7 @@ describe('auth/primus_init', function() {
     });
 
     it('should callback with an error if the user\'s user id cannot be determined.', function(done) {
-      var error = new Error();
+      const error = new Error();
       sinon.stub(Mocks.roomResolver, 'resolve', function() {
         return {
           name: '/test/:testId',
@@ -95,8 +95,8 @@ describe('auth/primus_init', function() {
         };
       });
       Mocks.spark.userId = 1;
-      var leaveSpy = sinon.spy(Mocks.spark, 'leave');
-      var broadcastSpy = sinon.spy(Mocks.broadcast, 'emit');
+      const leaveSpy = sinon.spy(Mocks.spark, 'leave');
+      const broadcastSpy = sinon.spy(Mocks.broadcast, 'emit');
       require('../../lib/ws/primus_init')(
         Mocks.Ravel, Mocks.Ravel._injector, Mocks.primus, Mocks.expressSessionStore, Mocks.roomResolver);
       Mocks.primus.emit('connection', Mocks.spark);

@@ -1,11 +1,11 @@
 'use strict';
 
-var chai = require('chai');
-var expect = chai.expect;
+const chai = require('chai');
+const expect = chai.expect;
 chai.use(require('chai-things'));
-var mockery = require('mockery');
+const mockery = require('mockery');
 
-var Ravel;
+let Ravel;
 
 describe('Ravel', function() {
   beforeEach(function(done) {

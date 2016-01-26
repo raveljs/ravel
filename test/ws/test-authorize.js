@@ -1,14 +1,14 @@
 'use strict';
 
-var chai = require('chai');
-var expect = chai.expect;
+const chai = require('chai');
+const expect = chai.expect;
 chai.use(require('chai-things'));
 chai.use(require('sinon-chai'));
-var sinon = require('sinon');
-var mockery = require('mockery');
-var httpMocks = require('node-mocks-http');
+const sinon = require('sinon');
+const mockery = require('mockery');
+const httpMocks = require('node-mocks-http');
 
-var Mocks;
+let Mocks;
 
 describe('ws/authorize', function() {
   beforeEach(function(done) {    
@@ -35,7 +35,7 @@ describe('ws/authorize', function() {
         req.signedCookies = {'connect.sid':9999999};
         callback();
       };
-      var session = {
+      const session = {
         passport: {
           user: 1
         }
@@ -43,7 +43,7 @@ describe('ws/authorize', function() {
       sinon.stub(Mocks.expressSessionStore, 'get', function(sessionId, callback) {
         callback(null, session);
       });
-      var req = httpMocks.createRequest({
+      const req = httpMocks.createRequest({
         method: 'GET',
         url: '/primus',
         headers: {
@@ -69,13 +69,13 @@ describe('ws/authorize', function() {
         req.signedCookies = {'connect.sid':9999999};
         callback();
       };
-      var session = {
+      const session = {
         //unauthorized
       };
       sinon.stub(Mocks.expressSessionStore, 'get', function(sessionId, callback) {
         callback(null, session);
       });
-      var req = httpMocks.createRequest({
+      const req = httpMocks.createRequest({
         method: 'GET',
         url: '/primus',
         headers: {
@@ -100,11 +100,11 @@ describe('ws/authorize', function() {
         req.signedCookies = {'connect.sid':9999999};
         callback();
       };
-      var error = new Error();
+      const error = new Error();
       sinon.stub(Mocks.expressSessionStore, 'get', function(sessionId, callback) {
         callback(error, null);
       });
-      var req = httpMocks.createRequest({
+      const req = httpMocks.createRequest({
         method: 'GET',
         url: '/primus',
         headers: {
@@ -126,7 +126,7 @@ describe('ws/authorize', function() {
     });
 
     it('should create a primus authorization function which authorizes users who have valid x-auth-token and x-auth-client headers', function(done) {
-      var profile = {
+      const profile = {
         id: 1,
         name: 'Sean McIntyre'
       };
@@ -136,7 +136,7 @@ describe('ws/authorize', function() {
       Mocks.Ravel.set('get user function', function(Ravel, profile, callback) {
         callback(null, profile);
       });
-      var req = httpMocks.createRequest({
+      const req = httpMocks.createRequest({
         method: 'GET',
         url: '/primus',
         headers: {
@@ -163,7 +163,7 @@ describe('ws/authorize', function() {
       sinon.stub(Mocks.tokenToProfile, 'tokenToProfile', function(token, client, callback) {
         callback(new Error(), null);
       });
-      var req = httpMocks.createRequest({
+      const req = httpMocks.createRequest({
         method: 'GET',
         url: '/primus',
         headers: {
@@ -187,7 +187,7 @@ describe('ws/authorize', function() {
     });
 
     it('should create a primus authorization function which rejects users who have valid x-auth-token and x-auth-client headers, but aren\'t registered users', function(done) {
-      var profile = {
+      const profile = {
         id: 1,
         name: 'Sean McIntyre'
       };
@@ -197,7 +197,7 @@ describe('ws/authorize', function() {
       Mocks.Ravel.set('get user function', function(Ravel, profile, callback) {
         callback(new Mocks.Ravel.ApplicationError.NotFound('User does not exist'), null);
       });
-      var req = httpMocks.createRequest({
+      const req = httpMocks.createRequest({
         method: 'GET',
         url: '/primus',
         headers: {

@@ -1,13 +1,13 @@
 'use strict';
 
-var chai = require('chai');
-var expect = chai.expect;
+const chai = require('chai');
+const expect = chai.expect;
 chai.use(require('chai-things'));
 chai.use(require('sinon-chai'));
-var sinon = require('sinon');
-var mockery = require('mockery');
+const sinon = require('sinon');
+const mockery = require('mockery');
 
-var Mocks;
+let Mocks;
 
 describe('ws/disconnect', function() {
   beforeEach(function(done) {    
@@ -34,13 +34,13 @@ describe('ws/disconnect', function() {
       sinon.stub(Mocks.Ravel.kvstore, 'sismember', function() {
         return true;
       });
-      var rooms = ['/test/1', '/test/2'];
-      var getRoomsSpy = sinon.stub(Mocks.Ravel.kvstore, 'smembers', function(key, callback) {
+      const rooms = ['/test/1', '/test/2'];
+      const getRoomsSpy = sinon.stub(Mocks.Ravel.kvstore, 'smembers', function(key, callback) {
         callback(null, rooms);
       });
-      var sremSpy = sinon.stub(Mocks.Ravel.kvstore, 'srem');
-      var delSpy = sinon.stub(Mocks.Ravel.kvstore, 'del');
-      var broadcastSpy = sinon.spy(Mocks.broadcast, 'emit');
+      const sremSpy = sinon.stub(Mocks.Ravel.kvstore, 'srem');
+      const delSpy = sinon.stub(Mocks.Ravel.kvstore, 'del');
+      const broadcastSpy = sinon.spy(Mocks.broadcast, 'emit');
       require('../../lib/ws/primus_init')(
         Mocks.Ravel, Mocks.Ravel._injector, Mocks.primus, Mocks.expressSessionStore, Mocks.roomResolver);
       Mocks.primus.emit('disconnection', Mocks.spark);

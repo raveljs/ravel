@@ -1,5 +1,8 @@
 'use strict';
 
+//TODO remove when harmony_rest_parameters is enabled by default
+require('harmonize')(['harmony_rest_parameters']);
+
 const gulp = require('gulp');
 const plugins = require( 'gulp-load-plugins' )();
 const stylish = require('jshint-stylish');
@@ -13,6 +16,8 @@ const TESTS = [
   'test/core/test-module.js',
   'test/core/test-modules.js',
   'test/core/test-params.js',
+  'test/core/test-resource.js',
+  'test/core/test-resources.js',
   // 'test/db/test-*.js',
   // 'test/util/test-*.js',
   'test/util/test-log.js',
@@ -125,7 +130,7 @@ gulp.task('travis', ['coveralls']);
 //   return gulp.src('src/main.js')
 //     .pipe(envs)
 //     .pipe(babel({optional: [
-//       'utility.inlineEnvironmentVariables'
+//       'utility.inlineEnvironmentconstiables'
 //     ]}))
 //     .pipe(uglify())
 //     .pipe(transform(file => browserify(file).bundle()))

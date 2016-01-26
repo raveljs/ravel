@@ -1,14 +1,14 @@
 'use strict';
 
-var chai = require('chai');
-var expect = chai.expect;
+const chai = require('chai');
+const expect = chai.expect;
 chai.use(require('chai-things'));
 chai.use(require('sinon-chai'));
-var sinon = require('sinon');
-var mockery = require('mockery');
-var httpMocks = require('node-mocks-http');
+const sinon = require('sinon');
+const mockery = require('mockery');
+const httpMocks = require('node-mocks-http');
 
-var Ravel, authorizeRequest, authorizeTokenStub, tokenToProfile;
+let Ravel, authorizeRequest, authorizeTokenStub, tokenToProfile;
 
 describe('util/authorize_request', function() {
   beforeEach(function(done) {
@@ -25,7 +25,7 @@ describe('util/authorize_request', function() {
       return tokenToProfile;
     };
     mockery.registerMock('./authorize_token', authorizeTokenStub);
-    Ravel = new require('../../lib/ravel')();
+    Ravel = new (require('../../lib/ravel'))();
     Ravel.Log.setLevel('NONE');
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
     authorizeRequest = require('../../lib/auth/authorize_request')(Ravel, false, false);
@@ -45,7 +45,7 @@ describe('util/authorize_request', function() {
   describe('middleware', function() {
     it('should use passport\'s req.isAuthenticated() to check users by default, calling next() if users are authorized by passport', function(done) {
       authorizeRequest = require('../../lib/auth/authorize_request')(Ravel, false, false);
-      var req = httpMocks.createRequest({
+      const req = httpMocks.createRequest({
         method: 'GET',
         url: '/entity',
         headers: {}
@@ -53,9 +53,9 @@ describe('util/authorize_request', function() {
       req.isAuthenticated = function() {
         return true;
       };
-      var isAuthenticatedSpy = sinon.spy(req, 'isAuthenticated');
-      var res = httpMocks.createResponse();
-      var next = sinon.stub();
+      const isAuthenticatedSpy = sinon.spy(req, 'isAuthenticated');
+      const res = httpMocks.createResponse();
+      const next = sinon.stub();
       authorizeRequest(req, res, next);
       expect(isAuthenticatedSpy).to.have.been.called;
       expect(next).to.have.been.calledWith();
@@ -64,7 +64,7 @@ describe('util/authorize_request', function() {
 
     it('should use passport\'s req.isAuthenticated() to check users by default, sending HTTP 401 UNAUTHORIZED if users are unauthorized', function(done) {
       authorizeRequest = require('../../lib/auth/authorize_request')(Ravel, false, false);
-      var req = httpMocks.createRequest({
+      const req = httpMocks.createRequest({
         method: 'GET',
         url: '/entity',
         headers: {}
@@ -72,10 +72,10 @@ describe('util/authorize_request', function() {
       req.isAuthenticated = function() {
         return false;
       };
-      var isAuthenticatedSpy = sinon.spy(req, 'isAuthenticated');
-      var res = httpMocks.createResponse();
-      var endSpy = sinon.spy(res, 'end');
-      var next = sinon.stub();
+      const isAuthenticatedSpy = sinon.spy(req, 'isAuthenticated');
+      const res = httpMocks.createResponse();
+      const endSpy = sinon.spy(res, 'end');
+      const next = sinon.stub();
       authorizeRequest(req, res, next);
       expect(isAuthenticatedSpy).to.have.been.called;
       expect(next).to.not.have.been.called;
@@ -87,7 +87,7 @@ describe('util/authorize_request', function() {
     it('should use passport\'s req.isAuthenticated() to check users by default, redirecting to the login page if users are unauthorized and redirects are enabled', function(done) {
       authorizeRequest = require('../../lib/auth/authorize_request')(Ravel, true, false);
       Ravel.set('login route', '/login');
-      var req = httpMocks.createRequest({
+      const req = httpMocks.createRequest({
         method: 'GET',
         url: '/entity',
         headers: {}
@@ -95,10 +95,10 @@ describe('util/authorize_request', function() {
       req.isAuthenticated = function() {
         return false;
       };
-      var isAuthenticatedSpy = sinon.spy(req, 'isAuthenticated');
-      var res = httpMocks.createResponse();
-      var redirectSpy = sinon.spy(res, 'redirect');
-      var next = sinon.stub();
+      const isAuthenticatedSpy = sinon.spy(req, 'isAuthenticated');
+      const res = httpMocks.createResponse();
+      const redirectSpy = sinon.spy(res, 'redirect');
+      const next = sinon.stub();
       authorizeRequest(req, res, next);
       expect(isAuthenticatedSpy).to.have.been.called;
       expect(next).to.not.have.been.called;
@@ -108,7 +108,7 @@ describe('util/authorize_request', function() {
 
     it('should use x-auth-token and x-auth-client headers to authorize mobile clients', function(done) {
       authorizeRequest = require('../../lib/auth/authorize_request')(Ravel, false, false);
-      var req = httpMocks.createRequest({
+      const req = httpMocks.createRequest({
         method: 'GET',
         url: '/entity',
         headers: {
@@ -117,10 +117,10 @@ describe('util/authorize_request', function() {
         }
       });
       req.isAuthenticated = function() {};
-      var isAuthenticatedSpy = sinon.spy(req, 'isAuthenticated');
-      var res = httpMocks.createResponse();
-      var next = sinon.stub();
-      var profile = {}, user = {};
+      const isAuthenticatedSpy = sinon.spy(req, 'isAuthenticated');
+      const res = httpMocks.createResponse();
+      const next = sinon.stub();
+      const profile = {}, user = {};
       sinon.stub(tokenToProfile, 'tokenToProfile', function(token, client, callback) {
         expect(token).to.equal('oauth-token');
         expect(client).to.equal('test-ios');
@@ -138,7 +138,7 @@ describe('util/authorize_request', function() {
 
     it('should use x-auth-token and x-auth-client headers to authorize mobile clients, failing with HTTP 401 UNAUTHORIZED if the user does not exist and registration is disabled', function(done) {
       authorizeRequest = require('../../lib/auth/authorize_request')(Ravel, false, false);
-      var req = httpMocks.createRequest({
+      const req = httpMocks.createRequest({
         method: 'GET',
         url: '/entity',
         headers: {
@@ -147,11 +147,11 @@ describe('util/authorize_request', function() {
         }
       });
       req.isAuthenticated = function() {};
-      var isAuthenticatedSpy = sinon.spy(req, 'isAuthenticated');
-      var res = httpMocks.createResponse();
-      var endSpy = sinon.spy(res, 'end');
-      var next = sinon.stub();
-      var profile = {};
+      const isAuthenticatedSpy = sinon.spy(req, 'isAuthenticated');
+      const res = httpMocks.createResponse();
+      const endSpy = sinon.spy(res, 'end');
+      const next = sinon.stub();
+      const profile = {};
       sinon.stub(tokenToProfile, 'tokenToProfile', function(token, client, callback) {
         expect(token).to.equal('oauth-token');
         expect(client).to.equal('test-ios');
@@ -170,7 +170,7 @@ describe('util/authorize_request', function() {
 
     it('use x-auth-token and x-auth-client headers to authorize mobile clients, failing with HTTP 401 UNAUTHORIZED if the token cannot be validated or translated into a profile', function(done) {
       authorizeRequest = require('../../lib/auth/authorize_request')(Ravel, false, false);
-      var req = httpMocks.createRequest({
+      const req = httpMocks.createRequest({
         method: 'GET',
         url: '/entity',
         headers: {
@@ -179,10 +179,10 @@ describe('util/authorize_request', function() {
         }
       });
       req.isAuthenticated = function() {};
-      var isAuthenticatedSpy = sinon.spy(req, 'isAuthenticated');
-      var res = httpMocks.createResponse();
-      var endSpy = sinon.spy(res, 'end');
-      var next = sinon.stub();
+      const isAuthenticatedSpy = sinon.spy(req, 'isAuthenticated');
+      const res = httpMocks.createResponse();
+      const endSpy = sinon.spy(res, 'end');
+      const next = sinon.stub();
       sinon.stub(tokenToProfile, 'tokenToProfile', function(token, client, callback) {
         expect(token).to.equal('oauth-token');
         expect(client).to.equal('test-ios');
@@ -198,7 +198,7 @@ describe('util/authorize_request', function() {
 
     it('use x-auth-token and x-auth-client headers to authorize mobile clients, registering users if that functionality is enabled and they don\'t already exist', function(done) {
       authorizeRequest = require('../../lib/auth/authorize_request')(Ravel, false, true);
-      var req = httpMocks.createRequest({
+      const req = httpMocks.createRequest({
         method: 'GET',
         url: '/entity',
         headers: {
@@ -207,10 +207,10 @@ describe('util/authorize_request', function() {
         }
       });
       req.isAuthenticated = function() {};
-      var isAuthenticatedSpy = sinon.spy(req, 'isAuthenticated');
-      var res = httpMocks.createResponse();
-      var next = sinon.stub();
-      var profile = {}, user = {};
+      const isAuthenticatedSpy = sinon.spy(req, 'isAuthenticated');
+      const res = httpMocks.createResponse();
+      const next = sinon.stub();
+      const profile = {}, user = {};
       sinon.stub(tokenToProfile, 'tokenToProfile', function(token, client, callback) {
         expect(token).to.equal('oauth-token');
         expect(client).to.equal('test-ios');
@@ -228,7 +228,7 @@ describe('util/authorize_request', function() {
 
     it('use x-auth-token and x-auth-client headers to authorize mobile clients, responding with HTTP 401 UNAUTHORIZED if user registration is enabled and registration fails', function(done) {
       authorizeRequest = require('../../lib/auth/authorize_request')(Ravel, false, true);
-      var req = httpMocks.createRequest({
+      const req = httpMocks.createRequest({
         method: 'GET',
         url: '/entity',
         headers: {
@@ -237,11 +237,11 @@ describe('util/authorize_request', function() {
         }
       });
       req.isAuthenticated = function() {};
-      var isAuthenticatedSpy = sinon.spy(req, 'isAuthenticated');
-      var res = httpMocks.createResponse();
-      var endSpy = sinon.spy(res, 'end');
-      var next = sinon.stub();
-      var profile = {};
+      const isAuthenticatedSpy = sinon.spy(req, 'isAuthenticated');
+      const res = httpMocks.createResponse();
+      const endSpy = sinon.spy(res, 'end');
+      const next = sinon.stub();
+      const profile = {};
       sinon.stub(tokenToProfile, 'tokenToProfile', function(token, client, callback) {
         expect(token).to.equal('oauth-token');
         expect(client).to.equal('test-ios');

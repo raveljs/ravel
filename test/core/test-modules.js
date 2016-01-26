@@ -4,7 +4,7 @@ const chai = require('chai');
 const expect = chai.expect;
 chai.use(require('chai-things'));
 const mockery = require('mockery');
-const path = require('path');
+const upath = require('upath');
 const sinon = require('sinon');
 chai.use(require('sinon-chai'));
 
@@ -52,8 +52,8 @@ describe('Ravel', function() {
         };
       });
 
-      mockery.registerMock(path.join(Ravel.cwd, './modules/test1.js'), class {});
-      mockery.registerMock(path.join(Ravel.cwd, './modules/test2.js'), class {});
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/test1.js'), class {});
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/test2.js'), class {});
       Ravel.modules('./modules');
       expect(Ravel._moduleFactories).to.have.property('test1');
       expect(Ravel._moduleFactories['test1']).to.be.a('function');

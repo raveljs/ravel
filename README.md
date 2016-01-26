@@ -57,8 +57,8 @@ Business logic sits in plain old node.js modules, which are generally not networ
     // modules and npm dependencies. No require
     // statements or relative paths!
     module.exports = function($E, $L, $Params, async) {
-      var Cities = {};
-      var c = ['Toronto', 'New York', 'Chicago'];
+      const Cities = {};
+      const c = ['Toronto', 'New York', 'Chicago'];
 
       Cities.getAllCities = function(callback) {
         // pretend we used async for something here
@@ -67,7 +67,7 @@ Business logic sits in plain old node.js modules, which are generally not networ
       };
 
       Cities.getCity = function(name, callback) {
-        var index = c.indexOf(name);
+        const index = c.indexOf(name);
         if (index) {
           callback(null, c[index]);
         } else {
@@ -86,7 +86,7 @@ To register and name your module, we need a top-level *app.js* file:
 
 *app.js*
 
-    var Ravel = new require('ravel')();
+    const Ravel = new require('ravel')();
     //...we'll initialize Ravel with some important parameters later
 
     // supply the path to this module. you'll be able to inject
@@ -95,7 +95,7 @@ To register and name your module, we need a top-level *app.js* file:
 
 Note: Modules with filenames including hyphens are made available for injection via camel case  (e.g. './modules/my-module.js' would be available as 'myModule').
 
-Another note: Modules also support array notation for injecting npm dependencies which have invalid js variables names (such as 'bad.module'). To use this notation, define your module like this:
+Another note: Modules also support array notation for injecting npm dependencies which have invalid js constiables names (such as 'bad.module'). To use this notation, define your module like this:
 
     module.exports = ['bad.module', function(badModule) {
       ...
@@ -151,7 +151,7 @@ Like before, we need to register our resource:
 
 *app.js*
 
-    var Ravel = new require('ravel')();
+    const Ravel = new require('ravel')();
     //...we're still getting to this part
 
     Ravel.module('./modules/cities');
@@ -186,7 +186,7 @@ Once again, register the routes:
 
 *app.js*
 
-    var Ravel = new require('ravel')();
+    const Ravel = new require('ravel')();
     //Since we're using EJS, we need to tell Ravel some things
     Ravel.set('express view directory', 'views');
     Ravel.set('express view engine', 'ejs');
@@ -203,7 +203,7 @@ Websocket Rooms are topic *patterns* which represent a collection of topics to w
 
 *app.js*
 
-    var Ravel = new require('ravel')();
+    const Ravel = new require('ravel')();
     Ravel.set('express view directory', 'views');
     Ravel.set('express view engine', 'ejs');
     //...we're still getting to this part
@@ -231,7 +231,7 @@ We've been avoiding some mandatory Ravel.set() parameters up until now, includin
 
 *app.js*
 
-    var Ravel = new require('ravel')();
+    const Ravel = new require('ravel')();
     Ravel.set('express view directory', 'views');
     Ravel.set('express view engine', 'ejs');
     //Here are those extra parameters we mentioned before

@@ -1,14 +1,14 @@
 'use strict';
 
-var chai = require('chai');
-var expect = chai.expect;
+const chai = require('chai');
+const expect = chai.expect;
 chai.use(require('chai-things'));
-var mockery = require('mockery');
-var path = require('path');
-var sinon = require('sinon');
-var express = require('express');
+const mockery = require('mockery');
+const upath = require('upath');
+const sinon = require('sinon');
+const express = require('express');
 
-var Ravel;
+let Ravel;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
@@ -18,8 +18,8 @@ describe('Ravel', function() {
       warnOnReplace: false,
       warnOnUnregistered: false
     });
-    
-    Ravel = new require('../../lib/ravel')();
+
+    Ravel = new (require('../../lib/ravel'))();
     Ravel.Log.setLevel('NONE');
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
     done();
@@ -57,7 +57,7 @@ describe('Ravel', function() {
       };
       Ravel.authorize = function() {};
       Ravel.authorizeWithRedirect = function() {};
-      var stub = function($E, $L, $KV, $RouteBuilder, $Broadcast, $Private, $PrivateRedirect) {
+      const stub = function($E, $L, $KV, $RouteBuilder, $Broadcast, $Private, $PrivateRedirect) {
         expect($E).to.be.ok;
         expect($E).to.be.an('object');
         expect($E).to.equal(Ravel.ApplicationError);
@@ -81,21 +81,21 @@ describe('Ravel', function() {
         return {};
       };
       Ravel.routes('stub');
-      mockery.registerMock(path.join(Ravel.cwd, 'stub'), stub);
+      mockery.registerMock(upath.join(Ravel.cwd, 'stub'), stub);
       Ravel._routesFactories['stub']();
     });
 
     it('should facilitate the creation of GET routes via $RouteBuilder.add, but not permit the use of other HTTP verbs', function(done) {
-      var middleware1 = function(/*req, res*/) {};
-      var middleware2 = function(/*req, res*/) {};
-      var stub = function($RouteBuilder) {
+      const middleware1 = function(/*req, res*/) {};
+      const middleware2 = function(/*req, res*/) {};
+      const stub = function($RouteBuilder) {
         $RouteBuilder.add('/app/path', middleware1, middleware2);
       };
       Ravel.routes('stub');
-      mockery.registerMock(path.join(Ravel.cwd, 'stub'), stub);
+      mockery.registerMock(upath.join(Ravel.cwd, 'stub'), stub);
 
       //load up express
-      var app = express();
+      const app = express();
       sinon.stub(app, 'get', function() {
         expect(arguments[0]).to.equal('/app/path');
         expect(arguments[1]).to.equal(middleware1);

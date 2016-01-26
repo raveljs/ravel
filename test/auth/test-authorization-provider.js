@@ -1,11 +1,11 @@
 'use strict';
 
-var chai = require('chai');
-var expect = chai.expect;
+const chai = require('chai');
+const expect = chai.expect;
 chai.use(require('chai-things'));
-var mockery = require('mockery');
+const mockery = require('mockery');
 
-var Ravel, provider;
+let Ravel, provider;
 
 describe('auth/authorization_provider', function() {
   beforeEach(function(done) {
@@ -17,16 +17,16 @@ describe('auth/authorization_provider', function() {
     });
 
     //mock Ravel.kvstore, since we're not actually starting Ravel.
-    var redisMock = {
+    const redisMock = {
       createClient: function() {
-        var redisClientStub = new (require('events').EventEmitter)();
+        const redisClientStub = new (require('events').EventEmitter)();
         redisClientStub.auth = function(){};
         return redisClientStub;
       },
     };
     mockery.registerMock('redis', redisMock);
 
-    Ravel = new require('../../lib/ravel')();
+    Ravel = new (require('../../lib/ravel'))();
     Ravel.Log.setLevel('NONE');
 
     provider = new Ravel.AuthorizationProvider('name');

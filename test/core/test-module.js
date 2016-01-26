@@ -4,7 +4,7 @@ const chai = require('chai');
 const expect = chai.expect;
 chai.use(require('chai-things'));
 const mockery = require('mockery');
-const path = require('path');
+const upath = require('upath');
 
 let Ravel;
 
@@ -32,7 +32,7 @@ describe('Ravel', function() {
 
   describe('#module()', function() {
     it('should allow clients to register module files for instantiation in Ravel.start', function(done) {
-      mockery.registerMock(path.join(Ravel.cwd, './modules/test'), class {});
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/test'), class {});
       Ravel.module('./modules/test');
       expect(Ravel._moduleFactories).to.have.property('test');
       expect(Ravel._moduleFactories['test']).to.be.a('function');
@@ -40,7 +40,7 @@ describe('Ravel', function() {
     });
 
     it('should allow clients to register module files with an extension and still derive the correct name', function(done) {
-      mockery.registerMock(path.join(Ravel.cwd, './modules/test.js'), class {});
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/test.js'), class {});
       Ravel.module('./modules/test.js');
       expect(Ravel._moduleFactories).to.have.property('test');
       expect(Ravel._moduleFactories['test']).to.be.a('function');
@@ -48,9 +48,9 @@ describe('Ravel', function() {
     });
 
     it('should throw a Ravel.ApplicationError.DuplicateEntry error when clients attempt to register multiple modules with the same name', function(done) {
-      mockery.registerMock(path.join(Ravel.cwd, './modules/test'), class {});
-      mockery.registerMock(path.join(Ravel.cwd, './more_modules/test'), class {});
-      var shouldThrow = function() {
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/test'), class {});
+      mockery.registerMock(upath.join(Ravel.cwd, './more_modules/test'), class {});
+      const shouldThrow = function() {
         Ravel.module('./modules/test');
         Ravel.module('./more_modules/test');
       };
@@ -90,14 +90,14 @@ describe('Ravel', function() {
 
         method() {}
       };
-      mockery.registerMock(path.join(Ravel.cwd, 'test'), Stub);
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.module('./test');
       Ravel._moduleInit();
     });
 
     it('should convert hyphenated module names into camel case automatically', function(done) {
       const Stub = class {};
-      mockery.registerMock(path.join(Ravel.cwd, 'my-test-module.js'), Stub);
+      mockery.registerMock(upath.join(Ravel.cwd, 'my-test-module.js'), Stub);
       Ravel.module('./my-test-module.js');
       expect(Ravel._moduleFactories).to.have.property('myTestModule');
       expect(Ravel._moduleFactories['myTestModule']).to.be.a('function');
@@ -119,8 +119,8 @@ describe('Ravel', function() {
           done();
         }
       };
-      mockery.registerMock(path.join(Ravel.cwd, './modules/test'), Stub1);
-      mockery.registerMock(path.join(Ravel.cwd, './modules/test2'), Stub2);
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/test'), Stub1);
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/test2'), Stub2);
       Ravel.module('./modules/test');
       Ravel.module('./modules/test2');
       Ravel._moduleInit();
@@ -135,7 +135,7 @@ describe('Ravel', function() {
           /*jshint unused:false*/
         }
       };
-      mockery.registerMock(path.join(Ravel.cwd, './modules/test'), Stub);
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/test'), Stub);
       Ravel.module('./modules/test');
       const test = function() {
         Ravel._moduleInit();
@@ -187,10 +187,10 @@ describe('Ravel', function() {
           expect(instantiatedModules).to.have.property('test');
         }
       };
-      mockery.registerMock(path.join(Ravel.cwd, './modules/test'), Stub1);
-      mockery.registerMock(path.join(Ravel.cwd, './modules/test2'), Stub2);
-      mockery.registerMock(path.join(Ravel.cwd, './modules/test3'), Stub3);
-      mockery.registerMock(path.join(Ravel.cwd, './modules/test4'), Stub4);
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/test'), Stub1);
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/test2'), Stub2);
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/test3'), Stub3);
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/test4'), Stub4);
       Ravel.module('./modules/test');
       Ravel.module('./modules/test2');
       Ravel.module('./modules/test3');
@@ -216,8 +216,8 @@ describe('Ravel', function() {
           /*jshint unused:false*/
         }
       };
-      mockery.registerMock(path.join(Ravel.cwd, './modules/test'), Stub1);
-      mockery.registerMock(path.join(Ravel.cwd, './modules/test2'), Stub2);
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/test'), Stub1);
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/test2'), Stub2);
       Ravel.module('./modules/test');
       Ravel.module('./modules/test2');
       const test = function() {
@@ -261,10 +261,10 @@ describe('Ravel', function() {
           return {};
         }
       };
-      mockery.registerMock(path.join(Ravel.cwd, './modules/test'), Stub1);
-      mockery.registerMock(path.join(Ravel.cwd, './modules/test2'), Stub2);
-      mockery.registerMock(path.join(Ravel.cwd, './modules/test3'), Stub3);
-      mockery.registerMock(path.join(Ravel.cwd, './modules/test4'), Stub4);
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/test'), Stub1);
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/test2'), Stub2);
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/test3'), Stub3);
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/test4'), Stub4);
       Ravel.module('./modules/test');
       Ravel.module('./modules/test2');
       Ravel.module('./modules/test3');
@@ -292,13 +292,13 @@ describe('Ravel', function() {
         }
         method() {}
       };
-      mockery.registerMock(path.join(Ravel.cwd, './test'), StubClientModule);
+      mockery.registerMock(upath.join(Ravel.cwd, './test'), StubClientModule);
       mockery.registerMock('moment', stubMoment);
       Ravel.module('./test');
       Ravel._moduleInit();
     });
 
-    it('should support array notation for specifying module dependencies which use invalid js variable names', function(done) {
+    it('should support array notation for specifying module dependencies which use invalid js constiable names', function(done) {
       const stubBadName = {
         method: function() {}
       };
@@ -314,7 +314,7 @@ describe('Ravel', function() {
         }
         method() {}
       };
-      mockery.registerMock(path.join(Ravel.cwd, './test'), StubClientModule);
+      mockery.registerMock(upath.join(Ravel.cwd, './test'), StubClientModule);
       mockery.registerMock('bad.name', stubBadName);
       Ravel.module('./test');
       Ravel._moduleInit();
@@ -329,7 +329,7 @@ describe('Ravel', function() {
           expect(unknownModule).to.be.an('object');
         }
       };
-      mockery.registerMock(path.join(Ravel.cwd, './test'), stub);
+      mockery.registerMock(upath.join(Ravel.cwd, './test'), stub);
       Ravel.module('./test');
       const shouldThrow = function() {
         Ravel._moduleFactories['test']();
@@ -342,7 +342,7 @@ describe('Ravel', function() {
       const Stub = class {
         method(){}
       };
-      mockery.registerMock(path.join(Ravel.cwd, './test'), Stub);
+      mockery.registerMock(upath.join(Ravel.cwd, './test'), Stub);
       Ravel.module('./test');
       Ravel._moduleInit();
       expect(Ravel._modules.test.method).to.be.a.function;
@@ -351,7 +351,7 @@ describe('Ravel', function() {
 
     it('should throw an ApplicationError.IllegalValue when a client attempts to register a module factory which is not an instantiable class', function(done) {
       const stub = 'I am not a function or an object';
-      mockery.registerMock(path.join(Ravel.cwd, './test'), stub);
+      mockery.registerMock(upath.join(Ravel.cwd, './test'), stub);
       const shouldThrow = function() {
         Ravel.module('./test');
       };
@@ -375,7 +375,7 @@ describe('Ravel', function() {
           expect(moment).to.equal(momentStub);
         }
       };
-      var Stub2 = class {
+      const Stub2 = class {
         static get inject() {
           return ['moment', '$E'];
         }
@@ -389,8 +389,8 @@ describe('Ravel', function() {
           done();
         }
       };
-      mockery.registerMock(path.join(Ravel.cwd, './test1'), Stub1);
-      mockery.registerMock(path.join(Ravel.cwd, './test2'), Stub2);
+      mockery.registerMock(upath.join(Ravel.cwd, './test1'), Stub1);
+      mockery.registerMock(upath.join(Ravel.cwd, './test2'), Stub2);
       Ravel.module('./test1');
       Ravel.module('./test2');
       Ravel._moduleInit();
@@ -422,9 +422,9 @@ describe('Ravel', function() {
           done();
         }
       };
-      mockery.registerMock(path.join(Ravel.cwd, './test'), Stub1);
-      mockery.registerMock(path.join(Ravel.cwd, './test2'), Stub2);
-      mockery.registerMock(path.join(Ravel.cwd, './test3'), Stub3);
+      mockery.registerMock(upath.join(Ravel.cwd, './test'), Stub1);
+      mockery.registerMock(upath.join(Ravel.cwd, './test2'), Stub2);
+      mockery.registerMock(upath.join(Ravel.cwd, './test3'), Stub3);
       Ravel.module('./test');
       Ravel.module('./test2');
       Ravel.module('./test3');

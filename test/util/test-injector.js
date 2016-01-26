@@ -4,7 +4,7 @@ const chai = require('chai');
 const expect = chai.expect;
 chai.use(require('chai-things'));
 const mockery = require('mockery');
-const path = require('path');
+const upath = require('upath');
 
 let Ravel;
 
@@ -44,8 +44,8 @@ describe('Ravel', function() {
           done();
         }
       };
-      mockery.registerMock(path.join(Ravel.cwd, 'test'), Stub1);
-      mockery.registerMock(path.join(Ravel.cwd, 'test2'), Stub2);
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub1);
+      mockery.registerMock(upath.join(Ravel.cwd, 'test2'), Stub2);
       Ravel.module('test');
       Ravel.module('test2');
       Ravel._moduleFactories['test']();
@@ -64,7 +64,7 @@ describe('Ravel', function() {
           done();
         }
       };
-      mockery.registerMock(path.join(Ravel.cwd, 'test'), Stub);
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       const test = function() {
         Ravel.module('test');
         Ravel._moduleFactories['test']();
@@ -89,7 +89,7 @@ describe('Ravel', function() {
         }
         method() {}
       };
-      mockery.registerMock(path.join(Ravel.cwd, 'test'), stubClientModule);
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), stubClientModule);
       mockery.registerMock('moment', stubMoment);
       Ravel.module('test');
       Ravel._injector.inject({}, stubClientModule);
@@ -104,7 +104,7 @@ describe('Ravel', function() {
           expect(unknownModule).to.be.an('object');
         }
       };
-      mockery.registerMock(path.join(Ravel.cwd, 'test'), stub);
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
       Ravel.module('test');
       try {
         Ravel._injector.inject({}, stub);
@@ -129,12 +129,12 @@ describe('Ravel', function() {
           done();
         }
       };
-      mockery.registerMock(path.join(Ravel.cwd, 'test'), stub);
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
       Ravel.module('test');
       Ravel._injector.inject(moduleMap, stub);
     });
 
-    it('should support array notation for declaring dependencies which are not valid js variable names', function(done) {
+    it('should support array notation for declaring dependencies which are not valid js constiable names', function(done) {
       const stubBadName = {
         method: function() {}
       };
@@ -157,8 +157,8 @@ describe('Ravel', function() {
         }
         method() {}
       };
-      mockery.registerMock(path.join(Ravel.cwd, 'my-module.js'), StubClientModule);
-      mockery.registerMock(path.join(Ravel.cwd, 'test'), AnotherStubClientModule);
+      mockery.registerMock(upath.join(Ravel.cwd, 'my-module.js'), StubClientModule);
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), AnotherStubClientModule);
       mockery.registerMock('bad.module', stubBadName);
       Ravel.module('my-module.js');
       Ravel.module('test');

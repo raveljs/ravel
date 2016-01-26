@@ -1,11 +1,11 @@
 'use strict';
 
-var chai = require('chai');
-var expect = chai.expect;
+const chai = require('chai');
+const expect = chai.expect;
 chai.use(require('chai-things'));
-var mockery = require('mockery');
+const mockery = require('mockery');
 
-var roomResolver, rooms;
+let roomResolver, rooms;
 
 describe('ws/util/websocket_room_resolver', function() {
   beforeEach(function(done) {
@@ -46,7 +46,7 @@ describe('ws/util/websocket_room_resolver', function() {
         regex: /\/entities\/users\/(\w+)/,
         authorize: function(){}
       };
-      var resolution = roomResolver.resolve('/entities/users/1');
+      let resolution = roomResolver.resolve('/entities/users/1');
       expect(resolution).to.have.property('instance').that.equals('/entities/users/1');
       expect(resolution).to.have.property('params').that.deep.equals({
         'userId':'1'
@@ -70,7 +70,7 @@ describe('ws/util/websocket_room_resolver', function() {
       };
       roomResolver.resolve('/entities/users/1');
       delete rooms['/entites/tasks/:taskId'];
-      var resolution = roomResolver.resolve('/entities/users/1');
+      const resolution = roomResolver.resolve('/entities/users/1');
       expect(resolution).to.have.property('instance').that.equals('/entities/users/1');
       expect(resolution).to.have.property('params').that.deep.equals({
         'userId':'1'

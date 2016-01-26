@@ -1,13 +1,13 @@
 'use strict';
 
-var chai = require('chai');
-var expect = chai.expect;
+const chai = require('chai');
+const expect = chai.expect;
 chai.use(require('chai-things'));
-var sinon = require('sinon');
-var mockery = require('mockery');
-var httpMocks = require('node-mocks-http');
+const sinon = require('sinon');
+const mockery = require('mockery');
+const httpMocks = require('node-mocks-http');
 
-var Ravel, broadcastMiddleware, emitSpy;
+let Ravel, broadcastMiddleware, emitSpy;
 
 describe('ws/util/broadcast_middleware', function() {
   beforeEach(function(done) {
@@ -38,14 +38,14 @@ describe('ws/util/broadcast_middleware', function() {
 
   describe('middleware', function() {
     it('should emit nothing and call next() when req.method is GET', function(done) {
-      var req = httpMocks.createRequest({
+      const req = httpMocks.createRequest({
         method: 'GET',
         url: '/entity',
         headers: {}
       });
-      var res = httpMocks.createResponse();
-      var temp = res.end;
-      var next = sinon.stub();
+      const res = httpMocks.createResponse();
+      const temp = res.end;
+      const next = sinon.stub();
       broadcastMiddleware(req, res, next);
       expect(next).to.have.been.calledWith();
       expect(emitSpy).to.not.have.been.called;
@@ -54,13 +54,13 @@ describe('ws/util/broadcast_middleware', function() {
     });
 
     it('should emit nothing and call next() when req.method is POST and req.statusCode is not 200 or 201', function(done) {
-      var req = httpMocks.createRequest({
+      const req = httpMocks.createRequest({
         method: 'POST',
         url: '/entity',
         headers: {}
       });
-      var res = httpMocks.createResponse();
-      var next = sinon.stub();
+      const res = httpMocks.createResponse();
+      const next = sinon.stub();
       broadcastMiddleware(req, res, next);
       res.status(409);
       res.end();
@@ -70,13 +70,13 @@ describe('ws/util/broadcast_middleware', function() {
     });
 
     it('should emit nothing and call next() when req.method is PUT and req.statusCode is not 200 or 201', function(done) {
-      var req = httpMocks.createRequest({
+      const req = httpMocks.createRequest({
         method: 'PUT',
         url: '/entity/1',
         headers: {}
       });
-      var res = httpMocks.createResponse();
-      var next = sinon.stub();
+      const res = httpMocks.createResponse();
+      const next = sinon.stub();
       broadcastMiddleware(req, res, next);
       res.status(404);
       res.end();
@@ -86,13 +86,13 @@ describe('ws/util/broadcast_middleware', function() {
     });
 
     it('should emit nothing and call next() when req.method is DELETE and req.statusCode is not 200 or 201', function(done) {
-      var req = httpMocks.createRequest({
+      const req = httpMocks.createRequest({
         method: 'DELETE',
         url: '/entity/1',
         headers: {}
       });
-      var res = httpMocks.createResponse();
-      var next = sinon.stub();
+      const res = httpMocks.createResponse();
+      const next = sinon.stub();
       broadcastMiddleware(req, res, next);
       res.status(500);
       res.end();
@@ -102,7 +102,7 @@ describe('ws/util/broadcast_middleware', function() {
     });
 
     it('should emit a create message to the appropriate websocket room when req.method is POST and res.status is 200 or 201', function(done) {
-      var req = httpMocks.createRequest({
+      const req = httpMocks.createRequest({
         method: 'POST',
         url: '/entity',
         headers: {}
@@ -110,15 +110,15 @@ describe('ws/util/broadcast_middleware', function() {
       req.route = {
         path: '/entity/:id'
       };
-      var res = httpMocks.createResponse();
+      const res = httpMocks.createResponse();
       res.send = function(body) {
         res.body = body;
         res.end(body);
       };
-      var next = sinon.stub();
+      const next = sinon.stub();
       broadcastMiddleware(req, res, next);
       res.status(201);
-      var body = {};
+      const body = {};
       res.send(body);
       expect(next).to.have.been.calledWith();
       expect(emitSpy).to.have.been.calledWith('/entity', 'create', '{}');
@@ -126,7 +126,7 @@ describe('ws/util/broadcast_middleware', function() {
     });
 
     it('should emit a change message to the appropriate websocket room when req.method is PUT and res.status is 200', function(done) {
-      var req = httpMocks.createRequest({
+      const req = httpMocks.createRequest({
         method: 'PUT',
         url: '/entity/1',
         headers: {}
@@ -134,15 +134,15 @@ describe('ws/util/broadcast_middleware', function() {
       req.route = {
         path: '/entity/:id'
       };
-      var res = httpMocks.createResponse();
+      const res = httpMocks.createResponse();
       res.send = function(body) {
         res.body = body;
         res.end(body);
       };
-      var next = sinon.stub();
+      const next = sinon.stub();
       broadcastMiddleware(req, res, next);
       res.status(200);
-      var body = {};
+      const body = {};
       res.send(body);
       expect(next).to.have.been.calledWith();
       expect(emitSpy).to.have.been.calledWith('/entity', 'change', '{}');
@@ -150,7 +150,7 @@ describe('ws/util/broadcast_middleware', function() {
     });
 
     it('should emit a delete message to the appropriate websocket room when req.method is DELETE and res.status is 200', function(done) {
-      var req = httpMocks.createRequest({
+      const req = httpMocks.createRequest({
         method: 'DELETE',
         url: '/entity/1',
         headers: {}
@@ -158,15 +158,15 @@ describe('ws/util/broadcast_middleware', function() {
       req.route = {
         path: '/entity/:id'
       };
-      var res = httpMocks.createResponse();
+      const res = httpMocks.createResponse();
       res.send = function(body) {
         res.body = body;
         res.end(body);
       };
-      var next = sinon.stub();
+      const next = sinon.stub();
       broadcastMiddleware(req, res, next);
       res.status(200);
-      var body = {};
+      const body = {};
       res.send(body);
       expect(next).to.have.been.calledWith();
       expect(emitSpy).to.have.been.calledWith('/entity', 'delete', '{}');
@@ -174,7 +174,7 @@ describe('ws/util/broadcast_middleware', function() {
     });
 
     it('should emit a change all message to the appropriate websocket room when req.method is PUT, res.status is 200, and the endpoint is missing its trailing parameter', function(done) {
-      var req = httpMocks.createRequest({
+      const req = httpMocks.createRequest({
         method: 'PUT',
         url: '/entity',
         headers: {}
@@ -182,15 +182,15 @@ describe('ws/util/broadcast_middleware', function() {
       req.route = {
         path: '/entity'
       };
-      var res = httpMocks.createResponse();
+      const res = httpMocks.createResponse();
       res.send = function(body) {
         res.body = body;
         res.end(body);
       };
-      var next = sinon.stub();
+      const next = sinon.stub();
       broadcastMiddleware(req, res, next);
       res.status(200);
-      var body = [];
+      const body = [];
       res.send(body);
       expect(next).to.have.been.calledWith();
       expect(emitSpy).to.have.been.calledWith('/entity', 'change all', '[]');
@@ -198,7 +198,7 @@ describe('ws/util/broadcast_middleware', function() {
     });
 
     it('should emit a delete all message to the appropriate websocket room when req.method is DELETE, res.status is 200, and the endpoint is missing its trailing paramete', function(done) {
-      var req = httpMocks.createRequest({
+      const req = httpMocks.createRequest({
         method: 'DELETE',
         url: '/entity',
         headers: {}
@@ -206,12 +206,12 @@ describe('ws/util/broadcast_middleware', function() {
       req.route = {
         path: '/entity'
       };
-      var res = httpMocks.createResponse();
+      const res = httpMocks.createResponse();
       res.send = function(body) {
         res.body = body;
         res.end(body);
       };
-      var next = sinon.stub();
+      const next = sinon.stub();
       broadcastMiddleware(req, res, next);
       res.status(200);
       res.send();
@@ -221,7 +221,7 @@ describe('ws/util/broadcast_middleware', function() {
     });
 
     it('should strip JSON vulnerability protection, if present, from the body before emitting a message', function(done) {
-      var req = httpMocks.createRequest({
+      const req = httpMocks.createRequest({
         method: 'POST',
         url: '/entity',
         headers: {}
@@ -229,15 +229,15 @@ describe('ws/util/broadcast_middleware', function() {
       req.route = {
         path: '/entity/:id'
       };
-      var res = httpMocks.createResponse();
+      const res = httpMocks.createResponse();
       res.send = function(body) {
         res.body = body;
         res.end(body);
       };
-      var next = sinon.stub();
+      const next = sinon.stub();
       broadcastMiddleware(req, res, next);
       res.status(201);
-      var body = {};
+      const body = {};
       res.send(')]}\',\n' + JSON.stringify(body));
       expect(next).to.have.been.calledWith();
       expect(emitSpy).to.have.been.calledWith('/entity', 'create', '{}');

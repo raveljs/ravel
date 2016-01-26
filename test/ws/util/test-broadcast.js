@@ -1,13 +1,13 @@
 'use strict';
 
-var chai = require('chai');
-var expect = chai.expect;
+const chai = require('chai');
+const expect = chai.expect;
 chai.use(require('chai-things'));
-var mockery = require('mockery');
-var sinon = require('sinon');
-var EventEmitter = require('events').EventEmitter;
+const mockery = require('mockery');
+const sinon = require('sinon');
+const EventEmitter = require('events').EventEmitter;
 
-var Ravel, broadcast, roomResolver, rooms, primus, primusRoom, redisClientStub;
+let Ravel, broadcast, roomResolver, rooms, primus, primusRoom, redisClientStub;
 
 describe('ws/util/broadcast', function() {
   beforeEach(function(done) {
@@ -65,7 +65,7 @@ describe('ws/util/broadcast', function() {
       redisClientStub.publish = function() {};
       redisClientStub.subscribe = function() {};
       redisClientStub.on = new EventEmitter().on;
-      var spy = sinon.spy(redisClientStub, 'subscribe');
+      const spy = sinon.spy(redisClientStub, 'subscribe');
       broadcast = require('../../../lib/ws/util/broadcast')(Ravel, primus, roomResolver);
       expect(spy).to.have.been.calledWith('tapestry_broadcast:');
       done();
@@ -75,9 +75,9 @@ describe('ws/util/broadcast', function() {
       redisClientStub.publish = function() {};
       redisClientStub.subscribe = function() {};
       redisClientStub.on = new EventEmitter().on;
-      var spy = sinon.spy(redisClientStub, 'publish');
+      const spy = sinon.spy(redisClientStub, 'publish');
       broadcast = require('../../../lib/ws/util/broadcast')(Ravel, primus, roomResolver);
-      var payload = {};
+      const payload = {};
       broadcast.emit('/entities/things/1', 'test event', payload, true);
       expect(spy).to.not.have.been.called;
       done();
@@ -87,9 +87,9 @@ describe('ws/util/broadcast', function() {
       redisClientStub.publish = function() {};
       redisClientStub.subscribe = function() {};
       redisClientStub.on = new EventEmitter().on;
-      var spy = sinon.spy(redisClientStub, 'publish');
+      const spy = sinon.spy(redisClientStub, 'publish');
       broadcast = require('../../../lib/ws/util/broadcast')(Ravel, primus, roomResolver);
-      var payload = {};
+      const payload = {};
       broadcast.emit('/entities/users/1', 'test event', payload, true);
       expect(spy).to.have.been.calledWith('tapestry_broadcast:', JSON.stringify({
         room: '/entities/users/1',
@@ -113,15 +113,15 @@ describe('ws/util/broadcast', function() {
       redisClientStub.on = new EventEmitter().on;
       Ravel.kvstore = redisClientStub;
       Ravel.set('websocket message cache time', 1000);
-      var zaddSpy = sinon.spy(redisClientStub, 'zadd');
-      var zremrangebyscoreSpy = sinon.spy(redisClientStub, 'zremrangebyscore');
+      const zaddSpy = sinon.spy(redisClientStub, 'zadd');
+      const zremrangebyscoreSpy = sinon.spy(redisClientStub, 'zremrangebyscore');
       sinon.stub(Date, 'now', function() {
         return 1234567890; //fake timestamp
       });
       broadcast = require('../../../lib/ws/util/broadcast')(Ravel, primus, roomResolver);
-      var payload = {};
+      const payload = {};
       broadcast.emit('/entities/users/1', 'test event', payload, false);
-      var message = {
+      const message = {
         event: 'test event',
         data: payload
       };
@@ -141,7 +141,7 @@ describe('ws/util/broadcast', function() {
     it('should log a message if message caching fails', function(done) {
       redisClientStub.publish = function() {};
       redisClientStub.subscribe = function() {};
-      var error = new Error();
+      const error = new Error();
       redisClientStub.zadd = function(args, callback) {
         callback(error);
       };
@@ -150,9 +150,9 @@ describe('ws/util/broadcast', function() {
       };
       redisClientStub.on = new EventEmitter().on;
       Ravel.kvstore = redisClientStub;
-      var spy = sinon.spy(Ravel.Log, 'error');
+      const spy = sinon.spy(Ravel.Log, 'error');
       broadcast = require('../../../lib/ws/util/broadcast')(Ravel, primus, roomResolver);
-      var payload = {};
+      const payload = {};
       broadcast.emit('/entities/users/1', 'test event', payload, false);
       expect(spy).to.have.been.calledWith(error);
       done();
@@ -164,27 +164,27 @@ describe('ws/util/broadcast', function() {
       redisClientStub.zadd = function(args, callback) {
         callback();
       };
-      var error = new Error();
+      const error = new Error();
       redisClientStub.zremrangebyscore = function(a, b, c, callback) {
         callback(error);
       };
       redisClientStub.on = new EventEmitter().on;
       Ravel.kvstore = redisClientStub;
-      var spy = sinon.spy(Ravel.Log, 'error');
+      const spy = sinon.spy(Ravel.Log, 'error');
       broadcast = require('../../../lib/ws/util/broadcast')(Ravel, primus, roomResolver);
-      var payload = {};
+      const payload = {};
       broadcast.emit('/entities/users/1', 'test event', payload, false);
       expect(spy).to.have.been.calledWith(error);
       done();
     });
 
     it('should emit messages to primus.room when they arrive via redis.subscribe', function(done) {
-      var roomSpy = sinon.spy(primus, 'room');
-      var sendSpy = sinon.spy(primusRoom, 'send');
+      const roomSpy = sinon.spy(primus, 'room');
+      const sendSpy = sinon.spy(primusRoom, 'send');
       redisClientStub.publish = function() {};
       redisClientStub.subscribe = function() {};
       redisClientStub.on = function(event, callback) {
-        var message = {
+        const message = {
           room: '/user/1',
           msg: {
             event: 'test event',
@@ -212,7 +212,7 @@ describe('ws/util/broadcast', function() {
       sinon.stub(Date, 'now', function() {
         return 2000000; //fake timestamp
       });
-      var zrangebyscoreSpy = sinon.spy(redisClientStub, 'zrangebyscore');
+      const zrangebyscoreSpy = sinon.spy(redisClientStub, 'zrangebyscore');
       broadcast = require('../../../lib/ws/util/broadcast')(Ravel, primus, roomResolver);
       broadcast.getMissedMessages('/user/1', 2, function(err, messages) {
         expect(zrangebyscoreSpy).to.not.have.been.called;
@@ -226,7 +226,7 @@ describe('ws/util/broadcast', function() {
     it('should callback with missed messages from the given room if the current time is inside the cache window', function(done) {
       redisClientStub.publish = function() {};
       redisClientStub.subscribe = function() {};
-      var messageCache = [];
+      const messageCache = [];
       redisClientStub.zrangebyscore = function(args, callback) {
         callback(null, messageCache);
       };
@@ -236,7 +236,7 @@ describe('ws/util/broadcast', function() {
       sinon.stub(Date, 'now', function() {
         return 2000000; //fake timestamp
       });
-      var zrangebyscoreSpy = sinon.spy(redisClientStub, 'zrangebyscore');
+      const zrangebyscoreSpy = sinon.spy(redisClientStub, 'zrangebyscore');
       broadcast = require('../../../lib/ws/util/broadcast')(Ravel, primus, roomResolver);
       broadcast.getMissedMessages('/user/1', 2000000-1, function(err, messages) {
         expect(err).to.be.null;

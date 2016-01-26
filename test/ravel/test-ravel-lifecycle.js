@@ -1,13 +1,13 @@
 'use strict';
 
-var chai = require('chai');
+const chai = require('chai');
 chai.use(require('sinon-chai'));
-var expect = chai.expect;
-var mockery = require('mockery');
-var path = require('path');
-var sinon = require('sinon');
+const expect = chai.expect;
+const mockery = require('mockery');
+const upath = require('upath');
+const sinon = require('sinon');
 
-var Ravel, favicon;
+let Ravel, favicon;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
@@ -17,17 +17,17 @@ describe('Ravel', function() {
       warnOnReplace: false,
       warnOnUnregistered: false
     });
-    var redis = require('redis-mock');
+    const redis = require('redis-mock');
     mockery.registerMock('redis', redis);
     //add in auth, since redis-mock doesn't have it
-    var oldCreateClient = redis.createClient;
+    const oldCreateClient = redis.createClient;
     sinon.stub(redis, 'createClient', function() {
-      var client = oldCreateClient.apply(redis, arguments);
+      const client = oldCreateClient.apply(redis, arguments);
       client.auth = function() {};
       return client;
     });
 
-    Ravel = new require('../../lib/ravel')();
+    Ravel = new (require('../../lib/ravel'))();
     Ravel.set('log level', Ravel.Log.NONE);
     Ravel.set('redis host', 'localhost');
     Ravel.set('redis port', 5432);
@@ -40,10 +40,10 @@ describe('Ravel', function() {
     Ravel.set('disable json vulnerability protection', true);
     Ravel.set('express favicon path', 'images/favicon.ico');
 
-    var u = [{id:1, name:'Joe'}, {id:2, name:'Jane'}];
+    const u = [{id:1, name:'Joe'}, {id:2, name:'Jane'}];
 
     //stub module
-    var users = function($E) {
+    const users = function($E) {
       return {
         getAllUsers: function(callback) {
           callback(null, u);
@@ -59,7 +59,7 @@ describe('Ravel', function() {
     };
 
     //stub resource
-    var usersResource = function($Resource, $Rest, users) {
+    const usersResource = function($Resource, $Rest, users) {
       $Resource.bind('/api/user');
 
       $Resource.getAll(function(req, res) {
@@ -71,9 +71,9 @@ describe('Ravel', function() {
       });
     };
 
-    mockery.registerMock(path.join(Ravel.cwd, 'users'), users);
+    mockery.registerMock(upath.join(Ravel.cwd, 'users'), users);
     Ravel.module('users');
-    mockery.registerMock(path.join(Ravel.cwd, 'usersResource'), usersResource);
+    mockery.registerMock(upath.join(Ravel.cwd, 'usersResource'), usersResource);
     Ravel.resource('usersResource');
 
     //jshint unused:false
@@ -81,7 +81,7 @@ describe('Ravel', function() {
     favicon.returns(function(req, res, next){});
     mockery.registerMock('serve-favicon', favicon);
 
-    mockery.registerMock(path.join(Ravel.cwd, 'node_modules', 'ejs'), {
+    mockery.registerMock(upath.join(Ravel.cwd, 'node_modules', 'ejs'), {
       __express: function() {}
     });
 
@@ -98,21 +98,21 @@ describe('Ravel', function() {
   describe('#init()', function() {
     it('should initialize an express server with appropriate parameters', function(done) {
       //jshint unused:false
-      var expressAppMock = new require('express')();
-      var expressMock = function(){
+      const expressAppMock = new require('express')();
+      const expressMock = function(){
         return expressAppMock;
       };
       expressMock.static = sinon.stub();
       expressMock.static.returns(function(req, res, next){});
       mockery.registerMock('express', expressMock);
-      var setSpy = sinon.spy(expressAppMock, 'set');
-      //var enableSpy = sinon.spy(expressAppMock, 'enable');
+      const setSpy = sinon.spy(expressAppMock, 'set');
+      //const enableSpy = sinon.spy(expressAppMock, 'enable');
       Ravel.init();
 
-      expect(setSpy).to.have.been.calledWith('views', path.join(Ravel.cwd, Ravel.get('express view directory')));
+      expect(setSpy).to.have.been.calledWith('views', upath.join(Ravel.cwd, Ravel.get('express view directory')));
       expect(setSpy).to.have.been.calledWith('view engine', Ravel.get('express view engine'));
-      expect(expressMock.static).to.have.been.calledWith(path.join(Ravel.cwd, Ravel.get('express public directory')));
-      expect(favicon).to.have.been.calledWith(path.join(Ravel.cwd, Ravel.get('express favicon path')));
+      expect(expressMock.static).to.have.been.calledWith(upath.join(Ravel.cwd, Ravel.get('express public directory')));
+      expect(favicon).to.have.been.calledWith(upath.join(Ravel.cwd, Ravel.get('express favicon path')));
       //TODO test expressMock.use calls as well
       done();
     });
@@ -131,7 +131,7 @@ describe('Ravel', function() {
 
     it('should start the underlying HTTP server when called after init()', function(done) {
       Ravel.init();
-      var listenSpy = sinon.stub(Ravel._server, 'listen', function(port, callback) {
+      const listenSpy = sinon.stub(Ravel._server, 'listen', function(port, callback) {
         callback();
       });
       Ravel.listen();
@@ -142,8 +142,8 @@ describe('Ravel', function() {
 
   describe('#start()', function() {
     it('should be a wrapper for Ravel.init() and Ravel.listen()', function(done) {
-      var initSpy = sinon.stub(Ravel, 'init');
-      var listenSpy = sinon.stub(Ravel, 'listen');
+      const initSpy = sinon.stub(Ravel, 'init');
+      const listenSpy = sinon.stub(Ravel, 'listen');
       Ravel.start();
       expect(initSpy).to.have.been.called;
       expect(listenSpy).to.have.been.called;
@@ -153,7 +153,7 @@ describe('Ravel', function() {
 
   describe('#close()', function() {
     it('should be a no-op if the underlying HTTP server isn\'t listening', function(done) {
-      var callback = sinon.stub();
+      const callback = sinon.stub();
       Ravel.close(callback);
       expect(callback).to.have.been.called;
       done();
@@ -162,7 +162,7 @@ describe('Ravel', function() {
     it('should stop the underlying HTTP server if the server is listening', function(done) {
       Ravel.init();
       Ravel.listen(function() {
-        var closeSpy = sinon.stub(Ravel._server, 'close', function(callback) {
+        const closeSpy = sinon.stub(Ravel._server, 'close', function(callback) {
           callback();
         });
         Ravel.close(sinon.stub());

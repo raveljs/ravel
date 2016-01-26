@@ -20,6 +20,7 @@
   "strict":    true,
   "indent":    2,
   "esnext":    true,
+  "varstmt":   true,
   "globals": {
     "require":    false,
     "module":     false

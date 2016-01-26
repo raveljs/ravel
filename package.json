@@ -14,13 +14,11 @@
   "main":"lib/ravel.js",
   "scripts": {
     "test":"gulp travis",
-    "debug":"node-debug $(which gulp) test"
+    "debug":"node-debug $(which gulp) test-no-cov"
   },
   "dependencies": {
     "async": "0.9.0",
     "body-parser":"*1.12.3",
-    "babel-core":"6.4.5",
-    "babel-plugin-transform-decorators": "6.4.0",
     "compression":"1.4.3",
     "connect-flash":"0.1.1",
     "connect-redis":"2.3.0",
@@ -29,6 +27,7 @@
     "express": "4.12.3",
     "express-session": "1.11.1",
     "fs-readdir-recursive":"0.1.2",
+    "harmonize": "1.4.4",
     "hiredis":"0.4.1",
     "intel":"1.0.0",
     "node-fs":"0.1.7",
@@ -37,7 +36,7 @@
     "redis":"0.12.1",
     "serve-favicon":"2.2.0",
     "engine.io":"1.5.1",
-    "upath": "0.1.5"
+    "upath": "0.1.6"
   },
   "devDependencies": {
     "chai":"2.3.0",

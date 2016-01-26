@@ -1,14 +1,14 @@
 'use strict';
 
-var chai = require('chai');
-var expect = chai.expect;
+const chai = require('chai');
+const expect = chai.expect;
 chai.use(require('chai-things'));
-var mockery = require('mockery');
-var path = require('path');
-var sinon = require('sinon');
+const mockery = require('mockery');
+const upath = require('upath');
+const sinon = require('sinon');
 chai.use(require('sinon-chai'));
 
-var Ravel, fs, err, stub;
+let Ravel, Resource, fs, err, stub;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
@@ -27,7 +27,8 @@ describe('Ravel', function() {
       return ['test1.js', 'test2.js', '.jshintrc'];
     });
 
-    Ravel = new require('../../lib/ravel')();
+    Ravel = new (require('../../lib/ravel'))();
+    Resource = require('../../lib/ravel').Resource;
     Ravel.Log.setLevel(Ravel.Log.NONE);
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
     done();
@@ -52,8 +53,8 @@ describe('Ravel', function() {
         };
       });
 
-      mockery.registerMock(path.join(Ravel.cwd, './resources/test1.js'), function(){});
-      mockery.registerMock(path.join(Ravel.cwd, './resources/test2.js'), function(){});
+      mockery.registerMock(upath.join(Ravel.cwd, './resources/test1.js'), class extends Resource {});
+      mockery.registerMock(upath.join(Ravel.cwd, './resources/test2.js'), class extends Resource {});
       Ravel.resources('./resources');
       expect(Ravel._resourceFactories).to.have.property('resources/test1.js');
       expect(Ravel._resourceFactories['resources/test1.js']).to.be.a('function');
@@ -70,8 +71,10 @@ describe('Ravel', function() {
         };
       });
 
-      var spy = sinon.spy(Ravel.resources);
-      expect(spy).to.throw(Ravel.ApplicationError.IllegalValue);
+      const test = function() {
+        Ravel.resources();
+      };
+      expect(test).to.throw(Ravel.ApplicationError.IllegalValue);
       done();
     });
   });

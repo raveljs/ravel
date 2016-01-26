@@ -1,12 +1,12 @@
 'use strict';
 
-var chai = require('chai');
-var expect = chai.expect;
+const chai = require('chai');
+const expect = chai.expect;
 chai.use(require('chai-things'));
-var mockery = require('mockery');
-var sinon = require('sinon');
+const mockery = require('mockery');
+const sinon = require('sinon');
 
-var Ravel, tokenAuth, profile, testProvider;
+let Ravel, tokenAuth, profile, testProvider;
 
 describe('auth/authorize_token', function() {
   beforeEach(function(done) {
@@ -17,9 +17,9 @@ describe('auth/authorize_token', function() {
       warnOnUnregistered: false
     });
     //mock Ravel.kvstore, since we're not actually starting Ravel.
-    var redisMock = {
+    const redisMock = {
       createClient: function() {
-        var redisClientStub = new (require('events').EventEmitter)();
+        const redisClientStub = new (require('events').EventEmitter)();
         redisClientStub.auth = function(){};
         redisClientStub.get = function(){};
         redisClientStub.setex = function(){};
@@ -28,7 +28,7 @@ describe('auth/authorize_token', function() {
     };
     mockery.registerMock('redis', redisMock);
 
-    Ravel = new require('../../lib/ravel')();
+    Ravel = new (require('../../lib/ravel'))();
     Ravel.Log.setLevel(Ravel.Log.NONE);
     Ravel.set('redis port', 0);
     Ravel.set('redis host', 'localhost');
@@ -49,7 +49,7 @@ describe('auth/authorize_token', function() {
     testProvider.tokenToProfile = function(token, client, callback) {
       callback(null, profile, 2000);
     };
-    var providers = Ravel.get('authorization providers');
+    const providers = Ravel.get('authorization providers');
     providers.push(testProvider);
     Ravel.set('authorization providers', providers);
     done();
@@ -88,7 +88,7 @@ describe('auth/authorize_token', function() {
       sinon.stub(Ravel.kvstore, 'get', function(key, callback) {
         callback(null, undefined);
       });
-      var spy = sinon.stub(Ravel.kvstore, 'setex');
+      const spy = sinon.stub(Ravel.kvstore, 'setex');
       tokenAuth.tokenToProfile('oauth-token', 'test-web', function(err, result) {
         expect(err).to.be.null;
         expect(result).to.equal(profile);
@@ -101,8 +101,8 @@ describe('auth/authorize_token', function() {
       sinon.stub(Ravel.kvstore, 'get', function(key, callback) {
         callback(null, JSON.stringify(profile));
       });
-      var setexSpy = sinon.stub(Ravel.kvstore, 'setex');
-      var translateSpy = sinon.spy(testProvider, 'tokenToProfile');
+      const setexSpy = sinon.stub(Ravel.kvstore, 'setex');
+      const translateSpy = sinon.spy(testProvider, 'tokenToProfile');
       tokenAuth.tokenToProfile('oauth-token', 'test-web', function(err, result) {
         expect(err).to.be.null;
         expect(result).to.deep.equal(profile);
@@ -116,7 +116,7 @@ describe('auth/authorize_token', function() {
       sinon.stub(Ravel.kvstore, 'get', function(key, callback) {
         callback(null, undefined);
       });
-      var spy = sinon.stub(Ravel.kvstore, 'setex');
+      const spy = sinon.stub(Ravel.kvstore, 'setex');
       sinon.stub(testProvider, 'tokenToProfile', function(token, client, callback) {
         callback(new Error());
       });
