@@ -8,7 +8,7 @@ const upath = require('upath');
 const sinon = require('sinon');
 chai.use(require('sinon-chai'));
 
-let Ravel, fs, err, stub;
+let Ravel, Module, fs, err, stub;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
@@ -26,8 +26,8 @@ describe('Ravel', function() {
       /*jshint unused:false*/
       return ['test1.js', 'test2.js', '.jshintrc'];
     });
-
     Ravel = new (require('../../lib/ravel'))();
+    Module = require('../../lib/ravel').Module;
     Ravel.Log.setLevel(Ravel.Log.NONE);
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
     done();
@@ -35,6 +35,7 @@ describe('Ravel', function() {
 
   afterEach(function(done) {
     Ravel = undefined;
+    Module = undefined;
     mockery.deregisterAll();
     mockery.disable();
     if (stub) {
@@ -52,8 +53,8 @@ describe('Ravel', function() {
         };
       });
 
-      mockery.registerMock(upath.join(Ravel.cwd, './modules/test1.js'), class {});
-      mockery.registerMock(upath.join(Ravel.cwd, './modules/test2.js'), class {});
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/test1.js'), class extends Module {});
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/test2.js'), class extends Module {});
       Ravel.modules('./modules');
       expect(Ravel._moduleFactories).to.have.property('test1');
       expect(Ravel._moduleFactories['test1']).to.be.a('function');

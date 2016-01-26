@@ -44,6 +44,7 @@ describe('Ravel', function() {
 
   afterEach(function(done) {
     Ravel = undefined;
+    Resource = undefined;
     broadcastMiddleware = undefined;
     mockery.deregisterAll();mockery.disable();
     done();
@@ -51,6 +52,7 @@ describe('Ravel', function() {
 
   describe('#resource()', function() {
     it('should allow clients to register resource modules for instantiation in Ravel.start', function(done) {
+      mockery.registerMock(upath.join(Ravel.cwd, './resources/test'), class extends Resource {});
       Ravel.resource('./resources/test');
       expect(Ravel._resourceFactories).to.have.property('./resources/test');
       expect(Ravel._resourceFactories['./resources/test']).to.be.a('function');
@@ -58,11 +60,21 @@ describe('Ravel', function() {
     });
 
     it('should throw a Ravel.ApplicationError.DuplicateEntry error when clients attempt to register the same resource module twice', function(done) {
+      mockery.registerMock(upath.join(Ravel.cwd, './resources/test'), class extends Resource {});
       const shouldThrow = function() {
         Ravel.resource('./resources/test');
         Ravel.resource('./resources/test');
       };
       expect(shouldThrow).to.throw(Ravel.ApplicationError.DuplicateEntry);
+      done();
+    });
+
+    it('should throw an ApplicationError.IllegalValue when a client attempts to register a resource module which is not a subclass of Resource', function(done) {
+      mockery.registerMock(upath.join(Ravel.cwd, './test'), class {});
+      const shouldThrow = function() {
+        Ravel.resource('./test');
+      };
+      expect(shouldThrow).to.throw(Ravel.ApplicationError.IllegalValue);
       done();
     });
 
@@ -102,8 +114,8 @@ describe('Ravel', function() {
         }
       };
 
-      Ravel.resource('test');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
+      Ravel.resource('test');
       const app = express();
       const resource = Ravel._resourceFactories['test'](app);
       expect(resource.log).to.be.an('object');
@@ -142,15 +154,15 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should throw Ravel.ApplicationError.IllegalValue Resource constructor super() is called without a basePath', function(done) {
+    it('should throw Ravel.ApplicationError.IllegalValue when Resource constructor super() is called without a basePath', function(done) {
       const stub = class extends Resource {
         constructor() {
           super();
         }
       };
       const app = express();
-      Ravel.resource('test');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
+      Ravel.resource('test');
       const test = function() {
         Ravel._resourceFactories['test'](app);
       };
@@ -169,8 +181,8 @@ describe('Ravel', function() {
       };
       const app = express();
       const spy = sinon.stub(app, 'get');
-      Ravel.resource('test');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
+      Ravel.resource('test');
       Ravel._resourceFactories['test'](app);
       expect(spy).to.have.been.calledWith('/api/test', broadcastMiddleware, middleware1, middleware2);
       done();
@@ -187,8 +199,8 @@ describe('Ravel', function() {
       };
       const app = express();
       const spy = sinon.stub(app, 'get');
-      Ravel.resource('test');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
+      Ravel.resource('test');
       Ravel._resourceFactories['test'](app);
       expect(spy).to.have.been.calledWith('/api/test/:id', broadcastMiddleware, middleware1, middleware2);
       done();
@@ -205,8 +217,8 @@ describe('Ravel', function() {
       };
       const app = express();
       const spy = sinon.stub(app, 'post');
-      Ravel.resource('test');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
+      Ravel.resource('test');
       Ravel._resourceFactories['test'](app);
       expect(spy).to.have.been.calledWith('/api/test', broadcastMiddleware, middleware1, middleware2);
       done();
@@ -223,8 +235,8 @@ describe('Ravel', function() {
       };
       const app = express();
       const spy = sinon.stub(app, 'put');
-      Ravel.resource('test');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
+      Ravel.resource('test');
       Ravel._resourceFactories['test'](app);
       expect(spy).to.have.been.calledWith('/api/test/:id', broadcastMiddleware, middleware1, middleware2);
       done();
@@ -241,8 +253,8 @@ describe('Ravel', function() {
       };
       const app = express();
       const spy = sinon.stub(app, 'put');
-      Ravel.resource('test');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
+      Ravel.resource('test');
       Ravel._resourceFactories['test'](app);
       expect(spy).to.have.been.calledWith('/api/test', broadcastMiddleware, middleware1, middleware2);
       done();
@@ -259,8 +271,8 @@ describe('Ravel', function() {
       };
       const app = express();
       const spy = sinon.stub(app, 'delete');
-      Ravel.resource('test');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
+      Ravel.resource('test');
       Ravel._resourceFactories['test'](app);
       expect(spy).to.have.been.calledWith('/api/test', broadcastMiddleware, middleware1, middleware2);
       done();
@@ -277,8 +289,8 @@ describe('Ravel', function() {
       };
       const app = express();
       const spy = sinon.stub(app, 'delete');
-      Ravel.resource('test');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
+      Ravel.resource('test');
       Ravel._resourceFactories['test'](app);
       expect(spy).to.have.been.calledWith('/api/test/:id', broadcastMiddleware, middleware1, middleware2);
       done();
@@ -305,12 +317,12 @@ describe('Ravel', function() {
       sinon.stub(app, 'post', expressHandler);
       sinon.stub(app, 'put', expressHandler);
       sinon.stub(app, 'delete', expressHandler);
-      Ravel.resource('test');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), class extends Resource {
         constructor() {
           super('/api/test');
         }
       });
+      Ravel.resource('test');
       Ravel._resourceFactories['test'](app);
       expect(spy).to.have.callCount(7);
       done();

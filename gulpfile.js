@@ -18,6 +18,7 @@ const TESTS = [
   'test/core/test-params.js',
   'test/core/test-resource.js',
   'test/core/test-resources.js',
+  'test/core/test-routes.js',
   // 'test/db/test-*.js',
   // 'test/util/test-*.js',
   'test/util/test-log.js',
