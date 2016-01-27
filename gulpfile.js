@@ -22,6 +22,7 @@ const TESTS = [
   'test/core/test-resources.js',
   'test/core/test-routes.js',
   // 'test/db/test-*.js',
+  'test/db/test-database-provider.js',
   'test/util/test-*.js',
   // 'test/auth/test-*.js',
   // 'test/ws/test-*.js',

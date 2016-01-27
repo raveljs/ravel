@@ -5,7 +5,7 @@ const expect = chai.expect;
 chai.use(require('chai-things'));
 const mockery = require('mockery');
 
-let Ravel, provider;
+let Ravel, DatabaseProvider, provider;
 
 describe('db/database_provider', function() {
   beforeEach(function(done) {
@@ -16,14 +16,16 @@ describe('db/database_provider', function() {
       warnOnUnregistered: false
     });
 
+    DatabaseProvider = require('../../lib/ravel').DatabaseProvider;
     Ravel = new (require('../../lib/ravel'))();
     Ravel.Log.setLevel('NONE');
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
-    provider = new Ravel.DatabaseProvider('name');
+    provider = new DatabaseProvider('name');
     done();
   });
 
   afterEach(function(done) {
+    DatabaseProvider = undefined;
     Ravel = undefined;
     provider = undefined;
     mockery.deregisterAll();mockery.disable();
@@ -32,7 +34,7 @@ describe('db/database_provider', function() {
 
   describe('constructor', function() {
     it('should allow clients to implement a database provider which has a name and several methods', function(done) {
-      provider = new Ravel.DatabaseProvider('mysql');
+      provider = new DatabaseProvider('mysql');
       expect(provider.name).to.equal('mysql');
       expect(provider).to.have.property('getTransactionConnection').that.is.a('function');
       expect(provider).to.have.property('exitTransaction').that.is.a('function');
