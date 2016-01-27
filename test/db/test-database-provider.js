@@ -42,6 +42,22 @@ describe('db/database_provider', function() {
     });
   });
 
+  describe('_init', function() {
+    it('should provide a DatabaseProvider with a logger for use in its methods', function(done) {
+      provider._init(Ravel);
+      expect(provider.log).to.be.ok;
+      expect(provider.log).to.be.an('object');
+      expect(provider.log).to.have.property('trace').that.is.a('function');
+      expect(provider.log).to.have.property('verbose').that.is.a('function');
+      expect(provider.log).to.have.property('debug').that.is.a('function');
+      expect(provider.log).to.have.property('info').that.is.a('function');
+      expect(provider.log).to.have.property('warn').that.is.a('function');
+      expect(provider.log).to.have.property('error').that.is.a('function');
+      expect(provider.log).to.have.property('critical').that.is.a('function');
+      done();
+    });
+  });
+
   describe('#getTransactionConnection()', function() {
     it('should throw Ravel.ApplicationError.NotImplemented, since this is a template', function(done) {
       try {

@@ -130,8 +130,7 @@ describe('Ravel', function() {
       sinon.stub(app, 'delete', function() {
         done(new Error('Routes class should never use app.delete.'));
       });
-
-      Ravel._routesFactories['stub'](app);
+      Ravel._routesInit(app);
     });
   });
 });

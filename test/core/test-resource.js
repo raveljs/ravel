@@ -147,8 +147,7 @@ describe('Ravel', function() {
       Ravel.resource('test2');
       const app = express();
       const shouldFail = function() {
-        Ravel._resourceFactories['test1'](app);
-        Ravel._resourceFactories['test2'](app);
+        Ravel._resourceInit(app);
       };
       expect(shouldFail).to.throw(Ravel.ApplicationError.DuplicateEntry);
       done();
@@ -164,7 +163,7 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
       Ravel.resource('test');
       const test = function() {
-        Ravel._resourceFactories['test'](app);
+        Ravel._resourceInit(app);
       };
       expect(test).to.throw(Ravel.ApplicationError.IllegalValue);
       done();
@@ -183,7 +182,7 @@ describe('Ravel', function() {
       const spy = sinon.stub(app, 'get');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
       Ravel.resource('test');
-      Ravel._resourceFactories['test'](app);
+      Ravel._resourceInit(app);
       expect(spy).to.have.been.calledWith('/api/test', broadcastMiddleware, middleware1, middleware2);
       done();
     });
@@ -201,7 +200,7 @@ describe('Ravel', function() {
       const spy = sinon.stub(app, 'get');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
       Ravel.resource('test');
-      Ravel._resourceFactories['test'](app);
+      Ravel._resourceInit(app);
       expect(spy).to.have.been.calledWith('/api/test/:id', broadcastMiddleware, middleware1, middleware2);
       done();
     });
@@ -219,7 +218,7 @@ describe('Ravel', function() {
       const spy = sinon.stub(app, 'post');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
       Ravel.resource('test');
-      Ravel._resourceFactories['test'](app);
+      Ravel._resourceInit(app);
       expect(spy).to.have.been.calledWith('/api/test', broadcastMiddleware, middleware1, middleware2);
       done();
     });
@@ -237,7 +236,7 @@ describe('Ravel', function() {
       const spy = sinon.stub(app, 'put');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
       Ravel.resource('test');
-      Ravel._resourceFactories['test'](app);
+      Ravel._resourceInit(app);
       expect(spy).to.have.been.calledWith('/api/test/:id', broadcastMiddleware, middleware1, middleware2);
       done();
     });
@@ -255,7 +254,7 @@ describe('Ravel', function() {
       const spy = sinon.stub(app, 'put');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
       Ravel.resource('test');
-      Ravel._resourceFactories['test'](app);
+      Ravel._resourceInit(app);
       expect(spy).to.have.been.calledWith('/api/test', broadcastMiddleware, middleware1, middleware2);
       done();
     });
@@ -273,7 +272,7 @@ describe('Ravel', function() {
       const spy = sinon.stub(app, 'delete');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
       Ravel.resource('test');
-      Ravel._resourceFactories['test'](app);
+      Ravel._resourceInit(app);
       expect(spy).to.have.been.calledWith('/api/test', broadcastMiddleware, middleware1, middleware2);
       done();
     });
@@ -291,7 +290,7 @@ describe('Ravel', function() {
       const spy = sinon.stub(app, 'delete');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
       Ravel.resource('test');
-      Ravel._resourceFactories['test'](app);
+      Ravel._resourceInit(app);
       expect(spy).to.have.been.calledWith('/api/test/:id', broadcastMiddleware, middleware1, middleware2);
       done();
     });
@@ -323,7 +322,7 @@ describe('Ravel', function() {
         }
       });
       Ravel.resource('test');
-      Ravel._resourceFactories['test'](app);
+      Ravel._resourceInit(app);
       expect(spy).to.have.callCount(7);
       done();
     });
