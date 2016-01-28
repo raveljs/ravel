@@ -21,8 +21,7 @@ const TESTS = [
   'test/core/test-resource.js',
   'test/core/test-resources.js',
   'test/core/test-routes.js',
-  // 'test/db/test-*.js',
-  'test/db/test-database-provider.js',
+  'test/db/test-*.js',
   'test/util/test-*.js',
   // 'test/auth/test-*.js',
   // 'test/ws/test-*.js',
@@ -94,7 +93,7 @@ gulp.task('test', ['cover'], function () {
       dir: './reports',
       reporters: [ 'lcov', 'json', 'text', 'text-summary', 'html']
     }))
-    // Enforce a coverage of at least 90%
+    // Enforce a coverage of at least 100%
     .pipe(plugins.istanbul.enforceThresholds({ thresholds: { global: 100 } }))
     .pipe(env.reset);
 });

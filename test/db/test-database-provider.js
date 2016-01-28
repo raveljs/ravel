@@ -44,7 +44,8 @@ describe('db/database_provider', function() {
 
   describe('_init', function() {
     it('should provide a DatabaseProvider with a logger for use in its methods', function(done) {
-      provider._init(Ravel);
+      Ravel.set('database providers', [provider]);
+      Ravel._databaseProviderInit();
       expect(provider.log).to.be.ok;
       expect(provider.log).to.be.an('object');
       expect(provider.log).to.have.property('trace').that.is.a('function');

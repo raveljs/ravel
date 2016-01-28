@@ -8,7 +8,7 @@ const sinon = require('sinon');
 const mockery = require('mockery');
 const httpMocks = require('node-mocks-http');
 
-let Ravel, database, mysqlProvider, postgresProvider;
+let Ravel, DatabaseProvider, database, mysqlProvider, postgresProvider;
 
 describe('db/database', function() {
   beforeEach(function(done) {
@@ -20,6 +20,7 @@ describe('db/database', function() {
     });
 
     Ravel = new (require('../../lib/ravel'))();
+    DatabaseProvider = require('../../lib/ravel').DatabaseProvider;
     Ravel.Log.setLevel('NONE');
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
 
@@ -27,14 +28,17 @@ describe('db/database', function() {
     database = require('../../lib/db/database')(Ravel);
 
     //mock a couple of providers for us to use
-    mysqlProvider = new Ravel.DatabaseProvider('mysql');
-    postgresProvider = new Ravel.DatabaseProvider('postgres');
+    mysqlProvider = new DatabaseProvider('mysql');
+    postgresProvider = new DatabaseProvider('postgres');
 
     done();
   });
 
   afterEach(function(done) {
     Ravel = undefined;
+    DatabaseProvider = undefined;
+    mysqlProvider = undefined;
+    postgresProvider = undefined;
     mockery.deregisterAll();mockery.disable();
     done();
   });
@@ -269,10 +273,12 @@ describe('db/database', function() {
   });
 
   describe('#scoped.enter()', function() {
-    it('should populate scoped callback with an empty dictionary of database connection objects when no database providers are registered', function(done) {
+    it('should throw a Ravel.ApplicationError.IllegalValue when no database providers are registered', function(done) {
       const scopeForTransaction = sinon.stub();
-      database.scoped.enter(scopeForTransaction);
-      expect(scopeForTransaction).to.have.been.calledWithMatch({});
+      function test() {
+        database.scoped.enter(scopeForTransaction);
+      }
+      expect(test).to.throw(Ravel.ApplicationError.IllegalValue);
       done();
     });
 
