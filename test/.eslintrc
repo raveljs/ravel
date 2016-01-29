@@ -1,6 +1,6 @@
 {
-  "extends": "../.jshintrc",
-  "-W030":     false,
+  "extends": "../.eslintrc",
+  "parser": "babel-eslint",
   "globals": {
     "describe":   false,
     "before":     false,
@@ -10,5 +10,11 @@
     "it":         false,
     "require":    false,
     "module":     false
+  },
+  "env": {
+    "mocha": true
+  },
+  "rules":  {
+    "strict": 0
   }
 }

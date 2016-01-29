@@ -141,9 +141,9 @@ describe('auth/passport_init', function() {
     const profile = {
       id: 9876
     };
-    Ravel.set('get user function', function(userId, $ScopedTransaction, done) {
+    Ravel.set('get user function', function(userId, $ScopedTransaction, d) {
       expect(userId).to.equal(9876);
-      done(null, profile);
+      d(null, profile);
     });
     const app = express();
 

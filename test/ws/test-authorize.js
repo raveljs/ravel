@@ -11,7 +11,7 @@ const httpMocks = require('node-mocks-http');
 let Mocks;
 
 describe('ws/authorize', function() {
-  beforeEach(function(done) {    
+  beforeEach(function(done) {
     //enable mockery
     mockery.enable({
       useCleanCache: true,
@@ -133,8 +133,8 @@ describe('ws/authorize', function() {
       sinon.stub(Mocks.tokenToProfile, 'tokenToProfile', function(token, client, callback) {
         callback(null, profile);
       });
-      Mocks.Ravel.set('get user function', function(Ravel, profile, callback) {
-        callback(null, profile);
+      Mocks.Ravel.set('get user function', function(Ravel, profile2, callback) {
+        callback(null, profile2);
       });
       const req = httpMocks.createRequest({
         method: 'GET',
@@ -194,7 +194,7 @@ describe('ws/authorize', function() {
       sinon.stub(Mocks.tokenToProfile, 'tokenToProfile', function(token, client, callback) {
         callback(null, profile);
       });
-      Mocks.Ravel.set('get user function', function(Ravel, profile, callback) {
+      Mocks.Ravel.set('get user function', function(Ravel, profile2, callback) {
         callback(new Mocks.Ravel.ApplicationError.NotFound('User does not exist'), null);
       });
       const req = httpMocks.createRequest({

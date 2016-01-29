@@ -8,12 +8,12 @@ require('babel-register');
 
 const gulp = require('gulp');
 const plugins = require( 'gulp-load-plugins' )();
-const stylish = require('jshint-stylish');
 // const isparta = require('isparta');
 const del = require('del');
 
 const TESTS = [
   // 'test/core/test-*.js',
+
   'test/core/test-error.js',
   'test/core/test-module.js',
   'test/core/test-modules.js',
@@ -23,6 +23,7 @@ const TESTS = [
   'test/core/test-routes.js',
   'test/db/test-*.js',
   'test/util/test-*.js',
+
   // 'test/auth/test-*.js',
   // 'test/ws/test-*.js',
   // 'test/ws/util/test-*.js',
@@ -32,9 +33,9 @@ const TESTS = [
 
 gulp.task('lint', function() {
   return gulp.src(['./lib/**/*.js', './test/**/*.js', 'gulpfile.js'])
-             .pipe(plugins.jshint())
-             .pipe(plugins.jshint.reporter(stylish))
-             .pipe(plugins.jshint.reporter('fail'));
+             .pipe(plugins.eslint())
+             .pipe(plugins.eslint.format())
+             .pipe(plugins.eslint.failAfterError());
 });
 
 gulp.task('docco', function() {

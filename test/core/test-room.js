@@ -54,8 +54,8 @@ describe('Ravel', function() {
     });
 
     it('should permit clients to register rooms which support path parameters and authorization functions', function(done) {
-      const authorizationFunction = function(userId, done) {
-        done(null, true);
+      const authorizationFunction = function(userId, done2) {
+        done2(null, true);
       };
       Ravel.room('/test/:testId/entity/:entityId', authorizationFunction);
       expect(rooms).have.property('/test/:testId/entity/:entityId').that.deep.equals({

@@ -53,7 +53,7 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test2'), Stub2);
       Ravel.module('test');
       Ravel.module('test2');
-      Ravel._moduleFactories['test']();
+      Ravel._moduleFactories.test();
       Ravel._injector.inject({}, Stub2);
     });
 
@@ -73,7 +73,7 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       const test = function() {
         Ravel.module('test');
-        Ravel._moduleFactories['test']();
+        Ravel._moduleFactories.test();
       };
       expect(test).to.throw(Ravel.ApplicationError.IllegalValue);
       done();
@@ -173,7 +173,7 @@ describe('Ravel', function() {
       mockery.registerMock('bad.module', stubBadName);
       Ravel.module('my-module.js');
       Ravel.module('test');
-      Ravel._moduleFactories['myModule']();
+      Ravel._moduleFactories.myModule();
       Ravel._injector.inject({}, AnotherStubClientModule);
     });
   });

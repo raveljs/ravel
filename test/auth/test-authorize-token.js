@@ -19,7 +19,7 @@ describe('auth/authorize_token', function() {
     //mock Ravel.kvstore, since we're not actually starting Ravel.
     const redisMock = {
       createClient: function() {
-        const redisClientStub = new (require('events').EventEmitter)();
+        const redisClientStub = new (require('events').EventEmitter)(); //eslint-disable-line no-extra-parens
         redisClientStub.auth = function(){};
         redisClientStub.get = function(){};
         redisClientStub.setex = function(){};
@@ -35,7 +35,7 @@ describe('auth/authorize_token', function() {
     Ravel.set('redis password', 'password');
     Ravel.kvstore = require('../../lib/util/kvstore')(Ravel);
 
-    tokenAuth = new require('../../lib/auth/authorize_token')(Ravel);
+    tokenAuth = new (require('../../lib/auth/authorize_token'))(Ravel);
 
     //mock up an authorization provider for our tests
     profile = {};

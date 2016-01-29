@@ -9,11 +9,11 @@ const upath = require('upath');
 const sinon = require('sinon');
 const express = require('express');
 
-let Ravel, Resource, broadcastMiddleware;
+let Ravel, Resource, pre, broadcastMiddleware;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
-    //enable mockery
+    // enable mockery
     mockery.enable({
       useCleanCache: true,
       warnOnReplace: false,
@@ -26,10 +26,11 @@ describe('Ravel', function() {
     });
 
     Resource = require('../../lib/ravel').Resource;
+    pre = Resource.pre;
 
     Ravel = new (require('../../lib/ravel'))();
     Ravel.Log.setLevel('NONE');
-    //mock broadcast, kvstore, authorize, authorizeWithRedirect and db.middleware, since they only get created during Ravel.start
+    // mock broadcast, kvstore, authorize, authorizeWithRedirect and db.middleware, since they only get created during Ravel.start
     Ravel.broadcast = {
       emit: function(){}
     };
@@ -45,6 +46,7 @@ describe('Ravel', function() {
   afterEach(function(done) {
     Ravel = undefined;
     Resource = undefined;
+    pre = undefined;
     broadcastMiddleware = undefined;
     mockery.deregisterAll();mockery.disable();
     done();
@@ -100,13 +102,6 @@ describe('Ravel', function() {
           expect($Params).to.have.property('registerSimpleParameter').that.is.a('function');
           expect($Params).to.have.property('registerSimpleParameter').that.equals(Ravel.registerSimpleParameter);
           expect(this).to.have.property('basePath').that.equals('/api/test');
-          expect(this).to.have.property('getAll').that.is.a('function');
-          expect(this).to.have.property('putAll').that.is.a('function');
-          expect(this).to.have.property('deleteAll').that.is.a('function');
-          expect(this).to.have.property('get').that.is.a('function');
-          expect(this).to.have.property('put').that.is.a('function');
-          expect(this).to.have.property('post').that.is.a('function');
-          expect(this).to.have.property('delete').that.is.a('function');
           expect($Broadcast).to.equal(Ravel.broadcast);
           expect($Private).to.equal(Ravel.authorize);
           expect($PrivateRedirect).to.equal(Ravel.authorizeWithRedirect);
@@ -117,7 +112,7 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
       Ravel.resource('test');
       const app = express();
-      const resource = Ravel._resourceFactories['test'](app);
+      const resource = Ravel._resourceFactories.test(app);
       expect(resource.log).to.be.an('object');
       expect(resource.log).to.have.property('trace').that.is.a('function');
       expect(resource.log).to.have.property('verbose').that.is.a('function');
@@ -172,126 +167,188 @@ describe('Ravel', function() {
     it('should facilitate the creation of GET routes via $Resource.getAll', function(done) {
       const middleware1 = function(/*req, res*/) {};
       const middleware2 = function(/*req, res*/) {};
-      const stub = class extends Resource {
+
+      class Stub extends Resource {
         constructor() {
           super('/api/test');
-          this.getAll(middleware1, middleware2);
         }
-      };
+
+        @pre('middleware1', 'middleware2')
+        getAll(req, res, next) { //eslint-disable-line no-unused-vars
+        }
+      }
       const app = express();
       const spy = sinon.stub(app, 'get');
-      mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
+      mockery.registerMock('middleware1', middleware1);
+      mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
       Ravel._resourceInit(app);
-      expect(spy).to.have.been.calledWith('/api/test', broadcastMiddleware, middleware1, middleware2);
+      expect(spy).to.have.been.calledWith('/api/test', broadcastMiddleware, middleware1, middleware2, Stub.prototype._original_getAll);
       done();
     });
 
     it('should facilitate the creation of GET routes via $Resource.get', function(done) {
       const middleware1 = function(/*req, res*/) {};
       const middleware2 = function(/*req, res*/) {};
-      const stub = class extends Resource {
+      class Stub extends Resource {
         constructor() {
           super('/api/test');
-          this.get(middleware1, middleware2);
+          this.middleware1 = middleware1;
+          this.middleware2 = middleware2;
         }
-      };
+
+        @pre('middleware1', 'middleware2')
+        get(req, res, next) {  //eslint-disable-line no-unused-vars
+        }
+      }
       const app = express();
       const spy = sinon.stub(app, 'get');
-      mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
       Ravel._resourceInit(app);
-      expect(spy).to.have.been.calledWith('/api/test/:id', broadcastMiddleware, middleware1, middleware2);
+      expect(spy).to.have.been.calledWith('/api/test/:id', broadcastMiddleware, middleware1, middleware2, Stub.prototype._original_get);
       done();
     });
 
     it('should facilitate the creation of POST routes via $Resource.post', function(done) {
       const middleware1 = function(/*req, res*/) {};
       const middleware2 = function(/*req, res*/) {};
-      const stub = class extends Resource {
+      class Stub extends Resource {
         constructor() {
           super('/api/test');
-          this.post(middleware1, middleware2);
         }
-      };
+
+        @pre('middleware1', 'middleware2')
+        post(req, res, next) { //eslint-disable-line no-unused-vars
+        }
+      }
       const app = express();
       const spy = sinon.stub(app, 'post');
-      mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
+      mockery.registerMock('middleware1', middleware1);
+      mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
       Ravel._resourceInit(app);
-      expect(spy).to.have.been.calledWith('/api/test', broadcastMiddleware, middleware1, middleware2);
+      expect(spy).to.have.been.calledWith('/api/test', broadcastMiddleware, middleware1, middleware2, Stub.prototype._original_post);
       done();
     });
 
     it('should facilitate the creation of PUT routes via $Resource.put', function(done) {
       const middleware1 = function(/*req, res*/) {};
       const middleware2 = function(/*req, res*/) {};
-      const stub = class extends Resource {
+      class Stub extends Resource {
         constructor() {
           super('/api/test');
-          this.put(middleware1, middleware2);
+          this.middleware1 = middleware1;
+          this.middleware2 = middleware2;
         }
-      };
+
+        @pre('middleware1', 'middleware2')
+        put(req, res, next) { //eslint-disable-line no-unused-vars
+        }
+      }
       const app = express();
       const spy = sinon.stub(app, 'put');
-      mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
       Ravel._resourceInit(app);
-      expect(spy).to.have.been.calledWith('/api/test/:id', broadcastMiddleware, middleware1, middleware2);
+      expect(spy).to.have.been.calledWith('/api/test/:id', broadcastMiddleware, middleware1, middleware2, Stub.prototype._original_put);
       done();
     });
 
     it('should facilitate the creation of PUT routes via $Resource.putAll', function(done) {
       const middleware1 = function(/*req, res*/) {};
       const middleware2 = function(/*req, res*/) {};
-      const stub = class extends Resource {
+      class Stub extends Resource {
         constructor() {
           super('/api/test');
-          this.putAll(middleware1, middleware2);
         }
-      };
+
+        @pre('middleware1', 'middleware2')
+        putAll(req, res, next) { //eslint-disable-line no-unused-vars
+        }
+      }
       const app = express();
       const spy = sinon.stub(app, 'put');
-      mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
+      mockery.registerMock('middleware1', middleware1);
+      mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
       Ravel._resourceInit(app);
-      expect(spy).to.have.been.calledWith('/api/test', broadcastMiddleware, middleware1, middleware2);
+      expect(spy).to.have.been.calledWith('/api/test', broadcastMiddleware, middleware1, middleware2, Stub.prototype._original_putAll);
       done();
     });
 
-    it('should facilitate the creation of GET routes via $Resource.deleteAll', function(done) {
+    it('should facilitate the creation of DELETE routes via $Resource.deleteAll', function(done) {
       const middleware1 = function(/*req, res*/) {};
       const middleware2 = function(/*req, res*/) {};
-      const stub = class extends Resource {
+      class Stub extends Resource {
         constructor() {
           super('/api/test');
-          this.deleteAll(middleware1, middleware2);
+          this.middleware1 = middleware1;
+          this.middleware2 = middleware2;
         }
-      };
+
+        @pre('middleware1', 'middleware2')
+        deleteAll(req, res, next) { //eslint-disable-line no-unused-vars
+        }
+      }
       const app = express();
       const spy = sinon.stub(app, 'delete');
-      mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
       Ravel._resourceInit(app);
-      expect(spy).to.have.been.calledWith('/api/test', broadcastMiddleware, middleware1, middleware2);
+      expect(spy).to.have.been.calledWith('/api/test', broadcastMiddleware, middleware1, middleware2, Stub.prototype._original_deleteAll);
       done();
     });
 
-    it('should facilitate the creation of GET routes via $Resource.delete', function(done) {
+    it('should facilitate the creation of DELETE routes via $Resource.delete', function(done) {
       const middleware1 = function(/*req, res*/) {};
       const middleware2 = function(/*req, res*/) {};
-      const stub = class extends Resource {
+
+      class Stub extends Resource {
         constructor() {
           super('/api/test');
-          this.delete(middleware1, middleware2);
         }
-      };
+
+        @pre('middleware1', 'middleware2')
+        delete(req, res, next) { //eslint-disable-line no-unused-vars
+        }
+      }
       const app = express();
       const spy = sinon.stub(app, 'delete');
-      mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
+      mockery.registerMock('middleware1', middleware1);
+      mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
       Ravel._resourceInit(app);
-      expect(spy).to.have.been.calledWith('/api/test/:id', broadcastMiddleware, middleware1, middleware2);
+      expect(spy).to.have.been.calledWith('/api/test/:id', broadcastMiddleware, middleware1, middleware2, Stub.prototype._original_delete);
+      done();
+    });
+
+    it('should support the use of @pre at the class level', function(done) {
+      const middleware1 = function(/*req, res*/) {};
+      const middleware2 = function(/*req, res*/) {};
+
+      @pre('middleware1')
+      class Stub extends Resource {
+        constructor() {
+          super('/api/test');
+          this.middleware1 = middleware1;
+          this.middleware2 = middleware2;
+        }
+
+        @pre('middleware2')
+        get(req, res, next) {  //eslint-disable-line no-unused-vars
+        }
+      }
+      const app = express();
+      const spy = sinon.stub(app, 'get');
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
+      Ravel.resource('test');
+      Ravel._resourceInit(app);
+      expect(spy).to.have.been.calledWith('/api/test/:id', broadcastMiddleware, middleware1, middleware2, Stub.prototype._original_get);
       done();
     });
 

@@ -59,15 +59,15 @@ describe('Ravel', function() {
     };
 
     //stub resource
-    const usersResource = function($Resource, $Rest, users) {
+    const usersResource = function($Resource, $Rest, users2) {
       $Resource.bind('/api/user');
 
       $Resource.getAll(function(req, res) {
-        users.getAllUsers($Rest.respond(req, res));
+        users2.getAllUsers($Rest.respond(req, res));
       });
 
       $Resource.get(function(req, res) {
-        users.getUser(req.params['id'], $Rest.respond(req, res));
+        users2.getUser(req.params.id, $Rest.respond(req, res));
       });
     };
 
@@ -76,9 +76,8 @@ describe('Ravel', function() {
     mockery.registerMock(upath.join(Ravel.cwd, 'usersResource'), usersResource);
     Ravel.resource('usersResource');
 
-    //jshint unused:false
     favicon = sinon.stub();
-    favicon.returns(function(req, res, next){});
+    favicon.returns(function(req, res, next){}); //eslint-disable-line no-unused-vars
     mockery.registerMock('serve-favicon', favicon);
 
     mockery.registerMock(upath.join(Ravel.cwd, 'node_modules', 'ejs'), {
@@ -97,13 +96,12 @@ describe('Ravel', function() {
 
   describe('#init()', function() {
     it('should initialize an express server with appropriate parameters', function(done) {
-      //jshint unused:false
-      const expressAppMock = new require('express')();
+      const expressAppMock = new (require('express'))();
       const expressMock = function(){
         return expressAppMock;
       };
       expressMock.static = sinon.stub();
-      expressMock.static.returns(function(req, res, next){});
+      expressMock.static.returns(function(req, res, next){}); //eslint-disable-line no-unused-vars
       mockery.registerMock('express', expressMock);
       const setSpy = sinon.spy(expressAppMock, 'set');
       //const enableSpy = sinon.spy(expressAppMock, 'enable');

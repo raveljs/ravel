@@ -18,7 +18,7 @@ describe('ws/util/broadcast_middleware', function() {
       warnOnUnregistered: false
     });
 
-    Ravel = new require('../../../lib/ravel')();
+    Ravel = new (require('../../../lib/ravel'))();
     Ravel.Log.setLevel(Ravel.Log.NONE);
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
     Ravel.broadcast = {

@@ -10,7 +10,7 @@ const mockery = require('mockery');
 let Mocks;
 
 describe('auth/primus_init', function() {
-  beforeEach(function(done) {    
+  beforeEach(function(done) {
     //enable mockery
     mockery.enable({
       useCleanCache: true,
@@ -61,9 +61,9 @@ describe('auth/primus_init', function() {
             name: '/test/:testId',
             params: ['testId'],
             regex: new RegExp('/test/(\\w+)/entity/(\\w+)'),
-            authorize: function(userId, done) {
+            authorize: function(userId, d) {
               expect(userId).to.equal(1);
-              done(null, true);
+              d(null, true);
             }
           }
         };

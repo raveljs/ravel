@@ -19,7 +19,7 @@ describe('Ravel', function() {
     });
     redisMock = {
       createClient: function() {
-        redisClientStub = new (require('events').EventEmitter)();
+        redisClientStub = new (require('events').EventEmitter)(); //eslint-disable-line no-extra-parens
         redisClientStub.auth = function(){};
         redisClientStub.end = function(){};
         return redisClientStub;

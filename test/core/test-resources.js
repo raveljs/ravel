@@ -8,7 +8,7 @@ const upath = require('upath');
 const sinon = require('sinon');
 chai.use(require('sinon-chai'));
 
-let Ravel, Resource, fs, err, stub;
+let Ravel, Resource, fs, stub;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
@@ -21,10 +21,8 @@ describe('Ravel', function() {
 
     fs = require('fs');
     mockery.registerMock('fs', fs);
-    err = null;
-    mockery.registerMock('fs-readdir-recursive', function(basePath) {
-      /*jshint unused:false*/
-      return ['test1.js', 'test2.js', '.jshintrc'];
+    mockery.registerMock('fs-readdir-recursive', function(basePath) { //eslint-disable-line no-unused-vars
+      return ['test1.js', 'test2.js', '.eslintrc'];
     });
 
     Ravel = new (require('../../lib/ravel'))();
@@ -60,7 +58,7 @@ describe('Ravel', function() {
       expect(Ravel._resourceFactories['resources/test1.js']).to.be.a('function');
       expect(Ravel._resourceFactories).to.have.property('resources/test2.js');
       expect(Ravel._resourceFactories['resources/test2.js']).to.be.a('function');
-      expect(Ravel._resourceFactories).to.not.have.property('.jshintrc');
+      expect(Ravel._resourceFactories).to.not.have.property('.eslintrc');
       done();
     });
 

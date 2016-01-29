@@ -19,7 +19,7 @@ describe('auth/authorization_provider', function() {
     //mock Ravel.kvstore, since we're not actually starting Ravel.
     const redisMock = {
       createClient: function() {
-        const redisClientStub = new (require('events').EventEmitter)();
+        const redisClientStub = new (require('events').EventEmitter)(); //eslint-disable-line no-extra-parens
         redisClientStub.auth = function(){};
         return redisClientStub;
       },

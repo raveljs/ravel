@@ -126,7 +126,7 @@ describe('util/authorize_request', function() {
         expect(client).to.equal('test-ios');
         callback(null, profile);
       });
-      Ravel.set('get user function', function(Ravel, profile, callback) {
+      Ravel.set('get user function', function(ravelInstance, profile2, callback) {
         callback(null, user);
       });
       authorizeRequest(req, res, next);
@@ -157,7 +157,7 @@ describe('util/authorize_request', function() {
         expect(client).to.equal('test-ios');
         callback(null, profile);
       });
-      Ravel.set('get user function', function(Ravel, profile, callback) {
+      Ravel.set('get user function', function(ravelInstance, profile2, callback) {
         callback(new Ravel.ApplicationError.NotFound('User does not exist'), null);
       });
       authorizeRequest(req, res, next);
@@ -216,7 +216,7 @@ describe('util/authorize_request', function() {
         expect(client).to.equal('test-ios');
         callback(null, profile);
       });
-      Ravel.set('get or create user function', function(Ravel, accessToken, refreshToken, profile, callback) {
+      Ravel.set('get or create user function', function(ravelInstance, accessToken, refreshToken, profile2, callback) {
         callback(null, user);
       });
       authorizeRequest(req, res, next);
@@ -247,7 +247,7 @@ describe('util/authorize_request', function() {
         expect(client).to.equal('test-ios');
         callback(null, profile);
       });
-      Ravel.set('get or create user function', function(Ravel, accessToken, refreshToken, profile, callback) {
+      Ravel.set('get or create user function', function(ravelInstance, accessToken, refreshToken, profile2, callback) {
         callback(new Error(), null);
       });
       authorizeRequest(req, res, next);

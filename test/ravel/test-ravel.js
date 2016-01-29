@@ -12,7 +12,7 @@ let Ravel, agent;
 
 const u = [{id:1, name:'Joe'}, {id:2, name:'Jane'}];
 //stub module
-const users = function($E) {
+const Users = function($E) {
   return {
     getAllUsers: function(callback) {
       callback(null, u);
@@ -36,7 +36,7 @@ const usersResource = function($Resource, $Rest, users) {
   });
 
   $Resource.get(function(req, res) {
-    users.getUser(req.params['id'], $Rest.respond(req, res));
+    users.getUser(req.params.id, $Rest.respond(req, res));
   });
 };
 
@@ -81,7 +81,7 @@ describe('Ravel end-to-end test', function() {
         Ravel.set('express session secret', 'mysecret');
         Ravel.set('disable json vulnerability protection', true);
 
-        mockery.registerMock(upath.join(Ravel.cwd, 'users'), users);
+        mockery.registerMock(upath.join(Ravel.cwd, 'users'), Users);
         Ravel.module('users');
         mockery.registerMock(upath.join(Ravel.cwd, 'usersResource'), usersResource);
         Ravel.resource('usersResource');

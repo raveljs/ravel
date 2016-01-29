@@ -27,7 +27,7 @@ describe('ws/util/broadcast', function() {
       auth: function(){},
       select: function(){}
     };
-    Ravel = new require('../../../lib/ravel')();
+    Ravel = new (require('../../../lib/ravel'))();
     Ravel.Log.setLevel(Ravel.Log.NONE);
     Ravel.set('redis port', 0);
     Ravel.set('redis host', 'localhost');

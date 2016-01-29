@@ -43,11 +43,11 @@ module.exports = function(mockery, callback) {
   //mock primus spark
   Mocks.spark = new EventEmitter();
   Mocks.spark.headers = {};
-  Mocks.spark.join = function(room, callback) {
-    callback();
+  Mocks.spark.join = function(room, cb) {
+    cb();
   };
-  Mocks.spark.leave = function(room, callback) {
-    callback();
+  Mocks.spark.leave = function(room, cb) {
+    cb();
   };
   //mock express session store
   Mocks.expressSessionStore = {

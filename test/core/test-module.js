@@ -40,7 +40,7 @@ describe('Ravel', function() {
       });
       Ravel.module('./modules/test');
       expect(Ravel._moduleFactories).to.have.property('test');
-      expect(Ravel._moduleFactories['test']).to.be.a('function');
+      expect(Ravel._moduleFactories.test).to.be.a('function');
       done();
     });
 
@@ -50,7 +50,7 @@ describe('Ravel', function() {
       });
       Ravel.module('./modules/test.js');
       expect(Ravel._moduleFactories).to.have.property('test');
-      expect(Ravel._moduleFactories['test']).to.be.a('function');
+      expect(Ravel._moduleFactories.test).to.be.a('function');
       done();
     });
 
@@ -70,7 +70,6 @@ describe('Ravel', function() {
     });
 
     it('should produce a module factory which can be used to instantiate the specified module and perform dependency injection', function(done) {
-      /*jshint ignore:start*/
       @inject('$E', '$KV', '$Params')
       class Stub extends Module {
         constructor($E, $KV, $Params) {
@@ -92,10 +91,9 @@ describe('Ravel', function() {
         method() {}
       }
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
-      /*jshint ignore:end*/
       Ravel.module('./test');
       Ravel._moduleInit();
-      const instance = Ravel._modules['test'];
+      const instance = Ravel._modules.test;
       expect(instance.log).to.be.ok;
       expect(instance.log).to.be.an('object');
       expect(instance.log).to.have.property('trace').that.is.a('function');
@@ -113,12 +111,10 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'my-test-module.js'), Stub);
       Ravel.module('./my-test-module.js');
       expect(Ravel._moduleFactories).to.have.property('myTestModule');
-      expect(Ravel._moduleFactories['myTestModule']).to.be.a('function');
-      Ravel._moduleFactories['myTestModule']();
+      expect(Ravel._moduleFactories.myTestModule).to.be.a('function');
+      Ravel._moduleFactories.myTestModule();
       done();
     });
-
-    /*jshint ignore:start*/
     it('should produce module factories which support dependency injection of client modules', function(done) {
       class Stub1 extends Module {
         constructor() {super();}
@@ -139,19 +135,15 @@ describe('Ravel', function() {
       Ravel.module('./modules/test2');
       Ravel._moduleInit();
     });
-    /*jshint ignore:end*/
 
     it('should not allow client modules to depend on themselves', function(done) {
-      /*jshint ignore:start*/
       @inject('test')
       class Stub extends Module {
-        constructor(test) {
+        constructor(test) { //eslint-disable-line no-unused-vars
           super();
-          /*jshint unused:false*/
         }
       }
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test'), Stub);
-      /*jshint ignore:end*/
       Ravel.module('./modules/test');
       const test = function() {
         Ravel._moduleInit();
@@ -162,11 +154,10 @@ describe('Ravel', function() {
 
     it('should instantiate modules in dependency order', function(done) {
       const instantiatedModules = {};
-      /*jshint ignore:start*/
       class Stub1 extends Module {
         constructor() {
           super();
-          instantiatedModules['test'] = true;
+          instantiatedModules.test = true;
           expect(instantiatedModules).to.not.have.property('test2');
           expect(instantiatedModules).to.not.have.property('test3');
           expect(instantiatedModules).to.not.have.property('test4');
@@ -175,10 +166,10 @@ describe('Ravel', function() {
 
       @inject('test', 'test4')
       class Stub2 extends Module {
-        constructor(test, test4) {
+        constructor(test, test4) {  //eslint-disable-line no-unused-vars
           super();
-          /*jshint unused:false*/
-          instantiatedModules['test2'] = true;
+
+          instantiatedModules.test2 = true;
           expect(instantiatedModules).to.have.property('test');
           expect(instantiatedModules).to.not.have.property('test3');
           expect(instantiatedModules).to.have.property('test4');
@@ -187,29 +178,28 @@ describe('Ravel', function() {
 
       @inject('test2')
       class Stub3 extends Module {
-        constructor(test2) {
+        constructor(test2) {  //eslint-disable-line no-unused-vars
           super();
-          /*jshint unused:false*/
-          instantiatedModules['test3'] = true;
+
+          instantiatedModules.test3 = true;
           expect(instantiatedModules).to.have.property('test2');
         }
-      };
+      }
 
       @inject('test')
       class Stub4 extends Module {
-        constructor(test) {
+        constructor(test) { //eslint-disable-line no-unused-vars
           super();
-          /*jshint unused:false*/
-          instantiatedModules['test4'] = true;
+
+          instantiatedModules.test4 = true;
           expect(instantiatedModules).to.not.have.property('test2');
           expect(instantiatedModules).to.have.property('test');
         }
-      };
+      }
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test'), Stub1);
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test2'), Stub2);
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test3'), Stub3);
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test4'), Stub4);
-      /*jshint ignore:end*/
       Ravel.module('./modules/test');
       Ravel.module('./modules/test2');
       Ravel.module('./modules/test3');
@@ -219,24 +209,20 @@ describe('Ravel', function() {
     });
 
     it('should detect basic cyclical dependencies between client modules', function(done) {
-      /*jshint ignore:start*/
       @inject('test2')
       class Stub1 extends Module {
-        constructor(test2) {
+        constructor(test2) { //eslint-disable-line no-unused-vars
           super();
-          /*jshint unused:false*/
         }
       }
       @inject('test')
       class Stub2 extends Module {
-        constructor(test) {
+        constructor(test) {  //eslint-disable-line no-unused-vars
           super();
-          /*jshint unused:false*/
         }
       }
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test'), Stub1);
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test2'), Stub2);
-      /*jshint ignore:end*/
       Ravel.module('./modules/test');
       Ravel.module('./modules/test2');
       const test = function() {
@@ -247,39 +233,33 @@ describe('Ravel', function() {
     });
 
     it('should detect complex cyclical dependencies between client modules', function(done) {
-      /*jshint ignore:start*/
       class Stub1 extends Module {
         constructor() {
           super();
-          /*jshint unused:false*/
         }
-      };
+      }
       @inject('test','test4')
       class Stub2 extends Module {
-        constructor(test, test4) {
+        constructor(test, test4) {  //eslint-disable-line no-unused-vars
           super();
-          /*jshint unused:false*/
         }
-      };
+      }
       @inject('test2')
       class Stub3 extends Module {
-        constructor(test2) {
+        constructor(test2) {  //eslint-disable-line no-unused-vars
           super();
-          /*jshint unused:false*/
         }
-      };
+      }
       @inject('test3')
       class Stub4 extends Module {
-        constructor(test3) {
+        constructor(test3) {  //eslint-disable-line no-unused-vars
           super();
-          /*jshint unused:false*/
         }
-      };
+      }
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test'), Stub1);
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test2'), Stub2);
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test3'), Stub3);
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test4'), Stub4);
-      /*jshint ignore:end*/
       Ravel.module('./modules/test');
       Ravel.module('./modules/test2');
       Ravel.module('./modules/test3');
@@ -291,7 +271,6 @@ describe('Ravel', function() {
       done();
     });
 
-    /*jshint ignore:start*/
     it('should produce a module factory which facilitates dependency injection of npm modules', function(done) {
       const stubMoment = {
         method: function() {}
@@ -312,9 +291,7 @@ describe('Ravel', function() {
       Ravel.module('./test');
       Ravel._moduleInit();
     });
-    /*jshint ignore:end*/
 
-    /*jshint ignore:start*/
     it('should support array notation for specifying module dependencies which use invalid js constiable names', function(done) {
       const stubBadName = {
         method: function() {}
@@ -335,22 +312,19 @@ describe('Ravel', function() {
       Ravel.module('./test');
       Ravel._moduleInit();
     });
-    /*jshint ignore:end*/
 
     it('should throw an ApplicationError.NotFound when a module factory which utilizes an unknown module/npm dependency is instantiated', function(done) {
-      /*jshint ignore:start*/
       @inject('unknownModule')
       class Stub extends Module {
         constructor(unknownModule) {
           super();
           expect(unknownModule).to.be.an('object');
         }
-      };
+      }
       mockery.registerMock(upath.join(Ravel.cwd, './test'), Stub);
-      /*jshint ignore:end*/
       Ravel.module('./test');
       const shouldThrow = function() {
-        Ravel._moduleFactories['test']();
+        Ravel._moduleFactories.test();
       };
       expect(shouldThrow).to.throw(Ravel.ApplicationError.NotFound);
       done();
@@ -378,10 +352,8 @@ describe('Ravel', function() {
     });
 
     it('should perform dependency injection on module factories which works regardless of the order of specified dependencies', function(done) {
-      /*jshint unused:false*/
       const momentStub = {};
       mockery.registerMock('moment', momentStub);
-      /*jshint ignore:start*/
       @inject('$E', 'moment')
       class Stub1 extends Module {
         constructor($E, moment) {
@@ -406,18 +378,15 @@ describe('Ravel', function() {
           expect(moment).to.equal(momentStub);
           done();
         }
-      };
+      }
       mockery.registerMock(upath.join(Ravel.cwd, './test1'), Stub1);
       mockery.registerMock(upath.join(Ravel.cwd, './test2'), Stub2);
-      /*jshint ignore:end*/
       Ravel.module('./test1');
       Ravel.module('./test2');
       Ravel._moduleInit();
     });
 
     it('should inject the same instance of a module into all modules which reference it', function(done) {
-      /*jshint unused:false*/
-      /*jshint ignore:start*/
       class Stub1 extends Module {
         method() {}
       }
@@ -431,7 +400,7 @@ describe('Ravel', function() {
           expect(test.method).to.be.a.function;
           stub2Test = test;
         }
-      };
+      }
 
       @inject('test')
       class Stub3 extends Module {
@@ -442,11 +411,10 @@ describe('Ravel', function() {
           expect(test).to.equal(stub2Test);
           done();
         }
-      };
+      }
       mockery.registerMock(upath.join(Ravel.cwd, './test'), Stub1);
       mockery.registerMock(upath.join(Ravel.cwd, './test2'), Stub2);
       mockery.registerMock(upath.join(Ravel.cwd, './test3'), Stub3);
-      /*jshint ignore:end*/
       Ravel.module('./test');
       Ravel.module('./test2');
       Ravel.module('./test3');

@@ -79,7 +79,7 @@ describe('Ravel', function() {
       };
       mockery.registerMock(upath.join(Ravel.cwd, 'stub'), stub);
       Ravel.routes('stub');
-      const instance = Ravel._routesFactories['stub']();
+      const instance = Ravel._routesFactories.stub();
       expect(instance.log).to.be.ok;
       expect(instance.log).to.be.an('object');
       expect(instance.log).to.have.property('trace').that.is.a('function');
