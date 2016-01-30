@@ -8,7 +8,7 @@ const upath = require('upath');
 const sinon = require('sinon');
 const express = require('express');
 
-let Ravel, Routes;
+let Ravel, Routes, inject, mapping, pre;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
@@ -19,7 +19,10 @@ describe('Ravel', function() {
       warnOnUnregistered: false
     });
 
-    Routes= require('../../lib/ravel').Routes;
+    Routes = require('../../lib/ravel').Routes;
+    inject = require('../../lib/ravel').inject;
+    mapping = Routes.mapping;
+    pre = Routes.pre;
     Ravel = new (require('../../lib/ravel'))();
     Ravel.Log.setLevel('NONE');
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
@@ -28,7 +31,10 @@ describe('Ravel', function() {
 
   afterEach(function(done) {
     Ravel = undefined;
+    inject = undefined;
     Routes = undefined;
+    mapping = undefined;
+    pre = undefined;
     mockery.deregisterAll();mockery.disable();
     done();
   });
@@ -61,10 +67,9 @@ describe('Ravel', function() {
       };
       Ravel.authorize = function() {};
       Ravel.authorizeWithRedirect = function() {};
-      const stub = class extends Routes {
-        static get inject() {
-          return ['$E', '$KV', '$Broadcast', '$Private', '$PrivateRedirect'];
-        }
+
+      @inject('$E', '$KV', '$Broadcast', '$Private', '$PrivateRedirect')
+      class Stub extends Routes {
         constructor($E, $KV, $Broadcast, $Private, $PrivateRedirect) {
           super();
           expect($E).to.be.ok;
@@ -74,10 +79,9 @@ describe('Ravel', function() {
           expect($Broadcast).to.equal(Ravel.broadcast);
           expect($Private).to.equal(Ravel.authorize);
           expect($PrivateRedirect).to.equal(Ravel.authorizeWithRedirect);
-          expect(this).to.have.property('get').that.is.a('function');
         }
       };
-      mockery.registerMock(upath.join(Ravel.cwd, 'stub'), stub);
+      mockery.registerMock(upath.join(Ravel.cwd, 'stub'), Stub);
       Ravel.routes('stub');
       const instance = Ravel._routesFactories.stub();
       expect(instance.log).to.be.ok;
@@ -104,13 +108,20 @@ describe('Ravel', function() {
     it('should facilitate the creation of GET routes via $RouteBuilder.add, but not permit the use of other HTTP verbs', function(done) {
       const middleware1 = function(/*req, res*/) {};
       const middleware2 = function(/*req, res*/) {};
-      const stub = class extends Routes {
+      class Stub extends Routes {
         constructor() {
           super('/app');
-          this.get('/path', middleware1, middleware2);
+        }
+
+        @mapping('/path')
+        @pre('middleware1', 'middleware2')
+        pathHandler(req, res) { //eslint-disable-line no-unused-vars
+          res.send(200);
         }
       };
-      mockery.registerMock(upath.join(Ravel.cwd, 'stub'), stub);
+      mockery.registerMock(upath.join(Ravel.cwd, 'stub'), Stub);
+      mockery.registerMock('middleware1', middleware1);
+      mockery.registerMock('middleware2', middleware2);
       Ravel.routes('stub');
 
       //load up express
