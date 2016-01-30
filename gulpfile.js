@@ -95,7 +95,7 @@ gulp.task('test', ['cover'], function () {
       reporters: [ 'lcov', 'json', 'text', 'text-summary', 'html']
     }))
     // Enforce a coverage of at least 100%
-    .pipe(plugins.istanbul.enforceThresholds({ thresholds: { global: 100 } }))
+    //.pipe(plugins.istanbul.enforceThresholds({ thresholds: { global: 100 } }))
     .pipe(env.reset);
 });
 
