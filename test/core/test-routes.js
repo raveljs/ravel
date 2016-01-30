@@ -8,7 +8,7 @@ const upath = require('upath');
 const sinon = require('sinon');
 const express = require('express');
 
-let Ravel, Routes, inject, mapping, pre;
+let Ravel, Routes, inject, mapping, before;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
@@ -21,8 +21,8 @@ describe('Ravel', function() {
 
     Routes = require('../../lib/ravel').Routes;
     inject = require('../../lib/ravel').inject;
+    before = require('../../lib/ravel').before;
     mapping = Routes.mapping;
-    pre = Routes.pre;
     Ravel = new (require('../../lib/ravel'))();
     Ravel.Log.setLevel('NONE');
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
@@ -34,7 +34,7 @@ describe('Ravel', function() {
     inject = undefined;
     Routes = undefined;
     mapping = undefined;
-    pre = undefined;
+    before = undefined;
     mockery.deregisterAll();mockery.disable();
     done();
   });
@@ -105,16 +105,58 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should facilitate the creation of GET routes via $RouteBuilder.add, but not permit the use of other HTTP verbs', function(done) {
+    it('should facilitate the creation of GET routes via , but not permit the use of other HTTP verbs', function(done) {
       const middleware1 = function(/*req, res*/) {};
       const middleware2 = function(/*req, res*/) {};
+
       class Stub extends Routes {
         constructor() {
           super('/app');
         }
 
         @mapping('/path')
-        @pre('middleware1', 'middleware2')
+        @before('middleware1','middleware2')
+        pathHandler(req, res) { //eslint-disable-line no-unused-vars
+          res.send(200);
+        }
+      };
+      mockery.registerMock(upath.join(Ravel.cwd, 'stub'), Stub);
+      mockery.registerMock('middleware1', middleware1);
+      mockery.registerMock('middleware2', middleware2);
+      Ravel.routes('stub');
+
+      //load up express
+      const app = express();
+      sinon.stub(app, 'get', function() {
+        expect(arguments[0]).to.equal('/app/path');
+        expect(arguments[1]).to.equal(middleware1);
+        expect(arguments[2]).to.equal(middleware2);
+        done();
+      });
+      sinon.stub(app, 'post', function() {
+        done(new Error('Routes class should never use app.post.'));
+      });
+      sinon.stub(app, 'put', function() {
+        done(new Error('Routes class should never use app.put.'));
+      });
+      sinon.stub(app, 'delete', function() {
+        done(new Error('Routes class should never use app.delete.'));
+      });
+      Ravel._routesInit(app);
+    });
+
+    it('should support the use of @before at the class level as well', function(done) {
+      const middleware1 = function(/*req, res*/) {};
+      const middleware2 = function(/*req, res*/) {};
+
+      @before('middleware1')
+      class Stub extends Routes {
+        constructor() {
+          super('/app');
+        }
+
+        @mapping('/path')
+        @before('middleware2')
         pathHandler(req, res) { //eslint-disable-line no-unused-vars
           res.send(200);
         }

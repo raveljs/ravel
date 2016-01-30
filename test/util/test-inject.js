@@ -18,7 +18,7 @@ describe('Ravel', function() {
     done();
   });
 
-  describe('#inject()', function() {
+  describe('@inject()', function() {
     it('should decorate a class with a static inject array', function(done) {
       @inject('test1', 'test2')
       class Stub1 {
@@ -38,7 +38,7 @@ describe('Ravel', function() {
         }
       }
       expect(Stub1.inject).to.be.an.array;
-      expect(Stub1.inject).to.deep.equal(['test1', 'test2', 'test3']);      
+      expect(Stub1.inject).to.deep.equal(['test1', 'test2', 'test3']);
       done();
     });
 

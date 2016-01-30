@@ -9,7 +9,7 @@ const upath = require('upath');
 const sinon = require('sinon');
 const express = require('express');
 
-let Ravel, Resource, pre, inject, broadcastMiddleware;
+let Ravel, Resource, before, inject, broadcastMiddleware;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
@@ -26,7 +26,7 @@ describe('Ravel', function() {
     });
 
     Resource = require('../../lib/ravel').Resource;
-    pre = Resource.pre;
+    before = require('../../lib/ravel').before;
     inject = require('../../lib/ravel').inject;
 
     Ravel = new (require('../../lib/ravel'))();
@@ -47,7 +47,7 @@ describe('Ravel', function() {
   afterEach(function(done) {
     Ravel = undefined;
     Resource = undefined;
-    pre = undefined;
+    before = undefined;
     inject = undefined;
     broadcastMiddleware = undefined;
     mockery.deregisterAll();mockery.disable();
@@ -172,7 +172,7 @@ describe('Ravel', function() {
           super('/api/test');
         }
 
-        @pre('middleware1', 'middleware2')
+        @before('middleware1', 'middleware2')
         getAll(req, res, next) { //eslint-disable-line no-unused-vars
         }
       }
@@ -197,7 +197,7 @@ describe('Ravel', function() {
           this.middleware2 = middleware2;
         }
 
-        @pre('middleware1', 'middleware2')
+        @before('middleware1', 'middleware2')
         get(req, res, next) {  //eslint-disable-line no-unused-vars
         }
       }
@@ -218,7 +218,7 @@ describe('Ravel', function() {
           super('/api/test');
         }
 
-        @pre('middleware1', 'middleware2')
+        @before('middleware1', 'middleware2')
         post(req, res, next) { //eslint-disable-line no-unused-vars
         }
       }
@@ -243,7 +243,7 @@ describe('Ravel', function() {
           this.middleware2 = middleware2;
         }
 
-        @pre('middleware1', 'middleware2')
+        @before('middleware1', 'middleware2')
         put(req, res, next) { //eslint-disable-line no-unused-vars
         }
       }
@@ -264,7 +264,7 @@ describe('Ravel', function() {
           super('/api/test');
         }
 
-        @pre('middleware1', 'middleware2')
+        @before('middleware1', 'middleware2')
         putAll(req, res, next) { //eslint-disable-line no-unused-vars
         }
       }
@@ -289,7 +289,7 @@ describe('Ravel', function() {
           this.middleware2 = middleware2;
         }
 
-        @pre('middleware1', 'middleware2')
+        @before('middleware1', 'middleware2')
         deleteAll(req, res, next) { //eslint-disable-line no-unused-vars
         }
       }
@@ -311,7 +311,7 @@ describe('Ravel', function() {
           super('/api/test');
         }
 
-        @pre('middleware1', 'middleware2')
+        @before('middleware1', 'middleware2')
         delete(req, res, next) { //eslint-disable-line no-unused-vars
         }
       }
@@ -326,11 +326,11 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should support the use of @pre at the class level', function(done) {
+    it('should support the use of @before at the class level', function(done) {
       const middleware1 = function(/*req, res*/) {};
       const middleware2 = function(/*req, res*/) {};
 
-      @pre('middleware1')
+      @before('middleware1')
       class Stub extends Resource {
         constructor() {
           super('/api/test');
@@ -338,7 +338,7 @@ describe('Ravel', function() {
           this.middleware2 = middleware2;
         }
 
-        @pre('middleware2')
+        @before('middleware2')
         get(req, res, next) {  //eslint-disable-line no-unused-vars
         }
       }
