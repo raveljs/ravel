@@ -61,22 +61,18 @@ describe('Ravel', function() {
     });
 
     it('should produce a factory function which can be used to instantiate the specified routes module and perform dependency injection', function(done) {
-      //stub broadcast, authorize and authorizeWithRedirect, since they only get created during Ravel.start
-      Ravel.broadcast = {
-        emit: function(){}
-      };
+      //stub authorize and authorizeWithRedirect, since they only get created during Ravel.start
       Ravel.authorize = function() {};
       Ravel.authorizeWithRedirect = function() {};
 
-      @inject('$E', '$KV', '$Broadcast', '$Private', '$PrivateRedirect')
+      @inject('$E', '$KV', '$Private', '$PrivateRedirect')
       class Stub extends Routes {
-        constructor($E, $KV, $Broadcast, $Private, $PrivateRedirect) {
+        constructor($E, $KV, $Private, $PrivateRedirect) {
           super();
           expect($E).to.be.ok;
           expect($E).to.be.an('object');
           expect($E).to.equal(Ravel.ApplicationError);
           expect($KV).to.equal(Ravel.kvstore);
-          expect($Broadcast).to.equal(Ravel.broadcast);
           expect($Private).to.equal(Ravel.authorize);
           expect($PrivateRedirect).to.equal(Ravel.authorizeWithRedirect);
         }

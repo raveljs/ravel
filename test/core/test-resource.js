@@ -9,7 +9,7 @@ const upath = require('upath');
 const sinon = require('sinon');
 const express = require('express');
 
-let Ravel, Resource, before, inject, broadcastMiddleware;
+let Ravel, Resource, before, inject;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
@@ -20,21 +20,13 @@ describe('Ravel', function() {
       warnOnUnregistered: false
     });
 
-    broadcastMiddleware = function(/*req, res, next*/){};
-    mockery.registerMock('../ws/util/broadcast_middleware', function() {
-      return broadcastMiddleware;
-    });
-
     Resource = require('../../lib/ravel').Resource;
     before = require('../../lib/ravel').before;
     inject = require('../../lib/ravel').inject;
 
     Ravel = new (require('../../lib/ravel'))();
     Ravel.Log.setLevel('NONE');
-    // mock broadcast, kvstore, authorize, authorizeWithRedirect and db.middleware, since they only get created during Ravel.start
-    Ravel.broadcast = {
-      emit: function(){}
-    };
+    // mock kvstore, authorize, authorizeWithRedirect and db.middleware, since they only get created during Ravel.start
     Ravel.kvstore = {};
     Ravel.db = {
       middleware: function(){}
@@ -49,7 +41,6 @@ describe('Ravel', function() {
     Resource = undefined;
     before = undefined;
     inject = undefined;
-    broadcastMiddleware = undefined;
     mockery.deregisterAll();mockery.disable();
     done();
   });
@@ -83,9 +74,9 @@ describe('Ravel', function() {
     });
 
     it('should produce a factory function which can be used to instantiate the specified resource module and perform dependency injection with specific, resource-related services', function(done) {
-      @inject('$E', '$KV', '$Broadcast', '$MiddlewareTransaction', '$Private', '$PrivateRedirect', '$Params')
+      @inject('$E', '$KV', '$MiddlewareTransaction', '$Private', '$PrivateRedirect', '$Params')
       class Stub extends Resource {
-        constructor($E, $KV, $Broadcast, $MiddlewareTransaction, $Private, $PrivateRedirect, $Params) {
+        constructor($E, $KV, $MiddlewareTransaction, $Private, $PrivateRedirect, $Params) {
           super('/api/test');
           expect($E).to.equal(Ravel.ApplicationError);
           expect($KV).to.be.ok;
@@ -101,7 +92,6 @@ describe('Ravel', function() {
           expect($Params).to.have.property('registerSimpleParameter').that.is.a('function');
           expect($Params).to.have.property('registerSimpleParameter').that.equals(Ravel.registerSimpleParameter);
           expect(this).to.have.property('basePath').that.equals('/api/test');
-          expect($Broadcast).to.equal(Ravel.broadcast);
           expect($Private).to.equal(Ravel.authorize);
           expect($PrivateRedirect).to.equal(Ravel.authorizeWithRedirect);
           expect($MiddlewareTransaction).to.equal(Ravel.db.middleware);
@@ -183,7 +173,7 @@ describe('Ravel', function() {
       mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
       Ravel._resourceInit(app);
-      expect(spy).to.have.been.calledWith('/api/test', broadcastMiddleware, middleware1, middleware2, Stub.prototype.getAll);
+      expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, Stub.prototype.getAll);
       done();
     });
 
@@ -206,7 +196,7 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
       Ravel._resourceInit(app);
-      expect(spy).to.have.been.calledWith('/api/test/:id', broadcastMiddleware, middleware1, middleware2, Stub.prototype.get);
+      expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, Stub.prototype.get);
       done();
     });
 
@@ -229,7 +219,7 @@ describe('Ravel', function() {
       mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
       Ravel._resourceInit(app);
-      expect(spy).to.have.been.calledWith('/api/test', broadcastMiddleware, middleware1, middleware2, Stub.prototype.post);
+      expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, Stub.prototype.post);
       done();
     });
 
@@ -252,7 +242,7 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
       Ravel._resourceInit(app);
-      expect(spy).to.have.been.calledWith('/api/test/:id', broadcastMiddleware, middleware1, middleware2, Stub.prototype.put);
+      expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, Stub.prototype.put);
       done();
     });
 
@@ -275,7 +265,7 @@ describe('Ravel', function() {
       mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
       Ravel._resourceInit(app);
-      expect(spy).to.have.been.calledWith('/api/test', broadcastMiddleware, middleware1, middleware2, Stub.prototype.putAll);
+      expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, Stub.prototype.putAll);
       done();
     });
 
@@ -298,7 +288,7 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
       Ravel._resourceInit(app);
-      expect(spy).to.have.been.calledWith('/api/test', broadcastMiddleware, middleware1, middleware2, Stub.prototype.deleteAll);
+      expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, Stub.prototype.deleteAll);
       done();
     });
 
@@ -322,7 +312,7 @@ describe('Ravel', function() {
       mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
       Ravel._resourceInit(app);
-      expect(spy).to.have.been.calledWith('/api/test/:id', broadcastMiddleware, middleware1, middleware2, Stub.prototype.delete);
+      expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, Stub.prototype.delete);
       done();
     });
 
@@ -347,7 +337,7 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
       Ravel._resourceInit(app);
-      expect(spy).to.have.been.calledWith('/api/test/:id', broadcastMiddleware, middleware1, middleware2, Stub.prototype.get);
+      expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, Stub.prototype.get);
       done();
     });
 
