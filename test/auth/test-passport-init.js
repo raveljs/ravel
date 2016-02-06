@@ -5,7 +5,7 @@ const expect = chai.expect;
 chai.use(require('chai-things'));
 const mockery = require('mockery');
 const sinon = require('sinon');
-const express = require('express');
+const koa = require('koa');
 
 let Ravel, passportMock;
 
@@ -71,12 +71,12 @@ describe('auth/passport_init', function() {
   });
 
   it('should not initialize passport and replace $Private and $PrivateRedirect with stubs that throw Ravel.ApplicationError.NotImplemented if no authorization providers are registered', function(done) {
-    const app = express();
+    const app = koa();
     const useSpy = sinon.spy(app, 'use');
     const passportInitSpy = sinon.spy(passportMock, 'initialize');
     const passportSessionSpy = sinon.spy(passportMock, 'session');
 
-    Ravel.emit('post config express', app);
+    Ravel.emit('post config koa', app);
     expect(useSpy).to.not.have.been.called;
     expect(passportInitSpy).to.not.have.been.called;
     expect(passportSessionSpy).to.not.have.been.called;
@@ -97,17 +97,17 @@ describe('auth/passport_init', function() {
     }
   });
 
-  it('should initialize passport and sessions for express', function(done) {
+  it('should initialize passport and sessions for koa', function(done) {
     const initStub = sinon.stub();
     Ravel.set('authorization providers', [{
       init: initStub
     }]);
-    const app = express();
+    const app = koa();
     const useSpy = sinon.spy(app, 'use');
     const passportInitSpy = sinon.spy(passportMock, 'initialize');
     const passportSessionSpy = sinon.spy(passportMock, 'session');
 
-    Ravel.emit('post config express', app);
+    Ravel.emit('post config koa', app);
     expect(useSpy).to.have.been.called;
     expect(passportInitSpy).to.have.been.called;
     expect(passportSessionSpy).to.have.been.called;
@@ -119,7 +119,7 @@ describe('auth/passport_init', function() {
     Ravel.set('authorization providers', [{
       init: sinon.stub()
     }]);
-    const app = express();
+    const app = koa();
 
     sinon.stub(passportMock, 'serializeUser', function(serializerFn) {
       serializerFn({id:9876}, function(err, result) {
@@ -128,7 +128,7 @@ describe('auth/passport_init', function() {
       });
     });
 
-    Ravel.emit('post config express', app);
+    Ravel.emit('post config koa', app);
   });
 
   it('should use user.id to deserialize users from session cookies', function(done) {
@@ -145,7 +145,7 @@ describe('auth/passport_init', function() {
       expect(userId).to.equal(9876);
       d(null, profile);
     });
-    const app = express();
+    const app = koa();
 
     sinon.stub(passportMock, 'deserializeUser', function(deserializerFn) {
       deserializerFn(9876, function(err, result) {
@@ -154,7 +154,7 @@ describe('auth/passport_init', function() {
       });
     });
 
-    Ravel.emit('post config express', app);
+    Ravel.emit('post config koa', app);
   });
 
   it('should delegate \'get or create user\' functionality to the \'get or create user function\'', function(doneTest) {
@@ -166,7 +166,7 @@ describe('auth/passport_init', function() {
       name: 'Sean McIntyre'
     };
     Ravel.set('authorization providers', [{
-      init: function(expressApp, passport, getOrCreate) {
+      init: function(koaApp, passport, getOrCreate) {
         getOrCreate('testAccessToken', 'testRefreshToken', {name: 'Sean McIntyre'}, function(err, result) {
           expect(result).to.deep.equal(databaseProfile);
           doneTest();
@@ -176,8 +176,8 @@ describe('auth/passport_init', function() {
     Ravel.set('get or create user function', function(accessToken, refreshToken, profile, $ScopedTransaction, done) {
       done(null, databaseProfile);
     });
-    const app = express();
+    const app = koa();
 
-    Ravel.emit('post config express', app);
+    Ravel.emit('post config koa', app);
   });
 });

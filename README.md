@@ -7,7 +7,7 @@ Forge past a tangle of node.js modules. Make a cool app.
 
 Ravel is a tiny, sometimes-opinionated foundation for rapidly creating complex, highly-scalable [node](https://github.com/joyent/node) applications.
 
-Layered on top of such fantastic technologies as [Express](https://github.com/strongloop/express), [Primus](https://github.com/primus/primus), [Passport](https://github.com/jaredhanson/passport), [Intel](https://github.com/seanmonstar/intel) and [Redis](https://github.com/antirez/redis), Ravel aims to provide a pre-baked, well-tested and highly modular solution for constructing enterprise web applications by providing:
+Layered on top of such fantastic technologies as [koa](http://koajs.com/), [Primus](https://github.com/primus/primus), [Passport](https://github.com/jaredhanson/passport), [Intel](https://github.com/seanmonstar/intel) and [Redis](https://github.com/antirez/redis), Ravel aims to provide a pre-baked, well-tested and highly modular solution for constructing enterprise web applications by providing:
 
  - Dependency injection
  - A set of well-defined architectural components
@@ -15,7 +15,7 @@ Layered on top of such fantastic technologies as [Express](https://github.com/st
  - Authentication and authorization with transparent handling of mobile (i.e. non-web) clients
  - Standards-compliant REST API definition
  - Websocket-based front-end model synchronization
- - Easy security, via an enforced, reference configuration of [Express](https://github.com/strongloop/express)
+ - Easy security, via an enforced, reference configuration of [koa](http://koajs.com/)
  - Horizontal scalability
 
 ## Installation
@@ -108,7 +108,7 @@ Ravel.modules('/modules/directory/path');
 
 ### Then, define a Resource
 
-Resources are a special kind of module which help you build REST endpoints to expose your business logic. They support Express middleware and are designed to make it easy to adhere to the proper REST semantics.
+Resources are a special kind of module which help you build REST endpoints to expose your business logic. They support koa middleware and are designed to make it easy to adhere to the proper REST semantics.
 
 *resources/city.js*
 
@@ -188,8 +188,8 @@ Once again, register the routes:
 
     const Ravel = new require('ravel')();
     //Since we're using EJS, we need to tell Ravel some things
-    Ravel.set('express view directory', 'views');
-    Ravel.set('express view engine', 'ejs');
+    Ravel.set('koa view directory', 'views');
+    Ravel.set('koa view engine', 'ejs');
     //...we're still getting to this part
 
     Ravel.module('./modules/cities');
@@ -204,8 +204,8 @@ Websocket Rooms are topic *patterns* which represent a collection of topics to w
 *app.js*
 
     const Ravel = new require('ravel')();
-    Ravel.set('express view directory', 'views');
-    Ravel.set('express view engine', 'ejs');
+    Ravel.set('koa view directory', 'views');
+    Ravel.set('koa view engine', 'ejs');
     //...we're still getting to this part
 
     Ravel.module('./modules/cities');
@@ -223,7 +223,7 @@ Websocket Rooms are topic *patterns* which represent a collection of topics to w
 
 ### Ravel.init() and Ravel.listen()
 
-After defining all the basic components of a Ravel application, we need to initialize it with Ravel.init(). This step configures Express, Primus and other base technologies, and instantiates your defined Modules, Resources, Routes and Rooms.
+After defining all the basic components of a Ravel application, we need to initialize it with Ravel.init(). This step configures koa, Primus and other base technologies, and instantiates your defined Modules, Resources, Routes and Rooms.
 
 After Ravel.init(), a *post init* event is emitted which can be used as a hook (via Ravel.on()) to perform other startup logic before spinning up the actual web server with Ravel.listen().
 
@@ -232,12 +232,12 @@ We've been avoiding some mandatory Ravel.set() parameters up until now, includin
 *app.js*
 
     const Ravel = new require('ravel')();
-    Ravel.set('express view directory', 'views');
-    Ravel.set('express view engine', 'ejs');
+    Ravel.set('koa view directory', 'views');
+    Ravel.set('koa view engine', 'ejs');
     //Here are those extra parameters we mentioned before
     Ravel.set('redis host', 'localhost');
     Ravel.set('redis port', 5432);
-    Ravel.set('express session secret', 'a very random string');
+    Ravel.set('koa session secret', 'a very random string');
 
     Ravel.module('./modules/cities');
     Ravel.resource('./resources/city');

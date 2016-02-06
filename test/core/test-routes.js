@@ -6,7 +6,7 @@ chai.use(require('chai-things'));
 const mockery = require('mockery');
 const upath = require('upath');
 const sinon = require('sinon');
-const express = require('express');
+const koa = require('koa');
 
 let Ravel, Routes, inject, mapping, before;
 
@@ -121,8 +121,8 @@ describe('Ravel', function() {
       mockery.registerMock('middleware2', middleware2);
       Ravel.routes('stub');
 
-      //load up express
-      const app = express();
+      //load up koa
+      const app = koa();
       sinon.stub(app, 'get', function() {
         expect(arguments[0]).to.equal('/app/path');
         expect(arguments[1]).to.equal(middleware1);
@@ -162,8 +162,8 @@ describe('Ravel', function() {
       mockery.registerMock('middleware2', middleware2);
       Ravel.routes('stub');
 
-      //load up express
-      const app = express();
+      //load up koa
+      const app = koa();
       sinon.stub(app, 'get', function() {
         expect(arguments[0]).to.equal('/app/path');
         expect(arguments[1]).to.equal(middleware1);

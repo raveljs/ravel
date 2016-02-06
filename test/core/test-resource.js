@@ -7,7 +7,7 @@ chai.use(require('sinon-chai'));
 const mockery = require('mockery');
 const upath = require('upath');
 const sinon = require('sinon');
-const express = require('express');
+const koa = require('koa');
 
 let Ravel, Resource, before, inject;
 
@@ -100,7 +100,7 @@ describe('Ravel', function() {
 
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
-      const app = express();
+      const app = koa();
       const resource = Ravel._resourceFactories.test(app);
       expect(resource.log).to.be.an('object');
       expect(resource.log).to.have.property('trace').that.is.a('function');
@@ -129,7 +129,7 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test2'), stub2);
       Ravel.resource('test1');
       Ravel.resource('test2');
-      const app = express();
+      const app = koa();
       const shouldFail = function() {
         Ravel._resourceInit(app);
       };
@@ -143,7 +143,7 @@ describe('Ravel', function() {
           super();
         }
       };
-      const app = express();
+      const app = koa();
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
       Ravel.resource('test');
       const test = function() {
@@ -166,7 +166,7 @@ describe('Ravel', function() {
         getAll(req, res, next) { //eslint-disable-line no-unused-vars
         }
       }
-      const app = express();
+      const app = koa();
       const spy = sinon.stub(app, 'get');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       mockery.registerMock('middleware1', middleware1);
@@ -191,7 +191,7 @@ describe('Ravel', function() {
         get(req, res, next) {  //eslint-disable-line no-unused-vars
         }
       }
-      const app = express();
+      const app = koa();
       const spy = sinon.stub(app, 'get');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
@@ -212,7 +212,7 @@ describe('Ravel', function() {
         post(req, res, next) { //eslint-disable-line no-unused-vars
         }
       }
-      const app = express();
+      const app = koa();
       const spy = sinon.stub(app, 'post');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       mockery.registerMock('middleware1', middleware1);
@@ -237,7 +237,7 @@ describe('Ravel', function() {
         put(req, res, next) { //eslint-disable-line no-unused-vars
         }
       }
-      const app = express();
+      const app = koa();
       const spy = sinon.stub(app, 'put');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
@@ -258,7 +258,7 @@ describe('Ravel', function() {
         putAll(req, res, next) { //eslint-disable-line no-unused-vars
         }
       }
-      const app = express();
+      const app = koa();
       const spy = sinon.stub(app, 'put');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       mockery.registerMock('middleware1', middleware1);
@@ -283,7 +283,7 @@ describe('Ravel', function() {
         deleteAll(req, res, next) { //eslint-disable-line no-unused-vars
         }
       }
-      const app = express();
+      const app = koa();
       const spy = sinon.stub(app, 'delete');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
@@ -305,7 +305,7 @@ describe('Ravel', function() {
         delete(req, res, next) { //eslint-disable-line no-unused-vars
         }
       }
-      const app = express();
+      const app = koa();
       const spy = sinon.stub(app, 'delete');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       mockery.registerMock('middleware1', middleware1);
@@ -332,7 +332,7 @@ describe('Ravel', function() {
         get(req, res, next) {  //eslint-disable-line no-unused-vars
         }
       }
-      const app = express();
+      const app = koa();
       const spy = sinon.stub(app, 'get');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
@@ -343,7 +343,7 @@ describe('Ravel', function() {
 
     it('should implement stub endpoints for unused HTTP verbs, all of which return a status httpCodes.NOT_IMPLEMENTED', function(done) {
       const httpCodes = require('../../lib/util/http_codes');
-      const app = express();
+      const app = koa();
       const res = {
         status: function(status) {
           expect(status).to.equal(httpCodes.NOT_IMPLEMENTED);
@@ -353,15 +353,15 @@ describe('Ravel', function() {
         }
       };
       const spy = sinon.spy(res, 'status');
-      const expressHandler = function() {
+      const koaHandler = function() {
         expect(arguments.length).to.equal(2);
         expect(arguments[1]).to.be.a('function');
         arguments[1](null, res);
       };
-      sinon.stub(app, 'get', expressHandler);
-      sinon.stub(app, 'post', expressHandler);
-      sinon.stub(app, 'put', expressHandler);
-      sinon.stub(app, 'delete', expressHandler);
+      sinon.stub(app, 'get', koaHandler);
+      sinon.stub(app, 'post', koaHandler);
+      sinon.stub(app, 'put', koaHandler);
+      sinon.stub(app, 'delete', koaHandler);
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), class extends Resource {
         constructor() {
           super('/api/test');

@@ -72,13 +72,13 @@ describe('Ravel end-to-end test', function() {
         Ravel.set('redis host', 'localhost');
         Ravel.set('redis port', 5432);
         Ravel.set('port', '9080');
-        Ravel.set('express public directory', 'public');
-        Ravel.set('express view directory', 'ejs');
-        Ravel.set('express view engine', 'ejs');
+        Ravel.set('koa public directory', 'public');
+        Ravel.set('koa view directory', 'ejs');
+        Ravel.set('koa view engine', 'ejs');
         mockery.registerMock(upath.join(Ravel.cwd, 'node_modules', 'ejs'), {
-          __express: function() {}
+          __koa: function() {}
         });
-        Ravel.set('express session secret', 'mysecret');
+        Ravel.set('koa session secret', 'mysecret');
         Ravel.set('disable json vulnerability protection', true);
 
         mockery.registerMock(upath.join(Ravel.cwd, 'users'), Users);

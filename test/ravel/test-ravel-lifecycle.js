@@ -33,12 +33,12 @@ describe('Ravel', function() {
     Ravel.set('redis port', 5432);
     Ravel.set('redis password', 'password');
     Ravel.set('port', '9080');
-    Ravel.set('express public directory', 'public');
-    Ravel.set('express view directory', 'ejs');
-    Ravel.set('express view engine', 'ejs');
-    Ravel.set('express session secret', 'mysecret');
+    Ravel.set('koa public directory', 'public');
+    Ravel.set('koa view directory', 'ejs');
+    Ravel.set('koa view engine', 'ejs');
+    Ravel.set('koa session secret', 'mysecret');
     Ravel.set('disable json vulnerability protection', true);
-    Ravel.set('express favicon path', 'images/favicon.ico');
+    Ravel.set('koa favicon path', 'images/favicon.ico');
 
     const u = [{id:1, name:'Joe'}, {id:2, name:'Jane'}];
 
@@ -81,7 +81,7 @@ describe('Ravel', function() {
     mockery.registerMock('serve-favicon', favicon);
 
     mockery.registerMock(upath.join(Ravel.cwd, 'node_modules', 'ejs'), {
-      __express: function() {}
+      __koa: function() {}
     });
 
     done();
@@ -95,23 +95,23 @@ describe('Ravel', function() {
   });
 
   describe('#init()', function() {
-    it('should initialize an express server with appropriate parameters', function(done) {
-      const expressAppMock = new (require('express'))();
-      const expressMock = function(){
-        return expressAppMock;
+    it('should initialize an koa server with appropriate parameters', function(done) {
+      const koaAppMock = new (require('koa'))();
+      const koaMock = function(){
+        return koaAppMock;
       };
-      expressMock.static = sinon.stub();
-      expressMock.static.returns(function(req, res, next){}); //eslint-disable-line no-unused-vars
-      mockery.registerMock('express', expressMock);
-      const setSpy = sinon.spy(expressAppMock, 'set');
-      //const enableSpy = sinon.spy(expressAppMock, 'enable');
+      koaMock.static = sinon.stub();
+      koaMock.static.returns(function(req, res, next){}); //eslint-disable-line no-unused-vars
+      mockery.registerMock('koa', koaMock);
+      const setSpy = sinon.spy(koaAppMock, 'set');
+      //const enableSpy = sinon.spy(koaAppMock, 'enable');
       Ravel.init();
 
-      expect(setSpy).to.have.been.calledWith('views', upath.join(Ravel.cwd, Ravel.get('express view directory')));
-      expect(setSpy).to.have.been.calledWith('view engine', Ravel.get('express view engine'));
-      expect(expressMock.static).to.have.been.calledWith(upath.join(Ravel.cwd, Ravel.get('express public directory')));
-      expect(favicon).to.have.been.calledWith(upath.join(Ravel.cwd, Ravel.get('express favicon path')));
-      //TODO test expressMock.use calls as well
+      expect(setSpy).to.have.been.calledWith('views', upath.join(Ravel.cwd, Ravel.get('koa view directory')));
+      expect(setSpy).to.have.been.calledWith('view engine', Ravel.get('koa view engine'));
+      expect(koaMock.static).to.have.been.calledWith(upath.join(Ravel.cwd, Ravel.get('koa public directory')));
+      expect(favicon).to.have.been.calledWith(upath.join(Ravel.cwd, Ravel.get('koa favicon path')));
+      //TODO test koaMock.use calls as well
       done();
     });
   });
