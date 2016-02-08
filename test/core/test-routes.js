@@ -6,7 +6,6 @@ chai.use(require('chai-things'));
 const mockery = require('mockery');
 const upath = require('upath');
 const sinon = require('sinon');
-const koa = require('koa');
 
 let Ravel, Routes, inject, mapping, before;
 
@@ -122,23 +121,23 @@ describe('Ravel', function() {
       Ravel.routes('stub');
 
       //load up koa
-      const app = koa();
-      sinon.stub(app, 'get', function() {
+      const router = require('koa-router')();
+      sinon.stub(router, 'get', function() {
         expect(arguments[0]).to.equal('/app/path');
         expect(arguments[1]).to.equal(middleware1);
         expect(arguments[2]).to.equal(middleware2);
         done();
       });
-      sinon.stub(app, 'post', function() {
+      sinon.stub(router, 'post', function() {
         done(new Error('Routes class should never use app.post.'));
       });
-      sinon.stub(app, 'put', function() {
+      sinon.stub(router, 'put', function() {
         done(new Error('Routes class should never use app.put.'));
       });
-      sinon.stub(app, 'delete', function() {
+      sinon.stub(router, 'delete', function() {
         done(new Error('Routes class should never use app.delete.'));
       });
-      Ravel._routesInit(app);
+      Ravel._routesInit(router);
     });
 
     it('should support the use of @before at the class level as well', function(done) {
@@ -163,23 +162,23 @@ describe('Ravel', function() {
       Ravel.routes('stub');
 
       //load up koa
-      const app = koa();
-      sinon.stub(app, 'get', function() {
+      const router = require('koa-router')();
+      sinon.stub(router, 'get', function() {
         expect(arguments[0]).to.equal('/app/path');
         expect(arguments[1]).to.equal(middleware1);
         expect(arguments[2]).to.equal(middleware2);
         done();
       });
-      sinon.stub(app, 'post', function() {
+      sinon.stub(router, 'post', function() {
         done(new Error('Routes class should never use app.post.'));
       });
-      sinon.stub(app, 'put', function() {
+      sinon.stub(router, 'put', function() {
         done(new Error('Routes class should never use app.put.'));
       });
-      sinon.stub(app, 'delete', function() {
+      sinon.stub(router, 'delete', function() {
         done(new Error('Routes class should never use app.delete.'));
       });
-      Ravel._routesInit(app);
+      Ravel._routesInit(router);
     });
   });
 });

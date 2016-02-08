@@ -7,7 +7,6 @@ chai.use(require('sinon-chai'));
 const mockery = require('mockery');
 const upath = require('upath');
 const sinon = require('sinon');
-const koa = require('koa');
 
 let Ravel, Resource, before, inject;
 
@@ -100,8 +99,8 @@ describe('Ravel', function() {
 
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
-      const app = koa();
-      const resource = Ravel._resourceFactories.test(app);
+      const router = require('koa-router')();
+      const resource = Ravel._resourceFactories.test(router);
       expect(resource.log).to.be.an('object');
       expect(resource.log).to.have.property('trace').that.is.a('function');
       expect(resource.log).to.have.property('verbose').that.is.a('function');
@@ -129,9 +128,9 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test2'), stub2);
       Ravel.resource('test1');
       Ravel.resource('test2');
-      const app = koa();
+      const router = require('koa-router')();
       const shouldFail = function() {
-        Ravel._resourceInit(app);
+        Ravel._resourceInit(router);
       };
       expect(shouldFail).to.throw(Ravel.ApplicationError.DuplicateEntry);
       done();
@@ -143,11 +142,11 @@ describe('Ravel', function() {
           super();
         }
       };
-      const app = koa();
+      const router = require('koa-router')();
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
       Ravel.resource('test');
       const test = function() {
-        Ravel._resourceInit(app);
+        Ravel._resourceInit(router);
       };
       expect(test).to.throw(Ravel.ApplicationError.IllegalValue);
       done();
@@ -166,13 +165,13 @@ describe('Ravel', function() {
         getAll(req, res, next) { //eslint-disable-line no-unused-vars
         }
       }
-      const app = koa();
-      const spy = sinon.stub(app, 'get');
+      const router = require('koa-router')();
+      const spy = sinon.stub(router, 'get');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       mockery.registerMock('middleware1', middleware1);
       mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
-      Ravel._resourceInit(app);
+      Ravel._resourceInit(router);
       expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, Stub.prototype.getAll);
       done();
     });
@@ -191,11 +190,11 @@ describe('Ravel', function() {
         get(req, res, next) {  //eslint-disable-line no-unused-vars
         }
       }
-      const app = koa();
-      const spy = sinon.stub(app, 'get');
+      const router = require('koa-router')();
+      const spy = sinon.stub(router, 'get');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
-      Ravel._resourceInit(app);
+      Ravel._resourceInit(router);
       expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, Stub.prototype.get);
       done();
     });
@@ -212,13 +211,13 @@ describe('Ravel', function() {
         post(req, res, next) { //eslint-disable-line no-unused-vars
         }
       }
-      const app = koa();
-      const spy = sinon.stub(app, 'post');
+      const router = require('koa-router')();
+      const spy = sinon.stub(router, 'post');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       mockery.registerMock('middleware1', middleware1);
       mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
-      Ravel._resourceInit(app);
+      Ravel._resourceInit(router);
       expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, Stub.prototype.post);
       done();
     });
@@ -237,11 +236,11 @@ describe('Ravel', function() {
         put(req, res, next) { //eslint-disable-line no-unused-vars
         }
       }
-      const app = koa();
-      const spy = sinon.stub(app, 'put');
+      const router = require('koa-router')();
+      const spy = sinon.stub(router, 'put');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
-      Ravel._resourceInit(app);
+      Ravel._resourceInit(router);
       expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, Stub.prototype.put);
       done();
     });
@@ -258,13 +257,13 @@ describe('Ravel', function() {
         putAll(req, res, next) { //eslint-disable-line no-unused-vars
         }
       }
-      const app = koa();
-      const spy = sinon.stub(app, 'put');
+      const router = require('koa-router')();
+      const spy = sinon.stub(router, 'put');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       mockery.registerMock('middleware1', middleware1);
       mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
-      Ravel._resourceInit(app);
+      Ravel._resourceInit(router);
       expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, Stub.prototype.putAll);
       done();
     });
@@ -283,11 +282,11 @@ describe('Ravel', function() {
         deleteAll(req, res, next) { //eslint-disable-line no-unused-vars
         }
       }
-      const app = koa();
-      const spy = sinon.stub(app, 'delete');
+      const router = require('koa-router')();
+      const spy = sinon.stub(router, 'delete');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
-      Ravel._resourceInit(app);
+      Ravel._resourceInit(router);
       expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, Stub.prototype.deleteAll);
       done();
     });
@@ -305,13 +304,13 @@ describe('Ravel', function() {
         delete(req, res, next) { //eslint-disable-line no-unused-vars
         }
       }
-      const app = koa();
-      const spy = sinon.stub(app, 'delete');
+      const router = require('koa-router')();
+      const spy = sinon.stub(router, 'delete');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       mockery.registerMock('middleware1', middleware1);
       mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
-      Ravel._resourceInit(app);
+      Ravel._resourceInit(router);
       expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, Stub.prototype.delete);
       done();
     });
@@ -332,18 +331,18 @@ describe('Ravel', function() {
         get(req, res, next) {  //eslint-disable-line no-unused-vars
         }
       }
-      const app = koa();
-      const spy = sinon.stub(app, 'get');
+      const router = require('koa-router')();
+      const spy = sinon.stub(router, 'get');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
-      Ravel._resourceInit(app);
+      Ravel._resourceInit(router);
       expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, Stub.prototype.get);
       done();
     });
 
     it('should implement stub endpoints for unused HTTP verbs, all of which return a status httpCodes.NOT_IMPLEMENTED', function(done) {
       const httpCodes = require('../../lib/util/http_codes');
-      const app = koa();
+      const router = require('koa-router')();
       const res = {
         status: function(status) {
           expect(status).to.equal(httpCodes.NOT_IMPLEMENTED);
@@ -358,17 +357,17 @@ describe('Ravel', function() {
         expect(arguments[1]).to.be.a('function');
         arguments[1](null, res);
       };
-      sinon.stub(app, 'get', koaHandler);
-      sinon.stub(app, 'post', koaHandler);
-      sinon.stub(app, 'put', koaHandler);
-      sinon.stub(app, 'delete', koaHandler);
+      sinon.stub(router, 'get', koaHandler);
+      sinon.stub(router, 'post', koaHandler);
+      sinon.stub(router, 'put', koaHandler);
+      sinon.stub(router, 'delete', koaHandler);
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), class extends Resource {
         constructor() {
           super('/api/test');
         }
       });
       Ravel.resource('test');
-      Ravel._resourceInit(app);
+      Ravel._resourceInit(router);
       expect(spy).to.have.callCount(7);
       done();
     });
