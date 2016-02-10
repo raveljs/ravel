@@ -13,8 +13,8 @@ const del = require('del');
 
 const TESTS = [
   'test/core/test-*.js',
-  // 'test/db/test-*.js',
-  'test/util/test-*.js',
+  'test/db/test-*.js',
+  'test/util/test-*.js'
 
   // 'test/auth/test-*.js',
   // 'test/ravel/test-*.js',

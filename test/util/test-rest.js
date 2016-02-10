@@ -1,10 +1,8 @@
 'use strict';
 
 const chai = require('chai');
-// const expect = chai.expect;
 chai.use(require('chai-things'));
 chai.use(require('sinon-chai'));
-// const sinon = require('sinon');
 const mockery = require('mockery');
 const request = require('supertest');
 const koa = require('koa');

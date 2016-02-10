@@ -3,6 +3,7 @@
 const chai = require('chai');
 const expect = chai.expect;
 chai.use(require('chai-things'));
+chai.use(require('chai-as-promised'));
 const mockery = require('mockery');
 
 let Ravel, DatabaseProvider, provider;
@@ -61,25 +62,15 @@ describe('db/database_provider', function() {
 
   describe('#getTransactionConnection()', function() {
     it('should throw Ravel.ApplicationError.NotImplemented, since this is a template', function(done) {
-      try {
-        provider.getTransactionConnection();
-        done(new Error('It should be impossible to call getTransactionConnection() on the template database provider.'));
-      } catch(err) {
-        expect(err).to.be.instanceof(Ravel.ApplicationError.NotImplemented);
-        done();
-      }
+      expect(provider.getTransactionConnection()).to.eventually.be.rejectedWith(Ravel.ApplicationError.NotImplemented);
+      done();
     });
   });
 
   describe('#exitTransaction()', function() {
     it('should throw Ravel.ApplicationError.NotImplemented, since this is a template', function(done) {
-      try {
-        provider.exitTransaction();
-        done(new Error('It should be impossible to call exitTransaction() on the template database provider.'));
-      } catch(err) {
-        expect(err).to.be.instanceof(Ravel.ApplicationError.NotImplemented);
-        done();
-      }
+      expect(provider.exitTransaction()).to.eventually.be.rejectedWith(Ravel.ApplicationError.NotImplemented);
+      done();
     });
   });
 });
