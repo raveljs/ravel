@@ -162,7 +162,7 @@ describe('Ravel', function() {
         }
 
         @before('middleware1', 'middleware2')
-        getAll(req, res, next) { //eslint-disable-line no-unused-vars
+        getAll() {
         }
       }
       const router = require('koa-router')();
@@ -187,7 +187,7 @@ describe('Ravel', function() {
         }
 
         @before('middleware1', 'middleware2')
-        get(req, res, next) {  //eslint-disable-line no-unused-vars
+        get() {
         }
       }
       const router = require('koa-router')();
@@ -208,7 +208,7 @@ describe('Ravel', function() {
         }
 
         @before('middleware1', 'middleware2')
-        post(req, res, next) { //eslint-disable-line no-unused-vars
+        post() {
         }
       }
       const router = require('koa-router')();
@@ -233,7 +233,7 @@ describe('Ravel', function() {
         }
 
         @before('middleware1', 'middleware2')
-        put(req, res, next) { //eslint-disable-line no-unused-vars
+        put() {
         }
       }
       const router = require('koa-router')();
@@ -254,7 +254,7 @@ describe('Ravel', function() {
         }
 
         @before('middleware1', 'middleware2')
-        putAll(req, res, next) { //eslint-disable-line no-unused-vars
+        putAll() {
         }
       }
       const router = require('koa-router')();
@@ -279,7 +279,7 @@ describe('Ravel', function() {
         }
 
         @before('middleware1', 'middleware2')
-        deleteAll(req, res, next) { //eslint-disable-line no-unused-vars
+        deleteAll() {
         }
       }
       const router = require('koa-router')();
@@ -301,7 +301,7 @@ describe('Ravel', function() {
         }
 
         @before('middleware1', 'middleware2')
-        delete(req, res, next) { //eslint-disable-line no-unused-vars
+        delete() {
         }
       }
       const router = require('koa-router')();
@@ -328,7 +328,7 @@ describe('Ravel', function() {
         }
 
         @before('middleware2')
-        get(req, res, next) {  //eslint-disable-line no-unused-vars
+        get() {
         }
       }
       const router = require('koa-router')();

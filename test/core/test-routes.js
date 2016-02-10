@@ -111,8 +111,8 @@ describe('Ravel', function() {
 
         @mapping('/path')
         @before('middleware1','middleware2')
-        pathHandler(req, res) { //eslint-disable-line no-unused-vars
-          res.send(200);
+        pathHandler() {
+          this.status = 200;
         }
       };
       mockery.registerMock(upath.join(Ravel.cwd, 'stub'), Stub);
@@ -152,8 +152,8 @@ describe('Ravel', function() {
 
         @mapping('/path')
         @before('middleware2')
-        pathHandler(req, res) { //eslint-disable-line no-unused-vars
-          res.send(200);
+        pathHandler() { //eslint-disable-line no-unused-vars
+          this.status(200);
         }
       };
       mockery.registerMock(upath.join(Ravel.cwd, 'stub'), Stub);
