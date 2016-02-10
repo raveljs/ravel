@@ -5,7 +5,7 @@ const expect = chai.expect;
 chai.use(require('chai-things'));
 const mockery = require('mockery');
 
-let Ravel;
+let Ravel, files, conf;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
@@ -14,6 +14,12 @@ describe('Ravel', function() {
       useCleanCache: true,
       warnOnReplace: false,
       warnOnUnregistered: false
+    });
+    files = [];
+    conf = {};
+    mockery.registerMock('rc', function(appName, target) {
+      Object.assign(target, conf);
+      return files;
     });
     Ravel = new (require('../../lib/ravel'))();
     Ravel.Log.setLevel('NONE');
@@ -85,6 +91,80 @@ describe('Ravel', function() {
         expect(err).to.be.instanceof(Ravel.ApplicationError.NotFound);
         done();
       }
+    });
+  });
+
+  describe('.config', function() {
+    it('should return the full configuration of the given Ravel instance', function(done) {
+      const defaultConfig = Ravel.config;
+      Ravel.registerSimpleParameter('test param', true);
+      Ravel.registerSimpleParameter('test param 2', true);
+      Ravel.set('test param', false);
+      Ravel.set('test param 2', 10);
+
+      const expected = {
+        'test param': false,
+        'test param 2': 10
+      };
+      Object.assign(expected, defaultConfig);
+
+      expect(Ravel.config).to.deep.equal(expected);
+      done();
+    });
+  });
+
+  describe('#_loadParameters()', function() {
+    it('should allow users to specify Ravel config parameters via a .ravelrc config file', function(done) {
+      files = ['./ravelrc'];
+      conf = {
+        'koa view engine': 'ejs',
+        'redis port': 6379
+      };
+
+      Ravel._loadParameters();
+      expect(Ravel.get('koa view engine')).to.equal(conf['koa view engine']);
+      expect(Ravel.get('redis port')).to.equal(conf['redis port']);
+      done();
+    });
+
+    it('should not override parameters set programmatically via Ravel.set', function(done) {
+      files = ['./ravelrc'];
+      conf = {
+        'koa view engine': 'ejs',
+        'redis port': 6379
+      };
+
+      Ravel.set('redis port', 6380);
+      Ravel._loadParameters();
+      expect(Ravel.get('koa view engine')).to.equal(conf['koa view engine']);
+      expect(Ravel.get('redis port')).to.equal(6380);
+      done();
+    });
+
+    it('should throw a Ravel.ApplicationError.IllegalValue if an unregistered paramter is specified in the config file', function(done) {
+      files = ['./ravelrc'];
+      conf = {
+        'koa view engine': 'ejs',
+        'redis port': 6379,
+      };
+      conf[Math.random().toString()] = false;
+
+      Ravel.set('redis port', 6380);
+      expect(function() {
+        Ravel._loadParameters();
+      }).to.throw(Ravel.ApplicationError.IllegalValue);
+      done();
+    });
+
+    it('should do nothing if no configuration files are present', function(done) {
+      files = [];
+      conf = undefined;
+
+      const oldParams = Object.create(null);
+      Object.assign(oldParams, Ravel.config);
+      Ravel._loadParameters();
+      expect(Ravel.config).to.deep.equal(oldParams);
+      done();
     });
   });
 });

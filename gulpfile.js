@@ -16,7 +16,7 @@ const TESTS = [
   'test/db/test-*.js',
   'test/util/test-*.js',
 
-  'test/auth/test-authorization-provider.js',
+  'test/auth/test-authorization-provider.js'
 
   // 'test/auth/test-*.js',
   // 'test/ravel/test-*.js',
