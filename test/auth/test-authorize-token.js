@@ -3,6 +3,8 @@
 const chai = require('chai');
 const expect = chai.expect;
 chai.use(require('chai-things'));
+chai.use(require('chai-as-promised'));
+chai.use(require('sinon-chai'));
 const mockery = require('mockery');
 const sinon = require('sinon');
 
@@ -39,16 +41,27 @@ describe('auth/authorize_token', function() {
 
     //mock up an authorization provider for our tests
     profile = {};
-    testProvider = new Ravel.AuthorizationProvider('test');
-    testProvider.init = function() {
-      //do nothing
-    };
-    testProvider.handlesClient = function(client) {
-      return client === 'test-web';
-    };
-    testProvider.tokenToProfile = function(token, client, callback) {
-      callback(null, profile, 2000);
-    };
+
+    const AuthorizationProvider = require('../../lib/ravel').AuthorizationProvider;
+
+    class TestProvider extends AuthorizationProvider {
+      constructor() {
+        super('test');
+      }
+
+      init() {
+
+      }
+
+      handlesClient(client) {
+        return client === 'test-web';
+      }
+
+      tokenToProfile(token, client) { //eslint-disable-line no-unused-vars
+        return Promise.resolve({profile: profile, expiry: 2000});
+      }
+    }
+    testProvider = new TestProvider();
     const providers = Ravel.get('authorization providers');
     providers.push(testProvider);
     Ravel.set('authorization providers', providers);
@@ -69,19 +82,13 @@ describe('auth/authorize_token', function() {
         callback(null, undefined);
       });
       sinon.stub(Ravel.kvstore, 'setex');
-      tokenAuth.tokenToProfile('oauth-token', 'test-web', function(err, result) {
-        expect(err).to.be.null;
-        expect(result).to.equal(profile);
-        done();
-      });
+      expect(tokenAuth.tokenToProfile('oauth-token', 'test-web')).to.eventually.equal(profile);
+      done();
     });
 
     it('should throw a Ravel.ApplicationError.NotFound error if there is no provider for the given client type', function(done) {
-      tokenAuth.tokenToProfile('oauth-token', 'test-ios', function(err, result) {
-        expect(err).to.be.instanceof(Ravel.ApplicationError.NotFound);
-        expect(result).to.be.not.ok;
-        done();
-      });
+      expect(tokenAuth.tokenToProfile('oauth-token', 'test-ios')).to.eventually.be.rejectedWith(Ravel.ApplicationError.NotFound);
+      done();
     });
 
     it('should cache profiles in redis using an expiry time which matches the token expiry time', function(done) {
@@ -89,9 +96,9 @@ describe('auth/authorize_token', function() {
         callback(null, undefined);
       });
       const spy = sinon.stub(Ravel.kvstore, 'setex');
-      tokenAuth.tokenToProfile('oauth-token', 'test-web', function(err, result) {
-        expect(err).to.be.null;
-        expect(result).to.equal(profile);
+      const promise = tokenAuth.tokenToProfile('oauth-token', 'test-web');
+      expect(promise).to.eventually.deep.equal(profile);
+      promise.then(function() {
         expect(spy).to.have.been.calledWith(testProvider.name+'-test-web-profile-oauth-token', 2000, JSON.stringify(profile));
         done();
       });
@@ -103,9 +110,9 @@ describe('auth/authorize_token', function() {
       });
       const setexSpy = sinon.stub(Ravel.kvstore, 'setex');
       const translateSpy = sinon.spy(testProvider, 'tokenToProfile');
-      tokenAuth.tokenToProfile('oauth-token', 'test-web', function(err, result) {
-        expect(err).to.be.null;
-        expect(result).to.deep.equal(profile);
+      const promise = tokenAuth.tokenToProfile('oauth-token', 'test-web');
+      expect(promise).to.eventually.deep.equal(profile);
+      promise.then(function() {
         expect(setexSpy).to.not.have.been.called;
         expect(translateSpy).to.not.have.been.called;
         done();
@@ -117,12 +124,12 @@ describe('auth/authorize_token', function() {
         callback(null, undefined);
       });
       const spy = sinon.stub(Ravel.kvstore, 'setex');
-      sinon.stub(testProvider, 'tokenToProfile', function(token, client, callback) {
-        callback(new Error());
+      sinon.stub(testProvider, 'tokenToProfile', function(token, client) { //eslint-disable-line no-unused-vars
+        return Promise.reject(new Error());
       });
-      tokenAuth.tokenToProfile('oauth-token', 'test-web', function(err, result) {
-        expect(err).to.be.not.null;
-        expect(result).to.be.not.ok;
+      const promise = tokenAuth.tokenToProfile('oauth-token', 'test-web');
+      expect(promise).to.eventually.be.rejectedWith(Error);
+      promise.catch(function() {        
         expect(spy).to.not.have.been.called;
         done();
       });
