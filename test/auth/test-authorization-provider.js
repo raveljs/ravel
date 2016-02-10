@@ -1,6 +1,7 @@
 'use strict';
 
 const chai = require('chai');
+chai.use(require('chai-as-promised'));
 const expect = chai.expect;
 chai.use(require('chai-things'));
 const mockery = require('mockery');
@@ -29,7 +30,7 @@ describe('auth/authorization_provider', function() {
     Ravel = new (require('../../lib/ravel'))();
     Ravel.Log.setLevel('NONE');
 
-    provider = new Ravel.AuthorizationProvider('name');
+    provider = new (require('../../lib/ravel')).AuthorizationProvider('name');
     done();
   });
 
@@ -43,7 +44,12 @@ describe('auth/authorization_provider', function() {
 
   describe('constructor', function() {
     it('should allow clients to implement an authorization provider which has a name and several methods', function(done) {
-      provider = new Ravel.AuthorizationProvider('google-oauth2');
+      class GoogleOAuth2 extends (require('../../lib/ravel')).AuthorizationProvider {
+        constructor() {
+          super('google-oauth2');
+        }
+      }
+      provider = new GoogleOAuth2();
       expect(provider.name).to.equal('google-oauth2');
       expect(provider).to.have.property('init').that.is.a('function');
       expect(provider).to.have.property('handlesClient').that.is.a('function');
@@ -78,13 +84,8 @@ describe('auth/authorization_provider', function() {
 
   describe('#tokenToProfile()', function() {
     it('should throw Ravel.ApplicationError.NotImplemented, since this is a template', function(done) {
-      try {
-        provider.tokenToProfile();
-        done(new Error('It should be impossible to call tokenToProfile() on the template authoriation provider.'));
-      } catch(err) {
-        expect(err).to.be.instanceof(Ravel.ApplicationError.NotImplemented);
-        done();
-      }
+      expect(provider.tokenToProfile()).to.eventually.be.rejectedWith(Ravel.ApplicationError.NotImplemented);
+      done();
     });
   });
 });
