@@ -73,6 +73,13 @@ describe('util/rest', function() {
       .expect(201, result, done);
     });
 
+    it('should allow the user to override the default success status code', function (done) {
+      app.use(rest.respond(201));
+      request(app.callback())
+      .get('/')
+      .expect(201, 'Created', done);
+    });
+
     it('should produce a response with HTTP 206 PARTIAL CONTENT if it is supplied as an okCode along with options.start, options.end and options.count', function(done) {
       const result = [];
 
