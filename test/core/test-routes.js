@@ -152,7 +152,7 @@ describe('Ravel', function() {
 
         @mapping('/path')
         @before('middleware2')
-        pathHandler() { //eslint-disable-line no-unused-vars
+        pathHandler() {
           this.status(200);
         }
       };

@@ -7,6 +7,8 @@ chai.use(require('sinon-chai'));
 const mockery = require('mockery');
 const upath = require('upath');
 const sinon = require('sinon');
+const request = require('supertest');
+const koa = require('koa');
 
 let Ravel, Resource, before, inject;
 
@@ -153,8 +155,8 @@ describe('Ravel', function() {
     });
 
     it('should facilitate the creation of GET routes via $Resource.getAll', function(done) {
-      const middleware1 = function(/*req, res*/) {};
-      const middleware2 = function(/*req, res*/) {};
+      const middleware1 = function*(/*next*/) {};
+      const middleware2 = function*(/*next*/) {};
 
       class Stub extends Resource {
         constructor() {
@@ -177,8 +179,8 @@ describe('Ravel', function() {
     });
 
     it('should facilitate the creation of GET routes via $Resource.get', function(done) {
-      const middleware1 = function(/*req, res*/) {};
-      const middleware2 = function(/*req, res*/) {};
+      const middleware1 = function*(/*next*/) {};
+      const middleware2 = function*(/*next*/) {};
       class Stub extends Resource {
         constructor() {
           super('/api/test');
@@ -200,8 +202,8 @@ describe('Ravel', function() {
     });
 
     it('should facilitate the creation of POST routes via $Resource.post', function(done) {
-      const middleware1 = function(/*req, res*/) {};
-      const middleware2 = function(/*req, res*/) {};
+      const middleware1 = function*(/*next*/) {};
+      const middleware2 = function*(/*next*/) {};
       class Stub extends Resource {
         constructor() {
           super('/api/test');
@@ -223,8 +225,8 @@ describe('Ravel', function() {
     });
 
     it('should facilitate the creation of PUT routes via $Resource.put', function(done) {
-      const middleware1 = function(/*req, res*/) {};
-      const middleware2 = function(/*req, res*/) {};
+      const middleware1 = function*(/*next*/) {};
+      const middleware2 = function*(/*next*/) {};
       class Stub extends Resource {
         constructor() {
           super('/api/test');
@@ -246,8 +248,8 @@ describe('Ravel', function() {
     });
 
     it('should facilitate the creation of PUT routes via $Resource.putAll', function(done) {
-      const middleware1 = function(/*req, res*/) {};
-      const middleware2 = function(/*req, res*/) {};
+      const middleware1 = function*(/*next*/) {};
+      const middleware2 = function*(/*next*/) {};
       class Stub extends Resource {
         constructor() {
           super('/api/test');
@@ -269,8 +271,8 @@ describe('Ravel', function() {
     });
 
     it('should facilitate the creation of DELETE routes via $Resource.deleteAll', function(done) {
-      const middleware1 = function(/*req, res*/) {};
-      const middleware2 = function(/*req, res*/) {};
+      const middleware1 = function*(/*next*/) {};
+      const middleware2 = function*(/*next*/) {};
       class Stub extends Resource {
         constructor() {
           super('/api/test');
@@ -292,8 +294,8 @@ describe('Ravel', function() {
     });
 
     it('should facilitate the creation of DELETE routes via $Resource.delete', function(done) {
-      const middleware1 = function(/*req, res*/) {};
-      const middleware2 = function(/*req, res*/) {};
+      const middleware1 = function*(/*next*/) {};
+      const middleware2 = function*(/*next*/) {};
 
       class Stub extends Resource {
         constructor() {
@@ -316,8 +318,8 @@ describe('Ravel', function() {
     });
 
     it('should support the use of @before at the class level', function(done) {
-      const middleware1 = function(/*req, res*/) {};
-      const middleware2 = function(/*req, res*/) {};
+      const middleware1 = function*(/*next*/) {};
+      const middleware2 = function*(/*next*/) {};
 
       @before('middleware1')
       class Stub extends Resource {
@@ -370,6 +372,39 @@ describe('Ravel', function() {
       Ravel._resourceInit(router);
       expect(spy).to.have.callCount(7);
       done();
+    });
+  });
+
+  describe('Resource Integration Test', function() {
+    it('should integrate properly with koa and koa-router', function(done) {
+
+      const middleware1 = function*(/*next*/) {};
+      const middleware2 = function*(/*next*/) {};
+      class Stub extends Resource {
+        constructor() {
+          super('/api/test');
+          this.middleware1 = middleware1;
+          this.middleware2 = middleware2;
+        }
+
+        @before('middleware1', 'middleware2')
+        get() {
+          return this.body = this.params;
+        }
+      }
+      const router = require('koa-router')();
+      const app = koa();
+
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
+      Ravel.resource('test');
+      Ravel._resourceInit(router);
+
+      app.use(router.routes());
+      app.use(router.allowedMethods());
+
+      request(app.callback())
+      .get('/api/test/1')
+      .expect(200, {id: 1}, done);
     });
   });
 });
