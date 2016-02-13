@@ -18,7 +18,7 @@ class GoogleOAuth2 extends AuthorizationProvider {
   }
 }
 
-let Ravel, Module, app, authconfig, AuthorizationMiddleware, authorizeTokenStub, tokenToProfile;
+let Ravel, Module, app, authconfig, AuthorizationMiddleware, authorizeTokenStub, tokenToProfile, coreSymbols;
 
 describe('util/authorize_request', function() {
   beforeEach(function(done) {
@@ -39,6 +39,7 @@ describe('util/authorize_request', function() {
     Ravel = new (require('../../lib/ravel'))();
     authconfig = (require('../../lib/ravel')).authconfig;
     Module = (require('../../lib/ravel')).Module;
+    coreSymbols = require('../../lib/core/symbols');
 
     const provider = new GoogleOAuth2();
     provider.init = sinon.stub();
@@ -58,6 +59,7 @@ describe('util/authorize_request', function() {
     app = undefined;
     authconfig = undefined;
     AuthorizationMiddleware = undefined;
+    coreSymbols = undefined;
     mockery.deregisterAll();
     mockery.disable();
     done();
@@ -140,7 +142,7 @@ describe('util/authorize_request', function() {
       }
       mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
       Ravel.module('authconfig');
-      Ravel._moduleInit();
+      Ravel[coreSymbols.moduleInit]();
 
       require('../../lib/auth/passport_init')(Ravel);
       Ravel.emit('post config koa', app);
@@ -185,7 +187,7 @@ describe('util/authorize_request', function() {
       }
       mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
       Ravel.module('authconfig');
-      Ravel._moduleInit();
+      Ravel[coreSymbols.moduleInit]();
 
       require('../../lib/auth/passport_init')(Ravel);
       Ravel.emit('post config koa', app);
@@ -258,7 +260,7 @@ describe('util/authorize_request', function() {
       }
       mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
       Ravel.module('authconfig');
-      Ravel._moduleInit();
+      Ravel[coreSymbols.moduleInit]();
 
       require('../../lib/auth/passport_init')(Ravel);
       Ravel.emit('post config koa', app);
@@ -302,7 +304,7 @@ describe('util/authorize_request', function() {
       }
       mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
       Ravel.module('authconfig');
-      Ravel._moduleInit();
+      Ravel[coreSymbols.moduleInit]();
 
       require('../../lib/auth/passport_init')(Ravel);
       Ravel.emit('post config koa', app);

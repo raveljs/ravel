@@ -129,7 +129,7 @@ describe('Ravel', function() {
 
     it('should start the underlying HTTP server when called after init()', function(done) {
       Ravel.init();
-      const listenSpy = sinon.stub(Ravel._server, 'listen', function(port, callback) {
+      const listenSpy = sinon.stub(Ravel.server, 'listen', function(port, callback) {
         callback();
       });
       Ravel.listen();
@@ -160,13 +160,13 @@ describe('Ravel', function() {
     it('should stop the underlying HTTP server if the server is listening', function(done) {
       Ravel.init();
       Ravel.listen(function() {
-        const closeSpy = sinon.stub(Ravel._server, 'close', function(callback) {
+        const closeSpy = sinon.stub(Ravel.server, 'close', function(callback) {
           callback();
         });
         Ravel.close(sinon.stub());
         //actually shut down the server to clean up
-        Ravel._server.close.restore();
-        Ravel._server.close(function() {
+        Ravel.server.close.restore();
+        Ravel.server.close(function() {
           expect(closeSpy).to.have.been.called;
           done();
         });

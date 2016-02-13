@@ -139,7 +139,7 @@ describe('Ravel', function() {
       sinon.stub(router, 'delete', function() {
         done(new Error('Routes class should never use app.delete.'));
       });
-      Ravel._routesInit(router);
+      Ravel[coreSymbols.routesInit](router);
     });
 
     it('should support the use of @before at the class level as well', function(done) {
@@ -180,7 +180,7 @@ describe('Ravel', function() {
       sinon.stub(router, 'delete', function() {
         done(new Error('Routes class should never use app.delete.'));
       });
-      Ravel._routesInit(router);
+      Ravel[coreSymbols.routesInit](router);
     });
   });
 });

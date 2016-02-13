@@ -6,7 +6,7 @@ chai.use(require('chai-things'));
 chai.use(require('chai-as-promised'));
 const mockery = require('mockery');
 
-let Ravel, DatabaseProvider, provider;
+let Ravel, DatabaseProvider, provider, dbSymbols;
 
 describe('db/database_provider', function() {
   beforeEach(function(done) {
@@ -19,6 +19,7 @@ describe('db/database_provider', function() {
 
     DatabaseProvider = require('../../lib/ravel').DatabaseProvider;
     Ravel = new (require('../../lib/ravel'))();
+    dbSymbols = require('../../lib/db/symbols');
     Ravel.Log.setLevel('NONE');
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
     provider = new DatabaseProvider('name');
@@ -29,6 +30,7 @@ describe('db/database_provider', function() {
     DatabaseProvider = undefined;
     Ravel = undefined;
     provider = undefined;
+    dbSymbols = undefined;
     mockery.deregisterAll();mockery.disable();
     done();
   });
@@ -46,7 +48,7 @@ describe('db/database_provider', function() {
   describe('_init', function() {
     it('should provide a DatabaseProvider with a logger for use in its methods', function(done) {
       Ravel.set('database providers', [provider]);
-      Ravel._databaseProviderInit();
+      Ravel[dbSymbols.databaseProviderInit]();
       expect(provider.log).to.be.ok;
       expect(provider.log).to.be.an('object');
       expect(provider.log).to.have.property('trace').that.is.a('function');

@@ -134,7 +134,7 @@ describe('Ravel', function() {
       Ravel.resource('test2');
       const router = require('koa-router')();
       const shouldFail = function() {
-        Ravel._resourceInit(router);
+        Ravel[coreSymbols.resourceInit](router);
       };
       expect(shouldFail).to.throw(Ravel.ApplicationError.DuplicateEntry);
       done();
@@ -150,7 +150,7 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
       Ravel.resource('test');
       const test = function() {
-        Ravel._resourceInit(router);
+        Ravel[coreSymbols.resourceInit](router);
       };
       expect(test).to.throw(Ravel.ApplicationError.IllegalValue);
       done();
@@ -175,7 +175,7 @@ describe('Ravel', function() {
       mockery.registerMock('middleware1', middleware1);
       mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
-      Ravel._resourceInit(router);
+      Ravel[coreSymbols.resourceInit](router);
       expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, Stub.prototype.getAll);
       done();
     });
@@ -198,7 +198,7 @@ describe('Ravel', function() {
       const spy = sinon.stub(router, 'get');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
-      Ravel._resourceInit(router);
+      Ravel[coreSymbols.resourceInit](router);
       expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, Stub.prototype.get);
       done();
     });
@@ -221,7 +221,7 @@ describe('Ravel', function() {
       mockery.registerMock('middleware1', middleware1);
       mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
-      Ravel._resourceInit(router);
+      Ravel[coreSymbols.resourceInit](router);
       expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, Stub.prototype.post);
       done();
     });
@@ -244,7 +244,7 @@ describe('Ravel', function() {
       const spy = sinon.stub(router, 'put');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
-      Ravel._resourceInit(router);
+      Ravel[coreSymbols.resourceInit](router);
       expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, Stub.prototype.put);
       done();
     });
@@ -267,7 +267,7 @@ describe('Ravel', function() {
       mockery.registerMock('middleware1', middleware1);
       mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
-      Ravel._resourceInit(router);
+      Ravel[coreSymbols.resourceInit](router);
       expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, Stub.prototype.putAll);
       done();
     });
@@ -290,7 +290,7 @@ describe('Ravel', function() {
       const spy = sinon.stub(router, 'delete');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
-      Ravel._resourceInit(router);
+      Ravel[coreSymbols.resourceInit](router);
       expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, Stub.prototype.deleteAll);
       done();
     });
@@ -314,7 +314,7 @@ describe('Ravel', function() {
       mockery.registerMock('middleware1', middleware1);
       mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
-      Ravel._resourceInit(router);
+      Ravel[coreSymbols.resourceInit](router);
       expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, Stub.prototype.delete);
       done();
     });
@@ -339,7 +339,7 @@ describe('Ravel', function() {
       const spy = sinon.stub(router, 'get');
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
-      Ravel._resourceInit(router);
+      Ravel[coreSymbols.resourceInit](router);
       expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, Stub.prototype.get);
       done();
     });
@@ -371,7 +371,7 @@ describe('Ravel', function() {
         }
       });
       Ravel.resource('test');
-      Ravel._resourceInit(router);
+      Ravel[coreSymbols.resourceInit](router);
       expect(spy).to.have.callCount(7);
       done();
     });
@@ -399,7 +399,7 @@ describe('Ravel', function() {
 
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
-      Ravel._resourceInit(router);
+      Ravel[coreSymbols.resourceInit](router);
 
       app.use(router.routes());
       app.use(router.allowedMethods());

@@ -17,7 +17,7 @@ class GoogleOAuth2 extends AuthorizationProvider {
   }
 }
 
-let Ravel, authconfig, passportMock;
+let Ravel, authconfig, passportMock, coreSymbols;
 
 describe('auth/passport_init', function() {
   beforeEach(function(done) {
@@ -47,6 +47,7 @@ describe('auth/passport_init', function() {
 
     Ravel = new (require('../../lib/ravel'))();
     authconfig = (require('../../lib/ravel')).authconfig;
+    coreSymbols = require('../../lib/core/symbols');
     Ravel.Log.setLevel(Ravel.Log.NONE);
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
     done();
@@ -56,6 +57,7 @@ describe('auth/passport_init', function() {
     Ravel = undefined;
     authconfig = undefined;
     passportMock = undefined;
+    coreSymbols = undefined;
     mockery.deregisterAll();
     mockery.disable();
     done();
@@ -89,7 +91,7 @@ describe('auth/passport_init', function() {
     mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
     Ravel.module('./something');
     Ravel.module('./authconfig');
-    Ravel._moduleInit();
+    Ravel[coreSymbols.moduleInit]();
 
     const provider = new GoogleOAuth2();
     provider.init = sinon.stub();
@@ -137,7 +139,7 @@ describe('auth/passport_init', function() {
     }
     mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
     Ravel.module('./authconfig');
-    Ravel._moduleInit();
+    Ravel[coreSymbols.moduleInit]();
 
     const provider = new GoogleOAuth2();
     provider.init = sinon.stub();
@@ -174,7 +176,7 @@ describe('auth/passport_init', function() {
     }
     mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
     Ravel.module('./authconfig');
-    Ravel._moduleInit();
+    Ravel[coreSymbols.moduleInit]();
 
     const provider = new GoogleOAuth2();
     provider.init = sinon.stub();
@@ -211,7 +213,7 @@ describe('auth/passport_init', function() {
     }
     mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
     Ravel.module('./authconfig');
-    Ravel._moduleInit();
+    Ravel[coreSymbols.moduleInit]();
 
     const provider = new GoogleOAuth2();
     provider.init = sinon.stub();
@@ -246,7 +248,7 @@ describe('auth/passport_init', function() {
     }
     mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
     Ravel.module('./authconfig');
-    Ravel._moduleInit();
+    Ravel[coreSymbols.moduleInit]();
 
     const provider = new GoogleOAuth2();
     sinon.stub(provider, 'init', function(expressApp, passport, getOrCreate) {
@@ -273,7 +275,7 @@ describe('auth/passport_init', function() {
     }
     mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
     Ravel.module('./authconfig');
-    Ravel._moduleInit();
+    Ravel[coreSymbols.moduleInit]();
 
     const provider = new GoogleOAuth2();
     sinon.stub(provider, 'init', function(expressApp, passport, getOrCreate) {

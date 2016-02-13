@@ -88,7 +88,7 @@ describe('Ravel end-to-end test', function() {
         mockery.registerMock(upath.join(Ravel.cwd, 'routes'), routes);
         Ravel.routes('routes');
         Ravel.init();
-        agent = request.agent(Ravel._server);
+        agent = request.agent(Ravel.server);
         done();
       });
 

@@ -95,7 +95,7 @@ describe('Ravel', function() {
       }
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.module('./test');
-      Ravel._moduleInit();
+      Ravel[coreSymbols.moduleInit]();
       const instance = Ravel[coreSymbols.modules].test;
       expect(instance.log).to.be.ok;
       expect(instance.log).to.be.an('object');
@@ -136,7 +136,7 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test2'), Stub2);
       Ravel.module('./modules/test');
       Ravel.module('./modules/test2');
-      Ravel._moduleInit();
+      Ravel[coreSymbols.moduleInit]();
     });
 
     it('should not allow client modules to depend on themselves', function(done) {
@@ -149,7 +149,7 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test'), Stub);
       Ravel.module('./modules/test');
       const test = function() {
-        Ravel._moduleInit();
+        Ravel[coreSymbols.moduleInit]();
       };
       expect(test).to.throw(Ravel.ApplicationError.General);
       done();
@@ -207,7 +207,7 @@ describe('Ravel', function() {
       Ravel.module('./modules/test2');
       Ravel.module('./modules/test3');
       Ravel.module('./modules/test4');
-      Ravel._moduleInit();
+      Ravel[coreSymbols.moduleInit]();
       done();
     });
 
@@ -229,7 +229,7 @@ describe('Ravel', function() {
       Ravel.module('./modules/test');
       Ravel.module('./modules/test2');
       const test = function() {
-        Ravel._moduleInit();
+        Ravel[coreSymbols.moduleInit]();
       };
       expect(test).to.throw(Ravel.ApplicationError.General);
       done();
@@ -268,7 +268,7 @@ describe('Ravel', function() {
       Ravel.module('./modules/test3');
       Ravel.module('./modules/test4');
       const test = function() {
-        Ravel._moduleInit();
+        Ravel[coreSymbols.moduleInit]();
       };
       expect(test).to.throw(Ravel.ApplicationError.General);
       done();
@@ -292,7 +292,7 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, './test'), StubClientModule);
       mockery.registerMock('moment', stubMoment);
       Ravel.module('./test');
-      Ravel._moduleInit();
+      Ravel[coreSymbols.moduleInit]();
     });
 
     it('should support array notation for specifying module dependencies which use invalid js constiable names', function(done) {
@@ -313,7 +313,7 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, './test'), StubClientModule);
       mockery.registerMock('bad.name', stubBadName);
       Ravel.module('./test');
-      Ravel._moduleInit();
+      Ravel[coreSymbols.moduleInit]();
     });
 
     it('should throw an ApplicationError.NotFound when a module factory which utilizes an unknown module/npm dependency is instantiated', function(done) {
@@ -340,7 +340,7 @@ describe('Ravel', function() {
       };
       mockery.registerMock(upath.join(Ravel.cwd, './test'), Stub);
       Ravel.module('./test');
-      Ravel._moduleInit();
+      Ravel[coreSymbols.moduleInit]();
       expect(Ravel[coreSymbols.modules].test.method).to.be.a.function;
       done();
     });
@@ -386,7 +386,7 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, './test2'), Stub2);
       Ravel.module('./test1');
       Ravel.module('./test2');
-      Ravel._moduleInit();
+      Ravel[coreSymbols.moduleInit]();
     });
 
     it('should inject the same instance of a module into all modules which reference it', function(done) {
@@ -421,7 +421,7 @@ describe('Ravel', function() {
       Ravel.module('./test');
       Ravel.module('./test2');
       Ravel.module('./test3');
-      Ravel._moduleInit();
+      Ravel[coreSymbols.moduleInit]();
     });
   });
 });

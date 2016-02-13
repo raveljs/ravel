@@ -32,7 +32,7 @@ describe('Ravel', function() {
     done();
   });
 
-  describe('._injector#inject()', function() {
+  describe('#inject()', function() {
     it('should facilitate dependency injection of client modules into other client modules', function(done) {
       const Stub1 = class extends Module {
         constructor() {super();}
@@ -56,7 +56,7 @@ describe('Ravel', function() {
       Ravel.module('test');
       Ravel.module('test2');
       Ravel[coreSymbols.moduleFactories].test();
-      Ravel._injector.inject({}, Stub2);
+      Ravel[coreSymbols.injector].inject({}, Stub2);
     });
 
 
@@ -101,7 +101,7 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), stubClientModule);
       mockery.registerMock('moment', stubMoment);
       Ravel.module('test');
-      Ravel._injector.inject({}, stubClientModule);
+      Ravel[coreSymbols.injector].inject({}, stubClientModule);
     });
 
     it('should throw an ApplicationError.NotFound when attempting to inject an unknown module/npm dependency', function(done) {
@@ -117,7 +117,7 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
       Ravel.module('test');
       try {
-        Ravel._injector.inject({}, stub);
+        Ravel[coreSymbols.injector].inject({}, stub);
         done(new Error('It should be impossible to inject an unknown module or npm dependency'));
       } catch(err) {
         expect(err).to.be.instanceof(Ravel.ApplicationError.NotFound);
@@ -142,7 +142,7 @@ describe('Ravel', function() {
       };
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
       Ravel.module('test');
-      Ravel._injector.inject(moduleMap, stub);
+      Ravel[coreSymbols.injector].inject(moduleMap, stub);
     });
 
     it('should support array notation for declaring dependencies which are not valid js constiable names', function(done) {
@@ -176,7 +176,7 @@ describe('Ravel', function() {
       Ravel.module('my-module.js');
       Ravel.module('test');
       Ravel[coreSymbols.moduleFactories].myModule();
-      Ravel._injector.inject({}, AnotherStubClientModule);
+      Ravel[coreSymbols.injector].inject({}, AnotherStubClientModule);
     });
   });
 });
