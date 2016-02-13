@@ -52,8 +52,8 @@ describe('Ravel', function() {
     it('should allow clients to register resource modules for instantiation in Ravel.start', function(done) {
       mockery.registerMock(upath.join(Ravel.cwd, './resources/test'), class extends Resource {});
       Ravel.resource('./resources/test');
-      expect(Ravel[coreSymbols.moduleFactories]).to.have.property('./resources/test');
-      expect(Ravel[coreSymbols.moduleFactories]['./resources/test']).to.be.a('function');
+      expect(Ravel[coreSymbols.resourceFactories]).to.have.property('./resources/test');
+      expect(Ravel[coreSymbols.resourceFactories]['./resources/test']).to.be.a('function');
       done();
     });
 
@@ -104,7 +104,7 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
       const router = require('koa-router')();
-      const resource = Ravel[coreSymbols.moduleFactories].test(router);
+      const resource = Ravel[coreSymbols.resourceFactories].test(router);
       expect(resource.log).to.be.an('object');
       expect(resource.log).to.have.property('trace').that.is.a('function');
       expect(resource.log).to.have.property('verbose').that.is.a('function');
@@ -176,7 +176,10 @@ describe('Ravel', function() {
       mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, Stub.prototype.getAll);
+      const genWrapper = function*() {
+        return Stub.prototype.getAll(this);
+      };
+      expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, sinon.match(genWrapper));
       done();
     });
 
@@ -199,7 +202,10 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, Stub.prototype.get);
+      const genWrapper = function*() {
+        return Stub.prototype.get(this);
+      };
+      expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, sinon.match(genWrapper));
       done();
     });
 
@@ -222,7 +228,10 @@ describe('Ravel', function() {
       mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, Stub.prototype.post);
+      const genWrapper = function*() {
+        return Stub.prototype.post(this);
+      };
+      expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, sinon.match(genWrapper));
       done();
     });
 
@@ -245,7 +254,10 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, Stub.prototype.put);
+      const genWrapper = function*() {
+        return Stub.prototype.put(this);
+      };
+      expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, sinon.match(genWrapper));
       done();
     });
 
@@ -268,7 +280,10 @@ describe('Ravel', function() {
       mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, Stub.prototype.putAll);
+      const genWrapper = function*() {
+        return Stub.prototype.putAll(this);
+      };
+      expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, sinon.match(genWrapper));
       done();
     });
 
@@ -291,7 +306,10 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, Stub.prototype.deleteAll);
+      const genWrapper = function*() {
+        return Stub.prototype.deleteAll(this);
+      };
+      expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, sinon.match(genWrapper));
       done();
     });
 
@@ -315,7 +333,10 @@ describe('Ravel', function() {
       mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, Stub.prototype.delete);
+      const genWrapper = function*() {
+        return Stub.prototype.delete(this);
+      };
+      expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, sinon.match(genWrapper));
       done();
     });
 
@@ -340,7 +361,10 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, Stub.prototype.get);
+      const genWrapper = function*() {
+        return Stub.prototype.get(this);
+      };
+      expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, sinon.match(genWrapper));
       done();
     });
 
@@ -390,8 +414,8 @@ describe('Ravel', function() {
         }
 
         @before('middleware1', 'middleware2')
-        get() {
-          return this.body = this.params;
+        get(ctx) {
+          ctx.body = ctx.params;
         }
       }
       const router = require('koa-router')();

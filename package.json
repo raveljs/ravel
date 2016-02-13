@@ -25,6 +25,7 @@
     "intel":"1.1.0",
     "koa": "1.1.2",
     "koa-compressor": "1.0.3",
+    "koa-favicon": "1.2.0",
     "koa-generic-session": "1.10.1",
     "koa-passport": "1.2.0",
     "koa-redis": "2.0.1",

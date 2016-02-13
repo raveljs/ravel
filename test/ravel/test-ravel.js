@@ -8,44 +8,70 @@ const upath = require('upath');
 const redis = require('redis-mock');
 const request = require('supertest');
 
-let Ravel, agent;
+const Ravel = require('../../lib/ravel');
+const inject = Ravel.inject;
+const pre = Ravel.before;
+let app, agent;
 
 const u = [{id:1, name:'Joe'}, {id:2, name:'Jane'}];
 //stub module
-const Users = function($E) {
-  return {
-    getAllUsers: function(callback) {
-      callback(null, u);
-    },
-    getUser: function(userId, callback) {
-      if (userId < u.length) {
-        callback(null, u[userId-1]);
-      } else {
-        callback(new $E.NotFound('User id=' + userId + ' does not exist!'), null);
-      }
+@inject('$E')
+class Users extends Ravel.Module {
+  constructor($E) {
+    super();
+    this.$E = $E;
+  }
+
+  getAllUsers() {
+    return Promise.resolve(u);
+  }
+
+  getUser(userId) {
+    if (userId < u.length) {
+      return Promise.resolve(u[userId-1]);
+    } else {
+      return Promise.reject(new this.$E.NotFound('User id=' + userId + ' does not exist!'));
     }
-  };
-};
+  }
+}
 
-//stub resource
-const usersResource = function($Resource, $Rest, users) {
-  $Resource.bind('/api/user');
+@inject('users')
+class UsersResource extends Ravel.Resource {
+  constructor(users) {
+    super('/api/user');
+    this.users = users;
+  }
 
-  $Resource.getAll(function(req, res) {
-    users.getAllUsers($Rest.respond(req, res));
-  });
+  @pre('respond')
+  getAll(ctx) {
+    // FIXME this is a koa context. how do we refer to stuff in self?
+    return this.users.getAllUsers()
+    .then((list) => {
+      ctx.body = list;
+    });
+  }
 
-  $Resource.get(function(req, res) {
-    users.getUser(req.params.id, $Rest.respond(req, res));
-  });
-};
+  @pre('respond')
+  get(ctx) {
+    return this.users.getUser(this.params.id).then((result) => {
+      ctx.body = result;
+    });
+  }
+}
 
 //stub routes
-const routes = function($RouteBuilder) {
-  $RouteBuilder.add('/test', function(req, res) {
-    res.status(200).send({});
-  });
-};
+const mapping = Ravel.Routes.mapping;
+class TestRoutes extends Ravel.Routes {
+  constructor() {
+    super();
+  }
+
+  @mapping('/test')
+  handler() {
+    this.body = {};
+    this.status = 200;
+  }
+}
 
 
 describe('Ravel end-to-end test', function() {
@@ -67,33 +93,27 @@ describe('Ravel end-to-end test', function() {
           warnOnUnregistered: false
         });
         mockery.registerMock('redis', redis);
-        Ravel = new (require('../../lib/ravel'))();
-        Ravel.set('log level', Ravel.Log.NONE);
-        Ravel.set('redis host', 'localhost');
-        Ravel.set('redis port', 5432);
-        Ravel.set('port', '9080');
-        Ravel.set('koa public directory', 'public');
-        Ravel.set('koa view directory', 'ejs');
-        Ravel.set('koa view engine', 'ejs');
-        mockery.registerMock(upath.join(Ravel.cwd, 'node_modules', 'ejs'), {
-          __koa: function() {}
-        });
-        Ravel.set('koa session secret', 'mysecret');
-        Ravel.set('disable json vulnerability protection', true);
+        app = new Ravel();
+        app.set('log level', app.Log.NONE);
+        app.set('redis host', 'localhost');
+        app.set('redis port', 5432);
+        app.set('port', '9080');
+        app.set('koa public directory', 'public');
+        app.set('keygrip keys', ['mysecret']);
 
-        mockery.registerMock(upath.join(Ravel.cwd, 'users'), Users);
-        Ravel.module('users');
-        mockery.registerMock(upath.join(Ravel.cwd, 'usersResource'), usersResource);
-        Ravel.resource('usersResource');
-        mockery.registerMock(upath.join(Ravel.cwd, 'routes'), routes);
-        Ravel.routes('routes');
-        Ravel.init();
-        agent = request.agent(Ravel.server);
+        mockery.registerMock(upath.join(app.cwd, 'users'), Users);
+        app.module('users');
+        mockery.registerMock(upath.join(app.cwd, 'usersResource'), UsersResource);
+        app.resource('usersResource');
+        mockery.registerMock(upath.join(app.cwd, 'routes'), TestRoutes);
+        app.routes('routes');
+        app.init();
+        agent = request.agent(app.server);
         done();
       });
 
       after(function(done) {
-        Ravel = undefined;
+        app = undefined;
         mockery.deregisterAll();
         mockery.disable();
         done();

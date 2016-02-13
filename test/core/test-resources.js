@@ -57,11 +57,11 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, './resources/test1.js'), class extends Resource {});
       mockery.registerMock(upath.join(Ravel.cwd, './resources/test2.js'), class extends Resource {});
       Ravel.resources('./resources');
-      expect(Ravel[coreSymbols.moduleFactories]).to.have.property('resources/test1.js');
-      expect(Ravel[coreSymbols.moduleFactories]['resources/test1.js']).to.be.a('function');
-      expect(Ravel[coreSymbols.moduleFactories]).to.have.property('resources/test2.js');
-      expect(Ravel[coreSymbols.moduleFactories]['resources/test2.js']).to.be.a('function');
-      expect(Ravel[coreSymbols.moduleFactories]).to.not.have.property('.eslintrc');
+      expect(Ravel[coreSymbols.resourceFactories]).to.have.property('resources/test1.js');
+      expect(Ravel[coreSymbols.resourceFactories]['resources/test1.js']).to.be.a('function');
+      expect(Ravel[coreSymbols.resourceFactories]).to.have.property('resources/test2.js');
+      expect(Ravel[coreSymbols.resourceFactories]['resources/test2.js']).to.be.a('function');
+      expect(Ravel[coreSymbols.resourceFactories]).to.not.have.property('.eslintrc');
       done();
     });
 
