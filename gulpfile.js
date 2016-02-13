@@ -12,12 +12,10 @@ const plugins = require( 'gulp-load-plugins' )();
 const del = require('del');
 
 const TESTS = [
-  // 'test/core/test-*.js',
-  // 'test/db/test-*.js',
-  // 'test/util/test-*.js',
-  'test/core/test-module.js',
-  'test/util/test-injector.js',
-  // 'test/auth/test-*.js'
+  'test/core/test-*.js',
+  'test/db/test-*.js',
+  'test/util/test-*.js',
+  'test/auth/test-*.js'
   // 'test/ravel/test-*.js',
   // 'test/**/test-*.js'
 ];
