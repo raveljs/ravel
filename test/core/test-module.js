@@ -42,8 +42,8 @@ describe('Ravel', function() {
         constructor() {super();}
       });
       Ravel.module('./modules/test');
-      expect(Ravel._moduleFactories).to.have.property('test');
-      expect(Ravel._moduleFactories.test).to.be.a('function');
+      expect(Ravel[coreSymbols.moduleFactories]).to.have.property('test');
+      expect(Ravel[coreSymbols.moduleFactories].test).to.be.a('function');
       done();
     });
 
@@ -52,8 +52,8 @@ describe('Ravel', function() {
         constructor() {super();}
       });
       Ravel.module('./modules/test.js');
-      expect(Ravel._moduleFactories).to.have.property('test');
-      expect(Ravel._moduleFactories.test).to.be.a('function');
+      expect(Ravel[coreSymbols.moduleFactories]).to.have.property('test');
+      expect(Ravel[coreSymbols.moduleFactories].test).to.be.a('function');
       done();
     });
 
@@ -113,9 +113,9 @@ describe('Ravel', function() {
       const Stub = class extends Module {constructor() {super();}};
       mockery.registerMock(upath.join(Ravel.cwd, 'my-test-module.js'), Stub);
       Ravel.module('./my-test-module.js');
-      expect(Ravel._moduleFactories).to.have.property('myTestModule');
-      expect(Ravel._moduleFactories.myTestModule).to.be.a('function');
-      Ravel._moduleFactories.myTestModule();
+      expect(Ravel[coreSymbols.moduleFactories]).to.have.property('myTestModule');
+      expect(Ravel[coreSymbols.moduleFactories].myTestModule).to.be.a('function');
+      Ravel[coreSymbols.moduleFactories].myTestModule();
       done();
     });
     it('should produce module factories which support dependency injection of client modules', function(done) {
@@ -327,7 +327,7 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, './test'), Stub);
       Ravel.module('./test');
       const shouldThrow = function() {
-        Ravel._moduleFactories.test();
+        Ravel[coreSymbols.moduleFactories].test();
       };
       expect(shouldThrow).to.throw(Ravel.ApplicationError.NotFound);
       done();

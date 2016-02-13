@@ -6,7 +6,7 @@ chai.use(require('chai-things'));
 const mockery = require('mockery');
 const upath = require('upath');
 
-let Ravel, Module;
+let Ravel, Module, coreSymbols;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
@@ -18,6 +18,7 @@ describe('Ravel', function() {
     });
     Module = require('../../lib/ravel').Module;
     Ravel = new (require('../../lib/ravel'))();
+    coreSymbols = require('../../lib/core/symbols');
     Ravel.Log.setLevel(Ravel.Log.NONE);
 
     done();
@@ -26,6 +27,7 @@ describe('Ravel', function() {
   afterEach(function(done) {
     Ravel = undefined;
     Module = undefined;
+    coreSymbols = undefined;
     mockery.deregisterAll();mockery.disable();
     done();
   });
@@ -53,7 +55,7 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test2'), Stub2);
       Ravel.module('test');
       Ravel.module('test2');
-      Ravel._moduleFactories.test();
+      Ravel[coreSymbols.moduleFactories].test();
       Ravel._injector.inject({}, Stub2);
     });
 
@@ -73,7 +75,7 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       const test = function() {
         Ravel.module('test');
-        Ravel._moduleFactories.test();
+        Ravel[coreSymbols.moduleFactories].test();
       };
       expect(test).to.throw(Ravel.ApplicationError.IllegalValue);
       done();
@@ -173,7 +175,7 @@ describe('Ravel', function() {
       mockery.registerMock('bad.module', stubBadName);
       Ravel.module('my-module.js');
       Ravel.module('test');
-      Ravel._moduleFactories.myModule();
+      Ravel[coreSymbols.moduleFactories].myModule();
       Ravel._injector.inject({}, AnotherStubClientModule);
     });
   });
