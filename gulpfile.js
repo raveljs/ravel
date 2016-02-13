@@ -15,12 +15,7 @@ const TESTS = [
   'test/core/test-*.js',
   'test/db/test-*.js',
   'test/util/test-*.js',
-
-  'test/auth/test-authorization-provider.js',
-  'test/auth/test-authorize-token.js',
-  'test/auth/test-authorize-request.js'
-
-  // 'test/auth/test-*.js',
+  'test/auth/test-*.js'
   // 'test/ravel/test-*.js',
   // 'test/**/test-*.js'
 ];

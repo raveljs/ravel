@@ -9,8 +9,16 @@ const sinon = require('sinon');
 const mockery = require('mockery');
 const koa = require('koa');
 const request = require('supertest');
+const upath = require('upath');
 
-let Ravel, app, AuthorizationMiddleware, authorizeTokenStub, tokenToProfile;
+const AuthorizationProvider = (require('../../lib/ravel')).AuthorizationProvider;
+class GoogleOAuth2 extends AuthorizationProvider {
+  constructor() {
+    super('google-oauth2');
+  }
+}
+
+let Ravel, Module, app, authconfig, AuthorizationMiddleware, authorizeTokenStub, tokenToProfile;
 
 describe('util/authorize_request', function() {
   beforeEach(function(done) {
@@ -29,11 +37,12 @@ describe('util/authorize_request', function() {
     mockery.registerMock('./authorize_token', authorizeTokenStub);
 
     Ravel = new (require('../../lib/ravel'))();
+    authconfig = (require('../../lib/ravel')).authconfig;
+    Module = (require('../../lib/ravel')).Module;
 
-    //TODO remove when passport_init is included in ravel-next
-    Ravel.registerSimpleParameter('login route', false);
-    Ravel.registerSimpleParameter('get user function', false);
-    Ravel.registerSimpleParameter('get or create user function', false);
+    const provider = new GoogleOAuth2();
+    provider.init = sinon.stub();
+    Ravel.set('authorization providers', [provider]);
 
     AuthorizationMiddleware  = require('../../lib/ravel').AuthorizationMiddleware;
     Ravel.Log.setLevel('NONE');
@@ -47,6 +56,7 @@ describe('util/authorize_request', function() {
     authorizeTokenStub = undefined;
     tokenToProfile = undefined;
     app = undefined;
+    authconfig = undefined;
     AuthorizationMiddleware = undefined;
     mockery.deregisterAll();
     mockery.disable();
@@ -54,19 +64,24 @@ describe('util/authorize_request', function() {
   });
 
   describe('middleware', function() {
-    it('should use passport\'s req.isAuthenticated() to check users by default, calling next() if users are authorized by passport', function(done) {
+    it('should use passport\'s req.isAuthenticated() to check users by default, yielding to next() if users are authorized by passport', function(done) {
       const isAuthenticatedStub = sinon.stub().returns(true);
+      const finalStub = sinon.stub();
 
       app.use(function*(next) {
         this.isAuthenticated = isAuthenticatedStub;
         yield next;
       });
       app.use((new AuthorizationMiddleware(Ravel, false, false)).middleware());
+      app.use(function*() {
+        finalStub();
+      });
 
       request(app.callback())
       .get('/entity')
       .expect(function() {
         expect(isAuthenticatedStub).to.have.been.called;
+        expect(finalStub).to.have.been.called;
       })
       .end(done);
     });
@@ -109,25 +124,35 @@ describe('util/authorize_request', function() {
 
     it('should use x-auth-token and x-auth-client headers to authorize mobile clients', function(done) {
       const isAuthenticatedStub = sinon.stub();
+      const finalStub = sinon.stub();
 
-      const profile = {}, user = {};
+      const profile = {}, user = {name: 'smcintyre'};
       sinon.stub(tokenToProfile, 'tokenToProfile', function(token, client) {
         expect(token).to.equal('oauth-token');
         expect(client).to.equal('test-ios');
         return Promise.resolve(profile);
       });
-      Ravel.set('get user function', function(ravelInstance, profile2) { // eslint-disable-line no-unused-vars
-        return Promise.resolve(user);
-      });
+      @authconfig
+      class AuthConfig extends Module {
+        getUser(userId) { // eslint-disable-line no-unused-vars
+          return Promise.resolve(user);
+        }
+      }
+      mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
+      Ravel.module('authconfig');
+      Ravel._moduleInit();
+
+      require('../../lib/auth/passport_init')(Ravel);
+      Ravel.emit('post config koa', app);
 
       app.use(function*(next) {
         this.isAuthenticated = isAuthenticatedStub;
         yield next;
       });
       app.use((new AuthorizationMiddleware(Ravel, false, false)).middleware());
-      app.use(function*(next) {
+      app.use(function*() {
         expect(this).to.have.property('user').that.equals(user);
-        yield next;
+        finalStub();
       });
 
       request(app.callback())
@@ -136,12 +161,14 @@ describe('util/authorize_request', function() {
       .set('x-auth-client', 'test-ios')
       .expect(function() {
         expect(isAuthenticatedStub).to.not.have.been.called;
+        expect(finalStub).to.have.been.called;
       })
       .end(done);
     });
 
     it('should use x-auth-token and x-auth-client headers to authorize mobile clients, failing with HTTP 401 UNAUTHORIZED if the user does not exist and registration is disabled', function(done) {
       const isAuthenticatedStub = sinon.stub();
+      const finalStub = sinon.stub();
 
       const profile = {};
       sinon.stub(tokenToProfile, 'tokenToProfile', function(token, client) {
@@ -149,17 +176,27 @@ describe('util/authorize_request', function() {
         expect(client).to.equal('test-ios');
         return Promise.resolve(profile);
       });
-      Ravel.set('get user function', function(ravelInstance, profile2) { // eslint-disable-line no-unused-vars
-        return Promise.reject(new Ravel.ApplicationError.NotFound('User does not exist'));
-      });
+
+      @authconfig
+      class AuthConfig extends Module {
+        getUser(userId) { // eslint-disable-line no-unused-vars
+          return Promise.reject(new Ravel.ApplicationError.NotFound('User does not exist'));
+        }
+      }
+      mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
+      Ravel.module('authconfig');
+      Ravel._moduleInit();
+
+      require('../../lib/auth/passport_init')(Ravel);
+      Ravel.emit('post config koa', app);
 
       app.use(function*(next) {
         this.isAuthenticated = isAuthenticatedStub;
         yield next;
       });
       app.use((new AuthorizationMiddleware(Ravel, false, false)).middleware());
-      app.use(function*(next) {
-        yield next;
+      app.use(function*() {
+        finalStub();
       });
 
       request(app.callback())
@@ -168,12 +205,14 @@ describe('util/authorize_request', function() {
       .set('x-auth-client', 'test-ios')
       .expect(function() {
         expect(isAuthenticatedStub).to.not.have.been.called;
+        expect(finalStub).to.not.have.been.called;
       })
       .expect(401, done);
     });
 
     it('use x-auth-token and x-auth-client headers to authorize mobile clients, failing with HTTP 401 UNAUTHORIZED if the token cannot be validated or translated into a profile', function(done) {
       const isAuthenticatedStub = sinon.stub();
+      const finalStub = sinon.stub();
 
       sinon.stub(tokenToProfile, 'tokenToProfile', function(token, client) {
         expect(token).to.equal('oauth-token');
@@ -186,8 +225,8 @@ describe('util/authorize_request', function() {
         yield next;
       });
       app.use((new AuthorizationMiddleware(Ravel, false, false)).middleware());
-      app.use(function*(next) {
-        yield next;
+      app.use(function*() {
+        finalStub();
       });
 
       request(app.callback())
@@ -196,12 +235,14 @@ describe('util/authorize_request', function() {
       .set('x-auth-client', 'test-ios')
       .expect(function() {
         expect(isAuthenticatedStub).to.not.have.been.called;
+        expect(finalStub).to.not.have.been.called;
       })
       .expect(401, done);
     });
 
     it('use x-auth-token and x-auth-client headers to authorize mobile clients, registering users if that functionality is enabled and they don\'t already exist', function(done) {
       const isAuthenticatedStub = sinon.stub();
+      const finalStub = sinon.stub();
 
       const profile = {}, user = {};
       sinon.stub(tokenToProfile, 'tokenToProfile', function(token, client) {
@@ -209,18 +250,27 @@ describe('util/authorize_request', function() {
         expect(client).to.equal('test-ios');
         return Promise.resolve(profile);
       });
-      Ravel.set('get or create user function', function() {
-        return Promise.resolve(user);
-      });
+      @authconfig
+      class AuthConfig extends Module {
+        getOrCreateUser(accessToken, refreshToken, prof) { // eslint-disable-line no-unused-vars
+          return Promise.resolve(user);
+        }
+      }
+      mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
+      Ravel.module('authconfig');
+      Ravel._moduleInit();
+
+      require('../../lib/auth/passport_init')(Ravel);
+      Ravel.emit('post config koa', app);
 
       app.use(function*(next) {
         this.isAuthenticated = isAuthenticatedStub;
         yield next;
       });
       app.use((new AuthorizationMiddleware(Ravel, false, true)).middleware());
-      app.use(function*(next) {
+      app.use(function*() {
         expect(this).to.have.property('user').that.equals(user);
-        yield next;
+        finalStub();
       });
 
       request(app.callback())
@@ -229,12 +279,14 @@ describe('util/authorize_request', function() {
       .set('x-auth-client', 'test-ios')
       .expect(function() {
         expect(isAuthenticatedStub).to.not.have.been.called;
+        expect(finalStub).to.have.been.called;
       })
       .end(done);
     });
 
     it('use x-auth-token and x-auth-client headers to authorize mobile clients, responding with HTTP 401 UNAUTHORIZED if user registration is enabled and registration fails', function(done) {
       const isAuthenticatedStub = sinon.stub();
+      const finalStub = sinon.stub();
 
       const profile = {}, user = {};
       sinon.stub(tokenToProfile, 'tokenToProfile', function(token, client) {
@@ -242,19 +294,28 @@ describe('util/authorize_request', function() {
         expect(client).to.equal('test-ios');
         return Promise.resolve(profile);
       });
-      Ravel.set('get or create user function', function() {
-        return Promise.reject(new Error());
-      });
+      @authconfig
+      class AuthConfig extends Module {
+        getOrCreateUser(accessToken, refreshToken, prof) { // eslint-disable-line no-unused-vars
+          return Promise.reject(new Ravel.ApplicationError.NotFound('User does not exist'));
+        }
+      }
+      mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
+      Ravel.module('authconfig');
+      Ravel._moduleInit();
+
+      require('../../lib/auth/passport_init')(Ravel);
+      Ravel.emit('post config koa', app);
 
       app.use(function*(next) {
         this.isAuthenticated = isAuthenticatedStub;
         yield next;
       });
       app.use((new AuthorizationMiddleware(Ravel, false, true)).middleware());
-      app.use(function*(next) {
+      app.use(function*() {
         // this assertion would fail if this middleware ever ran. But it shouldn't run.
         expect(this).to.have.property('user').that.equals(user);
-        yield next;
+        finalStub();
       });
 
       request(app.callback())
@@ -263,6 +324,7 @@ describe('util/authorize_request', function() {
       .set('x-auth-client', 'test-ios')
       .expect(function() {
         expect(isAuthenticatedStub).to.not.have.been.called;
+        expect(finalStub).to.not.have.been.called;
       })
       .expect(401, done);
     });
