@@ -10,7 +10,7 @@ const sinon = require('sinon');
 const request = require('supertest');
 const koa = require('koa');
 
-let Ravel, Resource, before, inject;
+let Ravel, Resource, before, inject, coreSymbols;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
@@ -24,6 +24,7 @@ describe('Ravel', function() {
     Resource = require('../../lib/ravel').Resource;
     before = require('../../lib/ravel').before;
     inject = require('../../lib/ravel').inject;
+    coreSymbols = require('../../lib/core/symbols');
 
     Ravel = new (require('../../lib/ravel'))();
     Ravel.Log.setLevel('NONE');
@@ -42,6 +43,7 @@ describe('Ravel', function() {
     Resource = undefined;
     before = undefined;
     inject = undefined;
+    coreSymbols = undefined;
     mockery.deregisterAll();mockery.disable();
     done();
   });
@@ -50,8 +52,8 @@ describe('Ravel', function() {
     it('should allow clients to register resource modules for instantiation in Ravel.start', function(done) {
       mockery.registerMock(upath.join(Ravel.cwd, './resources/test'), class extends Resource {});
       Ravel.resource('./resources/test');
-      expect(Ravel._resourceFactories).to.have.property('./resources/test');
-      expect(Ravel._resourceFactories['./resources/test']).to.be.a('function');
+      expect(Ravel[coreSymbols.moduleFactories]).to.have.property('./resources/test');
+      expect(Ravel[coreSymbols.moduleFactories]['./resources/test']).to.be.a('function');
       done();
     });
 
@@ -102,7 +104,7 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
       const router = require('koa-router')();
-      const resource = Ravel._resourceFactories.test(router);
+      const resource = Ravel[coreSymbols.moduleFactories].test(router);
       expect(resource.log).to.be.an('object');
       expect(resource.log).to.have.property('trace').that.is.a('function');
       expect(resource.log).to.have.property('verbose').that.is.a('function');
