@@ -6,7 +6,7 @@ chai.use(require('chai-things'));
 const mockery = require('mockery');
 const upath = require('upath');
 
-let Ravel, Module, inject;
+let Ravel, Module, inject, coreSymbols;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
@@ -20,6 +20,7 @@ describe('Ravel', function() {
     Module = require('../../lib/ravel').Module;
     inject = require('../../lib/ravel').inject;
     Ravel = new (require('../../lib/ravel'))();
+    coreSymbols = require('../../lib/core/symbols');
     Ravel.Log.setLevel(Ravel.Log.NONE);
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
     done();
@@ -28,6 +29,8 @@ describe('Ravel', function() {
   afterEach(function(done) {
     Ravel = undefined;
     Module = undefined;
+    inject = undefined;
+    coreSymbols = undefined;
     mockery.deregisterAll();
     mockery.disable();
     done();
@@ -93,7 +96,7 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.module('./test');
       Ravel._moduleInit();
-      const instance = Ravel._modules.test;
+      const instance = Ravel[coreSymbols.modules].test;
       expect(instance.log).to.be.ok;
       expect(instance.log).to.be.an('object');
       expect(instance.log).to.have.property('trace').that.is.a('function');
@@ -338,7 +341,7 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, './test'), Stub);
       Ravel.module('./test');
       Ravel._moduleInit();
-      expect(Ravel._modules.test.method).to.be.a.function;
+      expect(Ravel[coreSymbols.modules].test.method).to.be.a.function;
       done();
     });
 
