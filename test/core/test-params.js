@@ -5,7 +5,7 @@ const expect = chai.expect;
 chai.use(require('chai-things'));
 const mockery = require('mockery');
 
-let Ravel, files, conf;
+let Ravel, files, conf, coreSymbols;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
@@ -22,12 +22,14 @@ describe('Ravel', function() {
       return files;
     });
     Ravel = new (require('../../lib/ravel'))();
+    coreSymbols = require('../../lib/core/symbols');
     Ravel.Log.setLevel('NONE');
     done();
   });
 
   afterEach(function(done) {
     Ravel = undefined;
+    coreSymbols = undefined;
     mockery.deregisterAll();mockery.disable();
     done();
   });
@@ -121,7 +123,7 @@ describe('Ravel', function() {
         'redis port': 6379
       };
 
-      Ravel._loadParameters();
+      Ravel[coreSymbols.loadParameters]();
       expect(Ravel.get('koa view engine')).to.equal(conf['koa view engine']);
       expect(Ravel.get('redis port')).to.equal(conf['redis port']);
       done();
@@ -135,7 +137,7 @@ describe('Ravel', function() {
       };
 
       Ravel.set('redis port', 6380);
-      Ravel._loadParameters();
+      Ravel[coreSymbols.loadParameters]();
       expect(Ravel.get('koa view engine')).to.equal(conf['koa view engine']);
       expect(Ravel.get('redis port')).to.equal(6380);
       done();
@@ -151,7 +153,7 @@ describe('Ravel', function() {
 
       Ravel.set('redis port', 6380);
       expect(function() {
-        Ravel._loadParameters();
+        Ravel[coreSymbols.loadParameters]();
       }).to.throw(Ravel.ApplicationError.IllegalValue);
       done();
     });
@@ -162,7 +164,7 @@ describe('Ravel', function() {
 
       const oldParams = Object.create(null);
       Object.assign(oldParams, Ravel.config);
-      Ravel._loadParameters();
+      Ravel[coreSymbols.loadParameters]();
       expect(Ravel.config).to.deep.equal(oldParams);
       done();
     });
