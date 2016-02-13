@@ -7,7 +7,7 @@ const mockery = require('mockery');
 const upath = require('upath');
 const sinon = require('sinon');
 
-let Ravel, Routes, inject, mapping, before;
+let Ravel, Routes, inject, mapping, before, coreSymbols;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
@@ -22,6 +22,7 @@ describe('Ravel', function() {
     inject = require('../../lib/ravel').inject;
     before = require('../../lib/ravel').before;
     mapping = Routes.mapping;
+    coreSymbols = require('../../lib/core/symbols');
     Ravel = new (require('../../lib/ravel'))();
     Ravel.Log.setLevel('NONE');
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
@@ -34,6 +35,7 @@ describe('Ravel', function() {
     Routes = undefined;
     mapping = undefined;
     before = undefined;
+    coreSymbols = undefined;
     mockery.deregisterAll();mockery.disable();
     done();
   });
@@ -42,8 +44,8 @@ describe('Ravel', function() {
     it('should permit clients to register route modules for instantiation in Ravel.start', function(done) {
       mockery.registerMock(upath.join(Ravel.cwd, './routes/index_r'), class extends Routes {});
       Ravel.routes('./routes/index_r');
-      expect(Ravel._routesFactories).to.have.property('./routes/index_r');
-      expect(Ravel._routesFactories['./routes/index_r']).to.be.a('function');
+      expect(Ravel[coreSymbols.routesFactories]).to.have.property('./routes/index_r');
+      expect(Ravel[coreSymbols.routesFactories]['./routes/index_r']).to.be.a('function');
       done();
     });
 
@@ -78,7 +80,7 @@ describe('Ravel', function() {
       };
       mockery.registerMock(upath.join(Ravel.cwd, 'stub'), Stub);
       Ravel.routes('stub');
-      const instance = Ravel._routesFactories.stub();
+      const instance = Ravel[coreSymbols.routesFactories].stub();
       expect(instance.log).to.be.ok;
       expect(instance.log).to.be.an('object');
       expect(instance.log).to.have.property('trace').that.is.a('function');
