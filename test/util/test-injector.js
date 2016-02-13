@@ -38,8 +38,6 @@ describe('Ravel', function() {
         constructor() {super();}
         method() {}
       };
-      const stub1Instance = new Stub1();
-      stub1Instance._init(Ravel, 'test');
       const Stub2 = class extends Module {
         static get inject() {
           return ['test'];
@@ -47,7 +45,8 @@ describe('Ravel', function() {
         constructor(test) {
           super();
           expect(test).to.be.an('object');
-          expect(test).to.deep.equal(stub1Instance);
+          expect(test).to.have.a.property('method').that.is.a.function;
+          expect(test).to.have.a.property('log').that.is.an.object;
           done();
         }
       };
@@ -55,8 +54,7 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test2'), Stub2);
       Ravel.module('test');
       Ravel.module('test2');
-      Ravel[coreSymbols.moduleFactories].test();
-      Ravel[coreSymbols.injector].inject({}, Stub2);
+      Ravel[coreSymbols.moduleInit]();
     });
 
 
@@ -152,8 +150,6 @@ describe('Ravel', function() {
       const StubClientModule = class extends Module {
         method() {}
       };
-      const stubClientInstance = new StubClientModule();
-      stubClientInstance._init(Ravel, 'myModule');
       const AnotherStubClientModule = class extends Module {
         static get inject() {
           return ['bad.module', 'myModule'];
@@ -165,7 +161,8 @@ describe('Ravel', function() {
           expect(bad).to.equal(stubBadName);
           expect(myModule).to.be.ok;
           expect(myModule).to.be.an('object');
-          expect(myModule).to.deep.equal(stubClientInstance);
+          expect(myModule).to.have.a.property('log').that.is.an.object;
+          expect(myModule).to.have.a.property('method').that.is.a.function;
           done();
         }
         method() {}

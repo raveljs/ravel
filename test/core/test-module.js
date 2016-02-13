@@ -165,6 +165,7 @@ describe('Ravel', function() {
           expect(instantiatedModules).to.not.have.property('test3');
           expect(instantiatedModules).to.not.have.property('test4');
         }
+        one() {}
       }
 
       @inject('test', 'test4')
@@ -176,7 +177,12 @@ describe('Ravel', function() {
           expect(instantiatedModules).to.have.property('test');
           expect(instantiatedModules).to.not.have.property('test3');
           expect(instantiatedModules).to.have.property('test4');
+          expect(test).to.have.a.property('one').that.is.a.function;
+          expect(test4).to.have.a.property('four').that.is.a.function;
+          expect(test).to.have.a.property('log').that.is.an.object;
+          expect(test4).to.have.a.property('log').that.is.an.object;
         }
+        two() {}
       }
 
       @inject('test2')
@@ -186,7 +192,10 @@ describe('Ravel', function() {
 
           instantiatedModules.test3 = true;
           expect(instantiatedModules).to.have.property('test2');
+          expect(test2).to.have.a.property('two').that.is.a.function;
+          expect(test2).to.have.a.property('log').that.is.an.object;
         }
+        three() {}
       }
 
       @inject('test')
@@ -197,7 +206,10 @@ describe('Ravel', function() {
           instantiatedModules.test4 = true;
           expect(instantiatedModules).to.not.have.property('test2');
           expect(instantiatedModules).to.have.property('test');
+          expect(test).to.have.a.property('one').that.is.a.function;
+          expect(test).to.have.a.property('log').that.is.an.object;
         }
+        four() {}
       }
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test'), Stub1);
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test2'), Stub2);
