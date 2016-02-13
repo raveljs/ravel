@@ -4,17 +4,18 @@ const chai = require('chai');
 const expect = chai.expect;
 const ApplicationError = require('../../lib/util/application_error');
 
-let before;
+let before, utilSymbols;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
     before = require('../../lib/ravel').before;
-
+    utilSymbols = require('../../lib/util/symbols');
     done();
   });
 
   afterEach(function(done) {
     before = undefined;
+    utilSymbols = undefined;
     done();
   });
 
@@ -23,8 +24,8 @@ describe('Ravel', function() {
       @before('test1', 'test2')
       class Stub1 {
       }
-      expect(Stub1.prototype._globalMiddleware).to.be.an.array;
-      expect(Stub1.prototype._globalMiddleware).to.deep.equal(['test1', 'test2']);
+      expect(Stub1.prototype[utilSymbols.beforeGlobalMiddleware]).to.be.an.array;
+      expect(Stub1.prototype[utilSymbols.beforeGlobalMiddleware]).to.deep.equal(['test1', 'test2']);
       done();
     });
 
@@ -53,8 +54,8 @@ describe('Ravel', function() {
 
         }
       }
-      expect(Stub1.prototype._middleware_get).to.be.an.array;
-      expect(Stub1.prototype._middleware_get).to.deep.equal(['test1', 'test2']);
+      expect(Stub1.prototype[utilSymbols.beforeMethodMiddleware].get).to.be.an.array;
+      expect(Stub1.prototype[utilSymbols.beforeMethodMiddleware].get).to.deep.equal(['test1', 'test2']);
       done();
     });
   });
