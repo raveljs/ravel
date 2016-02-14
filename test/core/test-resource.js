@@ -157,8 +157,8 @@ describe('Ravel', function() {
     });
 
     it('should facilitate the creation of GET routes via $Resource.getAll', function(done) {
-      const middleware1 = function*(/*next*/) {};
-      const middleware2 = function*(/*next*/) {};
+      const middleware1 = function*(next) { yield next; };
+      const middleware2 = function*(next) { yield next; };
 
       class Stub extends Resource {
         constructor() {
@@ -176,16 +176,16 @@ describe('Ravel', function() {
       mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      const genWrapper = function*() {
-        return Stub.prototype.getAll(this);
-      };
-      expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, sinon.match(genWrapper));
+      expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, sinon.match(function(value) {
+        return value.toString().indexOf('return resource[methodName](this)') > 0;
+      }));
       done();
     });
 
     it('should facilitate the creation of GET routes via $Resource.get', function(done) {
-      const middleware1 = function*(/*next*/) {};
-      const middleware2 = function*(/*next*/) {};
+      const middleware1 = function*(next) { yield next; };
+      const middleware2 = function*(next) { yield next; };
+
       class Stub extends Resource {
         constructor() {
           super('/api/test');
@@ -202,16 +202,16 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      const genWrapper = function*() {
-        return Stub.prototype.get(this);
-      };
-      expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, sinon.match(genWrapper));
+      expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, sinon.match(function(value) {
+        return value.toString().indexOf('return resource[methodName](this)') > 0;
+      }));
       done();
     });
 
     it('should facilitate the creation of POST routes via $Resource.post', function(done) {
-      const middleware1 = function*(/*next*/) {};
-      const middleware2 = function*(/*next*/) {};
+      const middleware1 = function*(next) { yield next; };
+      const middleware2 = function*(next) { yield next; };
+
       class Stub extends Resource {
         constructor() {
           super('/api/test');
@@ -228,16 +228,16 @@ describe('Ravel', function() {
       mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      const genWrapper = function*() {
-        return Stub.prototype.post(this);
-      };
-      expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, sinon.match(genWrapper));
+      expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, sinon.match(function(value) {
+        return value.toString().indexOf('return resource[methodName](this)') > 0;
+      }));
       done();
     });
 
     it('should facilitate the creation of PUT routes via $Resource.put', function(done) {
-      const middleware1 = function*(/*next*/) {};
-      const middleware2 = function*(/*next*/) {};
+      const middleware1 = function*(next) { yield next; };
+      const middleware2 = function*(next) { yield next; };
+
       class Stub extends Resource {
         constructor() {
           super('/api/test');
@@ -254,16 +254,16 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      const genWrapper = function*() {
-        return Stub.prototype.put(this);
-      };
-      expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, sinon.match(genWrapper));
+      expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, sinon.match(function(value) {
+        return value.toString().indexOf('return resource[methodName](this)') > 0;
+      }));
       done();
     });
 
     it('should facilitate the creation of PUT routes via $Resource.putAll', function(done) {
-      const middleware1 = function*(/*next*/) {};
-      const middleware2 = function*(/*next*/) {};
+      const middleware1 = function*(next) { yield next; };
+      const middleware2 = function*(next) { yield next; };
+
       class Stub extends Resource {
         constructor() {
           super('/api/test');
@@ -280,16 +280,16 @@ describe('Ravel', function() {
       mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      const genWrapper = function*() {
-        return Stub.prototype.putAll(this);
-      };
-      expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, sinon.match(genWrapper));
+      expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, sinon.match(function(value) {
+        return value.toString().indexOf('return resource[methodName](this)') > 0;
+      }));
       done();
     });
 
     it('should facilitate the creation of DELETE routes via $Resource.deleteAll', function(done) {
-      const middleware1 = function*(/*next*/) {};
-      const middleware2 = function*(/*next*/) {};
+      const middleware1 = function*(next) { yield next; };
+      const middleware2 = function*(next) { yield next; };
+
       class Stub extends Resource {
         constructor() {
           super('/api/test');
@@ -306,16 +306,15 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      const genWrapper = function*() {
-        return Stub.prototype.deleteAll(this);
-      };
-      expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, sinon.match(genWrapper));
+      expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, sinon.match(function(value) {
+        return value.toString().indexOf('return resource[methodName](this)') > 0;
+      }));
       done();
     });
 
     it('should facilitate the creation of DELETE routes via $Resource.delete', function(done) {
-      const middleware1 = function*(/*next*/) {};
-      const middleware2 = function*(/*next*/) {};
+      const middleware1 = function*(next) { yield next; };
+      const middleware2 = function*(next) { yield next; };
 
       class Stub extends Resource {
         constructor() {
@@ -333,16 +332,15 @@ describe('Ravel', function() {
       mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      const genWrapper = function*() {
-        return Stub.prototype.delete(this);
-      };
-      expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, sinon.match(genWrapper));
+      expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, sinon.match(function(value) {
+        return value.toString().indexOf('return resource[methodName](this)') > 0;
+      }));
       done();
     });
 
     it('should support the use of @before at the class level', function(done) {
-      const middleware1 = function*(/*next*/) {};
-      const middleware2 = function*(/*next*/) {};
+      const middleware1 = function*(next) { yield next; };
+      const middleware2 = function*(next) { yield next; };
 
       @before('middleware1')
       class Stub extends Resource {
@@ -361,10 +359,9 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      const genWrapper = function*() {
-        return Stub.prototype.get(this);
-      };
-      expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, sinon.match(genWrapper));
+      expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, sinon.match(function(value) {
+        return value.toString().indexOf('return resource[methodName](this)') > 0;
+      }));
       done();
     });
 
@@ -403,9 +400,9 @@ describe('Ravel', function() {
 
   describe('Resource Integration Test', function() {
     it('should integrate properly with koa and koa-router', function(done) {
+      const middleware1 = function*(next) { yield next; };
+      const middleware2 = function*(next) { yield next; };
 
-      const middleware1 = function*(/*next*/) {};
-      const middleware2 = function*(/*next*/) {};
       class Stub extends Resource {
         constructor() {
           super('/api/test');
