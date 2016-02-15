@@ -62,20 +62,14 @@ describe('Ravel', function() {
     });
 
     it('should produce a factory function which can be used to instantiate the specified routes module and perform dependency injection', function(done) {
-      //stub authorize and authorizeWithRedirect, since they only get created during Ravel.start
-      Ravel.authorize = function() {};
-      Ravel.authorizeWithRedirect = function() {};
-
-      @inject('$E', '$KV', '$Private', '$PrivateRedirect')
+      @inject('$E', '$KV')
       class Stub extends Routes {
-        constructor($E, $KV, $Private, $PrivateRedirect) {
+        constructor($E, $KV) {
           super();
           expect($E).to.be.ok;
           expect($E).to.be.an('object');
           expect($E).to.equal(Ravel.ApplicationError);
           expect($KV).to.equal(Ravel.kvstore);
-          expect($Private).to.equal(Ravel.authorize);
-          expect($PrivateRedirect).to.equal(Ravel.authorizeWithRedirect);
         }
       };
       mockery.registerMock(upath.join(Ravel.cwd, 'stub'), Stub);
@@ -113,8 +107,8 @@ describe('Ravel', function() {
 
         @mapping('/path')
         @before('middleware1','middleware2')
-        pathHandler() {
-          this.status = 200;
+        pathHandler(ctx) {
+          ctx.status = 200;
         }
       };
       mockery.registerMock(upath.join(Ravel.cwd, 'stub'), Stub);
@@ -154,8 +148,8 @@ describe('Ravel', function() {
 
         @mapping('/path')
         @before('middleware2')
-        pathHandler() {
-          this.status(200);
+        pathHandler(ctx) {
+          ctx.status(200);
         }
       };
       mockery.registerMock(upath.join(Ravel.cwd, 'stub'), Stub);

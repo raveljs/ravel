@@ -74,7 +74,12 @@ describe('util/rest', function() {
     });
 
     it('should allow the user to override the default success status code', function (done) {
-      app.use(rest.respond(201));
+      app.use(rest.respond());
+      app.use(function*() {
+        this.respondOptions = {
+          okCode: 201
+        };
+      });
       request(app.callback())
       .get('/')
       .expect(201, 'Created', done);
@@ -84,14 +89,16 @@ describe('util/rest', function() {
       const result = [];
 
       const options = {
+        okCode: httpCodes.PARTIAL_CONTENT,
         start: 0,
         end: 5,
         count: 10
       };
 
-      app.use(rest.respond(httpCodes.PARTIAL_CONTENT, options));
+      app.use(rest.respond());
       app.use(function*() {
         this.body = result;
+        this.respondOptions = options;
       });
 
       request(app.callback())

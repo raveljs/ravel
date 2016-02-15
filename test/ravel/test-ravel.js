@@ -35,16 +35,16 @@ class Users extends Ravel.Module {
   }
 }
 
-@inject('users')
+@inject('users', '$E')
 class UsersResource extends Ravel.Resource {
-  constructor(users) {
+  constructor(users, $E) {
     super('/api/user');
     this.users = users;
+    this.$E = $E;
   }
 
   @pre('respond')
   getAll(ctx) {
-    // FIXME this is a koa context. how do we refer to stuff in self?
     return this.users.getAllUsers()
     .then((list) => {
       ctx.body = list;
@@ -53,7 +53,9 @@ class UsersResource extends Ravel.Resource {
 
   @pre('respond')
   get(ctx) {
-    return this.users.getUser(this.params.id).then((result) => {
+    // return promise and don't catch error so that Ravel can catch it
+    return this.users.getUser(ctx.params.id)
+    .then((result) => {
       ctx.body = result;
     });
   }
@@ -67,9 +69,9 @@ class TestRoutes extends Ravel.Routes {
   }
 
   @mapping('/test')
-  handler() {
-    this.body = {};
-    this.status = 200;
+  handler(ctx) {
+    ctx.body = {};
+    ctx.status = 200;
   }
 }
 
@@ -108,6 +110,7 @@ describe('Ravel end-to-end test', function() {
         mockery.registerMock(upath.join(app.cwd, 'routes'), TestRoutes);
         app.routes('routes');
         app.init();
+
         agent = request.agent(app.server);
         done();
       });
@@ -148,6 +151,4 @@ describe('Ravel end-to-end test', function() {
       });
     });
   });
-
-  //TODO end-to-end test websocket stuff
 });

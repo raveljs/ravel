@@ -28,13 +28,11 @@ describe('Ravel', function() {
 
     Ravel = new (require('../../lib/ravel'))();
     Ravel.Log.setLevel('NONE');
-    // mock kvstore, authorize, authorizeWithRedirect and db.middleware, since they only get created during Ravel.start
+    // mock kvstore and db.middleware, since they only get created during Ravel.start
     Ravel.kvstore = {};
     Ravel.db = {
       middleware: function(){}
     };
-    Ravel.authorize = function() {};
-    Ravel.authorizeWithRedirect = function() {};
     done();
   });
 
@@ -77,9 +75,9 @@ describe('Ravel', function() {
     });
 
     it('should produce a factory function which can be used to instantiate the specified resource module and perform dependency injection with specific, resource-related services', function(done) {
-      @inject('$E', '$KV', '$MiddlewareTransaction', '$Private', '$PrivateRedirect', '$Params')
+      @inject('$E', '$KV', '$MiddlewareTransaction', '$Params')
       class Stub extends Resource {
-        constructor($E, $KV, $MiddlewareTransaction, $Private, $PrivateRedirect, $Params) {
+        constructor($E, $KV, $MiddlewareTransaction, $Params) {
           super('/api/test');
           expect($E).to.equal(Ravel.ApplicationError);
           expect($KV).to.be.ok;
@@ -95,8 +93,6 @@ describe('Ravel', function() {
           expect($Params).to.have.property('registerSimpleParameter').that.is.a('function');
           expect($Params).to.have.property('registerSimpleParameter').that.equals(Ravel.registerSimpleParameter);
           expect(this).to.have.property('basePath').that.equals('/api/test');
-          expect($Private).to.equal(Ravel.authorize);
-          expect($PrivateRedirect).to.equal(Ravel.authorizeWithRedirect);
           expect($MiddlewareTransaction).to.equal(Ravel.db.middleware);
         }
       };
@@ -177,7 +173,7 @@ describe('Ravel', function() {
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
       expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, sinon.match(function(value) {
-        return value.toString().indexOf('return resource[methodName](this)') > 0;
+        return value.constructor.name === 'GeneratorFunction';
       }));
       done();
     });
@@ -203,7 +199,7 @@ describe('Ravel', function() {
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
       expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, sinon.match(function(value) {
-        return value.toString().indexOf('return resource[methodName](this)') > 0;
+        return value.constructor.name === 'GeneratorFunction';
       }));
       done();
     });
@@ -229,7 +225,7 @@ describe('Ravel', function() {
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
       expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, sinon.match(function(value) {
-        return value.toString().indexOf('return resource[methodName](this)') > 0;
+        return value.constructor.name === 'GeneratorFunction';
       }));
       done();
     });
@@ -255,7 +251,7 @@ describe('Ravel', function() {
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
       expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, sinon.match(function(value) {
-        return value.toString().indexOf('return resource[methodName](this)') > 0;
+        return value.constructor.name === 'GeneratorFunction';
       }));
       done();
     });
@@ -281,7 +277,7 @@ describe('Ravel', function() {
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
       expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, sinon.match(function(value) {
-        return value.toString().indexOf('return resource[methodName](this)') > 0;
+        return value.constructor.name === 'GeneratorFunction';
       }));
       done();
     });
@@ -307,7 +303,7 @@ describe('Ravel', function() {
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
       expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, sinon.match(function(value) {
-        return value.toString().indexOf('return resource[methodName](this)') > 0;
+        return value.constructor.name === 'GeneratorFunction';
       }));
       done();
     });
@@ -333,7 +329,7 @@ describe('Ravel', function() {
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
       expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, sinon.match(function(value) {
-        return value.toString().indexOf('return resource[methodName](this)') > 0;
+        return value.constructor.name === 'GeneratorFunction';
       }));
       done();
     });
@@ -360,7 +356,7 @@ describe('Ravel', function() {
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
       expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, sinon.match(function(value) {
-        return value.toString().indexOf('return resource[methodName](this)') > 0;
+        return value.constructor.name === 'GeneratorFunction';
       }));
       done();
     });
