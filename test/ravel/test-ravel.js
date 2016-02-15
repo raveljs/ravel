@@ -70,9 +70,9 @@ class TestRoutes extends Ravel.Routes {
     super();
   }
 
-  @mapping('/test')
+  @mapping('/app')
   handler(ctx) {
-    ctx.body = {};
+    ctx.body = '<!DOCTYPE html><html></html>';
     ctx.status = 200;
   }
 }
@@ -147,8 +147,8 @@ describe('Ravel end-to-end test', function() {
 
       it('should respond with an empty object on the route', function(done) {
         agent
-        .get('/test')
-        .expect(200, JSON.stringify({}))
+        .get('/app')
+        .expect(200, '<!DOCTYPE html><html></html>')
         .end(done);
       });
     });
