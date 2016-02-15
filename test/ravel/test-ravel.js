@@ -14,7 +14,7 @@ let app, agent;
 
 const u = [{id:1, name:'Joe'}, {id:2, name:'Jane'}];
 
-//stub Module
+//stub Module (business logic container)
 @inject('$E')
 class Users extends Ravel.Module {
   constructor($E) {
@@ -35,7 +35,7 @@ class Users extends Ravel.Module {
   }
 }
 
-//stub Resource
+//stub Resource (REST interface)
 const pre = Ravel.Resource.before;  //have to alias to @pre instead of proper @before, since the latter clashes with mocha
 @inject('users', '$E')
 class UsersResource extends Ravel.Resource {
@@ -63,7 +63,7 @@ class UsersResource extends Ravel.Resource {
   }
 }
 
-//stub Routes
+//stub Routes (miscellaneous routes, such as templated HTML content)
 const mapping = Ravel.Routes.mapping;
 class TestRoutes extends Ravel.Routes {
   constructor() {
