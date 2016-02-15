@@ -46,7 +46,7 @@ describe('auth/passport_init', function() {
     mockery.registerMock('koa-passport', passportMock);
 
     Ravel = new (require('../../lib/ravel'))();
-    authconfig = (require('../../lib/ravel')).authconfig;
+    authconfig = (require('../../lib/ravel')).Module.authconfig;
     coreSymbols = require('../../lib/core/symbols');
     Ravel.Log.setLevel(Ravel.Log.NONE);
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.

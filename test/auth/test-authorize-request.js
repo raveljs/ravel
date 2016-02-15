@@ -37,8 +37,8 @@ describe('util/authorize_request', function() {
     mockery.registerMock('./authorize_token', authorizeTokenStub);
 
     Ravel = new (require('../../lib/ravel'))();
-    authconfig = (require('../../lib/ravel')).authconfig;
     Module = (require('../../lib/ravel')).Module;
+    authconfig = Module.authconfig;
     coreSymbols = require('../../lib/core/symbols');
 
     const provider = new GoogleOAuth2();

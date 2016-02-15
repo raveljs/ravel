@@ -22,7 +22,7 @@ describe('Ravel', function() {
     });
 
     Resource = require('../../lib/ravel').Resource;
-    before = require('../../lib/ravel').before;
+    before = Resource.before;
     inject = require('../../lib/ravel').inject;
     coreSymbols = require('../../lib/core/symbols');
 

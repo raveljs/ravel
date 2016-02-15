@@ -8,7 +8,7 @@ let before, utilSymbols;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
-    before = require('../../lib/ravel').before;
+    before = require('../../lib/ravel').Resource.before;
     utilSymbols = require('../../lib/util/symbols');
     done();
   });

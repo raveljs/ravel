@@ -20,7 +20,7 @@ describe('Ravel', function() {
 
     Routes = require('../../lib/ravel').Routes;
     inject = require('../../lib/ravel').inject;
-    before = require('../../lib/ravel').before;
+    before = Routes.before;
     mapping = Routes.mapping;
     coreSymbols = require('../../lib/core/symbols');
     Ravel = new (require('../../lib/ravel'))();

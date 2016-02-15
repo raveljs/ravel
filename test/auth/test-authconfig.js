@@ -9,7 +9,7 @@ let authconfig;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
-    authconfig = require('../../lib/ravel').authconfig;
+    authconfig = require('../../lib/ravel').Module.authconfig;
     done();
   });
 

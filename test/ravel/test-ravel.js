@@ -10,11 +10,11 @@ const request = require('supertest');
 
 const Ravel = require('../../lib/ravel');
 const inject = Ravel.inject;
-const pre = Ravel.before;
 let app, agent;
 
 const u = [{id:1, name:'Joe'}, {id:2, name:'Jane'}];
-//stub module
+
+//stub Module
 @inject('$E')
 class Users extends Ravel.Module {
   constructor($E) {
@@ -35,6 +35,8 @@ class Users extends Ravel.Module {
   }
 }
 
+//stub Resource
+const pre = Ravel.Resource.before;  //have to alias to @pre instead of proper @before, since the latter clashes with mocha
 @inject('users', '$E')
 class UsersResource extends Ravel.Resource {
   constructor(users, $E) {
@@ -53,7 +55,7 @@ class UsersResource extends Ravel.Resource {
 
   @pre('respond')
   get(ctx) {
-    // return promise and don't catch error so that Ravel can catch it
+    // return promise and don't catch possible error so that Ravel can catch it
     return this.users.getUser(ctx.params.id)
     .then((result) => {
       ctx.body = result;
@@ -61,7 +63,7 @@ class UsersResource extends Ravel.Resource {
   }
 }
 
-//stub routes
+//stub Routes
 const mapping = Ravel.Routes.mapping;
 class TestRoutes extends Ravel.Routes {
   constructor() {
