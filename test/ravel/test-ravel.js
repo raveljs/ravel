@@ -71,9 +71,17 @@ class TestRoutes extends Ravel.Routes {
   }
 
   @mapping('/app')
-  handler(ctx) {
+  appHandler(ctx) {
     ctx.body = '<!DOCTYPE html><html></html>';
     ctx.status = 200;
+  }
+
+  @mapping('/login')
+  loginHandler(ctx) {
+    return Promise.resolve().then(() => {
+      ctx.body = '<!DOCTYPE html><html><head><title>login</title></head></html>';
+      ctx.status = 200;
+    });
   }
 }
 
@@ -145,10 +153,17 @@ describe('Ravel end-to-end test', function() {
         .end(done);
       });
 
-      it('should respond with an empty object on the route', function(done) {
+      it('should respond with html on the route /app', function(done) {
         agent
         .get('/app')
         .expect(200, '<!DOCTYPE html><html></html>')
+        .end(done);
+      });
+
+      it('should respond with html on the route /login', function(done) {
+        agent
+        .get('/login')
+        .expect(200, '<!DOCTYPE html><html><head><title>login</title></head></html>')
         .end(done);
       });
     });

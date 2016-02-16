@@ -66,6 +66,17 @@ describe('util/authorize_request', function() {
   });
 
   describe('middleware', function() {
+
+    it('should allow read-only access to important state information, mostly for use by subclasses', function(done) {
+      const shouldRedirect = Math.random() < 0.5;
+      const allowMobileRegistration = Math.random() < 0.5;
+      const auth = new AuthorizationMiddleware(Ravel, shouldRedirect, allowMobileRegistration);
+      expect(auth).to.have.a.property('ravelInstance').that.equals(Ravel);
+      expect(auth).to.have.a.property('shouldRedirect').that.equals(shouldRedirect);
+      expect(auth).to.have.a.property('allowMobileRegistration').that.equals(allowMobileRegistration);
+      done();
+    });
+
     it('should use passport\'s req.isAuthenticated() to check users by default, yielding to next() if users are authorized by passport', function(done) {
       const isAuthenticatedStub = sinon.stub().returns(true);
       const finalStub = sinon.stub();
