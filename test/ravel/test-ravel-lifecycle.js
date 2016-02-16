@@ -100,12 +100,10 @@ describe('Ravel', function() {
     app.set('log level', app.Log.NONE);
     app.set('redis host', 'localhost');
     app.set('redis port', 5432);
+    app.set('redis password', 'password');
     app.set('port', '9080');
-    app.set('koa public directory', 'public');
     app.set('keygrip keys', ['mysecret']);
     app.set('koa favicon path', 'images/favicon.ico');
-    app.set('koa view engine', 'ejs');
-    app.set('koa view directory', 'views');
 
     mockery.registerMock(upath.join(app.cwd, 'users'), Users);
     app.module('users');
@@ -125,6 +123,10 @@ describe('Ravel', function() {
 
   describe('#init()', function() {
     it('should initialize an koa server with appropriate middleware and parameters', function(done) {
+      app.set('koa public directory', 'public');
+      app.set('koa view engine', 'ejs');
+      app.set('koa view directory', 'views');
+      
       const koaAppMock = require('koa')();
       const useSpy = sinon.spy(koaAppMock, 'use');
       mockery.registerMock('koa', function() { return koaAppMock; });
@@ -161,6 +163,7 @@ describe('Ravel', function() {
       expect(useSpy).to.have.been.calledWith(views);
       expect(faviconSpy).to.have.been.calledWith(upath.join(app.cwd, app.get('koa favicon path')));
       expect(useSpy).to.have.been.calledWith(favicon);
+      expect(app.initialized).to.be.ok;
       done();
     });
   });
@@ -172,12 +175,14 @@ describe('Ravel', function() {
 
     it('should start the underlying HTTP server when called after init()', function(done) {
       app.init();
-      const listenSpy = sinon.stub(app.server, 'listen', function(callback) {
+      const listenSpy = sinon.stub(app.server, 'listen', function(port, callback) {
         callback();
       });
-      app.listen();
-      expect(listenSpy).to.have.been.calledWith(app.get('port'));
-      done();
+      app.listen().then(function() {
+        expect(listenSpy).to.have.been.calledWith(app.get('port'));
+        expect(app.listening).to.be.ok;
+        done();
+      });
     });
   });
 
@@ -204,7 +209,9 @@ describe('Ravel', function() {
         callback();
       });
       app.listen()
-      .then(app.close())
+      .then(function() {
+        return app.close();
+      })
       .then(() =>  {
         app.server.close.restore(); // undo stub
         app.server.close(done); // actually close server so test suite exits cleanly
