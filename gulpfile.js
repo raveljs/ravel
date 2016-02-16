@@ -16,11 +16,8 @@ const TESTS = [
   'test/db/test-*.js',
   'test/util/test-*.js',
   'test/auth/test-*.js',
-
-  'test/ravel/test-ravel.js'
-
-  // 'test/ravel/test-*.js',
-  // 'test/**/test-*.js'
+  'test/ravel/test-*.js',
+  'test/**/test-*.js'
 ];
 
 gulp.task('lint', function() {

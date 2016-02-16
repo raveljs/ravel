@@ -87,7 +87,7 @@ describe('Ravel end-to-end test', function() {
     done();
   });
 
-  describe('#listen()', function() {
+  describe('#init()', function() {
     describe('basic application server consisting of a module and a resource', function() {
       before(function(done) {
         //enable mockery
