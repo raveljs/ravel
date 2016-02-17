@@ -48,7 +48,7 @@ class Cities extends Module {
     return Promise.resolve(c);
   }
 
-  getCity() {
+  getCity(name) {
     return new Promise((resolve, reject) => {
       const index = c.indexOf(name);
       if (index) {
@@ -70,230 +70,88 @@ class Cities extends Module {
 
 What might be referred to as a *controller* in other frameworks, a Resource module defines HTTP methods on an endpoint, supporting the session-per-request transaction pattern via Ravel middleware. Also supports dependency injection, allowing for the easy creation of RESTful interfaces to your Module-based application logic.
 
+*resources/city.js*
+```javascript
+// Resources support dependency injection too!
+// Notice that we have injected our cities Module by name.
+const Resource = require('ravel').Resource;
+const inject = require('ravel').inject;
+const before = Resource.before; // decorator to add middleware to an endpoint within the Resource
+
+@inject('cities')
+class CitiesResource extends Resource {
+  constructor(cities) {
+    super('/cities');
+    this.cities = cities;
+
+    // some other middleware, which you might have injected or created here
+    this.anotherMiddleware = function*(next) {
+      yield next;
+    };
+  }
+
+  @before('respond') // 'respond' is built-in Ravel rest response middleware
+  getAll(ctx) {   // ctx is a koa context. this is the last middleware which will run in the chain
+     return this.cities.getAllCities()
+     .then((list) => {
+       ctx.body = list;
+     });
+  }
+
+  @before('anotherMiddleware', 'respond')
+  get(ctx) { // get routes automatically receive an endpoint of /cities/:id (in this case).
+    return this.cities.getCity(ctx.params.id)
+    .then((city) => {
+      ctx.body = city;
+    });
+  }
+
+  // post, put, putAll, delete and deleteAll are
+  // also supported. Not specifying them for
+  // this resource will result in calls using
+  // those verbs returning HTTP 501 NOT IMPLEMENTED
+
+  // postAll is not supported, because that's stupid.
+}
+```
+
 ### Routes
 
-Only supporting GET requests, routes are used to serve up content such as EJS/Jade templates. Everything else should be a Resource.
+Only supporting GET requests, Routes are used to serve up content such as EJS/Jade templates. Everything else should be a Resource.
 
-### Rooms
-
-Websocket 'rooms' which users may subscribe to, supporting authorization functions. Designed from the start to work in a clustered setting, as long as you're careful to use a reverse proxy supporting sticky sessions!
-
-## Building a Simple Ravel Application
-
-### Make a Module
-
-Business logic sits in plain old node.js modules, which are generally not network-aware. Ravel modules are most powerful when they are factory functions which support **Dependency Injection**, though plain object modules are supported as well. Cyclical dependencies are automatically detected and prevented between modules using dependency injection.
-
-*modules/cities.js*
-
-    // Ravel error and logging services $E, $L and
-    // $Params can be injected alongside your own
-    // modules and npm dependencies. No require
-    // statements or relative paths!
-    module.exports = function($E, $L, $Params, async) {
-      const Cities = {};
-      const c = ['Toronto', 'New York', 'Chicago'];
-
-      Cities.getAllCities = function(callback) {
-        // pretend we used async for something here
-        // since we magically injected it above
-        callback(null, c);
-      };
-
-      Cities.getCity = function(name, callback) {
-        const index = c.indexOf(name);
-        if (index) {
-          callback(null, c[index]);
-        } else {
-          $L.warn('User requested unknown city ' + name);
-          // callback with an error from $E, and Resources will
-          // be able to respond with appropriate HTTP status codes
-          // automatically via $Rest (see below)
-          callback(new $E.NotFound('City ' + name + ' does not exist.'), null);
-        }
-      };
-
-      return Cities;
-    };
-
-To register and name your module, we need a top-level *app.js* file:
-
-*app.js*
-
-    const Ravel = new require('ravel')();
-    //...we'll initialize Ravel with some important parameters later
-
-    // supply the path to this module. you'll be able to inject
-    // it into other modules using the name 'cities'
-    Ravel.module('./modules/cities');
-
-Note: Modules with filenames including hyphens are made available for injection via camel case  (e.g. './modules/my-module.js' would be available as 'myModule').
-
-Another note: Modules also support array notation for injecting npm dependencies which have invalid js constiables names (such as 'bad.module'). To use this notation, define your module like this:
-
-    module.exports = ['bad.module', function(badModule) {
-      ...
-    }];
-
-Yet another note: You can recursively import a directory of modules via:
-```js
-Ravel.modules('/modules/directory/path');
+*routes/index.js*
+```javascript
+const Routes = require('ravel').Routes;
+const mapping = Routes.mapping;
+class ExampleRoutes extends Routes {
+  @mapping('/app')
+  appHandler(ctx) {
+    ctx.body = '<!DOCTYPE html><html>...</html>';
+    ctx.status = 200;
+  }
+}
 ```
 
-### Then, define a Resource
-
-Resources are a special kind of module which help you build REST endpoints to expose your business logic. They support koa middleware and are designed to make it easy to adhere to the proper REST semantics.
-
-*resources/city.js*
-
-    // Resources support dependency injection too!
-    // $Resource is unique to resources, and
-    // notice that we have injected our cities
-    // module by name.
-    module.exports = function($E, $L, $Params, $Resource, $Rest, cities) {
-
-      // Register this Resource with the base path /cities
-      $Resource.bind('/cities');
-
-      // will become GET /cities
-      $Resource.getAll(function(req, res) {
-        // $Rest makes it easy to build RESTful responses with
-        // proper status codes, headers, etc. More on this later.
-        cities.getCities($Rest.respond(req, res));
-      });
-
-      // will become GET /cities/:id
-      $Resource.get(
-        function(req, res, next) {
-          //some middleware
-          next();
-        },
-        function(req, res) {
-          cities.getCity(req.params['id'], $Rest.respond(req, res));
-        }
-      );
-
-      // post, put, putAll, delete and deleteAll are
-      // also supported. Not specifying them for
-      // this resource will result in calls using
-      // those verbs returning HTTP 501 NOT IMPLEMENTED
-
-      // postAll is not supported, because that's stupid.
-    };
-
-Like before, we need to register our resource:
+### Bringing it all together
 
 *app.js*
+```javascript
+const app = new require('ravel')();
 
-    const Ravel = new require('ravel')();
-    //...we're still getting to this part
+// parameters like this can be supplied via a .ravelrc file
+app.set('keygrip keys', ['mysecret']);
 
-    Ravel.module('./modules/cities');
-    // Specify the base endpoint (/cities), and the location of the resource module
-    Ravel.resource('./resources/city');
+app.modules('./modules'); //import all modules from a directory
+app.resources('./resources');  //import all resources from a directory
+app.routes('./routes/index.js');  //import all routes from a file
 
-Note: You can recursively import a directory of resources via:
-```js
-Ravel.resources('/resources/directory/path');
+// start it up!
+app.start();
 ```
-
-### Add a Route for good measure
-
-Routes are used to serve content such as EJS/Jade templates. Assuming you have a template index file at views/index.ejs:
-
-*views/index.ejs*
-
-    <!DOCTYPE html/>
-    <html>
-      <!-- Put whatever content or EJS stuff you want here -->
-    </html>
-
-*routes/index_r.js*
-
-    module.exports = function($E, $L, $RouteBuilder) {
-      $RouteBuilder.add('/', $PrivateRedirect, function(req, res) {
-        res.render('index', {});
-      });
-    };
-
-Once again, register the routes:
-
-*app.js*
-
-    const Ravel = new require('ravel')();
-    //Since we're using EJS, we need to tell Ravel some things
-    Ravel.set('koa view directory', 'views');
-    Ravel.set('koa view engine', 'ejs');
-    //...we're still getting to this part
-
-    Ravel.module('./modules/cities');
-    Ravel.resource('./resources/city');
-    //Just specify the location of the routes and Ravel will load them
-    Ravel.routes('./routes/index_r.js');
-
-### Make Room for more
-
-Websocket Rooms are topic *patterns* which represent a collection of topics to which clients can subscribe. They support path parameters and custom authorization functions. Furthermore, if a room is specified with a path which matches the path of a Resource, model updates will automatically be published to that room. Don't worry, we'll cover this later - for now let's just make a simple room in *app.js*:
-
-*app.js*
-
-    const Ravel = new require('ravel')();
-    Ravel.set('koa view directory', 'views');
-    Ravel.set('koa view engine', 'ejs');
-    //...we're still getting to this part
-
-    Ravel.module('./modules/cities');
-    Ravel.resource('./resources/city');
-    Ravel.routes('./routes/index_r.js');
-
-    //define a chat room pattern representing
-    //rooms such as /chatroom/1, /chatroom/30
-    Ravel.room('/chatroom/:chatroomId', function(userId, params, callback) {
-      //auth function
-      //should the user be allowed to join the given room?
-      //for /chatroom/30 params will contain: {chatroomId:30}
-      callback(null, true);
-    });
-
-### Ravel.init() and Ravel.listen()
-
-After defining all the basic components of a Ravel application, we need to initialize it with Ravel.init(). This step configures koa, Primus and other base technologies, and instantiates your defined Modules, Resources, Routes and Rooms.
-
-After Ravel.init(), a *post init* event is emitted which can be used as a hook (via Ravel.on()) to perform other startup logic before spinning up the actual web server with Ravel.listen().
-
-We've been avoiding some mandatory Ravel.set() parameters up until now, including Redis connection parameters and a session secret, so let's add them in now.
-
-*app.js*
-
-    const Ravel = new require('ravel')();
-    Ravel.set('koa view directory', 'views');
-    Ravel.set('koa view engine', 'ejs');
-    //Here are those extra parameters we mentioned before
-    Ravel.set('redis host', 'localhost');
-    Ravel.set('redis port', 5432);
-    Ravel.set('koa session secret', 'a very random string');
-
-    Ravel.module('./modules/cities');
-    Ravel.resource('./resources/city');
-    Ravel.routes('./routes/index_r.js');
-
-    Ravel.room('/chatroom/:chatroomId', function(userId, params, callback) {
-      callback(null, true);
-    });
-
-    //Instantiate and configure everything
-    Ravel.init();
-    //Anything listening to post init via Ravel.on('post init') will fire here
-
-    //Now, we actually start the web server
-    Ravel.listen();
-
-That's it! Assuming redis is running at the given host and port, your server should start and you should be able to access the /cities endpoint at [localhost:8080/cities](http://localhost:8080/cities)
-
 
 ## A more complex example
 
-*"You mentioned transactions! Authentication and authorization! Mobile-ready APIs! Front-end model synchronization! Get on with the show, already!" --Some Impatient Guy*
+*"You mentioned transactions! Authentication and authorization! Mobile-ready APIs! Get on with the show, already!" --Some Impatient Guy*
 
 TODO
 
