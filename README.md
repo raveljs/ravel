@@ -29,13 +29,13 @@ Ravel applications consist of three basic parts:
 
 ### Modules
 
-Plain old node.js modules containing a class which encapsulates application logic. Modules support dependency injection of core Ravel services and other Modules alongside npm dependencies *(no relative `require`'s!)*;
+Plain old node.js modules containing a class which encapsulates application logic. Modules support dependency injection of core Ravel services and other Modules alongside npm dependencies *(no relative `require`'s!)*. Modules are instantiated safely in dependency-order, and cyclical dependencies are detected automatically.
 
 *modules/cities.js*
 ```javascript
 const Module = require('ravel').Module;
 const inject = require('ravel').inject;
-const c = ['Toronto', 'New York', 'Chicago'];
+const c = ['Toronto', 'New York', 'Chicago']; // fake 'database'
 
 @inject('async')
 class Cities extends Module {
@@ -58,43 +58,17 @@ class Cities extends Module {
         // reject the promise with a Ravel error, and
         // Ravel will automatically respond with the
         // appropriate HTTP status code! Feel free to
-        // implement your own errors as well.
+        // implement your own errors as well via Ravel.error(name, code).
         reject(new this.ApplicationError.NotFound(`City ${name} does not exist.`));
       }
     });
   }
 }
-
-module.exports = function($E, $L, $Params, async) {
-  const Cities = {};
-  const c = ['Toronto', 'New York', 'Chicago'];
-
-  Cities.getAllCities = function(callback) {
-    // pretend we used async for something here
-    // since we magically injected it above
-    callback(null, c);
-  };
-
-  Cities.getCity = function(name, callback) {
-    const index = c.indexOf(name);
-    if (index) {
-      callback(null, c[index]);
-    } else {
-      $L.warn('User requested unknown city ' + name);
-      // callback with an error from $E, and Resources will
-      // be able to respond with appropriate HTTP status codes
-      // automatically via $Rest (see below)
-      callback(new $E.NotFound('City ' + name + ' does not exist.'), null);
-    }
-  };
-
-  return Cities;
-};
 ```
 
 ### Resources
 
-What might be referred to as a *controller* in other frameworks, a Resource module defines HTTP methods on an endpoint, supporting the session-per-request transaction pattern via fancy middleware. Also supports dependency injection, allowing for the easy creation of RESTful interfaces to your module-based business logic, as well as front-end model synchronization via websockets.
+What might be referred to as a *controller* in other frameworks, a Resource module defines HTTP methods on an endpoint, supporting the session-per-request transaction pattern via Ravel middleware. Also supports dependency injection, allowing for the easy creation of RESTful interfaces to your Module-based application logic.
 
 ### Routes
 

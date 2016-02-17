@@ -152,7 +152,7 @@ describe('Ravel', function() {
       };
       const AnotherStubClientModule = class extends Module {
         static get inject() {
-          return ['bad.module', 'myModule'];
+          return ['bad.module', 'my-module'];
         }
         constructor(bad, myModule) {
           super();
@@ -172,7 +172,7 @@ describe('Ravel', function() {
       mockery.registerMock('bad.module', stubBadName);
       Ravel.module('my-module.js');
       Ravel.module('test');
-      Ravel[coreSymbols.moduleFactories].myModule();
+      Ravel[coreSymbols.moduleFactories]['my-module']();
       Ravel[coreSymbols.injector].inject({}, AnotherStubClientModule);
     });
   });

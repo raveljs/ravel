@@ -108,9 +108,9 @@ describe('Ravel', function() {
       const Stub = class extends Module {constructor() {super();}};
       mockery.registerMock(upath.join(Ravel.cwd, 'my-test-module.js'), Stub);
       Ravel.module('./my-test-module.js');
-      expect(Ravel[coreSymbols.moduleFactories]).to.have.property('myTestModule');
-      expect(Ravel[coreSymbols.moduleFactories].myTestModule).to.be.a('function');
-      Ravel[coreSymbols.moduleFactories].myTestModule();
+      expect(Ravel[coreSymbols.moduleFactories]).to.have.property('my-test-module');
+      expect(Ravel[coreSymbols.moduleFactories]['my-test-module']).to.be.a('function');
+      Ravel[coreSymbols.moduleFactories]['my-test-module']();
       done();
     });
     it('should produce module factories which support dependency injection of client modules', function(done) {
