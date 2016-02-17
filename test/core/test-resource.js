@@ -75,25 +75,14 @@ describe('Ravel', function() {
     });
 
     it('should produce a factory function which can be used to instantiate the specified resource module and perform dependency injection with specific, resource-related services', function(done) {
-      @inject('$E', '$KV', '$MiddlewareTransaction', '$Params')
+      const another = {};
+      mockery.registerMock('another', another);
+      @inject('another')
       class Stub extends Resource {
-        constructor($E, $KV, $MiddlewareTransaction, $Params) {
+        constructor(a) {
           super('/api/test');
-          expect($E).to.equal(Ravel.ApplicationError);
-          expect($KV).to.be.ok;
-          expect($KV).to.be.an('object');
-          expect($KV).to.equal(Ravel.kvstore);
-          expect($KV).to.be.ok;
-          expect($Params).to.be.ok;
-          expect($Params).to.be.an('object');
-          expect($Params).to.have.property('get').that.is.a('function');
-          expect($Params).to.have.property('get').that.equals(Ravel.get);
-          expect($Params).to.have.property('set').that.is.a('function');
-          expect($Params).to.have.property('set').that.equals(Ravel.set);
-          expect($Params).to.have.property('registerSimpleParameter').that.is.a('function');
-          expect($Params).to.have.property('registerSimpleParameter').that.equals(Ravel.registerSimpleParameter);
+          expect(a).to.equal(another);
           expect(this).to.have.property('basePath').that.equals('/api/test');
-          expect($MiddlewareTransaction).to.equal(Ravel.db.middleware);
         }
       };
 
@@ -110,6 +99,10 @@ describe('Ravel', function() {
       expect(resource.log).to.have.property('error').that.is.a('function');
       expect(resource.log).to.have.property('critical').that.is.a('function');
       expect(resource).to.have.property('respond').that.is.a('function');
+      expect(resource.ApplicationError).to.equal(Ravel.ApplicationError);
+      expect(resource.kvstore).to.equal(Ravel.kvstore);
+      expect(resource.params).to.be.an.object;
+      expect(resource.params).to.have.a.property('get').that.is.a.function;
       done();
     });
 

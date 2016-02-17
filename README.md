@@ -1,36 +1,96 @@
 # Ravel
 [![npm version](https://badge.fury.io/js/ravel.svg)](http://badge.fury.io/js/ravel) [![Build Status](https://travis-ci.org/raveljs/ravel.svg?branch=master)](https://travis-ci.org/raveljs/ravel) [![Coverage Status](https://coveralls.io/repos/raveljs/ravel/badge.svg?branch=master)](https://coveralls.io/r/raveljs/ravel?branch=master) [![Dependency Status](https://david-dm.org/raveljs/ravel.svg)](https://david-dm.org/raveljs/ravel)
 
-Forge past a tangle of node.js modules. Make a cool app.
+Forge past a tangle of node.js code. Make a cool app.
 
 ## Introduction
 
-Ravel is a tiny, sometimes-opinionated foundation for rapidly creating complex, highly-scalable [node](https://github.com/joyent/node) applications.
+Ravel is a tiny, sometimes-opinionated foundation for rapidly creating maintainable, horizontally-scalable web application back-ends in  [node](https://github.com/joyent/node).
 
-Layered on top of such fantastic technologies as [koa](http://koajs.com/), [Primus](https://github.com/primus/primus), [Passport](https://github.com/jaredhanson/passport), [Intel](https://github.com/seanmonstar/intel) and [Redis](https://github.com/antirez/redis), Ravel aims to provide a pre-baked, well-tested and highly modular solution for constructing enterprise web applications by providing:
+Layered on top of ES2015/2016 and awesome technologies such as [koa](http://koajs.com/), [babel](babeljs.io), [Passport](https://github.com/jaredhanson/passport), [Intel](https://github.com/seanmonstar/intel), [Redis](https://github.com/antirez/redis), and [docker](docker.com), Ravel aims to provide a pre-baked, well-tested and highly modular solution for constructing enterprise web applications by providing:
 
+ - A standard set of well-defined architectural components
  - Dependency injection
- - A set of well-defined architectural components
- - Automatic database transaction management
+ - Automatic transaction-per-request management
  - Authentication and authorization with transparent handling of mobile (i.e. non-web) clients
- - Standards-compliant REST API definition
- - Websocket-based front-end model synchronization
- - Easy security, via an enforced, reference configuration of [koa](http://koajs.com/)
+ - Rapid, standards-compliant REST API definition
+ - Easy bootstrapping, via an enforced, reference configuration of [koa](http://koajs.com/) and standard middleware
  - Horizontal scalability
 
 ## Installation
 
     $ npm install ravel
 
-Ravel also needs [Redis](https://github.com/antirez/redis). As part of the 1.0 release, a reference project including a [Vagrant](https://www.vagrantup.com/) development VM will be provided as a [Yeoman](http://yeoman.io/) generator, but for now you'll need to install Redis somewhere yourself.
+Ravel needs [Redis](https://github.com/antirez/redis) to run. As part of the Ravel 1.0 release, a reference project including a [docker](docker.com)ized development environment will be provided as a [Yeoman](http://yeoman.io/) generator, but for now you'll need to install Redis somewhere yourself.
 
 ## Ravel Architecture
 
-Ravel applications consist of four basic parts:
+Ravel applications consist of three basic parts:
 
 ### Modules
 
-Plain old node.js modules encapsulating business logic, supporting dependency injection of core Ravel services, other modules and npm dependencies.
+Plain old node.js modules containing a class which encapsulates application logic. Modules support dependency injection of core Ravel services and other Modules alongside npm dependencies *(no relative `require`'s!)*;
+
+*modules/cities.js*
+```javascript
+const Module = require('ravel').Module;
+const inject = require('ravel').inject;
+const c = ['Toronto', 'New York', 'Chicago'];
+
+@inject('async')
+class Cities extends Module {
+  constructor(async) {
+    super();
+    this.async = async;
+  }
+
+  getAllCities() {
+    return Promise.resolve(c);
+  }
+
+  getCity() {
+    return new Promise((resolve, reject) => {
+      const index = c.indexOf(name);
+      if (index) {
+        resolve(c[index]);
+      } else {
+        this.log.warn(`User requested unknown city ${name}`);
+        // reject the promise with a Ravel error, and
+        // Ravel will automatically respond with the
+        // appropriate HTTP status code! Feel free to
+        // implement your own errors as well.
+        reject(new this.ApplicationError.NotFound(`City ${name} does not exist.`));
+      }
+    });
+  }
+}
+
+module.exports = function($E, $L, $Params, async) {
+  const Cities = {};
+  const c = ['Toronto', 'New York', 'Chicago'];
+
+  Cities.getAllCities = function(callback) {
+    // pretend we used async for something here
+    // since we magically injected it above
+    callback(null, c);
+  };
+
+  Cities.getCity = function(name, callback) {
+    const index = c.indexOf(name);
+    if (index) {
+      callback(null, c[index]);
+    } else {
+      $L.warn('User requested unknown city ' + name);
+      // callback with an error from $E, and Resources will
+      // be able to respond with appropriate HTTP status codes
+      // automatically via $Rest (see below)
+      callback(new $E.NotFound('City ' + name + ' does not exist.'), null);
+    }
+  };
+
+  return Cities;
+};
+```
 
 ### Resources
 

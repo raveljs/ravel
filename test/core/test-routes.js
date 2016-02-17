@@ -62,14 +62,14 @@ describe('Ravel', function() {
     });
 
     it('should produce a factory function which can be used to instantiate the specified routes module and perform dependency injection', function(done) {
-      @inject('$E', '$KV')
+      const another = {};
+      mockery.registerMock('another', another);
+      @inject('another')
       class Stub extends Routes {
-        constructor($E, $KV) {
+        constructor(a) {
           super();
-          expect($E).to.be.ok;
-          expect($E).to.be.an('object');
-          expect($E).to.equal(Ravel.ApplicationError);
-          expect($KV).to.equal(Ravel.kvstore);
+          expect(a).to.equal(another);
+          expect(this).to.have.property('basePath').that.equals('/');
         }
       };
       mockery.registerMock(upath.join(Ravel.cwd, 'stub'), Stub);
@@ -84,6 +84,10 @@ describe('Ravel', function() {
       expect(instance.log).to.have.property('warn').that.is.a('function');
       expect(instance.log).to.have.property('error').that.is.a('function');
       expect(instance.log).to.have.property('critical').that.is.a('function');
+      expect(instance.ApplicationError).to.equal(Ravel.ApplicationError);
+      expect(instance.kvstore).to.equal(Ravel.kvstore);
+      expect(instance.params).to.be.an.object;
+      expect(instance.params).to.have.a.property('get').that.is.a.function;
       done();
     });
 

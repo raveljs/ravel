@@ -73,22 +73,13 @@ describe('Ravel', function() {
     });
 
     it('should produce a module factory which can be used to instantiate the specified module and perform dependency injection', function(done) {
-      @inject('$E', '$KV', '$Params')
+      const another = {};
+      mockery.registerMock('another', another);
+      @inject('another')
       class Stub extends Module {
-        constructor($E, $KV, $Params) {
+        constructor(a) {
           super();
-          expect($E).to.be.ok;
-          expect($E).to.be.an('object');
-          expect($E).to.equal(Ravel.ApplicationError);
-          expect($KV).to.be.ok;
-          expect($KV).to.be.an('object');
-          expect($KV).to.equal(Ravel.kvstore);
-          expect($Params).to.have.property('get').that.is.a('function');
-          expect($Params).to.have.property('get').that.equals(Ravel.get);
-          expect($Params).to.have.property('set').that.is.a('function');
-          expect($Params).to.have.property('set').that.equals(Ravel.set);
-          expect($Params).to.have.property('registerSimpleParameter').that.is.a('function');
-          expect($Params).to.have.property('registerSimpleParameter').that.equals(Ravel.registerSimpleParameter);
+          expect(a).to.equal(another);
         }
 
         method() {}
@@ -106,6 +97,10 @@ describe('Ravel', function() {
       expect(instance.log).to.have.property('warn').that.is.a('function');
       expect(instance.log).to.have.property('error').that.is.a('function');
       expect(instance.log).to.have.property('critical').that.is.a('function');
+      expect(instance.ApplicationError).to.equal(Ravel.ApplicationError);
+      expect(instance.kvstore).to.equal(Ravel.kvstore);
+      expect(instance.params).to.be.an.object;
+      expect(instance.params).to.have.a.property('get').that.is.a.function;
       done();
     });
 
