@@ -19,9 +19,12 @@ Layered on top of ES2015/2016 and awesome technologies such as [koa](http://koaj
 
 ## Installation
 
+> As Ravel uses the Spread operator from ES2015, you will need to use a 5.x+ distribution of node.
+
     $ npm install ravel
 
 Ravel needs [Redis](https://github.com/antirez/redis) to run. As part of the Ravel 1.0 release, a reference project including a [docker](docker.com)ized development environment will be provided as a [Yeoman](http://yeoman.io/) generator, but for now you'll need to install Redis somewhere yourself.
+
 
 ## Ravel Architecture
 
@@ -126,9 +129,30 @@ const mapping = Routes.mapping;
 class ExampleRoutes extends Routes {
   @mapping('/app')
   appHandler(ctx) {
-    ctx.body = '<!DOCTYPE html><html>...</html>';
+    ctx.body = '<!DOCTYPE html><html><body>Hello World!</body></html>';
     ctx.status = 200;
   }
+}
+```
+
+### Babel configuration
+
+Since decorators are not yet available in Node, you will need to use Babel to transpile them into ES2015-compliant code.
+
+```bash
+$ npm install babel@6.3.26 babel-plugin-transform-decorators-legacy@1.3.4 babel-register@6.4.3 harmonize@1.4.4
+```
+
+Place this `.babelrc` config file at the root of your source code.
+
+.babelrc
+```json
+{
+  "plugins": ["transform-decorators-legacy"],
+  "only": [
+    "test/**/*.js"
+  ],
+  "retainLines": true
 }
 ```
 
@@ -136,17 +160,26 @@ class ExampleRoutes extends Routes {
 
 *app.js*
 ```javascript
+//TODO remove when harmony_rest_parameters is enabled by default
+require('harmonize')(['harmony_rest_parameters']);
+//TODO remove when decorators land in node
+require('babel-register');
+
 const app = new require('ravel')();
 
 // parameters like this can be supplied via a .ravelrc file
 app.set('keygrip keys', ['mysecret']);
 
-app.modules('./modules'); //import all modules from a directory
-app.resources('./resources');  //import all resources from a directory
-app.routes('./routes/index.js');  //import all routes from a file
+app.modules('./modules'); //import all Modules from a directory
+app.resources('./resources');  //import all Resources from a directory
+app.routes('./routes/index.js');  //import all Routes from a file
 
 // start it up!
 app.start();
+```
+
+```bash
+$ node app.js
 ```
 
 ## A more complex example
