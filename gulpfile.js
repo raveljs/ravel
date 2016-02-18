@@ -93,12 +93,6 @@ gulp.task('watch', ['lint'], function() {
   gulp.watch(['gulpfile.js', './test/**/*.js'], ['lint']);
 });
 
-
-gulp.task('coveralls', ['test'], function() {
-  return gulp.src('reports/lcov.info')
-             .pipe(plugins.coveralls());
-});
-
 gulp.task('show-coverage', function() {
   return gulp.src('./reports/index.html')
              .pipe(plugins.open());
@@ -110,7 +104,6 @@ gulp.task('show-docs', ['docco'], function() {
 });
 
 gulp.task('default', ['watch']);
-gulp.task('travis', ['coveralls']);
 //
 // gulp.task('debug', () => {
 //   const envs = plugins.env.set({

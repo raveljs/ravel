@@ -13,7 +13,7 @@
   },
   "main":"lib/ravel.js",
   "scripts": {
-    "test":"gulp travis",
+    "test":"gulp test",
     "debug":"node-debug $(which gulp) test-no-cov"
   },
   "dependencies": {
@@ -52,9 +52,9 @@
     "supertest":"0.15.0",
     "eslint": "1.10.3",
 
+    "codeclimate-test-reporter": "0.3.1",
     "del": "2.2.0",
     "gulp": "3.9.0",
-    "gulp-coveralls": "0.1.4",
     "gulp-docco": "0.0.4",
     "gulp-env": "0.4.0",
     "istanbul": "0.4.2",
