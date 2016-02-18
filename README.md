@@ -145,7 +145,7 @@ $ npm install babel@6.3.26 babel-plugin-transform-decorators-legacy@1.3.4 babel-
 
 Place this `.babelrc` config file at the root of your source code.
 
-.babelrc
+*.babelrc*
 ```json
 {
   "plugins": ["transform-decorators-legacy"],
