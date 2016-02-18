@@ -1,13 +1,14 @@
 'use strict';
 
-var chai = require('chai');
+const chai = require('chai');
 chai.use(require('sinon-chai'));
-var expect = chai.expect;
-var mockery = require('mockery');
-var path = require('path');
-var sinon = require('sinon');
+chai.use(require('chai-as-promised'));
+const expect = chai.expect;
+const mockery = require('mockery');
+const upath = require('upath');
+const sinon = require('sinon');
 
-var Ravel, favicon;
+let app;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
@@ -17,134 +18,179 @@ describe('Ravel', function() {
       warnOnReplace: false,
       warnOnUnregistered: false
     });
-    var redis = require('redis-mock');
+    const redis = require('redis-mock');
     mockery.registerMock('redis', redis);
     //add in auth, since redis-mock doesn't have it
-    var oldCreateClient = redis.createClient;
+    const oldCreateClient = redis.createClient;
     sinon.stub(redis, 'createClient', function() {
-      var client = oldCreateClient.apply(redis, arguments);
+      const client = oldCreateClient.apply(redis, arguments);
       client.auth = function() {};
       return client;
     });
 
-    Ravel = new require('../../lib-cov/ravel')();
-    Ravel.set('log level', Ravel.Log.NONE);
-    Ravel.set('redis host', 'localhost');
-    Ravel.set('redis port', 5432);
-    Ravel.set('redis password', 'password');
-    Ravel.set('port', '9080');
-    Ravel.set('express public directory', 'public');
-    Ravel.set('express view directory', 'ejs');
-    Ravel.set('express view engine', 'ejs');
-    Ravel.set('express session secret', 'mysecret');
-    Ravel.set('disable json vulnerability protection', true);
-    Ravel.set('express favicon path', 'images/favicon.ico');
+    const Ravel = require('../../lib/ravel');
+    const inject = Ravel.inject;
 
-    var u = [{id:1, name:'Joe'}, {id:2, name:'Jane'}];
+    const u = [{id:1, name:'Joe'}, {id:2, name:'Jane'}];
 
-    //stub module
-    var users = function($E) {
-      return {
-        getAllUsers: function(callback) {
-          callback(null, u);
-        },
-        getUser: function(userId, callback) {
-          if (userId < u.length) {
-            callback(null, u[userId-1]);
-          } else {
-            callback(new $E.NotFound('User id=' + userId + ' does not exist!'), null);
-          }
+    //stub Module (business logic container)
+    @inject('$E')
+    class Users extends Ravel.Module {
+      constructor($E) {
+        super();
+        this.$E = $E;
+      }
+
+      getAllUsers() {
+        return Promise.resolve(u);
+      }
+
+      getUser(userId) {
+        if (userId < u.length) {
+          return Promise.resolve(u[userId-1]);
+        } else {
+          return Promise.reject(new this.$E.NotFound('User id=' + userId + ' does not exist!'));
         }
-      };
-    };
+      }
+    }
 
-    //stub resource
-    var usersResource = function($Resource, $Rest, users) {
-      $Resource.bind('/api/user');
+    //stub Resource (REST interface)
+    const pre = Ravel.Resource.before;  //have to alias to @pre instead of proper @before, since the latter clashes with mocha
+    @inject('users', '$E')
+    class UsersResource extends Ravel.Resource {
+      constructor(users, $E) {
+        super('/api/user');
+        this.users = users;
+        this.$E = $E;
+      }
 
-      $Resource.getAll(function(req, res) {
-        users.getAllUsers($Rest.respond(req, res));
-      });
+      @pre('respond')
+      getAll(ctx) {
+        return this.users.getAllUsers()
+        .then((list) => {
+          ctx.body = list;
+        });
+      }
 
-      $Resource.get(function(req, res) {
-        users.getUser(req.params['id'], $Rest.respond(req, res));
-      });
-    };
+      @pre('respond')
+      get(ctx) {
+        // return promise and don't catch possible error so that Ravel can catch it
+        return this.users.getUser(ctx.params.id)
+        .then((result) => {
+          ctx.body = result;
+        });
+      }
+    }
 
-    mockery.registerMock(path.join(Ravel.cwd, 'users'), users);
-    Ravel.module('users');
-    mockery.registerMock(path.join(Ravel.cwd, 'usersResource'), usersResource);
-    Ravel.resource('usersResource');
+    //stub Routes (miscellaneous routes, such as templated HTML content)
+    const mapping = Ravel.Routes.mapping;
+    class TestRoutes extends Ravel.Routes {
+      constructor() {
+        super();
+      }
 
-    //jshint unused:false
-    favicon = sinon.stub();
-    favicon.returns(function(req, res, next){});
-    mockery.registerMock('serve-favicon', favicon);
+      @mapping('/app')
+      handler(ctx) {
+        ctx.body = '<!DOCTYPE html><html></html>';
+        ctx.status = 200;
+      }
+    }
 
-    mockery.registerMock(path.join(Ravel.cwd, 'node_modules', 'ejs'), {
-      __express: function() {}
-    });
+    app = new Ravel();
+    app.set('log level', app.Log.NONE);
+    app.set('redis host', 'localhost');
+    app.set('redis port', 5432);
+    app.set('redis password', 'password');
+    app.set('port', '9080');
+    app.set('keygrip keys', ['mysecret']);
+    app.set('koa favicon path', 'images/favicon.ico');
 
+    mockery.registerMock(upath.join(app.cwd, 'users'), Users);
+    app.module('users');
+    mockery.registerMock(upath.join(app.cwd, 'usersResource'), UsersResource);
+    app.resource('usersResource');
+    mockery.registerMock(upath.join(app.cwd, 'routes'), TestRoutes);
+    app.routes('routes');
     done();
   });
 
   afterEach(function(done) {
-    Ravel = undefined;
+    app = undefined;
     mockery.deregisterAll();
     mockery.disable();
     done();
   });
 
   describe('#init()', function() {
-    it('should initialize an express server with appropriate parameters', function(done) {
-      //jshint unused:false
-      var expressAppMock = new require('express')();
-      var expressMock = function(){
-        return expressAppMock;
-      };
-      expressMock.static = sinon.stub();
-      expressMock.static.returns(function(req, res, next){});
-      mockery.registerMock('express', expressMock);
-      var setSpy = sinon.spy(expressAppMock, 'set');
-      //var enableSpy = sinon.spy(expressAppMock, 'enable');
-      Ravel.init();
+    it('should initialize an koa server with appropriate middleware and parameters', function(done) {
+      app.set('koa public directory', 'public');
+      app.set('koa view engine', 'ejs');
+      app.set('koa view directory', 'views');
+      
+      const koaAppMock = require('koa')();
+      const useSpy = sinon.spy(koaAppMock, 'use');
+      mockery.registerMock('koa', function() { return koaAppMock; });
 
-      expect(setSpy).to.have.been.calledWith('views', path.join(Ravel.cwd, Ravel.get('express view directory')));
-      expect(setSpy).to.have.been.calledWith('view engine', Ravel.get('express view engine'));
-      expect(expressMock.static).to.have.been.calledWith(path.join(Ravel.cwd, Ravel.get('express public directory')));
-      expect(favicon).to.have.been.calledWith(path.join(Ravel.cwd, Ravel.get('express favicon path')));
-      //TODO test expressMock.use calls as well
+      const session = function*(next) { yield next; };
+      const sessionSpy = sinon.stub().returns(session);
+      mockery.registerMock('koa-generic-session', sessionSpy);
+
+      const staticMiddleware = function*(next) { yield next; };
+      const staticSpy = sinon.stub().returns(staticMiddleware);
+      mockery.registerMock('koa-static', staticSpy);
+
+      const views = function*(next) { yield next; };
+      const viewSpy = sinon.stub().returns(views);
+      mockery.registerMock('koa-views', viewSpy);
+
+      const favicon = function*(next) { yield next; };
+      const faviconSpy = sinon.stub().returns(favicon);
+      mockery.registerMock('koa-favicon', faviconSpy);
+
+      const gzip = function*(next) { yield next; };
+      const gzipSpy = sinon.stub().returns(gzip);
+      mockery.registerMock('koa-compressor', gzipSpy);
+
+      app.init();
+
+      expect(sessionSpy).to.have.been.called;
+      expect(useSpy).to.have.been.calledWith(session);
+      expect(gzipSpy).to.have.been.called;
+      expect(useSpy).to.have.been.calledWith(gzip);
+      expect(staticSpy).to.have.been.calledWith(upath.join(app.cwd, app.get('koa public directory')));
+      expect(useSpy).to.have.been.calledWith(staticMiddleware);
+      expect(viewSpy).to.have.been.calledWith(upath.join(app.cwd, app.get('koa view directory')));
+      expect(useSpy).to.have.been.calledWith(views);
+      expect(faviconSpy).to.have.been.calledWith(upath.join(app.cwd, app.get('koa favicon path')));
+      expect(useSpy).to.have.been.calledWith(favicon);
+      expect(app.initialized).to.be.ok;
       done();
     });
   });
 
   describe('#listen()', function() {
-    it('should throw Ravel.ApplicationError.NotAllowed if called before init()', function(done) {
-      try {
-        Ravel.listen();
-        done('Ravel should not be able to listen() before init().');
-      } catch (err) {
-        expect(err).to.be.instanceof(Ravel.ApplicationError.NotAllowed);
-        done();
-      }
+    it('should throw Ravel.ApplicationError.NotAllowed if called before init()', function() {
+      return expect(app.listen()).to.eventually.be.rejectedWith(app.ApplicationError.NotAllowed);
     });
 
     it('should start the underlying HTTP server when called after init()', function(done) {
-      Ravel.init();
-      var listenSpy = sinon.stub(Ravel._server, 'listen', function(port, callback) {
+      app.init();
+      const listenSpy = sinon.stub(app.server, 'listen', function(port, callback) {
         callback();
       });
-      Ravel.listen();
-      expect(listenSpy).to.have.been.calledWith(Ravel.get('port'));
-      done();
+      app.listen().then(function() {
+        expect(listenSpy).to.have.been.calledWith(app.get('port'));
+        expect(app.listening).to.be.ok;
+        done();
+      });
     });
   });
 
   describe('#start()', function() {
     it('should be a wrapper for Ravel.init() and Ravel.listen()', function(done) {
-      var initSpy = sinon.stub(Ravel, 'init');
-      var listenSpy = sinon.stub(Ravel, 'listen');
-      Ravel.start();
+      const initSpy = sinon.stub(app, 'init');
+      const listenSpy = sinon.stub(app, 'listen');
+      app.start();
       expect(initSpy).to.have.been.called;
       expect(listenSpy).to.have.been.called;
       done();
@@ -153,25 +199,26 @@ describe('Ravel', function() {
 
   describe('#close()', function() {
     it('should be a no-op if the underlying HTTP server isn\'t listening', function(done) {
-      var callback = sinon.stub();
-      Ravel.close(callback);
-      expect(callback).to.have.been.called;
+      expect(app.close()).to.be.fulfilled;
       done();
     });
 
     it('should stop the underlying HTTP server if the server is listening', function(done) {
-      Ravel.init();
-      Ravel.listen(function() {
-        var closeSpy = sinon.stub(Ravel._server, 'close', function(callback) {
-          callback();
-        });
-        Ravel.close(sinon.stub());
-        //actually shut down the server to clean up
-        Ravel._server.close.restore();
-        Ravel._server.close(function() {
-          expect(closeSpy).to.have.been.called;
-          done();
-        });
+      app.init();
+      sinon.stub(app.server, 'close', function(callback) {
+        callback();
+      });
+      app.listen()
+      .then(function() {
+        return app.close();
+      })
+      .then(() =>  {
+        app.server.close.restore(); // undo stub
+        app.server.close(done); // actually close server so test suite exits cleanly
+      }).catch(() =>  {
+        app.server.close.restore(); // undo stub
+        app.server.close(); // actually close server so test suite exits cleanly
+        done(new Error());
       });
     });
   });

@@ -1,51 +1,89 @@
 'use strict';
 
-var chai = require('chai');
+const chai = require('chai');
 chai.use(require('chai-things'));
 chai.use(require('chai-as-promised'));
-var mockery = require('mockery');
-var path = require('path');
-var redis = require('redis-mock');
-var request = require('supertest');
+const mockery = require('mockery');
+const upath = require('upath');
+const redis = require('redis-mock');
+const request = require('supertest');
 
-var Ravel, agent;
+const Ravel = require('../../lib/ravel');
+const inject = Ravel.inject;
+let app, agent;
 
-var u = [{id:1, name:'Joe'}, {id:2, name:'Jane'}];
-//stub module
-var users = function($E) {
-  return {
-    getAllUsers: function(callback) {
-      callback(null, u);
-    },
-    getUser: function(userId, callback) {
-      if (userId < u.length) {
-        callback(null, u[userId-1]);
-      } else {
-        callback(new $E.NotFound('User id=' + userId + ' does not exist!'), null);
-      }
+const u = [{id:1, name:'Joe'}, {id:2, name:'Jane'}];
+
+//stub Module (business logic container)
+@inject('$E')
+class Users extends Ravel.Module {
+  constructor($E) {
+    super();
+    this.$E = $E;
+  }
+
+  getAllUsers() {
+    return Promise.resolve(u);
+  }
+
+  getUser(userId) {
+    if (userId < u.length) {
+      return Promise.resolve(u[userId-1]);
+    } else {
+      return Promise.reject(new this.$E.NotFound('User id=' + userId + ' does not exist!'));
     }
-  };
-};
+  }
+}
 
-//stub resource
-var usersResource = function($Resource, $Rest, users) {
-  $Resource.bind('/api/user');
+//stub Resource (REST interface)
+const pre = Ravel.Resource.before;  //have to alias to @pre instead of proper @before, since the latter clashes with mocha
+@inject('users', '$E')
+class UsersResource extends Ravel.Resource {
+  constructor(users, $E) {
+    super('/api/user');
+    this.users = users;
+    this.$E = $E;
+  }
 
-  $Resource.getAll(function(req, res) {
-    users.getAllUsers($Rest.respond(req, res));
-  });
+  @pre('respond')
+  getAll(ctx) {
+    return this.users.getAllUsers()
+    .then((list) => {
+      ctx.body = list;
+    });
+  }
 
-  $Resource.get(function(req, res) {
-    users.getUser(req.params['id'], $Rest.respond(req, res));
-  });
-};
+  @pre('respond')
+  get(ctx) {
+    // return promise and don't catch possible error so that Ravel can catch it
+    return this.users.getUser(ctx.params.id)
+    .then((result) => {
+      ctx.body = result;
+    });
+  }
+}
 
-//stub routes
-var routes = function($RouteBuilder) {
-  $RouteBuilder.add('/test', function(req, res) {
-    res.status(200).send({});
-  });
-};
+//stub Routes (miscellaneous routes, such as templated HTML content)
+const mapping = Ravel.Routes.mapping;
+class TestRoutes extends Ravel.Routes {
+  constructor() {
+    super();
+  }
+
+  @mapping('/app')
+  appHandler(ctx) {
+    ctx.body = '<!DOCTYPE html><html></html>';
+    ctx.status = 200;
+  }
+
+  @mapping('/login')
+  loginHandler(ctx) {
+    return Promise.resolve().then(() => {
+      ctx.body = '<!DOCTYPE html><html><head><title>login</title></head></html>';
+      ctx.status = 200;
+    });
+  }
+}
 
 
 describe('Ravel end-to-end test', function() {
@@ -57,7 +95,7 @@ describe('Ravel end-to-end test', function() {
     done();
   });
 
-  describe('#listen()', function() {
+  describe('#init()', function() {
     describe('basic application server consisting of a module and a resource', function() {
       before(function(done) {
         //enable mockery
@@ -67,33 +105,28 @@ describe('Ravel end-to-end test', function() {
           warnOnUnregistered: false
         });
         mockery.registerMock('redis', redis);
-        Ravel = new require('../../lib-cov/ravel')();
-        Ravel.set('log level', Ravel.Log.NONE);
-        Ravel.set('redis host', 'localhost');
-        Ravel.set('redis port', 5432);
-        Ravel.set('port', '9080');
-        Ravel.set('express public directory', 'public');
-        Ravel.set('express view directory', 'ejs');
-        Ravel.set('express view engine', 'ejs');
-        mockery.registerMock(path.join(Ravel.cwd, 'node_modules', 'ejs'), {
-          __express: function() {}
-        });
-        Ravel.set('express session secret', 'mysecret');
-        Ravel.set('disable json vulnerability protection', true);
+        app = new Ravel();
+        app.set('log level', app.Log.NONE);
+        app.set('redis host', 'localhost');
+        app.set('redis port', 5432);
+        app.set('port', '9080');
+        app.set('koa public directory', 'public');
+        app.set('keygrip keys', ['mysecret']);
 
-        mockery.registerMock(path.join(Ravel.cwd, 'users'), users);
-        Ravel.module('users');
-        mockery.registerMock(path.join(Ravel.cwd, 'usersResource'), usersResource);
-        Ravel.resource('usersResource');
-        mockery.registerMock(path.join(Ravel.cwd, 'routes'), routes);
-        Ravel.routes('routes');
-        Ravel.init();
-        agent = request.agent(Ravel._server);
+        mockery.registerMock(upath.join(app.cwd, 'users'), Users);
+        app.module('users');
+        mockery.registerMock(upath.join(app.cwd, 'usersResource'), UsersResource);
+        app.resource('usersResource');
+        mockery.registerMock(upath.join(app.cwd, 'routes'), TestRoutes);
+        app.routes('routes');
+        app.init();
+
+        agent = request.agent(app.server);
         done();
       });
 
       after(function(done) {
-        Ravel = undefined;
+        app = undefined;
         mockery.deregisterAll();
         mockery.disable();
         done();
@@ -120,14 +153,19 @@ describe('Ravel end-to-end test', function() {
         .end(done);
       });
 
-      it('should respond with an empty object on the route', function(done) {
+      it('should respond with html on the route /app', function(done) {
         agent
-        .get('/test')
-        .expect(200, JSON.stringify({}))
+        .get('/app')
+        .expect(200, '<!DOCTYPE html><html></html>')
+        .end(done);
+      });
+
+      it('should respond with html on the route /login', function(done) {
+        agent
+        .get('/login')
+        .expect(200, '<!DOCTYPE html><html><head><title>login</title></head></html>')
         .end(done);
       });
     });
   });
-
-  //TODO end-to-end test websocket stuff
 });

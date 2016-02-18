@@ -1,14 +1,14 @@
 'use strict';
 
-var chai = require('chai');
-var expect = chai.expect;
+const chai = require('chai');
+const expect = chai.expect;
 chai.use(require('chai-things'));
-var mockery = require('mockery');
-var path = require('path');
-var sinon = require('sinon');
+const mockery = require('mockery');
+const upath = require('upath');
+const sinon = require('sinon');
 chai.use(require('sinon-chai'));
 
-var Ravel, fs, err, stub;
+let Ravel, Resource, fs, stub, coreSymbols;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
@@ -21,13 +21,13 @@ describe('Ravel', function() {
 
     fs = require('fs');
     mockery.registerMock('fs', fs);
-    err = null;
-    mockery.registerMock('fs-readdir-recursive', function(basePath) {
-      /*jshint unused:false*/
-      return ['test1.js', 'test2.js', '.jshintrc'];
+    mockery.registerMock('fs-readdir-recursive', function(basePath) { //eslint-disable-line no-unused-vars
+      return ['test1.js', 'test2.js', '.eslintrc'];
     });
 
-    Ravel = new require('../../lib-cov/ravel')();
+    Ravel = new (require('../../lib/ravel'))();
+    Resource = require('../../lib/ravel').Resource;
+    coreSymbols = require('../../lib/core/symbols');
     Ravel.Log.setLevel(Ravel.Log.NONE);
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
     done();
@@ -35,6 +35,8 @@ describe('Ravel', function() {
 
   afterEach(function(done) {
     Ravel = undefined;
+    Resource = undefined;
+    coreSymbols = undefined;
     mockery.deregisterAll();
     mockery.disable();
     if (stub) {
@@ -52,14 +54,14 @@ describe('Ravel', function() {
         };
       });
 
-      mockery.registerMock(path.join(Ravel.cwd, './resources/test1.js'), function(){});
-      mockery.registerMock(path.join(Ravel.cwd, './resources/test2.js'), function(){});
+      mockery.registerMock(upath.join(Ravel.cwd, './resources/test1.js'), class extends Resource {});
+      mockery.registerMock(upath.join(Ravel.cwd, './resources/test2.js'), class extends Resource {});
       Ravel.resources('./resources');
-      expect(Ravel._resourceFactories).to.have.property('resources/test1.js');
-      expect(Ravel._resourceFactories['resources/test1.js']).to.be.a('function');
-      expect(Ravel._resourceFactories).to.have.property('resources/test2.js');
-      expect(Ravel._resourceFactories['resources/test2.js']).to.be.a('function');
-      expect(Ravel._resourceFactories).to.not.have.property('.jshintrc');
+      expect(Ravel[coreSymbols.resourceFactories]).to.have.property('resources/test1.js');
+      expect(Ravel[coreSymbols.resourceFactories]['resources/test1.js']).to.be.a('function');
+      expect(Ravel[coreSymbols.resourceFactories]).to.have.property('resources/test2.js');
+      expect(Ravel[coreSymbols.resourceFactories]['resources/test2.js']).to.be.a('function');
+      expect(Ravel[coreSymbols.resourceFactories]).to.not.have.property('.eslintrc');
       done();
     });
 
@@ -70,8 +72,10 @@ describe('Ravel', function() {
         };
       });
 
-      var spy = sinon.spy(Ravel.resources);
-      expect(spy).to.throw(Ravel.ApplicationError.IllegalValue);
+      const test = function() {
+        Ravel.resources();
+      };
+      expect(test).to.throw(Ravel.ApplicationError.IllegalValue);
       done();
     });
   });

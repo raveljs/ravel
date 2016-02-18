@@ -1,0 +1,13 @@
+{
+  "extends": "../.eslintrc.json",
+  "globals": {
+    "Ravel":       true,
+    "Primus":      true,
+    "constructor": false,
+    "require":     false,
+    "module":      false
+  },
+  "rules": {
+    "max-len":  [2, 120, 2]
+  }
+}

@@ -1,14 +1,24 @@
 'use strict';
 
-var chai = require('chai');
-var expect = chai.expect;
+const chai = require('chai');
+const expect = chai.expect;
 chai.use(require('chai-things'));
+chai.use(require('chai-as-promised'));
 chai.use(require('sinon-chai'));
-var sinon = require('sinon');
-var mockery = require('mockery');
-var httpMocks = require('node-mocks-http');
+const sinon = require('sinon');
+const mockery = require('mockery');
+const koa = require('koa');
+const request = require('supertest');
+const upath = require('upath');
 
-var Ravel, authorizeRequest, authorizeTokenStub, tokenToProfile;
+const AuthorizationProvider = (require('../../lib/ravel')).AuthorizationProvider;
+class GoogleOAuth2 extends AuthorizationProvider {
+  constructor() {
+    super('google-oauth2');
+  }
+}
+
+let Ravel, Module, app, authconfig, AuthorizationMiddleware, authorizeTokenStub, tokenToProfile, coreSymbols;
 
 describe('util/authorize_request', function() {
   beforeEach(function(done) {
@@ -25,237 +35,311 @@ describe('util/authorize_request', function() {
       return tokenToProfile;
     };
     mockery.registerMock('./authorize_token', authorizeTokenStub);
-    Ravel = new require('../../lib-cov/ravel')();
+
+    Ravel = new (require('../../lib/ravel'))();
+    Module = (require('../../lib/ravel')).Module;
+    authconfig = Module.authconfig;
+    coreSymbols = require('../../lib/core/symbols');
+
+    const provider = new GoogleOAuth2();
+    provider.init = sinon.stub();
+    Ravel.set('authorization providers', [provider]);
+
+    AuthorizationMiddleware  = require('../../lib/ravel').AuthorizationMiddleware;
     Ravel.Log.setLevel('NONE');
-    Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
-    authorizeRequest = require('../../lib-cov/auth/authorize_request')(Ravel, false, false);
+    app = koa();
+    Ravel.kvstore = {}; // mock Ravel.kvstore, since we're not actually starting Ravel.
     done();
   });
 
   afterEach(function(done) {
     Ravel = undefined;
-    authorizeRequest = undefined;
     authorizeTokenStub = undefined;
     tokenToProfile = undefined;
+    app = undefined;
+    authconfig = undefined;
+    AuthorizationMiddleware = undefined;
+    coreSymbols = undefined;
     mockery.deregisterAll();
     mockery.disable();
     done();
   });
 
   describe('middleware', function() {
-    it('should use passport\'s req.isAuthenticated() to check users by default, calling next() if users are authorized by passport', function(done) {
-      authorizeRequest = require('../../lib-cov/auth/authorize_request')(Ravel, false, false);
-      var req = httpMocks.createRequest({
-        method: 'GET',
-        url: '/entity',
-        headers: {}
-      });
-      req.isAuthenticated = function() {
-        return true;
-      };
-      var isAuthenticatedSpy = sinon.spy(req, 'isAuthenticated');
-      var res = httpMocks.createResponse();
-      var next = sinon.stub();
-      authorizeRequest(req, res, next);
-      expect(isAuthenticatedSpy).to.have.been.called;
-      expect(next).to.have.been.calledWith();
+
+    it('should allow read-only access to important state information, mostly for use by subclasses', function(done) {
+      const shouldRedirect = Math.random() < 0.5;
+      const allowMobileRegistration = Math.random() < 0.5;
+      const auth = new AuthorizationMiddleware(Ravel, shouldRedirect, allowMobileRegistration);
+      expect(auth).to.have.a.property('ravelInstance').that.equals(Ravel);
+      expect(auth).to.have.a.property('shouldRedirect').that.equals(shouldRedirect);
+      expect(auth).to.have.a.property('allowMobileRegistration').that.equals(allowMobileRegistration);
       done();
+    });
+
+    it('should use passport\'s req.isAuthenticated() to check users by default, yielding to next() if users are authorized by passport', function(done) {
+      const isAuthenticatedStub = sinon.stub().returns(true);
+      const finalStub = sinon.stub();
+
+      app.use(function*(next) {
+        this.isAuthenticated = isAuthenticatedStub;
+        yield next;
+      });
+      app.use((new AuthorizationMiddleware(Ravel, false, false)).middleware());
+      app.use(function*() {
+        finalStub();
+      });
+
+      request(app.callback())
+      .get('/entity')
+      .expect(function() {
+        expect(isAuthenticatedStub).to.have.been.called;
+        expect(finalStub).to.have.been.called;
+      })
+      .end(done);
     });
 
     it('should use passport\'s req.isAuthenticated() to check users by default, sending HTTP 401 UNAUTHORIZED if users are unauthorized', function(done) {
-      authorizeRequest = require('../../lib-cov/auth/authorize_request')(Ravel, false, false);
-      var req = httpMocks.createRequest({
-        method: 'GET',
-        url: '/entity',
-        headers: {}
+      const isAuthenticatedStub = sinon.stub().returns(false);
+
+      app.use(function*(next) {
+        this.isAuthenticated = isAuthenticatedStub;
+        yield next;
       });
-      req.isAuthenticated = function() {
-        return false;
-      };
-      var isAuthenticatedSpy = sinon.spy(req, 'isAuthenticated');
-      var res = httpMocks.createResponse();
-      var endSpy = sinon.spy(res, 'end');
-      var next = sinon.stub();
-      authorizeRequest(req, res, next);
-      expect(isAuthenticatedSpy).to.have.been.called;
-      expect(next).to.not.have.been.called;
-      expect(res).to.have.property('statusCode').that.equals(401);
-      expect(endSpy).to.have.been.called;
-      done();
+      app.use((new AuthorizationMiddleware(Ravel, false, false)).middleware());
+
+      request(app.callback())
+      .get('/entity')
+      .expect(function() {
+        expect(isAuthenticatedStub).to.have.been.called;
+      })
+      .expect(401, done);
     });
 
     it('should use passport\'s req.isAuthenticated() to check users by default, redirecting to the login page if users are unauthorized and redirects are enabled', function(done) {
-      authorizeRequest = require('../../lib-cov/auth/authorize_request')(Ravel, true, false);
       Ravel.set('login route', '/login');
-      var req = httpMocks.createRequest({
-        method: 'GET',
-        url: '/entity',
-        headers: {}
+      const isAuthenticatedStub = sinon.stub().returns(false);
+
+      app.use(function*(next) {
+        this.isAuthenticated = isAuthenticatedStub;
+        yield next;
       });
-      req.isAuthenticated = function() {
-        return false;
-      };
-      var isAuthenticatedSpy = sinon.spy(req, 'isAuthenticated');
-      var res = httpMocks.createResponse();
-      var redirectSpy = sinon.spy(res, 'redirect');
-      var next = sinon.stub();
-      authorizeRequest(req, res, next);
-      expect(isAuthenticatedSpy).to.have.been.called;
-      expect(next).to.not.have.been.called;
-      expect(redirectSpy).to.have.been.calledWith('/login');
-      done();
+      app.use((new AuthorizationMiddleware(Ravel, true, false)).middleware());
+
+      request(app.callback())
+      .get('/entity')
+      .expect(function() {
+        expect(isAuthenticatedStub).to.have.been.called;
+      })
+      .expect('Location', /\/login/)
+      .expect(302, done);
     });
 
     it('should use x-auth-token and x-auth-client headers to authorize mobile clients', function(done) {
-      authorizeRequest = require('../../lib-cov/auth/authorize_request')(Ravel, false, false);
-      var req = httpMocks.createRequest({
-        method: 'GET',
-        url: '/entity',
-        headers: {
-          'x-auth-token': 'oauth-token',
-          'x-auth-client': 'test-ios'
-        }
-      });
-      req.isAuthenticated = function() {};
-      var isAuthenticatedSpy = sinon.spy(req, 'isAuthenticated');
-      var res = httpMocks.createResponse();
-      var next = sinon.stub();
-      var profile = {}, user = {};
-      sinon.stub(tokenToProfile, 'tokenToProfile', function(token, client, callback) {
+      const isAuthenticatedStub = sinon.stub();
+      const finalStub = sinon.stub();
+
+      const profile = {}, user = {name: 'smcintyre'};
+      sinon.stub(tokenToProfile, 'tokenToProfile', function(token, client) {
         expect(token).to.equal('oauth-token');
         expect(client).to.equal('test-ios');
-        callback(null, profile);
+        return Promise.resolve(profile);
       });
-      Ravel.set('get user function', function(Ravel, profile, callback) {
-        callback(null, user);
+      @authconfig
+      class AuthConfig extends Module {
+        getUser(userId) { // eslint-disable-line no-unused-vars
+          return Promise.resolve(user);
+        }
+      }
+      mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
+      Ravel.module('authconfig');
+      Ravel[coreSymbols.moduleInit]();
+
+      require('../../lib/auth/passport_init')(Ravel);
+      Ravel.emit('post config koa', app);
+
+      app.use(function*(next) {
+        this.isAuthenticated = isAuthenticatedStub;
+        yield next;
       });
-      authorizeRequest(req, res, next);
-      expect(isAuthenticatedSpy).to.not.have.been.called;
-      expect(next).to.have.been.calledWith();
-      expect(req).to.have.property('user').that.equals(user);
-      done();
+      app.use((new AuthorizationMiddleware(Ravel, false, false)).middleware());
+      app.use(function*() {
+        expect(this).to.have.property('user').that.equals(user);
+        finalStub();
+      });
+
+      request(app.callback())
+      .get('/entity')
+      .set('x-auth-token', 'oauth-token')
+      .set('x-auth-client', 'test-ios')
+      .expect(function() {
+        expect(isAuthenticatedStub).to.not.have.been.called;
+        expect(finalStub).to.have.been.called;
+      })
+      .end(done);
     });
 
     it('should use x-auth-token and x-auth-client headers to authorize mobile clients, failing with HTTP 401 UNAUTHORIZED if the user does not exist and registration is disabled', function(done) {
-      authorizeRequest = require('../../lib-cov/auth/authorize_request')(Ravel, false, false);
-      var req = httpMocks.createRequest({
-        method: 'GET',
-        url: '/entity',
-        headers: {
-          'x-auth-token': 'oauth-token',
-          'x-auth-client': 'test-ios'
-        }
-      });
-      req.isAuthenticated = function() {};
-      var isAuthenticatedSpy = sinon.spy(req, 'isAuthenticated');
-      var res = httpMocks.createResponse();
-      var endSpy = sinon.spy(res, 'end');
-      var next = sinon.stub();
-      var profile = {};
-      sinon.stub(tokenToProfile, 'tokenToProfile', function(token, client, callback) {
+      const isAuthenticatedStub = sinon.stub();
+      const finalStub = sinon.stub();
+
+      const profile = {};
+      sinon.stub(tokenToProfile, 'tokenToProfile', function(token, client) {
         expect(token).to.equal('oauth-token');
         expect(client).to.equal('test-ios');
-        callback(null, profile);
+        return Promise.resolve(profile);
       });
-      Ravel.set('get user function', function(Ravel, profile, callback) {
-        callback(new Ravel.ApplicationError.NotFound('User does not exist'), null);
+
+      @authconfig
+      class AuthConfig extends Module {
+        getUser(userId) { // eslint-disable-line no-unused-vars
+          return Promise.reject(new Ravel.ApplicationError.NotFound('User does not exist'));
+        }
+      }
+      mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
+      Ravel.module('authconfig');
+      Ravel[coreSymbols.moduleInit]();
+
+      require('../../lib/auth/passport_init')(Ravel);
+      Ravel.emit('post config koa', app);
+
+      app.use(function*(next) {
+        this.isAuthenticated = isAuthenticatedStub;
+        yield next;
       });
-      authorizeRequest(req, res, next);
-      expect(isAuthenticatedSpy).to.not.have.been.called;
-      expect(next).to.not.have.been.called;
-      expect(res).to.have.property('statusCode').that.equals(401);
-      expect(endSpy).to.have.been.called;
-      done();
+      app.use((new AuthorizationMiddleware(Ravel, false, false)).middleware());
+      app.use(function*() {
+        finalStub();
+      });
+
+      request(app.callback())
+      .get('/entity')
+      .set('x-auth-token', 'oauth-token')
+      .set('x-auth-client', 'test-ios')
+      .expect(function() {
+        expect(isAuthenticatedStub).to.not.have.been.called;
+        expect(finalStub).to.not.have.been.called;
+      })
+      .expect(401, done);
     });
 
     it('use x-auth-token and x-auth-client headers to authorize mobile clients, failing with HTTP 401 UNAUTHORIZED if the token cannot be validated or translated into a profile', function(done) {
-      authorizeRequest = require('../../lib-cov/auth/authorize_request')(Ravel, false, false);
-      var req = httpMocks.createRequest({
-        method: 'GET',
-        url: '/entity',
-        headers: {
-          'x-auth-token': 'oauth-token',
-          'x-auth-client': 'test-ios'
-        }
-      });
-      req.isAuthenticated = function() {};
-      var isAuthenticatedSpy = sinon.spy(req, 'isAuthenticated');
-      var res = httpMocks.createResponse();
-      var endSpy = sinon.spy(res, 'end');
-      var next = sinon.stub();
-      sinon.stub(tokenToProfile, 'tokenToProfile', function(token, client, callback) {
+      const isAuthenticatedStub = sinon.stub();
+      const finalStub = sinon.stub();
+
+      sinon.stub(tokenToProfile, 'tokenToProfile', function(token, client) {
         expect(token).to.equal('oauth-token');
         expect(client).to.equal('test-ios');
-        callback(new Error(), null);
+        return Promise.reject(new Error());
       });
-      authorizeRequest(req, res, next);
-      expect(isAuthenticatedSpy).to.not.have.been.called;
-      expect(next).to.not.have.been.called;
-      expect(res).to.have.property('statusCode').that.equals(401);
-      expect(endSpy).to.have.been.called;
-      done();
+
+      app.use(function*(next) {
+        this.isAuthenticated = isAuthenticatedStub;
+        yield next;
+      });
+      app.use((new AuthorizationMiddleware(Ravel, false, false)).middleware());
+      app.use(function*() {
+        finalStub();
+      });
+
+      request(app.callback())
+      .get('/entity')
+      .set('x-auth-token', 'oauth-token')
+      .set('x-auth-client', 'test-ios')
+      .expect(function() {
+        expect(isAuthenticatedStub).to.not.have.been.called;
+        expect(finalStub).to.not.have.been.called;
+      })
+      .expect(401, done);
     });
 
     it('use x-auth-token and x-auth-client headers to authorize mobile clients, registering users if that functionality is enabled and they don\'t already exist', function(done) {
-      authorizeRequest = require('../../lib-cov/auth/authorize_request')(Ravel, false, true);
-      var req = httpMocks.createRequest({
-        method: 'GET',
-        url: '/entity',
-        headers: {
-          'x-auth-token': 'oauth-token',
-          'x-auth-client': 'test-ios'
-        }
-      });
-      req.isAuthenticated = function() {};
-      var isAuthenticatedSpy = sinon.spy(req, 'isAuthenticated');
-      var res = httpMocks.createResponse();
-      var next = sinon.stub();
-      var profile = {}, user = {};
-      sinon.stub(tokenToProfile, 'tokenToProfile', function(token, client, callback) {
+      const isAuthenticatedStub = sinon.stub();
+      const finalStub = sinon.stub();
+
+      const profile = {}, user = {};
+      sinon.stub(tokenToProfile, 'tokenToProfile', function(token, client) {
         expect(token).to.equal('oauth-token');
         expect(client).to.equal('test-ios');
-        callback(null, profile);
+        return Promise.resolve(profile);
       });
-      Ravel.set('get or create user function', function(Ravel, accessToken, refreshToken, profile, callback) {
-        callback(null, user);
+      @authconfig
+      class AuthConfig extends Module {
+        getOrCreateUser(accessToken, refreshToken, prof) { // eslint-disable-line no-unused-vars
+          return Promise.resolve(user);
+        }
+      }
+      mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
+      Ravel.module('authconfig');
+      Ravel[coreSymbols.moduleInit]();
+
+      require('../../lib/auth/passport_init')(Ravel);
+      Ravel.emit('post config koa', app);
+
+      app.use(function*(next) {
+        this.isAuthenticated = isAuthenticatedStub;
+        yield next;
       });
-      authorizeRequest(req, res, next);
-      expect(isAuthenticatedSpy).to.not.have.been.called;
-      expect(next).to.have.been.calledWith();
-      expect(req).to.have.property('user').that.equals(user);
-      done();
+      app.use((new AuthorizationMiddleware(Ravel, false, true)).middleware());
+      app.use(function*() {
+        expect(this).to.have.property('user').that.equals(user);
+        finalStub();
+      });
+
+      request(app.callback())
+      .get('/entity')
+      .set('x-auth-token', 'oauth-token')
+      .set('x-auth-client', 'test-ios')
+      .expect(function() {
+        expect(isAuthenticatedStub).to.not.have.been.called;
+        expect(finalStub).to.have.been.called;
+      })
+      .end(done);
     });
 
     it('use x-auth-token and x-auth-client headers to authorize mobile clients, responding with HTTP 401 UNAUTHORIZED if user registration is enabled and registration fails', function(done) {
-      authorizeRequest = require('../../lib-cov/auth/authorize_request')(Ravel, false, true);
-      var req = httpMocks.createRequest({
-        method: 'GET',
-        url: '/entity',
-        headers: {
-          'x-auth-token': 'oauth-token',
-          'x-auth-client': 'test-ios'
-        }
-      });
-      req.isAuthenticated = function() {};
-      var isAuthenticatedSpy = sinon.spy(req, 'isAuthenticated');
-      var res = httpMocks.createResponse();
-      var endSpy = sinon.spy(res, 'end');
-      var next = sinon.stub();
-      var profile = {};
-      sinon.stub(tokenToProfile, 'tokenToProfile', function(token, client, callback) {
+      const isAuthenticatedStub = sinon.stub();
+      const finalStub = sinon.stub();
+
+      const profile = {}, user = {};
+      sinon.stub(tokenToProfile, 'tokenToProfile', function(token, client) {
         expect(token).to.equal('oauth-token');
         expect(client).to.equal('test-ios');
-        callback(null, profile);
+        return Promise.resolve(profile);
       });
-      Ravel.set('get or create user function', function(Ravel, accessToken, refreshToken, profile, callback) {
-        callback(new Error(), null);
+      @authconfig
+      class AuthConfig extends Module {
+        getOrCreateUser(accessToken, refreshToken, prof) { // eslint-disable-line no-unused-vars
+          return Promise.reject(new Ravel.ApplicationError.NotFound('User does not exist'));
+        }
+      }
+      mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
+      Ravel.module('authconfig');
+      Ravel[coreSymbols.moduleInit]();
+
+      require('../../lib/auth/passport_init')(Ravel);
+      Ravel.emit('post config koa', app);
+
+      app.use(function*(next) {
+        this.isAuthenticated = isAuthenticatedStub;
+        yield next;
       });
-      authorizeRequest(req, res, next);
-      expect(isAuthenticatedSpy).to.not.have.been.called;
-      expect(next).to.not.have.been.called;
-      expect(res).to.have.property('statusCode').that.equals(401);
-      expect(endSpy).to.have.been.called;
-      done();
+      app.use((new AuthorizationMiddleware(Ravel, false, true)).middleware());
+      app.use(function*() {
+        // this assertion would fail if this middleware ever ran. But it shouldn't run.
+        expect(this).to.have.property('user').that.equals(user);
+        finalStub();
+      });
+
+      request(app.callback())
+      .get('/entity')
+      .set('x-auth-token', 'oauth-token')
+      .set('x-auth-client', 'test-ios')
+      .expect(function() {
+        expect(isAuthenticatedStub).to.not.have.been.called;
+        expect(finalStub).to.not.have.been.called;
+      })
+      .expect(401, done);
     });
   });
 });

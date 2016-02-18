@@ -1,9 +1,0 @@
-{
-  "extends": "../.jshintrc",
-  "maxlen":    120,
-  "globals": {
-    "Primus":     true,
-    "require":    false,
-    "module":     false
-  }
-}

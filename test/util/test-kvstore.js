@@ -1,12 +1,12 @@
 'use strict';
 
-var chai = require('chai');
-var expect = chai.expect;
+const chai = require('chai');
+const expect = chai.expect;
 chai.use(require('chai-things'));
-var mockery = require('mockery');
-var sinon = require('sinon');
+const mockery = require('mockery');
+const sinon = require('sinon');
 
-var Ravel, kvstore, redisClientStub, redisMock;
+let Ravel, kvstore, redisClientStub, redisMock;
 
 describe('Ravel', function() {
 
@@ -19,20 +19,17 @@ describe('Ravel', function() {
     });
     redisMock = {
       createClient: function() {
-        redisClientStub = new (require('events').EventEmitter)();
+        redisClientStub = new (require('events').EventEmitter)(); //eslint-disable-line no-extra-parens
         redisClientStub.auth = function(){};
         redisClientStub.end = function(){};
         return redisClientStub;
       },
     };
     mockery.registerMock('redis', redisMock);
-    Ravel = new require('../../lib-cov/ravel')();
+    Ravel = new (require('../../lib/ravel'))();
     Ravel.Log.setLevel(Ravel.Log.NONE);
     Ravel.set('redis port', 0);
     Ravel.set('redis host', 'localhost');
-    Ravel.set('redis password', 'password');
-
-    kvstore = require('../../lib-cov/util/kvstore')(Ravel);
 
     done();
   });
@@ -47,10 +44,25 @@ describe('Ravel', function() {
 
     describe('reconnection', function() {
       it('should seamlessly create a new redis client when an \'end\' event is received from the original', function(done) {
+        kvstore = require('../../lib/util/kvstore')(Ravel);
         expect(kvstore).to.have.a.property('auth').that.is.a('function');
 
-        var origKvstoreAuth = kvstore.auth;
-        var spy = sinon.spy(redisMock, 'createClient');
+        const origKvstoreAuth = kvstore.auth;
+        const spy = sinon.spy(redisMock, 'createClient');
+        //fake disconnection
+        redisClientStub.emit('end');
+        expect(spy).to.have.been.calledOnce;
+        expect(kvstore.auth).to.not.equal(origKvstoreAuth);
+        done();
+      });
+
+      it('should support auth', function(done) {
+        Ravel.set('redis password', 'password');
+        kvstore = require('../../lib/util/kvstore')(Ravel);
+        expect(kvstore).to.have.a.property('auth').that.is.a('function');
+
+        const origKvstoreAuth = kvstore.auth;
+        const spy = sinon.spy(redisMock, 'createClient');
         //fake disconnection
         redisClientStub.emit('end');
         expect(spy).to.have.been.calledOnce;
