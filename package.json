@@ -13,6 +13,7 @@
   },
   "main":"lib/ravel.js",
   "scripts": {
+    "docs":"mr-doc -n ravel -s lib",
     "test":"gulp test",
     "debug":"node-debug $(which gulp) test-no-cov"
   },
@@ -44,6 +45,8 @@
     "mocha": "2.3.4",
     "mocha-lcov-reporter":"0.0.2",
     "mockery":"1.4.0",
+    "mr-doc":"3.1.5",
+    "mr-doc-theme-default":"1.4.0",
     "node-inspector":"0.12.5",
     "node-mocks-http":"1.4.2",
     "redis-mock":"0.4.8",

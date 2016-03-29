@@ -27,14 +27,6 @@ gulp.task('lint', function() {
              .pipe(plugins.eslint.failAfterError());
 });
 
-gulp.task('docco', function() {
-  return gulp.src(['./lib/**/*.js'])
-             .pipe(plugins.docco({
-               layout: 'parallel'
-             }))
-             .pipe(gulp.dest('./docs'));
-});
-
 gulp.task('clean', function() {
   return del([
     'reports', 'docs'
@@ -95,11 +87,6 @@ gulp.task('watch', ['lint'], function() {
 
 gulp.task('show-coverage', function() {
   return gulp.src('./reports/index.html')
-             .pipe(plugins.open());
-});
-
-gulp.task('show-docs', ['docco'], function() {
-  return gulp.src('./docs/index.html')
              .pipe(plugins.open());
 });
 

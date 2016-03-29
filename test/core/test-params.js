@@ -97,7 +97,7 @@ describe('Ravel', function() {
   });
 
   describe('.config', function() {
-    it('should return the full configuration of the given Ravel instance', function(done) {
+    it('should return the full configuration of the given `ravel instance`', function(done) {
       const defaultConfig = Ravel.config;
       Ravel.registerSimpleParameter('test param', true);
       Ravel.registerSimpleParameter('test param 2', true);
