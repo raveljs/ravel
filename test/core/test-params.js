@@ -19,7 +19,8 @@ describe('Ravel', function() {
     conf = {};
     mockery.registerMock('rc', function(appName, target) {
       Object.assign(target, conf);
-      return files;
+      target.configs = files;
+      return target;
     });
     Ravel = new (require('../../lib/ravel'))();
     coreSymbols = require('../../lib/core/symbols');

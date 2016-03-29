@@ -1,6 +1,7 @@
 'use strict';
 
 const chai = require('chai');
+const expect = chai.expect;
 chai.use(require('chai-things'));
 chai.use(require('chai-as-promised'));
 const mockery = require('mockery');
@@ -9,6 +10,7 @@ const redis = require('redis-mock');
 const request = require('supertest');
 
 const Ravel = require('../../lib/ravel');
+const httpCodes = require('../../lib/util/http_codes');
 const inject = Ravel.inject;
 let app, agent;
 
@@ -106,6 +108,7 @@ describe('Ravel end-to-end test', function() {
         });
         mockery.registerMock('redis', redis);
         app = new Ravel();
+        expect(Ravel).to.have.a.property('httpCodes').that.deep.equals(httpCodes);
         app.set('log level', app.Log.NONE);
         app.set('redis host', 'localhost');
         app.set('redis port', 5432);
