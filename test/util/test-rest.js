@@ -119,7 +119,7 @@ describe('util/rest', function() {
       });
       request(app.callback())
       .get('/')
-      .expect(404, `NotFoundError: ${message}`, done);
+      .expect(404, message, done);
     });
 
     it('should respond with HTTP 403 Forbidden when ApplicationError.Access is passed as err', function(done) {
@@ -130,7 +130,7 @@ describe('util/rest', function() {
       });
       request(app.callback())
       .get('/')
-      .expect(403, `AccessError: ${message}`, done);
+      .expect(403, message, done);
     });
 
     it('should respond with HTTP 405 METHOD NOT ALLOWED when ApplicationError.NotAllowed is passed as err', function(done) {
@@ -141,7 +141,7 @@ describe('util/rest', function() {
       });
       request(app.callback())
       .get('/')
-      .expect(405, `NotAllowedError: ${message}`, done);
+      .expect(405, message, done);
     });
 
     it('should respond with HTTP 501 NOT IMPLEMENTED when ApplicationError.NotImplemented is passed as err', function(done) {
@@ -152,7 +152,7 @@ describe('util/rest', function() {
       });
       request(app.callback())
       .get('/')
-      .expect(501, `NotImplementedError: ${message}`, done);
+      .expect(501, message, done);
     });
 
     it('should respond with HTTP 409 CONFLICT when ApplicationError.DuplicateEntry is passed as err', function(done) {
@@ -163,7 +163,7 @@ describe('util/rest', function() {
       });
       request(app.callback())
       .get('/')
-      .expect(409, `DuplicateEntryError: ${message}`, done);
+      .expect(409, message, done);
     });
 
     it('should respond with HTTP 416 REQUESTED_RANGE_NOT_SATISFIABLE when ApplicationError.RangeOutOfBounds is passed as err', function(done) {
@@ -174,7 +174,7 @@ describe('util/rest', function() {
       });
       request(app.callback())
       .get('/')
-      .expect(416, `RangeOutOfBoundsError: ${message}`, done);
+      .expect(416, message, done);
     });
 
     it('should respond with HTTP 400 BAD REQUEST when ApplicationError.IllegalValue is passed as err', function(done) {
@@ -185,7 +185,7 @@ describe('util/rest', function() {
       });
       request(app.callback())
       .get('/')
-      .expect(400, `IllegalValueError: ${message}`, done);
+      .expect(400, message, done);
     });
 
     it('should respond with HTTP 500 INTERNAL SERVER ERROR when an unknown Error type is passed as err', function(done) {
@@ -196,7 +196,7 @@ describe('util/rest', function() {
       });
       request(app.callback())
       .get('/')
-      .expect(500, `Error: ${message}`, done);
+      .expect(500, message, done);
     });
   });
 });
