@@ -9,7 +9,7 @@ addons:
   code_climate:
     repo_token: b2541fd4db954639617d2d7083b5570ba6e2fb1f88875cab12061523287128b6
 node_js:
-  - "5.6"
+  - "5.9.1"
 before_install:
   - if [[ $TRAVIS_OS_NAME == "linux" ]]; then export CXX=g++-4.8; fi
   - $CXX --version
