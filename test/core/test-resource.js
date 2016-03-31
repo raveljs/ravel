@@ -385,6 +385,25 @@ describe('Ravel', function() {
       expect(spy).to.have.callCount(7);
       done();
     });
+
+    it('should facilitate the creation of routes which are not decorated with middleware', function(done) {
+      class Stub extends Resource {
+        constructor() {
+          super('/api/test');
+        }
+        getAll() {
+        }
+      }
+      const router = require('koa-router')();
+      const spy = sinon.stub(router, 'get');
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
+      Ravel.resource('test');
+      Ravel[coreSymbols.resourceInit](router);
+      expect(spy).to.have.been.calledWith('/api/test', sinon.match(function(value) {
+        return value.constructor.name === 'GeneratorFunction';
+      }));
+      done();
+    });
   });
 
   describe('Resource Integration Test', function() {

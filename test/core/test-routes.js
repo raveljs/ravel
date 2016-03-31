@@ -100,7 +100,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should facilitate the creation of GET routes via , but not permit the use of other HTTP verbs', function(done) {
+    it('should facilitate the creation of GET routes via @mapping, but not permit the use of other HTTP verbs', function(done) {
       const middleware1 = function(/*req, res*/) {};
       const middleware2 = function(/*req, res*/) {};
 
@@ -167,6 +167,38 @@ describe('Ravel', function() {
         expect(arguments[0]).to.equal('/app/path');
         expect(arguments[1]).to.equal(middleware1);
         expect(arguments[2]).to.equal(middleware2);
+        done();
+      });
+      sinon.stub(router, 'post', function() {
+        done(new Error('Routes class should never use app.post.'));
+      });
+      sinon.stub(router, 'put', function() {
+        done(new Error('Routes class should never use app.put.'));
+      });
+      sinon.stub(router, 'delete', function() {
+        done(new Error('Routes class should never use app.delete.'));
+      });
+      Ravel[coreSymbols.routesInit](router);
+    });
+
+    it('should support the use of @mapping without @before', function(done) {
+      class Stub extends Routes {
+        constructor() {
+          super('/app');
+        }
+
+        @mapping('/path')
+        pathHandler(ctx) {
+          ctx.status(200);
+        }
+      };
+      mockery.registerMock(upath.join(Ravel.cwd, 'stub'), Stub);
+      Ravel.routes('stub');
+
+      //load up koa
+      const router = require('koa-router')();
+      sinon.stub(router, 'get', function() {
+        expect(arguments[0]).to.equal('/app/path');
         done();
       });
       sinon.stub(router, 'post', function() {
