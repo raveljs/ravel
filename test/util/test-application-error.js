@@ -30,6 +30,42 @@ describe('util/application_error', function() {
       done();
     });
 
+    it('constructor should reject codes which are greater than valid HTTP error codes', function(done) {
+      class TestError extends Ravel.ApplicationError.General {
+        constructor(msg) {
+          super(msg, constructor, 600);
+        }
+      }
+      expect(function() {
+        return new TestError('test');
+      }).to.throw();
+      done();
+    });
+
+    it('constructor should reject codes which are less than valid HTTP error codes', function(done) {
+      class TestError extends Ravel.ApplicationError.General {
+        constructor(msg) {
+          super(msg, constructor, 50);
+        }
+      }
+      expect(function() {
+        return new TestError('test');
+      }).to.throw();
+      done();
+    });
+
+    it('constructor should reject codes which are not numbers', function(done) {
+      class TestError extends Ravel.ApplicationError.General {
+        constructor(msg) {
+          super(msg, constructor, '600');
+        }
+      }
+      expect(function() {
+        return new TestError('test');
+      }).to.throw();
+      done();
+    });
+
     it('should provide .Access', function(done) {
       expect(Ravel.ApplicationError).to.have.a.property('Access')
         .that.is.a('function');
