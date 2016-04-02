@@ -11,6 +11,7 @@ const request = require('supertest');
 
 const Ravel = require('../../lib/ravel');
 const httpCodes = require('../../lib/util/http_codes');
+const ApplicationError = require('../../lib/util/application_error');
 const inject = Ravel.inject;
 let app, agent;
 
@@ -109,6 +110,7 @@ describe('Ravel end-to-end test', function() {
         mockery.registerMock('redis', redis);
         app = new Ravel();
         expect(Ravel).to.have.a.property('httpCodes').that.deep.equals(httpCodes);
+        expect(Ravel).to.have.a.property('Error').that.deep.equals(ApplicationError.General);
         app.set('log level', app.Log.NONE);
         app.set('redis host', 'localhost');
         app.set('redis port', 5432);
