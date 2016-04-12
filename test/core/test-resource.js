@@ -354,6 +354,39 @@ describe('Ravel', function() {
       done();
     });
 
+    it('should support the use of @before on some, but not all, endpoints', function(done) {
+      const middleware1 = function*(next) { yield next; };
+      const middleware2 = function*(next) { yield next; };
+
+      class Stub extends Resource {
+        constructor() {
+          super('/api/test');
+          this.middleware1 = middleware1;
+          this.middleware2 = middleware2;
+        }
+
+        @before('middleware1', 'middleware2')
+        get() {
+        }
+
+        put() {
+        }
+      }
+      const router = require('koa-router')();
+      const spy = sinon.stub(router, 'get');
+      const spy2 = sinon.stub(router, 'put');
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
+      Ravel.resource('test');
+      Ravel[coreSymbols.resourceInit](router);
+      expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, sinon.match(function(value) {
+        return value.constructor.name === 'GeneratorFunction';
+      }));
+      expect(spy2).to.have.been.calledWith('/api/test/:id', sinon.match(function(value) {
+        return value.constructor.name === 'GeneratorFunction';
+      }));
+      done();
+    });
+
     it('should implement stub endpoints for unused HTTP verbs, all of which return a status httpCodes.NOT_IMPLEMENTED', function(done) {
       const httpCodes = require('../../lib/util/http_codes');
       const router = require('koa-router')();
