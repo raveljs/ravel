@@ -2,14 +2,14 @@
 
 const chai = require('chai');
 const expect = chai.expect;
-const ApplicationError = require('../../lib/util/application_error');
+const ApplicationError = require('../../../lib/util/application_error');
 
 let before, utilSymbols;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
-    before = require('../../lib/ravel').Resource.before;
-    utilSymbols = require('../../lib/util/symbols');
+    before = require('../../../lib/ravel').Resource.before;
+    utilSymbols = require('../../../lib/util/symbols');
     done();
   });
 
