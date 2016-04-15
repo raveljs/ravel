@@ -14,8 +14,9 @@
   "main":"lib/ravel.js",
   "scripts": {
     "docs":"mr-doc -n ravel -s lib",
-    "test":"gulp test",
-    "debug":"node-debug $(which gulp) test-no-cov"
+    "test":"node --harmony_rest_parameters $(which gulp) test",
+    "test-no-cov":"node --harmony_rest_parameters $(which gulp) test-no-cov",
+    "debug":"node --harmony_rest_parameters --debug-brk=5858 $(which gulp) test-no-cov"
   },
   "dependencies": {
     "co":"4.6.0",

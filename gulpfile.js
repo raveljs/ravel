@@ -1,8 +1,5 @@
 'use strict';
 
-//TODO remove when harmony_rest_parameters is enabled by default
-require('harmonize')(['harmony_rest_parameters']);
-
 const gulp = require('gulp');
 const plugins = require( 'gulp-load-plugins' )();
 // const isparta = require('isparta');
@@ -96,18 +93,3 @@ gulp.task('show-coverage', function() {
 });
 
 gulp.task('default', ['watch']);
-//
-// gulp.task('debug', () => {
-//   const envs = plugins.env.set({
-//     NODE_ENV: 'debug'
-//   });
-//   return gulp.src('src/main.js')
-//     .pipe(envs)
-//     .pipe(babel({optional: [
-//       'utility.inlineEnvironmentconstiables'
-//     ]}))
-//     .pipe(uglify())
-//     .pipe(transform(file => browserify(file).bundle()))
-//     .pipe(envs.reset)
-//     .pipe(gulp.dest('dist'));
-// });
