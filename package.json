@@ -1,7 +1,7 @@
 {
   "name": "ravel",
   "version": "0.8.1",
-  "author": "Sean McIntyre <smcintyre@xverba.ca>",
+  "author": "Sean McIntyre <s.mcintyre@xverba.ca>",
   "description": "Ravel Rapid Application Development Framework",
   "contributors": [
     {"name": "Sean McIntyre","email": "s.mcintyre@xverba.ca"}
@@ -58,7 +58,6 @@
     "codeclimate-test-reporter": "0.3.1",
     "del": "2.2.0",
     "gulp": "3.9.0",
-    "gulp-docco": "0.0.4",
     "gulp-env": "0.4.0",
     "istanbul": "0.4.2",
     "isparta": "4.0.0",
