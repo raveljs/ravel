@@ -86,10 +86,10 @@ describe('Ravel', function() {
     const mapping = Ravel.Routes.mapping;
     class TestRoutes extends Ravel.Routes {
       constructor() {
-        super();
+        super('/');
       }
 
-      @mapping('/app')
+      @mapping(Ravel.Routes.GET, '/app')
       handler(ctx) {
         ctx.body = '<!DOCTYPE html><html></html>';
         ctx.status = 200;
@@ -126,7 +126,7 @@ describe('Ravel', function() {
       app.set('koa public directory', 'public');
       app.set('koa view engine', 'ejs');
       app.set('koa view directory', 'views');
-      
+
       const koaAppMock = require('koa')();
       const useSpy = sinon.spy(koaAppMock, 'use');
       mockery.registerMock('koa', function() { return koaAppMock; });
