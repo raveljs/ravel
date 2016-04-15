@@ -32,7 +32,7 @@ Ravel applications consist of three basic parts:
 
 ### Modules
 
-Plain old node.js modules containing a class which encapsulates application logic. Modules support dependency injection of core Ravel services and other Modules alongside npm dependencies *(no relative `require`'s!)*. Modules are instantiated safely in dependency-order, and cyclical dependencies are detected automatically.
+Plain old node.js modules containing a class which encapsulates application logic. `Module`s support dependency injection of core Ravel services and other Modules alongside npm dependencies *(no relative `require`'s!)*. `Module`s are instantiated safely in dependency-order, and cyclical dependencies are detected automatically.
 
 *modules/cities.js*
 ```javascript
@@ -69,9 +69,40 @@ class Cities extends Module {
 }
 ```
 
+### Routes
+
+`Routes` are Ravel's wrapper for koa. They support GET, POST, PUT and DELETE requests, and middleware, via decorators. Like `Module`s, they also support dependency injection. Routes are most useful for implementing non-REST things, such as static content serving or template serving (EJS, Jade, etc.). If you want to build a REST API, use `Resource`s instead (they're up next!).
+
+*routes/index.js*
+```javascript
+const Routes = require('ravel').Routes;
+const inject = require('ravel').inject;
+const before = Routes.before; // decorator to add middleware to an endpoint within the Routes
+const mapping = Routes.mapping;
+
+@inject('middleware1') // middleware from NPM, or your own modules, etc.
+class ExampleRoutes extends Routes {
+  constructor(middleware1) {
+    super('/'); //base path
+    this.middleware1 = middleware1;
+    // you can also build middleware right here!
+    this.middleware2 = function*(next) {
+      yield next;
+    };
+  }
+
+  @mapping(Routes.GET, '/app')
+  @before('middleware1','middleware2')
+  appHandler(ctx) {
+    ctx.body = '<!DOCTYPE html><html><body>Hello World!</body></html>';
+    ctx.status = 200;
+  }
+}
+```
+
 ### Resources
 
-What might be referred to as a *controller* in other frameworks, a Resource module defines HTTP methods on an endpoint, supporting the session-per-request transaction pattern via Ravel middleware. Also supports dependency injection, allowing for the easy creation of RESTful interfaces to your Module-based application logic.
+What might be referred to as a *controller* in other frameworks, a `Resource` module defines HTTP methods on an endpoint, supporting the session-per-request transaction pattern via Ravel middleware. `Resource`s also support dependency injection, allowing for the easy creation of RESTful interfaces to your `Module`-based application logic. Resources are really just a thin wrapper around `Routes`, using specially-named handler functions (`get`, `getAll`, `post`, `put`, `putAll`, `delete`, `deleteAll`) instead of `@mapping`, and supporting advanced functionality such as transactions-per-request.
 
 *resources/city.js*
 ```javascript
@@ -84,7 +115,7 @@ const before = Resource.before; // decorator to add middleware to an endpoint wi
 @inject('cities')
 class CitiesResource extends Resource {
   constructor(cities) {
-    super('/cities');
+    super('/cities'); //base path
     this.cities = cities;
 
     // some other middleware, which you might have injected or created here
@@ -115,23 +146,6 @@ class CitiesResource extends Resource {
   // those verbs returning HTTP 501 NOT IMPLEMENTED
 
   // postAll is not supported, because that's stupid.
-}
-```
-
-### Routes
-
-Only supporting GET requests, Routes are used to serve up content such as EJS/Jade templates. Everything else should be a Resource.
-
-*routes/index.js*
-```javascript
-const Routes = require('ravel').Routes;
-const mapping = Routes.mapping;
-class ExampleRoutes extends Routes {
-  @mapping('/app')
-  appHandler(ctx) {
-    ctx.body = '<!DOCTYPE html><html><body>Hello World!</body></html>';
-    ctx.status = 200;
-  }
 }
 ```
 
