@@ -13,6 +13,7 @@
   },
   "main":"lib/ravel.js",
   "scripts": {
+    "clean": "node --harmony_rest_parameters $(which gulp) clean",
     "docs":"mr-doc -n ravel -s lib",
     "test":"node --harmony_rest_parameters $(which gulp) test",
     "test-no-cov":"node --harmony_rest_parameters $(which gulp) test-no-cov",

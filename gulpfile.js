@@ -6,6 +6,7 @@ const plugins = require( 'gulp-load-plugins' )();
 const del = require('del');
 
 const TESTS = [
+  'test-dist/core/decorators/test-*.js',
   'test-dist/core/test-*.js',
   'test-dist/db/test-*.js',
   'test-dist/util/test-*.js',
