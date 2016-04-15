@@ -73,13 +73,13 @@ class TestRoutes extends Ravel.Routes {
     super();
   }
 
-  @mapping('/app')
+  @mapping(Ravel.Routes.GET, '/app')
   appHandler(ctx) {
     ctx.body = '<!DOCTYPE html><html></html>';
     ctx.status = 200;
   }
 
-  @mapping('/login')
+  @mapping(Ravel.Routes.GET, '/login')
   loginHandler(ctx) {
     return Promise.resolve().then(() => {
       ctx.body = '<!DOCTYPE html><html><head><title>login</title></head></html>';

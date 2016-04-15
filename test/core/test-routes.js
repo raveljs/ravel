@@ -100,7 +100,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should facilitate the creation of GET routes via @mapping, but not permit the use of other HTTP verbs', function(done) {
+    it('should facilitate the creation of GET routes via @mapping', function(done) {
       const middleware1 = function(/*req, res*/) {};
       const middleware2 = function(/*req, res*/) {};
 
@@ -109,7 +109,7 @@ describe('Ravel', function() {
           super('/app');
         }
 
-        @mapping('/path')
+        @mapping(Routes.GET, '/path')
         @before('middleware1','middleware2')
         pathHandler(ctx) {
           ctx.status = 200;
@@ -128,14 +128,98 @@ describe('Ravel', function() {
         expect(arguments[2]).to.equal(middleware2);
         done();
       });
+      Ravel[coreSymbols.routesInit](router);
+    });
+
+    it('should facilitate the creation of POST routes via @mapping', function(done) {
+      const middleware1 = function(/*req, res*/) {};
+      const middleware2 = function(/*req, res*/) {};
+
+      class Stub extends Routes {
+        constructor() {
+          super('/app');
+        }
+
+        @mapping(Routes.POST, '/path')
+        @before('middleware1','middleware2')
+        pathHandler(ctx) {
+          ctx.status = 200;
+        }
+      };
+      mockery.registerMock(upath.join(Ravel.cwd, 'stub'), Stub);
+      mockery.registerMock('middleware1', middleware1);
+      mockery.registerMock('middleware2', middleware2);
+      Ravel.routes('stub');
+
+      //load up koa
+      const router = require('koa-router')();
       sinon.stub(router, 'post', function() {
-        done(new Error('Routes class should never use app.post.'));
+        expect(arguments[0]).to.equal('/app/path');
+        expect(arguments[1]).to.equal(middleware1);
+        expect(arguments[2]).to.equal(middleware2);
+        done();
       });
+      Ravel[coreSymbols.routesInit](router);
+    });
+
+    it('should facilitate the creation of PUT routes via @mapping', function(done) {
+      const middleware1 = function(/*req, res*/) {};
+      const middleware2 = function(/*req, res*/) {};
+
+      class Stub extends Routes {
+        constructor() {
+          super('/app');
+        }
+
+        @mapping(Routes.PUT, '/path')
+        @before('middleware1','middleware2')
+        pathHandler(ctx) {
+          ctx.status = 200;
+        }
+      };
+      mockery.registerMock(upath.join(Ravel.cwd, 'stub'), Stub);
+      mockery.registerMock('middleware1', middleware1);
+      mockery.registerMock('middleware2', middleware2);
+      Ravel.routes('stub');
+
+      //load up koa
+      const router = require('koa-router')();
       sinon.stub(router, 'put', function() {
-        done(new Error('Routes class should never use app.put.'));
+        expect(arguments[0]).to.equal('/app/path');
+        expect(arguments[1]).to.equal(middleware1);
+        expect(arguments[2]).to.equal(middleware2);
+        done();
       });
+      Ravel[coreSymbols.routesInit](router);
+    });
+
+    it('should facilitate the creation of DELETE routes via @mapping', function(done) {
+      const middleware1 = function(/*req, res*/) {};
+      const middleware2 = function(/*req, res*/) {};
+
+      class Stub extends Routes {
+        constructor() {
+          super('/app');
+        }
+
+        @mapping(Routes.DELETE, '/path')
+        @before('middleware1','middleware2')
+        pathHandler(ctx) {
+          ctx.status = 200;
+        }
+      };
+      mockery.registerMock(upath.join(Ravel.cwd, 'stub'), Stub);
+      mockery.registerMock('middleware1', middleware1);
+      mockery.registerMock('middleware2', middleware2);
+      Ravel.routes('stub');
+
+      //load up koa
+      const router = require('koa-router')();
       sinon.stub(router, 'delete', function() {
-        done(new Error('Routes class should never use app.delete.'));
+        expect(arguments[0]).to.equal('/app/path');
+        expect(arguments[1]).to.equal(middleware1);
+        expect(arguments[2]).to.equal(middleware2);
+        done();
       });
       Ravel[coreSymbols.routesInit](router);
     });
@@ -150,7 +234,7 @@ describe('Ravel', function() {
           super('/app');
         }
 
-        @mapping('/path')
+        @mapping(Routes.GET, '/path')
         @before('middleware2')
         pathHandler(ctx) {
           ctx.status(200);
@@ -187,7 +271,7 @@ describe('Ravel', function() {
           super('/app');
         }
 
-        @mapping('/path')
+        @mapping(Routes.GET, '/path')
         pathHandler(ctx) {
           ctx.status(200);
         }
