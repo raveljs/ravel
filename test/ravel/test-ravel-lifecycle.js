@@ -86,7 +86,7 @@ describe('Ravel', function() {
     const mapping = Ravel.Routes.mapping;
     class TestRoutes extends Ravel.Routes {
       constructor() {
-        super();
+        super('/');
       }
 
       @mapping(Ravel.Routes.GET, '/app')

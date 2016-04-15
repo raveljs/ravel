@@ -42,10 +42,26 @@ describe('Ravel', function() {
 
   describe('#routes()', function() {
     it('should permit clients to register route modules for instantiation in Ravel.start', function(done) {
-      mockery.registerMock(upath.join(Ravel.cwd, './routes/index_r'), class extends Routes {});
+      mockery.registerMock(upath.join(Ravel.cwd, './routes/index_r'), class extends Routes {constructor() {super('/');}});
       Ravel.routes('./routes/index_r');
       expect(Ravel[coreSymbols.routesFactories]).to.have.property('./routes/index_r');
       expect(Ravel[coreSymbols.routesFactories]['./routes/index_r']).to.be.a('function');
+      done();
+    });
+
+    it('should throw Ravel.ApplicationError.IllegalValue when Resource constructor super() is called without a basePath', function(done) {
+      const stub = class extends Routes {
+        constructor() {
+          super();
+        }
+      };
+      const router = require('koa-router')();
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
+      Ravel.routes('test');
+      const test = function() {
+        Ravel[coreSymbols.routesInit](router);
+      };
+      expect(test).to.throw(Ravel.ApplicationError.IllegalValue);
       done();
     });
 
@@ -61,13 +77,36 @@ describe('Ravel', function() {
       }
     });
 
+    it('should throw a Ravel.ApplicationError.DuplicateEntry error when clients attempt to register multiple routes modules with the same base path', function(done) {
+      const stub1 = class extends Routes {
+        constructor() {
+          super('/api/test');
+        }
+      };
+      const stub2 = class extends Routes {
+        constructor() {
+          super('/api/test');
+        }
+      };
+      mockery.registerMock(upath.join(Ravel.cwd, 'test1'), stub1);
+      mockery.registerMock(upath.join(Ravel.cwd, 'test2'), stub2);
+      Ravel.routes('test1');
+      Ravel.routes('test2');
+      const router = require('koa-router')();
+      const shouldFail = function() {
+        Ravel[coreSymbols.routesInit](router);
+      };
+      expect(shouldFail).to.throw(Ravel.ApplicationError.DuplicateEntry);
+      done();
+    });
+
     it('should produce a factory function which can be used to instantiate the specified routes module and perform dependency injection', function(done) {
       const another = {};
       mockery.registerMock('another', another);
       @inject('another')
       class Stub extends Routes {
         constructor(a) {
-          super();
+          super('/');
           expect(a).to.equal(another);
           expect(this).to.have.property('basePath').that.equals('/');
         }

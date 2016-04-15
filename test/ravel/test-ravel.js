@@ -70,7 +70,7 @@ class UsersResource extends Ravel.Resource {
 const mapping = Ravel.Routes.mapping;
 class TestRoutes extends Ravel.Routes {
   constructor() {
-    super();
+    super('/');
   }
 
   @mapping(Ravel.Routes.GET, '/app')

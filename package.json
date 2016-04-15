@@ -39,6 +39,7 @@
     "upath": "0.1.6"
   },
   "devDependencies": {
+    "async":"1.5.2",
     "chai":"2.3.0",
     "chai-things":"0.2.0",
     "chai-as-promised":"5.0.0",

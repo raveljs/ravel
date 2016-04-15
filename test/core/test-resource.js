@@ -1,5 +1,6 @@
 'use strict';
 
+const async = require('async');
 const chai = require('chai');
 const expect = chai.expect;
 chai.use(require('chai-things'));
@@ -388,35 +389,31 @@ describe('Ravel', function() {
     });
 
     it('should implement stub endpoints for unused HTTP verbs, all of which return a status httpCodes.NOT_IMPLEMENTED', function(done) {
-      const httpCodes = require('../../lib/util/http_codes');
-      const router = require('koa-router')();
-      const res = {
-        status: function(status) {
-          expect(status).to.equal(httpCodes.NOT_IMPLEMENTED);
-          return {
-            end: function() {}
-          };
-        }
-      };
-      const spy = sinon.spy(res, 'status');
-      const koaHandler = function() {
-        expect(arguments.length).to.equal(2);
-        expect(arguments[1]).to.be.a('function');
-        arguments[1](null, res);
-      };
-      sinon.stub(router, 'get', koaHandler);
-      sinon.stub(router, 'post', koaHandler);
-      sinon.stub(router, 'put', koaHandler);
-      sinon.stub(router, 'delete', koaHandler);
+      mockery.registerMock('redis', require('redis-mock'));
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), class extends Resource {
         constructor() {
           super('/api/test');
         }
       });
+      Ravel.set('log level', Ravel.Log.NONE);
+      Ravel.set('redis host', 'localhost');
+      Ravel.set('redis port', 5432);
+      Ravel.set('port', '9080');
+      Ravel.set('koa public directory', 'public');
+      Ravel.set('keygrip keys', ['mysecret']);
       Ravel.resource('test');
-      Ravel[coreSymbols.resourceInit](router);
-      expect(spy).to.have.callCount(7);
-      done();
+      Ravel.init();
+      const agent = request.agent(Ravel.server);
+
+      async.series([
+        function(next) {agent.get('/api/test').expect(501).end(next);},
+        function(next) {agent.get('/api/test/1').expect(501).end(next);},
+        function(next) {agent.post('/api/test').expect(501).end(next);},
+        function(next) {agent.put('/api/test').expect(501).end(next);},
+        function(next) {agent.put('/api/test/2').expect(501).end(next);},
+        function(next) {agent.delete('/api/test').expect(501).end(next);},
+        function(next) {agent.delete('/api/test/50').expect(501).end(next);}
+      ], done);
     });
 
     it('should facilitate the creation of routes which are not decorated with middleware', function(done) {
