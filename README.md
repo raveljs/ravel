@@ -71,7 +71,7 @@ class Cities extends Module {
 
 ### Routes
 
-`Routes` are Ravel's wrapper for koa. They support GET, POST, PUT and DELETE requests, and middleware, via decorators. Like `Module`s, they also support dependency injection. Routes are most useful for implementing non-REST things, such as static content serving or template serving (EJS, Jade, etc.). If you want to build a REST API, use `Resource`s instead (they're up next!).
+`Routes` are Ravel's wrapper for `koa`. They support GET, POST, PUT and DELETE requests, and middleware, via decorators. Like `Module`s, they also support dependency injection. Routes are most useful for implementing non-REST things, such as static content serving or template serving (EJS, Jade, etc.). If you want to build a REST API, use `Resource`s instead (they're up next!).
 
 *routes/index.js*
 ```javascript
