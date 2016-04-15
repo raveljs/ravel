@@ -3,21 +3,18 @@
 //TODO remove when harmony_rest_parameters is enabled by default
 require('harmonize')(['harmony_rest_parameters']);
 
-//TODO remove when decorators land in node
-require('babel-register');
-
 const gulp = require('gulp');
 const plugins = require( 'gulp-load-plugins' )();
 // const isparta = require('isparta');
 const del = require('del');
 
 const TESTS = [
-  'test/core/test-*.js',
-  'test/db/test-*.js',
-  'test/util/test-*.js',
-  'test/auth/test-*.js',
-  'test/ravel/test-*.js',
-  'test/**/test-*.js'
+  'test-dist/core/test-*.js',
+  'test-dist/db/test-*.js',
+  'test-dist/util/test-*.js',
+  'test-dist/auth/test-*.js',
+  'test-dist/ravel/test-*.js',
+  'test-dist/**/test-*.js'
 ];
 
 gulp.task('lint', function() {
@@ -29,11 +26,11 @@ gulp.task('lint', function() {
 
 gulp.task('clean', function() {
   return del([
-    'reports', 'docs'
+    'reports', 'docs', 'test-dist'
   ]);
 });
 
-gulp.task('cover', ['lint'], function() {
+gulp.task('cover', ['transpile'], function() {
   return gulp.src(['./lib/**/*.js'])
              .pipe(plugins.istanbul({
               //  instrumenter: isparta.Instrumenter,
@@ -42,8 +39,16 @@ gulp.task('cover', ['lint'], function() {
              .pipe(plugins.istanbul.hookRequire());
 });
 
+gulp.task('transpile', ['lint'], function() {
+  return gulp.src('test/**/*.js')
+      .pipe(plugins.sourcemaps.init())
+      .pipe(plugins.babel())
+      .pipe(plugins.sourcemaps.write('.'))
+      .pipe(gulp.dest('test-dist'));
+});
+
 //necessary to locate issues in code, due to https://github.com/gotwarlost/istanbul/issues/274
-gulp.task('test-no-cov', ['lint'], function () {
+gulp.task('test-no-cov', ['transpile'], function () {
   const env = plugins.env.set({
     LOG_LEVEL : 'critical'
   });
