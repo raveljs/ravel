@@ -6,6 +6,7 @@ const plugins = require( 'gulp-load-plugins' )();
 const del = require('del');
 
 const TESTS = [
+  'test-dist/core/decorators/test-*.js',
   'test-dist/core/test-*.js',
   'test-dist/db/test-*.js',
   'test-dist/util/test-*.js',
@@ -36,7 +37,7 @@ gulp.task('cover', ['transpile'], function() {
              .pipe(plugins.istanbul.hookRequire());
 });
 
-gulp.task('transpile', ['lint'], function() {
+gulp.task('transpile', ['clean', 'lint'], function() {
   return gulp.src('test/**/*.js')
       .pipe(plugins.sourcemaps.init())
       .pipe(plugins.babel())

@@ -2,13 +2,14 @@
 
 const chai = require('chai');
 const expect = chai.expect;
-const ApplicationError = require('../../lib/util/application_error');
+const ApplicationError = require('../../../lib/util/application_error');
+const Metadata = require('../../../lib/util/meta');
 
 let inject;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
-    inject = require('../../lib/ravel').inject;
+    inject = require('../../../lib/ravel').inject;
 
     done();
   });
@@ -19,14 +20,14 @@ describe('Ravel', function() {
   });
 
   describe('@inject()', function() {
-    it('should decorate a class with a static inject array', function(done) {
+    it('should decorate a class with inject metadata', function(done) {
       @inject('test1', 'test2')
       class Stub1 {
         constructor(test1, test2) { //eslint-disable-line no-unused-vars
         }
       }
-      expect(Stub1.inject).to.be.an.array;
-      expect(Stub1.inject).to.deep.equal(['test1', 'test2']);
+      expect(Metadata.getClassMetaValue(Stub1, '@inject', 'dependencies')).to.be.an.array;
+      expect(Metadata.getClassMetaValue(Stub1, '@inject', 'dependencies')).to.deep.equal(['test1', 'test2']);
       done();
     });
 
@@ -37,8 +38,8 @@ describe('Ravel', function() {
         constructor(test1, test2, test3) { //eslint-disable-line no-unused-vars
         }
       }
-      expect(Stub1.inject).to.be.an.array;
-      expect(Stub1.inject).to.deep.equal(['test1', 'test2', 'test3']);
+      expect(Metadata.getClassMetaValue(Stub1, '@inject', 'dependencies')).to.be.an.array;
+      expect(Metadata.getClassMetaValue(Stub1, '@inject', 'dependencies')).to.deep.equal(['test1', 'test2', 'test3']);
       done();
     });
 
@@ -46,19 +47,6 @@ describe('Ravel', function() {
       const test = function() {
         @inject([])
         class Stub {} //eslint-disable-line no-unused-vars
-      };
-      expect(test).to.throw(ApplicationError.IllegalValue);
-      done();
-    });
-
-    it('should throw an ApplicationError.IllegalValue if the target class already has a static inject property which is not an array', function(done) {
-      const test = function() {
-        @inject('test')
-        class Stub { //eslint-disable-line no-unused-vars
-          static get inject() {
-            return 'hello';
-          }
-        }
       };
       expect(test).to.throw(ApplicationError.IllegalValue);
       done();
