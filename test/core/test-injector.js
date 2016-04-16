@@ -6,7 +6,7 @@ chai.use(require('chai-things'));
 const mockery = require('mockery');
 const upath = require('upath');
 
-let Ravel, Module, coreSymbols;
+let Ravel, Module, coreSymbols, inject;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
@@ -18,6 +18,7 @@ describe('Ravel', function() {
     });
     Module = require('../../lib/ravel').Module;
     Ravel = new (require('../../lib/ravel'))();
+    inject = require('../../lib/ravel').inject;
     coreSymbols = require('../../lib/core/symbols');
     Ravel.Log.setLevel(Ravel.Log.NONE);
 
@@ -28,6 +29,7 @@ describe('Ravel', function() {
     Ravel = undefined;
     Module = undefined;
     coreSymbols = undefined;
+    inject = undefined;
     mockery.deregisterAll();mockery.disable();
     done();
   });
@@ -38,10 +40,9 @@ describe('Ravel', function() {
         constructor() {super();}
         method() {}
       };
-      const Stub2 = class extends Module {
-        static get inject() {
-          return ['test'];
-        }
+
+      @inject('test')
+      class Stub2 extends Module {
         constructor(test) {
           super();
           expect(test).to.be.an('object');
@@ -57,36 +58,12 @@ describe('Ravel', function() {
       Ravel[coreSymbols.moduleInit]();
     });
 
-
-
-    it('should throw an ApplicationError.IllegalValue if the static injector property is not an Array', function(done) {
-      const Stub = class extends Module {
-        static get inject() {
-          return 'test';
-        }
-        constructor(test) {
-          super();
-          expect(test).to.be.undefined;
-          done();
-        }
-      };
-      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
-      const test = function() {
-        Ravel.module('test');
-        Ravel[coreSymbols.moduleFactories].test();
-      };
-      expect(test).to.throw(Ravel.ApplicationError.IllegalValue);
-      done();
-    });
-
     it('should facilitate dependency injection of npm modules into client modules', function(done) {
       const stubMoment = {
         method: function() {}
       };
-      const stubClientModule = class extends Module {
-        static get inject() {
-          return ['moment'];
-        }
+      @inject('moment')
+      class Stub extends Module {
         constructor(moment) {
           super();
           expect(moment).to.be.ok;
@@ -96,14 +73,15 @@ describe('Ravel', function() {
         }
         method() {}
       };
-      mockery.registerMock(upath.join(Ravel.cwd, 'test'), stubClientModule);
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       mockery.registerMock('moment', stubMoment);
       Ravel.module('test');
-      Ravel[coreSymbols.injector].inject({}, stubClientModule);
+      Ravel[coreSymbols.injector].inject({}, Stub);
     });
 
     it('should throw an ApplicationError.NotFound when attempting to inject an unknown module/npm dependency', function(done) {
-      const stub = class extends Module {
+      @inject('unknownModule')
+      class Stub extends Module {
         static get inject() {
           return ['unknownModule'];
         }
@@ -112,10 +90,10 @@ describe('Ravel', function() {
           expect(unknownModule).to.be.an('object');
         }
       };
-      mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.module('test');
       try {
-        Ravel[coreSymbols.injector].inject({}, stub);
+        Ravel[coreSymbols.injector].inject({}, Stub);
         done(new Error('It should be impossible to inject an unknown module or npm dependency'));
       } catch(err) {
         expect(err).to.be.instanceof(Ravel.ApplicationError.NotFound);
@@ -127,10 +105,8 @@ describe('Ravel', function() {
       const moduleMap = {
         pseudoModule: {}
       };
-      const stub = class extends Module {
-        static get inject() {
-          return ['$E', 'pseudoModule'];
-        }
+      @inject('$E', 'pseudoModule')
+      class Stub extends Module {
         constructor($E, pseudoModule) {
           super();
           expect($E).to.equal(Ravel.ApplicationError);
@@ -138,9 +114,9 @@ describe('Ravel', function() {
           done();
         }
       };
-      mockery.registerMock(upath.join(Ravel.cwd, 'test'), stub);
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.module('test');
-      Ravel[coreSymbols.injector].inject(moduleMap, stub);
+      Ravel[coreSymbols.injector].inject(moduleMap, Stub);
     });
 
     it('should support array notation for declaring dependencies which are not valid js constiable names', function(done) {
@@ -150,10 +126,8 @@ describe('Ravel', function() {
       const StubClientModule = class extends Module {
         method() {}
       };
-      const AnotherStubClientModule = class extends Module {
-        static get inject() {
-          return ['bad.module', 'my-module'];
-        }
+      @inject('bad.module', 'my-module')
+      class AnotherStubClientModule extends Module {
         constructor(bad, myModule) {
           super();
           expect(bad).to.be.ok;

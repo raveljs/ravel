@@ -37,7 +37,7 @@ gulp.task('cover', ['transpile'], function() {
              .pipe(plugins.istanbul.hookRequire());
 });
 
-gulp.task('transpile', ['lint'], function() {
+gulp.task('transpile', ['clean', 'lint'], function() {
   return gulp.src('test/**/*.js')
       .pipe(plugins.sourcemaps.init())
       .pipe(plugins.babel())
