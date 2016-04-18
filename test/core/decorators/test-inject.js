@@ -10,7 +10,6 @@ let inject;
 describe('Ravel', function() {
   beforeEach(function(done) {
     inject = require('../../../lib/ravel').inject;
-
     done();
   });
 
@@ -26,8 +25,8 @@ describe('Ravel', function() {
         constructor(test1, test2) { //eslint-disable-line no-unused-vars
         }
       }
-      expect(Metadata.getClassMetaValue(Stub1, '@inject', 'dependencies')).to.be.an.array;
-      expect(Metadata.getClassMetaValue(Stub1, '@inject', 'dependencies')).to.deep.equal(['test1', 'test2']);
+      expect(Metadata.getClassMetaValue(Stub1.prototype, '@inject', 'dependencies')).to.be.an.array;
+      expect(Metadata.getClassMetaValue(Stub1.prototype, '@inject', 'dependencies')).to.deep.equal(['test1', 'test2']);
       done();
     });
 
@@ -38,8 +37,8 @@ describe('Ravel', function() {
         constructor(test1, test2, test3) { //eslint-disable-line no-unused-vars
         }
       }
-      expect(Metadata.getClassMetaValue(Stub1, '@inject', 'dependencies')).to.be.an.array;
-      expect(Metadata.getClassMetaValue(Stub1, '@inject', 'dependencies')).to.deep.equal(['test1', 'test2', 'test3']);
+      expect(Metadata.getClassMetaValue(Stub1.prototype, '@inject', 'dependencies')).to.be.an.array;
+      expect(Metadata.getClassMetaValue(Stub1.prototype, '@inject', 'dependencies')).to.deep.equal(['test1', 'test2', 'test3']);
       done();
     });
 
