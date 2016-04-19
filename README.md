@@ -174,8 +174,6 @@ Place this `.babelrc` config file at the root of your source code.
 
 *app.js*
 ```javascript
-//TODO remove when harmony_rest_parameters is enabled by default
-require('harmonize')(['harmony_rest_parameters']);
 //TODO remove when decorators land in node
 require('babel-register');
 
@@ -193,7 +191,7 @@ app.start();
 ```
 
 ```bash
-$ node app.js
+$ node --harmony_rest_parameters app.js
 ```
 
 ## A more complex example
