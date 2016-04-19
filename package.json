@@ -3,6 +3,20 @@
   "version": "0.10.1",
   "author": "Sean McIntyre <s.mcintyre@xverba.ca>",
   "description": "Ravel Rapid Application Development Framework",
+  "keywords": [
+    "koa",
+    "web",
+    "app",
+    "http",
+    "application",
+    "architecture",
+    "framework",
+    "middleware",
+    "generators",
+    "es6",
+    "modules",
+    "promises"
+  ],
   "contributors": [
     {"name": "Sean McIntyre","email": "s.mcintyre@xverba.ca"}
   ],
