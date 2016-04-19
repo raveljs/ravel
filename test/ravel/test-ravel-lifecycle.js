@@ -106,7 +106,7 @@ describe('Ravel', function() {
     app.set('koa favicon path', 'images/favicon.ico');
 
     mockery.registerMock(upath.join(app.cwd, 'users'), Users);
-    app.module('users');
+    app.module('users', 'users');
     mockery.registerMock(upath.join(app.cwd, 'usersResource'), UsersResource);
     app.resource('usersResource');
     mockery.registerMock(upath.join(app.cwd, 'routes'), TestRoutes);

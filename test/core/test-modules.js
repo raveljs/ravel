@@ -22,7 +22,7 @@ describe('Ravel', function() {
     fs = require('fs');
     mockery.registerMock('fs', fs);
     mockery.registerMock('fs-readdir-recursive', function(basePath) {  //eslint-disable-line no-unused-vars
-      return ['test1.js', 'test2.js', '.eslintrc'];
+      return ['test1.js', 'test2.js', '.eslintrc', 'package/test3.js'];
     });
     Ravel = new (require('../../lib/ravel'))();
     coreSymbols = require('../../lib/core/symbols');
@@ -55,10 +55,13 @@ describe('Ravel', function() {
 
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test1.js'), class extends Module {});
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test2.js'), class extends Module {});
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/package/test3.js'), class extends Module {});
       Ravel.modules('./modules');
       expect(Ravel[coreSymbols.moduleFactories]).to.have.property('test1');
       expect(Ravel[coreSymbols.moduleFactories].test1).to.be.a('function');
       expect(Ravel[coreSymbols.moduleFactories]).to.have.property('test2');
+      expect(Ravel[coreSymbols.moduleFactories].test2).to.be.a('function');
+      expect(Ravel[coreSymbols.moduleFactories]).to.have.property('package.test3');
       expect(Ravel[coreSymbols.moduleFactories].test2).to.be.a('function');
       expect(Ravel[coreSymbols.moduleFactories]).to.not.have.property('.eslintrc');
       done();

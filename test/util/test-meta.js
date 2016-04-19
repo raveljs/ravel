@@ -2,25 +2,18 @@
 
 const chai = require('chai');
 const expect = chai.expect;
-const mockery = require('mockery');
+const ApplicationError = require('../../lib/util/application_error');
 
 let Metadata;
 
 describe('util/meta', function() {
 
   beforeEach(function(done) {
-    //enable mockery
-    mockery.enable({
-      useCleanCache: true,
-      warnOnReplace: false,
-      warnOnUnregistered: false
-    });
     Metadata = require('../../lib/util/meta');
     done();
   });
 
   afterEach(function(done) {
-    mockery.deregisterAll();mockery.disable();
     Metadata = undefined;
     done();
   });
@@ -37,9 +30,10 @@ describe('util/meta', function() {
 
     it('should throw an exception if the target class isn\'t a prototype', function(done) {
       class Test {}
-      expect(function() {
+      function test() {
         return Metadata.getMeta(Test);
-      }).to.throw;
+      }
+      expect(test).to.throw(ApplicationError.IllegalValue);
       done();
     });
   });
@@ -141,27 +135,39 @@ describe('util/meta', function() {
   describe('#putMethodMeta', function() {
     it('should support storing metdata at the method-level', function(done) {
       class Test{}
-      Metadata.putMethodMeta(Test.prototype, 'methodName', '@inject', 'mykey', 'myvalue');
+      Metadata.putMethodMeta(Test.prototype, 'methodName', '@before', 'mykey', 'myvalue');
       expect(Metadata.getMeta(Test.prototype)).to.deep.equal({
         class: {},
         method: {
           'methodName': {
-            '@inject': {
+            '@before': {
               'mykey':  'myvalue'
             }
           }
         }
       });
-      expect(Metadata.getMethodMeta(Test.prototype, 'methodName', '@inject')).to.deep.equal({
+      expect(Metadata.getMethodMeta(Test.prototype, 'methodName', '@before')).to.deep.equal({
         'mykey': 'myvalue'
       });
-      expect(Metadata.getMethodMeta(Test.prototype, 'methodName', '@inject')).to.equal(
-        Metadata.getMeta(Test.prototype).method.methodName['@inject']
+      expect(Metadata.getMethodMeta(Test.prototype, 'methodName', '@before')).to.equal(
+        Metadata.getMeta(Test.prototype).method.methodName['@before']
       );
-      expect(Metadata.getMethodMetaValue(Test.prototype, 'methodName', '@inject', 'mykey')).to.equal('myvalue');
-      expect(Metadata.getMethodMetaValue(Test.prototype, 'methodName', '@inject', 'mykey')).to.equal(
-        Metadata.getMeta(Test.prototype).method.methodName['@inject'].mykey
+      expect(Metadata.getMethodMetaValue(Test.prototype, 'methodName', '@before', 'mykey')).to.equal('myvalue');
+      expect(Metadata.getMethodMetaValue(Test.prototype, 'methodName', '@before', 'mykey')).to.equal(
+        Metadata.getMeta(Test.prototype).method.methodName['@before'].mykey
       );
+      Metadata.putMethodMeta(Test.prototype, 'methodName', '@before', 'anotherkey', 'anothervalue');
+      expect(Metadata.getMeta(Test.prototype)).to.deep.equal({
+        class: {},
+        method: {
+          'methodName': {
+            '@before': {
+              'mykey':  'myvalue',
+              'anotherkey':  'anothervalue'
+            }
+          }
+        }
+      });
       done();
     });
 

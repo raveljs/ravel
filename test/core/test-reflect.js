@@ -49,7 +49,7 @@ describe('Ravel', function() {
         method() {}
       }
       mockery.registerMock(upath.join(app.cwd, 'test'), Stub);
-      app.module('./test');
+      app.module('./test', 'test');
 
       const meta = app.reflect('./test').metadata;
       expect(meta).to.deep.equal({
@@ -168,6 +168,14 @@ describe('Ravel', function() {
           }
         }
       });
+      done();
+    });
+
+    it('should throw an ApplicationError.NotFound if the specified path is not a known Ravel component', function(done) {
+      function test() {
+        app.reflect('./stub');
+      }
+      expect(test).to.throw(app.ApplicationError.NotFound);
       done();
     });
   });

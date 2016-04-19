@@ -89,8 +89,8 @@ describe('auth/passport_init', function() {
     }
     mockery.registerMock(upath.join(Ravel.cwd, './something'), class extends (require('../../lib/ravel')).Module {});
     mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
-    Ravel.module('./something');
-    Ravel.module('./authconfig');
+    Ravel.module('./something', 'something');
+    Ravel.module('./authconfig', 'authconfig');
     Ravel[coreSymbols.moduleInit]();
 
     const provider = new GoogleOAuth2();
@@ -138,7 +138,7 @@ describe('auth/passport_init', function() {
       }
     }
     mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
-    Ravel.module('./authconfig');
+    Ravel.module('./authconfig', 'authconfig');
     Ravel[coreSymbols.moduleInit]();
 
     const provider = new GoogleOAuth2();
@@ -175,7 +175,7 @@ describe('auth/passport_init', function() {
       }
     }
     mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
-    Ravel.module('./authconfig');
+    Ravel.module('./authconfig', 'authconfig');
     Ravel[coreSymbols.moduleInit]();
 
     const provider = new GoogleOAuth2();
@@ -212,7 +212,7 @@ describe('auth/passport_init', function() {
       }
     }
     mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
-    Ravel.module('./authconfig');
+    Ravel.module('./authconfig', 'authconfig');
     Ravel[coreSymbols.moduleInit]();
 
     const provider = new GoogleOAuth2();
@@ -247,7 +247,7 @@ describe('auth/passport_init', function() {
       }
     }
     mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
-    Ravel.module('./authconfig');
+    Ravel.module('./authconfig', 'authconfig');
     Ravel[coreSymbols.moduleInit]();
 
     const provider = new GoogleOAuth2();
@@ -274,7 +274,7 @@ describe('auth/passport_init', function() {
       }
     }
     mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
-    Ravel.module('./authconfig');
+    Ravel.module('./authconfig', 'authconfig');
     Ravel[coreSymbols.moduleInit]();
 
     const provider = new GoogleOAuth2();
