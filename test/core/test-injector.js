@@ -53,8 +53,8 @@ describe('Ravel', function() {
       };
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub1);
       mockery.registerMock(upath.join(Ravel.cwd, 'test2'), Stub2);
-      Ravel.module('test');
-      Ravel.module('test2');
+      Ravel.module('test', 'test');
+      Ravel.module('test2', 'test2');
       Ravel[coreSymbols.moduleInit]();
     });
 
@@ -75,7 +75,7 @@ describe('Ravel', function() {
       };
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       mockery.registerMock('moment', stubMoment);
-      Ravel.module('test');
+      Ravel.module('test', 'test');
       Ravel[coreSymbols.injector].inject({}, Stub);
     });
 
@@ -91,7 +91,7 @@ describe('Ravel', function() {
         }
       };
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
-      Ravel.module('test');
+      Ravel.module('test', 'test');
       try {
         Ravel[coreSymbols.injector].inject({}, Stub);
         done(new Error('It should be impossible to inject an unknown module or npm dependency'));
@@ -115,7 +115,7 @@ describe('Ravel', function() {
         }
       };
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
-      Ravel.module('test');
+      Ravel.module('test', 'test');
       Ravel[coreSymbols.injector].inject(moduleMap, Stub);
     });
 
@@ -144,8 +144,8 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'my-module.js'), StubClientModule);
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), AnotherStubClientModule);
       mockery.registerMock('bad.module', stubBadName);
-      Ravel.module('my-module.js');
-      Ravel.module('test');
+      Ravel.module('my-module.js', 'my-module');
+      Ravel.module('test', 'test');
       Ravel[coreSymbols.moduleFactories]['my-module']();
       Ravel[coreSymbols.injector].inject({}, AnotherStubClientModule);
     });

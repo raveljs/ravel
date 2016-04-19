@@ -119,7 +119,7 @@ describe('Ravel end-to-end test', function() {
         app.set('keygrip keys', ['mysecret']);
 
         mockery.registerMock(upath.join(app.cwd, 'users'), Users);
-        app.module('users');
+        app.module('users', 'users');
         mockery.registerMock(upath.join(app.cwd, 'usersResource'), UsersResource);
         app.resource('usersResource');
         mockery.registerMock(upath.join(app.cwd, 'routes'), TestRoutes);

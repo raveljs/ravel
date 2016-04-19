@@ -41,7 +41,7 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test'), class extends Module {
         constructor() {super();}
       });
-      Ravel.module('./modules/test');
+      Ravel.module('./modules/test', 'test');
       expect(Ravel[coreSymbols.moduleFactories]).to.have.property('test');
       expect(Ravel[coreSymbols.moduleFactories].test).to.be.a('function');
       done();
@@ -51,9 +51,20 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test.js'), class extends Module {
         constructor() {super();}
       });
-      Ravel.module('./modules/test.js');
+      Ravel.module('./modules/test.js', 'test');
       expect(Ravel[coreSymbols.moduleFactories]).to.have.property('test');
       expect(Ravel[coreSymbols.moduleFactories].test).to.be.a('function');
+      done();
+    });
+
+    it('should throw a Ravel.ApplicationError.IllegalValue error when clients attempt to register a module without a name', function(done) {
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/test'), class extends Module {
+        constructor() {super();}
+      });
+      const shouldThrow = function() {
+        Ravel.module('./modules/test');
+      };
+      expect(shouldThrow).to.throw(Ravel.ApplicationError.IllegalValue);
       done();
     });
 
@@ -65,8 +76,8 @@ describe('Ravel', function() {
         constructor() {super();}
       });
       const shouldThrow = function() {
-        Ravel.module('./modules/test');
-        Ravel.module('./more_modules/test');
+        Ravel.module('./modules/test', 'test');
+        Ravel.module('./more_modules/test', 'test');
       };
       expect(shouldThrow).to.throw(Ravel.ApplicationError.DuplicateEntry);
       done();
@@ -85,7 +96,7 @@ describe('Ravel', function() {
         method() {}
       }
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
-      Ravel.module('./test');
+      Ravel.module('./test', 'test');
       Ravel[coreSymbols.moduleInit]();
       const instance = Ravel[coreSymbols.modules].test;
       expect(instance.log).to.be.ok;
@@ -104,15 +115,6 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should convert hyphenated module names into camel case automatically', function(done) {
-      const Stub = class extends Module {constructor() {super();}};
-      mockery.registerMock(upath.join(Ravel.cwd, 'my-test-module.js'), Stub);
-      Ravel.module('./my-test-module.js');
-      expect(Ravel[coreSymbols.moduleFactories]).to.have.property('my-test-module');
-      expect(Ravel[coreSymbols.moduleFactories]['my-test-module']).to.be.a('function');
-      Ravel[coreSymbols.moduleFactories]['my-test-module']();
-      done();
-    });
     it('should produce module factories which support dependency injection of client modules', function(done) {
       class Stub1 extends Module {
         constructor() {super();}
@@ -129,8 +131,8 @@ describe('Ravel', function() {
       }
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test'), Stub1);
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test2'), Stub2);
-      Ravel.module('./modules/test');
-      Ravel.module('./modules/test2');
+      Ravel.module('./modules/test', 'test');
+      Ravel.module('./modules/test2', 'test2');
       Ravel[coreSymbols.moduleInit]();
     });
 
@@ -142,7 +144,7 @@ describe('Ravel', function() {
         }
       }
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test'), Stub);
-      Ravel.module('./modules/test');
+      Ravel.module('./modules/test', 'test');
       const test = function() {
         Ravel[coreSymbols.moduleInit]();
       };
@@ -210,10 +212,10 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test2'), Stub2);
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test3'), Stub3);
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test4'), Stub4);
-      Ravel.module('./modules/test');
-      Ravel.module('./modules/test2');
-      Ravel.module('./modules/test3');
-      Ravel.module('./modules/test4');
+      Ravel.module('./modules/test', 'test');
+      Ravel.module('./modules/test2', 'test2');
+      Ravel.module('./modules/test3', 'test3');
+      Ravel.module('./modules/test4', 'test4');
       Ravel[coreSymbols.moduleInit]();
       done();
     });
@@ -233,8 +235,8 @@ describe('Ravel', function() {
       }
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test'), Stub1);
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test2'), Stub2);
-      Ravel.module('./modules/test');
-      Ravel.module('./modules/test2');
+      Ravel.module('./modules/test', 'test');
+      Ravel.module('./modules/test2', 'test2');
       const test = function() {
         Ravel[coreSymbols.moduleInit]();
       };
@@ -270,10 +272,10 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test2'), Stub2);
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test3'), Stub3);
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test4'), Stub4);
-      Ravel.module('./modules/test');
-      Ravel.module('./modules/test2');
-      Ravel.module('./modules/test3');
-      Ravel.module('./modules/test4');
+      Ravel.module('./modules/test', 'test');
+      Ravel.module('./modules/test2', 'test2');
+      Ravel.module('./modules/test3', 'test3');
+      Ravel.module('./modules/test4', 'test4');
       const test = function() {
         Ravel[coreSymbols.moduleInit]();
       };
@@ -298,7 +300,7 @@ describe('Ravel', function() {
       }
       mockery.registerMock(upath.join(Ravel.cwd, './test'), StubClientModule);
       mockery.registerMock('moment', stubMoment);
-      Ravel.module('./test');
+      Ravel.module('./test', 'test');
       Ravel[coreSymbols.moduleInit]();
     });
 
@@ -319,7 +321,7 @@ describe('Ravel', function() {
       }
       mockery.registerMock(upath.join(Ravel.cwd, './test'), StubClientModule);
       mockery.registerMock('bad.name', stubBadName);
-      Ravel.module('./test');
+      Ravel.module('./test', 'test');
       Ravel[coreSymbols.moduleInit]();
     });
 
@@ -332,7 +334,7 @@ describe('Ravel', function() {
         }
       }
       mockery.registerMock(upath.join(Ravel.cwd, './test'), Stub);
-      Ravel.module('./test');
+      Ravel.module('./test', 'test');
       const shouldThrow = function() {
         Ravel[coreSymbols.moduleFactories].test();
       };
@@ -346,7 +348,7 @@ describe('Ravel', function() {
         method(){}
       };
       mockery.registerMock(upath.join(Ravel.cwd, './test'), Stub);
-      Ravel.module('./test');
+      Ravel.module('./test', 'test');
       Ravel[coreSymbols.moduleInit]();
       expect(Ravel[coreSymbols.modules].test.method).to.be.a.function;
       done();
@@ -355,7 +357,7 @@ describe('Ravel', function() {
     it('should throw an ApplicationError.IllegalValue when a client attempts to register a module which is not a subclass of Module', function(done) {
       mockery.registerMock(upath.join(Ravel.cwd, './test'), class {});
       const shouldThrow = function() {
-        Ravel.module('./test');
+        Ravel.module('./test', 'test');
       };
       expect(shouldThrow).to.throw(Ravel.ApplicationError.IllegalValue);
       done();
@@ -391,8 +393,8 @@ describe('Ravel', function() {
       }
       mockery.registerMock(upath.join(Ravel.cwd, './test1'), Stub1);
       mockery.registerMock(upath.join(Ravel.cwd, './test2'), Stub2);
-      Ravel.module('./test1');
-      Ravel.module('./test2');
+      Ravel.module('./test1', 'test1');
+      Ravel.module('./test2', 'test2');
       Ravel[coreSymbols.moduleInit]();
     });
 
@@ -425,9 +427,9 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, './test'), Stub1);
       mockery.registerMock(upath.join(Ravel.cwd, './test2'), Stub2);
       mockery.registerMock(upath.join(Ravel.cwd, './test3'), Stub3);
-      Ravel.module('./test');
-      Ravel.module('./test2');
-      Ravel.module('./test3');
+      Ravel.module('./test', 'test');
+      Ravel.module('./test2', 'test2');
+      Ravel.module('./test3', 'test3');
       Ravel[coreSymbols.moduleInit]();
     });
   });

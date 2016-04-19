@@ -6,6 +6,8 @@ chai.use(require('chai-things'));
 const mockery = require('mockery');
 const upath = require('upath');
 const sinon = require('sinon');
+const request = require('supertest');
+const async = require('async');
 
 let Ravel, Routes, inject, mapping, before, coreSymbols;
 
@@ -314,6 +316,11 @@ describe('Ravel', function() {
         pathHandler(ctx) {
           ctx.status(200);
         }
+
+        @before('middleware2') // this should just be ignored, since @mapping isn't present
+        ignoredHandler(ctx) {
+          ctx.status(200);
+        }
       };
       mockery.registerMock(upath.join(Ravel.cwd, 'stub'), Stub);
       Ravel.routes('stub');
@@ -334,6 +341,31 @@ describe('Ravel', function() {
         done(new Error('Routes class should never use app.delete.'));
       });
       Ravel[coreSymbols.routesInit](router);
+    });
+
+    it('should support the use of @mapping at the class level as well, to denote unsupported routes', function(done) {
+      @mapping(Routes.GET, '/path') // will respond with NOT_IMPLEMENTED
+      @mapping(Routes.POST, '/another', 404) // will respond with 404
+      class Stub extends Routes {
+        constructor() {
+          super('/app');
+        }
+      };
+      mockery.registerMock('redis', require('redis-mock'));
+      mockery.registerMock(upath.join(Ravel.cwd, 'stub'), Stub);
+      Ravel.set('log level', Ravel.Log.NONE);
+      Ravel.set('redis host', 'localhost');
+      Ravel.set('redis port', 5432);
+      Ravel.set('port', '9080');
+      Ravel.set('koa public directory', 'public');
+      Ravel.set('keygrip keys', ['mysecret']);
+      Ravel.routes('stub');
+      Ravel.init();
+      const agent = request.agent(Ravel.server);
+      async.series([
+        function(next) {agent.get('/app/path').expect(501).end(next);},
+        function(next) {agent.get('/app/another').expect(404).end(next);}
+      ], done);
     });
   });
 });

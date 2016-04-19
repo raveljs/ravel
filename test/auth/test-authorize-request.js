@@ -152,7 +152,7 @@ describe('util/authorize_request', function() {
         }
       }
       mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
-      Ravel.module('authconfig');
+      Ravel.module('authconfig', 'authconfig');
       Ravel[coreSymbols.moduleInit]();
 
       require('../../lib/auth/passport_init')(Ravel);
@@ -197,7 +197,7 @@ describe('util/authorize_request', function() {
         }
       }
       mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
-      Ravel.module('authconfig');
+      Ravel.module('authconfig', 'authconfig');
       Ravel[coreSymbols.moduleInit]();
 
       require('../../lib/auth/passport_init')(Ravel);
@@ -270,7 +270,7 @@ describe('util/authorize_request', function() {
         }
       }
       mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
-      Ravel.module('authconfig');
+      Ravel.module('authconfig', 'authconfig');
       Ravel[coreSymbols.moduleInit]();
 
       require('../../lib/auth/passport_init')(Ravel);
@@ -314,7 +314,7 @@ describe('util/authorize_request', function() {
         }
       }
       mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
-      Ravel.module('authconfig');
+      Ravel.module('authconfig', 'authconfig');
       Ravel[coreSymbols.moduleInit]();
 
       require('../../lib/auth/passport_init')(Ravel);
