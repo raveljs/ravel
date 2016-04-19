@@ -9,84 +9,9 @@ const upath = require('upath');
 const redis = require('redis-mock');
 const request = require('supertest');
 
-const Ravel = require('../../lib/ravel');
-const httpCodes = require('../../lib/util/http_codes');
-const ApplicationError = require('../../lib/util/application_error');
-const inject = Ravel.inject;
 let app, agent;
 
 const u = [{id:1, name:'Joe'}, {id:2, name:'Jane'}];
-
-//stub Module (business logic container)
-@inject('$E')
-class Users extends Ravel.Module {
-  constructor($E) {
-    super();
-    this.$E = $E;
-  }
-
-  getAllUsers() {
-    return Promise.resolve(u);
-  }
-
-  getUser(userId) {
-    if (userId < u.length) {
-      return Promise.resolve(u[userId-1]);
-    } else {
-      return Promise.reject(new this.$E.NotFound('User id=' + userId + ' does not exist!'));
-    }
-  }
-}
-
-//stub Resource (REST interface)
-const pre = Ravel.Resource.before;  //have to alias to @pre instead of proper @before, since the latter clashes with mocha
-@inject('users', '$E')
-class UsersResource extends Ravel.Resource {
-  constructor(users, $E) {
-    super('/api/user');
-    this.users = users;
-    this.$E = $E;
-  }
-
-  @pre('respond')
-  getAll(ctx) {
-    return this.users.getAllUsers()
-    .then((list) => {
-      ctx.body = list;
-    });
-  }
-
-  @pre('respond')
-  get(ctx) {
-    // return promise and don't catch possible error so that Ravel can catch it
-    return this.users.getUser(ctx.params.id)
-    .then((result) => {
-      ctx.body = result;
-    });
-  }
-}
-
-//stub Routes (miscellaneous routes, such as templated HTML content)
-const mapping = Ravel.Routes.mapping;
-class TestRoutes extends Ravel.Routes {
-  constructor() {
-    super('/');
-  }
-
-  @mapping(Ravel.Routes.GET, '/app')
-  appHandler(ctx) {
-    ctx.body = '<!DOCTYPE html><html></html>';
-    ctx.status = 200;
-  }
-
-  @mapping(Ravel.Routes.GET, '/login')
-  loginHandler(ctx) {
-    return Promise.resolve().then(() => {
-      ctx.body = '<!DOCTYPE html><html><head><title>login</title></head></html>';
-      ctx.status = 200;
-    });
-  }
-}
 
 
 describe('Ravel end-to-end test', function() {
@@ -107,6 +32,83 @@ describe('Ravel end-to-end test', function() {
           warnOnReplace: false,
           warnOnUnregistered: false
         });
+
+        const Ravel = require('../../lib/ravel');
+        const httpCodes = require('../../lib/util/http_codes');
+        const ApplicationError = require('../../lib/util/application_error');
+        const inject = Ravel.inject;
+
+        //stub Module (business logic container)
+        @inject('$E')
+        class Users extends Ravel.Module {
+          constructor($E) {
+            super();
+            this.$E = $E;
+          }
+
+          getAllUsers() {
+            return Promise.resolve(u);
+          }
+
+          getUser(userId) {
+            if (userId < u.length) {
+              return Promise.resolve(u[userId-1]);
+            } else {
+              return Promise.reject(new this.$E.NotFound('User id=' + userId + ' does not exist!'));
+            }
+          }
+        }
+
+        //stub Resource (REST interface)
+        const pre = Ravel.Resource.before;  //have to alias to @pre instead of proper @before, since the latter clashes with mocha
+        @inject('users', '$E')
+        class UsersResource extends Ravel.Resource {
+          constructor(users, $E) {
+            super('/api/user');
+            this.users = users;
+            this.$E = $E;
+          }
+
+          @pre('respond')
+          getAll(ctx) {
+            return this.users.getAllUsers()
+            .then((list) => {
+              ctx.body = list;
+            });
+          }
+
+          @pre('respond')
+          get(ctx) {
+            // return promise and don't catch possible error so that Ravel can catch it
+            return this.users.getUser(ctx.params.id)
+            .then((result) => {
+              ctx.body = result;
+            });
+          }
+        }
+
+        //stub Routes (miscellaneous routes, such as templated HTML content)
+        const mapping = Ravel.Routes.mapping;
+        class TestRoutes extends Ravel.Routes {
+          constructor() {
+            super('/');
+          }
+
+          @mapping(Ravel.Routes.GET, '/app')
+          appHandler(ctx) {
+            ctx.body = '<!DOCTYPE html><html></html>';
+            ctx.status = 200;
+          }
+
+          @mapping(Ravel.Routes.GET, '/login')
+          loginHandler(ctx) {
+            return Promise.resolve().then(() => {
+              ctx.body = '<!DOCTYPE html><html><head><title>login</title></head></html>';
+              ctx.status = 200;
+            });
+          }
+        }
+
         mockery.registerMock('redis', redis);
         app = new Ravel();
         expect(Ravel).to.have.a.property('httpCodes').that.deep.equals(httpCodes);

@@ -7,7 +7,6 @@ const mockery = require('mockery');
 chai.use(require('sinon-chai'));
 const upath = require('upath');
 
-const coreSymbols = require('../../lib/core/symbols');
 let Ravel, app;
 
 describe('Ravel', function() {
@@ -134,11 +133,17 @@ describe('Ravel', function() {
       app.db = { // mock app.db
         middleware: function*(next){ yield next;}
       };
-      app.resource('./stub');
 
-      // need to call resource init so that it creates @mapping decorators
-      const router = require('koa-router')();
-      app[coreSymbols.resourceInit](router);
+      // need to call init so that it creates @mapping decorators
+      mockery.registerMock('redis', require('redis-mock'));
+      app.set('log level', app.Log.NONE);
+      app.set('redis host', 'localhost');
+      app.set('redis port', 5432);
+      app.set('port', '9080');
+      app.set('koa public directory', 'public');
+      app.set('keygrip keys', ['mysecret']);
+      app.resource('./stub');
+      app.init();
 
       const meta = app.reflect('./stub').metadata;
 
