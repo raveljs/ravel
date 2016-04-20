@@ -196,7 +196,7 @@ describe('util/rest', function() {
       });
       request(app.callback())
       .get('/')
-      .expect(500, message, done);
+      .expect(500, 'Internal Server Error', done); // error message should not be exposed
     });
   });
 });
