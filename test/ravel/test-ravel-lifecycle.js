@@ -9,8 +9,12 @@ const upath = require('upath');
 const sinon = require('sinon');
 
 let app;
+let postinitHandlerCalled = 0;
+let prelistenHandlerCalled = 0;
+let postlistenHandlerCalled = 0;
+let endHandlerCalled = 0;
 
-describe('Ravel', function() {
+describe('Ravel lifeycle test', function() {
   beforeEach(function(done) {
     //enable mockery
     mockery.enable({
@@ -30,6 +34,14 @@ describe('Ravel', function() {
 
     const Ravel = require('../../lib/ravel');
     const inject = Ravel.inject;
+    const postinit = Ravel.Module.postinit;
+    const prelisten = Ravel.Module.prelisten;
+    const postlisten = Ravel.Module.postlisten;
+    const end = Ravel.Module.end;
+    postinitHandlerCalled = 0;
+    prelistenHandlerCalled = 0;
+    postlistenHandlerCalled = 0;
+    endHandlerCalled = 0;
 
     const u = [{id:1, name:'Joe'}, {id:2, name:'Jane'}];
 
@@ -51,6 +63,27 @@ describe('Ravel', function() {
         } else {
           return Promise.reject(new this.$E.NotFound('User id=' + userId + ' does not exist!'));
         }
+      }
+
+      @postinit
+      doPostInit() {
+        console.log('here');
+        postinitHandlerCalled += 1;
+      }
+
+      @prelisten
+      doPreListen() {
+        prelistenHandlerCalled += 1;
+      }
+
+      @postlisten
+      doPostListen() {
+        postlistenHandlerCalled += 1;
+      }
+
+      @end
+      doEnd() {
+        endHandlerCalled += 1;
       }
     }
 
@@ -164,6 +197,7 @@ describe('Ravel', function() {
       expect(faviconSpy).to.have.been.calledWith(upath.join(app.cwd, app.get('koa favicon path')));
       expect(useSpy).to.have.been.calledWith(favicon);
       expect(app.initialized).to.be.ok;
+      expect(postinitHandlerCalled).to.equal(1);
       done();
     });
   });
@@ -175,11 +209,14 @@ describe('Ravel', function() {
 
     it('should start the underlying HTTP server when called after init()', function(done) {
       app.init();
+      expect(postinitHandlerCalled).to.equal(1);
       const listenSpy = sinon.stub(app.server, 'listen', function(port, callback) {
         callback();
       });
       app.listen().then(function() {
         expect(listenSpy).to.have.been.calledWith(app.get('port'));
+        expect(prelistenHandlerCalled).to.equal(1);
+        expect(postlistenHandlerCalled).to.equal(1);
         expect(app.listening).to.be.ok;
         done();
       });
@@ -213,6 +250,10 @@ describe('Ravel', function() {
         return app.close();
       })
       .then(() =>  {
+        expect(postinitHandlerCalled).to.equal(1);
+        expect(prelistenHandlerCalled).to.equal(1);
+        expect(postlistenHandlerCalled).to.equal(1);
+        expect(endHandlerCalled).to.equal(1);
         app.server.close.restore(); // undo stub
         app.server.close(done); // actually close server so test suite exits cleanly
       }).catch(() =>  {
