@@ -5,6 +5,8 @@ const expect = chai.expect;
 chai.use(require('chai-things'));
 const mockery = require('mockery');
 const upath = require('upath');
+const sinon = require('sinon');
+chai.use(require('sinon-chai'));
 
 let Ravel, Module, inject, coreSymbols;
 
@@ -98,6 +100,10 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.module('./test', 'test');
       Ravel[coreSymbols.moduleInit]();
+      const scopedStub = sinon.stub();
+      Ravel.db = {
+        scoped: scopedStub
+      };
       const instance = Ravel[coreSymbols.modules].test;
       expect(instance.log).to.be.ok;
       expect(instance.log).to.be.an('object');
@@ -112,6 +118,9 @@ describe('Ravel', function() {
       expect(instance.kvstore).to.equal(Ravel.kvstore);
       expect(instance.params).to.be.an.object;
       expect(instance.params).to.have.a.property('get').that.is.a.function;
+      expect(instance.db).to.have.a.property('scoped').that.is.an.function;
+      instance.db.scoped();
+      expect(scopedStub).to.have.been.called;
       done();
     });
 
