@@ -153,10 +153,11 @@ describe('util/authorize_request', function() {
       }
       mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
       Ravel.module('authconfig', 'authconfig');
-      Ravel[coreSymbols.moduleInit]();
 
       require('../../lib/auth/passport_init')(Ravel);
       Ravel.emit('post config koa', app);
+      Ravel[coreSymbols.moduleInit]();
+      Ravel.emit('post module init');
 
       app.use(function*(next) {
         this.isAuthenticated = isAuthenticatedStub;
@@ -198,10 +199,11 @@ describe('util/authorize_request', function() {
       }
       mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
       Ravel.module('authconfig', 'authconfig');
-      Ravel[coreSymbols.moduleInit]();
 
       require('../../lib/auth/passport_init')(Ravel);
       Ravel.emit('post config koa', app);
+      Ravel[coreSymbols.moduleInit]();
+      Ravel.emit('post module init');
 
       app.use(function*(next) {
         this.isAuthenticated = isAuthenticatedStub;
@@ -271,10 +273,11 @@ describe('util/authorize_request', function() {
       }
       mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
       Ravel.module('authconfig', 'authconfig');
-      Ravel[coreSymbols.moduleInit]();
 
       require('../../lib/auth/passport_init')(Ravel);
       Ravel.emit('post config koa', app);
+      Ravel[coreSymbols.moduleInit]();
+      Ravel.emit('post module init');
 
       app.use(function*(next) {
         this.isAuthenticated = isAuthenticatedStub;
@@ -315,10 +318,11 @@ describe('util/authorize_request', function() {
       }
       mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
       Ravel.module('authconfig', 'authconfig');
-      Ravel[coreSymbols.moduleInit]();
 
       require('../../lib/auth/passport_init')(Ravel);
       Ravel.emit('post config koa', app);
+      Ravel[coreSymbols.moduleInit]();
+      Ravel.emit('post module init');
 
       app.use(function*(next) {
         this.isAuthenticated = isAuthenticatedStub;
