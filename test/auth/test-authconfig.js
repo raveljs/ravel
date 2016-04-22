@@ -4,6 +4,7 @@ const chai = require('chai');
 chai.use(require('chai-as-promised'));
 const expect = chai.expect;
 const ApplicationError = require('../../lib/util/application_error');
+const Metadata = require('../../lib/util/meta');
 
 let authconfig;
 
@@ -23,7 +24,7 @@ describe('Ravel', function() {
       @authconfig
       class Stub {}
       const instance = new Stub();
-      expect(instance).to.have.a.property(require('../../lib/auth/symbols').authconfig).which.equals(true);
+      expect(Metadata.getClassMetaValue(Object.getPrototypeOf(instance),'@authconfig', 'enabled', false)).to.be.ok;
       done();
     });
 
