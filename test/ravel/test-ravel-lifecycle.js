@@ -67,7 +67,6 @@ describe('Ravel lifeycle test', function() {
 
       @postinit
       doPostInit() {
-        console.log('here');
         postinitHandlerCalled += 1;
       }
 
