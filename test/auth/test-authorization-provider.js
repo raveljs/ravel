@@ -53,7 +53,7 @@ describe('auth/authorization_provider', function() {
       expect(provider.name).to.equal('google-oauth2');
       expect(provider).to.have.property('init').that.is.a('function');
       expect(provider).to.have.property('handlesClient').that.is.a('function');
-      expect(provider).to.have.property('tokenToProfile').that.is.a('function');
+      expect(provider).to.have.property('credentialToProfile').that.is.a('function');
       done();
     });
   });
@@ -82,9 +82,9 @@ describe('auth/authorization_provider', function() {
     });
   });
 
-  describe('#tokenToProfile()', function() {
+  describe('#credentialToProfile()', function() {
     it('should throw Ravel.ApplicationError.NotImplemented, since this is a template', function(done) {
-      expect(provider.tokenToProfile()).to.eventually.be.rejectedWith(Ravel.ApplicationError.NotImplemented);
+      expect(provider.credentialToProfile()).to.eventually.be.rejectedWith(Ravel.ApplicationError.NotImplemented);
       done();
     });
   });

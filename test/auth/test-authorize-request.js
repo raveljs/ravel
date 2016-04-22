@@ -18,7 +18,7 @@ class GoogleOAuth2 extends AuthorizationProvider {
   }
 }
 
-let Ravel, Module, app, authconfig, AuthorizationMiddleware, authorizeTokenStub, tokenToProfile, coreSymbols;
+let Ravel, Module, app, authconfig, AuthorizationMiddleware, authorizeTokenStub, credentialToProfile, coreSymbols;
 
 describe('util/authorize_request', function() {
   beforeEach(function(done) {
@@ -28,11 +28,11 @@ describe('util/authorize_request', function() {
       warnOnReplace: false,
       warnOnUnregistered: false
     });
-    tokenToProfile = {
-      tokenToProfile: function(){}
+    credentialToProfile = {
+      credentialToProfile: function(){}
     };
     authorizeTokenStub = function() {
-      return tokenToProfile;
+      return credentialToProfile;
     };
     mockery.registerMock('./authorize_token', authorizeTokenStub);
 
@@ -55,7 +55,7 @@ describe('util/authorize_request', function() {
   afterEach(function(done) {
     Ravel = undefined;
     authorizeTokenStub = undefined;
-    tokenToProfile = undefined;
+    credentialToProfile = undefined;
     app = undefined;
     authconfig = undefined;
     AuthorizationMiddleware = undefined;
@@ -139,15 +139,15 @@ describe('util/authorize_request', function() {
       const isAuthenticatedStub = sinon.stub();
       const finalStub = sinon.stub();
 
-      const profile = {}, user = {name: 'smcintyre'};
-      sinon.stub(tokenToProfile, 'tokenToProfile', function(token, client) {
+      const profile = {id: 1}, user = {name: 'smcintyre'};
+      sinon.stub(credentialToProfile, 'credentialToProfile', function(token, client) {
         expect(token).to.equal('oauth-token');
         expect(client).to.equal('test-ios');
         return Promise.resolve(profile);
       });
       @authconfig
       class AuthConfig extends Module {
-        getUser(userId) { // eslint-disable-line no-unused-vars
+        getUserById(userId) { // eslint-disable-line no-unused-vars
           return Promise.resolve(user);
         }
       }
@@ -184,7 +184,7 @@ describe('util/authorize_request', function() {
       const finalStub = sinon.stub();
 
       const profile = {};
-      sinon.stub(tokenToProfile, 'tokenToProfile', function(token, client) {
+      sinon.stub(credentialToProfile, 'credentialToProfile', function(token, client) {
         expect(token).to.equal('oauth-token');
         expect(client).to.equal('test-ios');
         return Promise.resolve(profile);
@@ -192,7 +192,7 @@ describe('util/authorize_request', function() {
 
       @authconfig
       class AuthConfig extends Module {
-        getUser(userId) { // eslint-disable-line no-unused-vars
+        getUserById(userId) { // eslint-disable-line no-unused-vars
           return Promise.reject(new Ravel.ApplicationError.NotFound('User does not exist'));
         }
       }
@@ -227,7 +227,7 @@ describe('util/authorize_request', function() {
       const isAuthenticatedStub = sinon.stub();
       const finalStub = sinon.stub();
 
-      sinon.stub(tokenToProfile, 'tokenToProfile', function(token, client) {
+      sinon.stub(credentialToProfile, 'credentialToProfile', function(token, client) {
         expect(token).to.equal('oauth-token');
         expect(client).to.equal('test-ios');
         return Promise.reject(new Error());
@@ -258,14 +258,14 @@ describe('util/authorize_request', function() {
       const finalStub = sinon.stub();
 
       const profile = {}, user = {};
-      sinon.stub(tokenToProfile, 'tokenToProfile', function(token, client) {
+      sinon.stub(credentialToProfile, 'credentialToProfile', function(token, client) {
         expect(token).to.equal('oauth-token');
         expect(client).to.equal('test-ios');
         return Promise.resolve(profile);
       });
       @authconfig
       class AuthConfig extends Module {
-        getOrCreateUser(accessToken, refreshToken, prof) { // eslint-disable-line no-unused-vars
+        getOrCreateUserByProfile(accessToken, refreshToken, prof) { // eslint-disable-line no-unused-vars
           return Promise.resolve(user);
         }
       }
@@ -302,14 +302,14 @@ describe('util/authorize_request', function() {
       const finalStub = sinon.stub();
 
       const profile = {}, user = {};
-      sinon.stub(tokenToProfile, 'tokenToProfile', function(token, client) {
+      sinon.stub(credentialToProfile, 'credentialToProfile', function(token, client) {
         expect(token).to.equal('oauth-token');
         expect(client).to.equal('test-ios');
         return Promise.resolve(profile);
       });
       @authconfig
       class AuthConfig extends Module {
-        getOrCreateUser(accessToken, refreshToken, prof) { // eslint-disable-line no-unused-vars
+        getOrCreateUserByProfile(accessToken, refreshToken, prof) { // eslint-disable-line no-unused-vars
           return Promise.reject(new Ravel.ApplicationError.NotFound('User does not exist'));
         }
       }

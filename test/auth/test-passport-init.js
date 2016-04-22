@@ -80,10 +80,10 @@ describe('auth/passport_init', function() {
     //mock auth config
     @authconfig
     class AuthConfig extends (require('../../lib/ravel')).Module {
-      getUser() {
+      getUserById() {
         return Promise.resolve({});
       }
-      getOrCreateUser() {
+      getOrCreateUserByProfile() {
         return Promise.resolve({});
       }
     }
@@ -130,10 +130,10 @@ describe('auth/passport_init', function() {
     //mock auth config
     @authconfig
     class AuthConfig extends (require('../../lib/ravel')).Module {
-      getUser() {
+      getUserById() {
         return Promise.resolve({});
       }
-      getOrCreateUser() {
+      getOrCreateUserByProfile() {
         return Promise.resolve({});
       }
     }
@@ -166,11 +166,11 @@ describe('auth/passport_init', function() {
     //mock auth config
     @authconfig
     class AuthConfig extends (require('../../lib/ravel')).Module {
-      getUser(userId) {
+      getUserById(userId) {
         expect(userId).to.equal(profile.id);
         return Promise.resolve(profile);
       }
-      getOrCreateUser() {
+      getOrCreateUserByProfile() {
         return Promise.resolve({});
       }
     }
@@ -203,11 +203,11 @@ describe('auth/passport_init', function() {
     //mock auth config
     @authconfig
     class AuthConfig extends (require('../../lib/ravel')).Module {
-      getUser(userId) {
+      getUserById(userId) {
         expect(userId).to.equal(profile.id);
         return Promise.reject(new Error());
       }
-      getOrCreateUser() {
+      getOrCreateUserByProfile() {
         return Promise.resolve({});
       }
     }
@@ -233,7 +233,7 @@ describe('auth/passport_init', function() {
     Ravel.emit('post config koa', app);
   });
 
-  it('should delegate \'getOrCreateUser\' functionality to an @authconfig Module', function(done) {
+  it('should delegate \'getOrCreateUserByProfile\' functionality to an @authconfig Module', function(done) {
     const databaseProfile = {
       id: 9876,
       name: 'Sean McIntyre'
@@ -242,7 +242,7 @@ describe('auth/passport_init', function() {
     //mock auth config
     @authconfig
     class AuthConfig extends (require('../../lib/ravel')).Module {
-      getOrCreateUser() {
+      verifyCredentials() {
         return Promise.resolve(databaseProfile);
       }
     }
@@ -251,8 +251,8 @@ describe('auth/passport_init', function() {
     Ravel[coreSymbols.moduleInit]();
 
     const provider = new GoogleOAuth2();
-    sinon.stub(provider, 'init', function(expressApp, passport, getOrCreate) {
-      getOrCreate('testAccessToken', 'testRefreshToken', {name: 'Sean McIntyre'}, function(err, result) {
+    sinon.stub(provider, 'init', function(expressApp, passport, verify) {
+      verify('testAccessToken', 'testRefreshToken', {name: 'Sean McIntyre'}, function(err, result) {
         expect(result).to.deep.equal(databaseProfile);
         done();
       });
@@ -265,11 +265,11 @@ describe('auth/passport_init', function() {
     Ravel.emit('post config koa', app);
   });
 
-  it('should callback with an error if the getOrCreateUser function prevents auth provider initialization', function(done) {
+  it('should callback with an error if the getOrCreateUserByProfile function prevents auth provider initialization', function(done) {
     //mock auth config
     @authconfig
     class AuthConfig extends (require('../../lib/ravel')).Module {
-      getOrCreateUser() {
+      getOrCreateUserByProfile() {
         return Promise.reject(new Error());
       }
     }

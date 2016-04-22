@@ -57,7 +57,7 @@ describe('auth/authorize_token', function() {
         return client === 'test-web';
       }
 
-      tokenToProfile(token, client) { //eslint-disable-line no-unused-vars
+      credentialToProfile(credential, client) { //eslint-disable-line no-unused-vars
         return Promise.resolve({profile: profile, expiry: 2000});
       }
     }
@@ -76,18 +76,18 @@ describe('auth/authorize_token', function() {
     done();
   });
 
-  describe('#tokenToProfile()', function() {
+  describe('#credentialToProfile()', function() {
     it('should use the appropriate authorization provider to validate and turn a client token into a profile', function(done) {
       sinon.stub(Ravel.kvstore, 'get', function(key, callback) {
         callback(null, undefined);
       });
       sinon.stub(Ravel.kvstore, 'setex');
-      expect(tokenAuth.tokenToProfile('oauth-token', 'test-web')).to.eventually.equal(profile);
+      expect(tokenAuth.credentialToProfile('oauth-token', 'test-web')).to.eventually.equal(profile);
       done();
     });
 
     it('should throw a Ravel.ApplicationError.NotFound error if there is no provider for the given client type', function(done) {
-      expect(tokenAuth.tokenToProfile('oauth-token', 'test-ios')).to.eventually.be.rejectedWith(Ravel.ApplicationError.NotFound);
+      expect(tokenAuth.credentialToProfile('oauth-token', 'test-ios')).to.eventually.be.rejectedWith(Ravel.ApplicationError.NotFound);
       done();
     });
 
@@ -96,7 +96,7 @@ describe('auth/authorize_token', function() {
         callback(null, undefined);
       });
       const spy = sinon.stub(Ravel.kvstore, 'setex');
-      const promise = tokenAuth.tokenToProfile('oauth-token', 'test-web');
+      const promise = tokenAuth.credentialToProfile('oauth-token', 'test-web');
       expect(promise).to.eventually.deep.equal(profile);
       promise.then(function() {
         expect(spy).to.have.been.calledWith(testProvider.name+'-test-web-profile-oauth-token', 2000, JSON.stringify(profile));
@@ -109,8 +109,8 @@ describe('auth/authorize_token', function() {
         callback(null, JSON.stringify(profile));
       });
       const setexSpy = sinon.stub(Ravel.kvstore, 'setex');
-      const translateSpy = sinon.spy(testProvider, 'tokenToProfile');
-      const promise = tokenAuth.tokenToProfile('oauth-token', 'test-web');
+      const translateSpy = sinon.spy(testProvider, 'credentialToProfile');
+      const promise = tokenAuth.credentialToProfile('oauth-token', 'test-web');
       expect(promise).to.eventually.deep.equal(profile);
       promise.then(function() {
         expect(setexSpy).to.not.have.been.called;
@@ -124,12 +124,12 @@ describe('auth/authorize_token', function() {
         callback(null, undefined);
       });
       const spy = sinon.stub(Ravel.kvstore, 'setex');
-      sinon.stub(testProvider, 'tokenToProfile', function(token, client) { //eslint-disable-line no-unused-vars
+      sinon.stub(testProvider, 'credentialToProfile', function(token, client) { //eslint-disable-line no-unused-vars
         return Promise.reject(new Error());
       });
-      const promise = tokenAuth.tokenToProfile('oauth-token', 'test-web');
+      const promise = tokenAuth.credentialToProfile('oauth-token', 'test-web');
       expect(promise).to.eventually.be.rejectedWith(Error);
-      promise.catch(function() {        
+      promise.catch(function() {
         expect(spy).to.not.have.been.called;
         done();
       });

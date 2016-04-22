@@ -19,7 +19,7 @@ describe('Ravel', function() {
     done();
   });
 
-  describe('@inject()', function() {
+  describe('@authconfig()', function() {
     it('should decorate a class with a hidden property indicating it is an authconfig module', function(done) {
       @authconfig
       class Stub {}
@@ -32,40 +32,63 @@ describe('Ravel', function() {
       @authconfig
       class Stub {}
       const instance = new Stub();
-      expect(instance).to.have.a.property('getUser').that.is.a.function;
-      expect(instance).to.have.a.property('getOrCreateUser').that.is.a.function;
-      expect(instance.getUser()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
-      expect(instance.getOrCreateUser()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
+      expect(instance).to.have.a.property('getUserById').that.is.a.function;
+      expect(instance).to.have.a.property('getOrCreateUserByProfile').that.is.a.function;
+      expect(instance).to.have.a.property('verifyCredentials').that.is.a.function;
+      expect(instance.getUserById()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
+      expect(instance.getOrCreateUserByProfile()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
+      expect(instance.verifyCredentials()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
       done();
     });
 
     it('should retain an existing implementation of getUser()', function(done) {
       @authconfig
       class Stub {
-        getUser() {
+        getUserById() {
           return Promise.resolve({});
         }
       }
       const instance = new Stub();
-      expect(instance).to.have.a.property('getUser').that.is.a.function;
-      expect(instance).to.have.a.property('getOrCreateUser').that.is.a.function;
-      expect(instance.getUser()).to.eventually.deep.equal({});
-      expect(instance.getOrCreateUser()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
+      expect(instance).to.have.a.property('getUserById').that.is.a.function;
+      expect(instance).to.have.a.property('getOrCreateUserByProfile').that.is.a.function;
+      expect(instance).to.have.a.property('verifyCredentials').that.is.a.function;
+      expect(instance.getUserById()).to.eventually.deep.equal({});
+      expect(instance.getOrCreateUserByProfile()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
+      expect(instance.verifyCredentials()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
       done();
     });
 
-    it('should retain an existing implementation of getOrCreateUser()', function(done) {
+    it('should retain an existing implementation of getOrCreateUserByProfile()', function(done) {
       @authconfig
       class Stub {
-        getOrCreateUser() {
+        getOrCreateUserByProfile() {
           return Promise.resolve({});
         }
       }
       const instance = new Stub();
-      expect(instance).to.have.a.property('getUser').that.is.a.function;
-      expect(instance).to.have.a.property('getOrCreateUser').that.is.a.function;
-      expect(instance.getUser()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
-      expect(instance.getOrCreateUser()).to.eventually.deep.equal({});
+      expect(instance).to.have.a.property('getUserById').that.is.a.function;
+      expect(instance).to.have.a.property('getOrCreateUserByProfile').that.is.a.function;
+      expect(instance).to.have.a.property('verifyCredentials').that.is.a.function;
+      expect(instance.getUserById()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
+      expect(instance.getOrCreateUserByProfile()).to.eventually.deep.equal({});
+      expect(instance.verifyCredentials()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
+      done();
+    });
+
+    it('should retain an existing implementation of verifyCredentials()', function(done) {
+      @authconfig
+      class Stub {
+        verifyCredentials() {
+          return Promise.resolve({});
+        }
+      }
+      const instance = new Stub();
+      expect(instance).to.have.a.property('getUserById').that.is.a.function;
+      expect(instance).to.have.a.property('getOrCreateUserByProfile').that.is.a.function;
+      expect(instance).to.have.a.property('verifyCredentials').that.is.a.function;
+      expect(instance.getUserById()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
+      expect(instance.getOrCreateUserByProfile()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
+      expect(instance.verifyCredentials()).to.eventually.deep.equal({});
       done();
     });
   });
