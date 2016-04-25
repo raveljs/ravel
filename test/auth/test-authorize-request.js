@@ -11,7 +11,7 @@ const koa = require('koa');
 const request = require('supertest');
 const upath = require('upath');
 
-const AuthorizationProvider = (require('../../lib/ravel')).AuthorizationProvider;
+const AuthorizationProvider = require('../../lib/ravel').AuthorizationProvider;
 class GoogleOAuth2 extends AuthorizationProvider {
   constructor() {
     super('google-oauth2');
@@ -45,7 +45,7 @@ describe('util/authorize_request', function() {
     provider.init = sinon.stub();
     Ravel.set('authorization providers', [provider]);
 
-    AuthorizationMiddleware  = require('../../lib/ravel').AuthorizationMiddleware;
+    AuthorizationMiddleware  = require('../../lib/auth/authorize_request');
     Ravel.Log.setLevel('NONE');
     app = koa();
     Ravel.kvstore = {}; // mock Ravel.kvstore, since we're not actually starting Ravel.
