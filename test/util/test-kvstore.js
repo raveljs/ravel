@@ -4,9 +4,8 @@ const chai = require('chai');
 const expect = chai.expect;
 chai.use(require('chai-things'));
 const mockery = require('mockery');
-const sinon = require('sinon');
 
-let Ravel, kvstore, redisClientStub, redisMock;
+let Ravel, redisClientStub, redisMock;
 
 describe('Ravel', function() {
 
@@ -41,32 +40,35 @@ describe('Ravel', function() {
   });
 
   describe('util/kvstore', function() {
-
-    describe('reconnection', function() {
-      it('should seamlessly create a new redis client when an \'end\' event is received from the original', function(done) {
-        kvstore = require('../../lib/util/kvstore')(Ravel);
-        expect(kvstore).to.have.a.property('auth').that.is.a('function');
-
-        const origKvstoreAuth = kvstore.auth;
-        const spy = sinon.spy(redisMock, 'createClient');
-        //fake disconnection
-        redisClientStub.emit('end');
-        expect(spy).to.have.been.calledOnce;
-        expect(kvstore.auth).to.not.equal(origKvstoreAuth);
+    describe('retryStrategy', function() {
+      it('should return an error when redis refuses the connection', function(done) {
+        const retryStrategy = require('../../lib/util/kvstore').retryStrategy(Ravel);
+        expect(retryStrategy).to.be.a('function');
+        expect(retryStrategy({error:{code:'ECONNREFUSED'}})).to.be.an.instanceof(Ravel.ApplicationError.General);
         done();
       });
 
-      it('should support auth', function(done) {
-        Ravel.set('redis password', 'password');
-        kvstore = require('../../lib/util/kvstore')(Ravel);
-        expect(kvstore).to.have.a.property('auth').that.is.a('function');
+      it('should return an error when the maximum number of retries is exceeded', function(done) {
+        const retryStrategy = require('../../lib/util/kvstore').retryStrategy(Ravel);
+        expect(retryStrategy).to.be.a('function');
+        Ravel.set('redis max retries', 10);
+        const options = {
+          error:{code:'something'},
+          attempt: Ravel.get('redis max retries') + 1
+        };
+        expect(retryStrategy(options)).to.be.an.instanceof(Ravel.ApplicationError.General);
+        done();
+      });
 
-        const origKvstoreAuth = kvstore.auth;
-        const spy = sinon.spy(redisMock, 'createClient');
-        //fake disconnection
-        redisClientStub.emit('end');
-        expect(spy).to.have.been.calledOnce;
-        expect(kvstore.auth).to.not.equal(origKvstoreAuth);
+      it('should return the time to the next reconnect if the number of retries does not exceed the maximum', function(done) {
+        const retryStrategy = require('../../lib/util/kvstore').retryStrategy(Ravel);
+        expect(retryStrategy).to.be.a('function');
+        Ravel.set('redis max retries', 10);
+        const options = {
+          error:{code:'something'},
+          attempt: 1
+        };
+        expect(retryStrategy(options)).to.equal(100);
         done();
       });
     });
