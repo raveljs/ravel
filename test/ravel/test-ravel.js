@@ -96,6 +96,7 @@ describe('Ravel end-to-end test', function() {
 
           @mapping(Ravel.Routes.GET, '/app')
           appHandler(ctx) {
+            expect(this).to.have.a.property('params').that.is.an('object');
             ctx.body = '<!DOCTYPE html><html></html>';
             ctx.status = 200;
           }
