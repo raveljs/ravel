@@ -37,7 +37,7 @@ describe('Ravel lifeycle test', function() {
     const postinit = Ravel.Module.postinit;
     const prelisten = Ravel.Module.prelisten;
     const postlisten = Ravel.Module.postlisten;
-    const end = Ravel.Module.end;
+    const preclose = Ravel.Module.preclose;
     postinitHandlerCalled = 0;
     prelistenHandlerCalled = 0;
     postlistenHandlerCalled = 0;
@@ -80,7 +80,7 @@ describe('Ravel lifeycle test', function() {
         postlistenHandlerCalled += 1;
       }
 
-      @end
+      @preclose
       doEnd() {
         endHandlerCalled += 1;
       }
