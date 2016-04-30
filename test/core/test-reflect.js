@@ -53,8 +53,9 @@ describe('Ravel', function() {
       const meta = app.reflect('./test').metadata;
       expect(meta).to.deep.equal({
         class: {
+          'ravel': {'instance': app },
           '@inject': { dependencies: ['another'] },
-          source: { path: './test' }
+          source: { 'name': 'test', path: './test' }
         },
         method: {}
       });
@@ -84,6 +85,7 @@ describe('Ravel', function() {
       const meta = app.reflect('./stub').metadata;
       expect(meta).to.deep.equal({
         class: {
+          'ravel': {'instance': app },
           '@before': { middleware: ['middleware1'] },
           '@mapping': {
             'Symbol(get) /path':{
@@ -149,6 +151,7 @@ describe('Ravel', function() {
 
       expect(meta).to.deep.equal({
         class: {
+          'ravel': {'instance': app },
           '@before': { middleware: ['middleware1'] },
           '@mapping': {
             'Symbol(get) /': { verb: Resource.GET, path: '/', status: 501 },

@@ -47,6 +47,7 @@ describe('Ravel end-to-end test', function() {
           }
 
           getAllUsers() {
+            expect(this).to.have.a.property('params').that.is.an('object');
             return Promise.resolve(u);
           }
 
@@ -71,6 +72,7 @@ describe('Ravel end-to-end test', function() {
 
           @pre('respond')
           getAll(ctx) {
+            expect(this).to.have.a.property('params').that.is.an('object');
             return this.users.getAllUsers()
             .then((list) => {
               ctx.body = list;

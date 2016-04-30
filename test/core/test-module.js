@@ -86,6 +86,11 @@ describe('Ravel', function() {
     });
 
     it('should produce a module factory which can be used to instantiate the specified module and perform dependency injection', function(done) {
+      const scopedStub = sinon.stub();
+      Ravel.db = {
+        scoped: scopedStub
+      };
+
       const another = {};
       mockery.registerMock('another', another);
       @inject('another')
@@ -93,6 +98,22 @@ describe('Ravel', function() {
         constructor(a) {
           super();
           expect(a).to.equal(another);
+          expect(this.log).to.be.ok;
+          expect(this.log).to.be.an('object');
+          expect(this.log).to.have.property('trace').that.is.a('function');
+          expect(this.log).to.have.property('verbose').that.is.a('function');
+          expect(this.log).to.have.property('debug').that.is.a('function');
+          expect(this.log).to.have.property('info').that.is.a('function');
+          expect(this.log).to.have.property('warn').that.is.a('function');
+          expect(this.log).to.have.property('error').that.is.a('function');
+          expect(this.log).to.have.property('critical').that.is.a('function');
+          expect(this.ApplicationError).to.equal(Ravel.ApplicationError);
+          expect(this.kvstore).to.equal(Ravel.kvstore);
+          expect(this.params).to.be.an.object;
+          expect(this.params).to.have.a.property('get').that.is.a.function;
+          expect(this.db).to.have.a.property('scoped').that.is.an.function;
+          this.db.scoped();
+          expect(scopedStub).to.have.been.called;
         }
 
         method() {}
@@ -100,27 +121,6 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.module('./test', 'test');
       Ravel[coreSymbols.moduleInit]();
-      const scopedStub = sinon.stub();
-      Ravel.db = {
-        scoped: scopedStub
-      };
-      const instance = Ravel[coreSymbols.modules].test;
-      expect(instance.log).to.be.ok;
-      expect(instance.log).to.be.an('object');
-      expect(instance.log).to.have.property('trace').that.is.a('function');
-      expect(instance.log).to.have.property('verbose').that.is.a('function');
-      expect(instance.log).to.have.property('debug').that.is.a('function');
-      expect(instance.log).to.have.property('info').that.is.a('function');
-      expect(instance.log).to.have.property('warn').that.is.a('function');
-      expect(instance.log).to.have.property('error').that.is.a('function');
-      expect(instance.log).to.have.property('critical').that.is.a('function');
-      expect(instance.ApplicationError).to.equal(Ravel.ApplicationError);
-      expect(instance.kvstore).to.equal(Ravel.kvstore);
-      expect(instance.params).to.be.an.object;
-      expect(instance.params).to.have.a.property('get').that.is.a.function;
-      expect(instance.db).to.have.a.property('scoped').that.is.an.function;
-      instance.db.scoped();
-      expect(scopedStub).to.have.been.called;
       done();
     });
 
