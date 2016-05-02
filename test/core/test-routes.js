@@ -124,11 +124,17 @@ describe('Ravel', function() {
           expect(this.kvstore).to.equal(Ravel.kvstore);
           expect(this.params).to.be.an.object;
           expect(this.params).to.have.a.property('get').that.is.a.function;
+          expect(this.authorize).to.be.a('function');
+          expect(this.authorizeRedirect).to.be.a('function');
+          expect(this.authorize().toString()).to.equal('[object Generator]');
+          expect(this.authorizeRedirect().toString()).to.equal('[object Generator]');
+          done();
         }
       };
       mockery.registerMock(upath.join(Ravel.cwd, 'stub'), Stub);
       Ravel.routes('stub');
-      done();
+      const router = require('koa-router')();
+      Ravel[coreSymbols.routesInit](router);
     });
 
     it('should throw an ApplicationError.IllegalValue when a client attempts to register a routes module which is not a subclass of Routes', function(done) {

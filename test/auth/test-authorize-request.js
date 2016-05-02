@@ -345,5 +345,32 @@ describe('util/authorize_request', function() {
       })
       .expect(401, done);
     });
+
+    it('should rethrow errors which are not related to auth', function(done) {
+      const isAuthenticatedStub = sinon.stub().returns(true);
+      const error = new Error('something went wrong');
+
+      app.use(function*(next) {
+        this.isAuthenticated = isAuthenticatedStub;
+        try {
+          yield next;
+          this.status = 200;
+        } catch (err) {
+          expect(err).to.equal(error);
+          this.body = 'something went wrong';
+          this.status = 500;
+        }
+      });
+      app.use((new AuthorizationMiddleware(Ravel, false, false)).middleware());
+      app.use(function*() {
+        throw error;
+      });
+      request(app.callback())
+      .get('/entity')
+      .expect(function() {
+        expect(isAuthenticatedStub).to.have.been.called;
+      })
+      .expect(500, 'something went wrong', done);
+    });
   });
 });
