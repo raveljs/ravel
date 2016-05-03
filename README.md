@@ -1,7 +1,7 @@
 # Ravel
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/raveljs/ravel/master/LICENSE) [![npm version](https://badge.fury.io/js/ravel.svg)](http://badge.fury.io/js/ravel) [![npm](https://img.shields.io/npm/dt/ravel.svg?maxAge=2592000)]() [![Build Status](https://travis-ci.org/raveljs/ravel.svg?branch=master)](https://travis-ci.org/raveljs/ravel) [![Code Climate](https://codeclimate.com/github/raveljs/ravel/badges/gpa.svg)](https://codeclimate.com/github/raveljs/ravel) [![Test Coverage](https://codeclimate.com/github/raveljs/ravel/badges/coverage.svg)](https://codeclimate.com/github/raveljs/ravel/coverage) [![Dependency Status](https://david-dm.org/raveljs/ravel.svg)](https://david-dm.org/raveljs/ravel)
 
-Forge past a tangle of node.js code. Make a cool app.
+Forge past a tangle of node.js modules. Make a cool app.
 
 ## Introduction
 
