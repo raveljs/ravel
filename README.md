@@ -5,7 +5,7 @@ Forge past a tangle of node.js modules. Make a cool app.
 
 ## Introduction
 
-Ravel is a tiny, sometimes-opinionated foundation for rapidly creating maintainable, horizontally-scalable web application back-ends in  [node](https://github.com/joyent/node).
+Ravel is a tiny, sometimes-opinionated foundation for rapidly creating maintainable, horizontally-scalable web application back-ends in [node](https://github.com/joyent/node).
 
 Layered on top of ES2015/2016 and awesome technologies such as [koa](http://koajs.com/), [babel](babeljs.io), [Passport](https://github.com/jaredhanson/passport), [Intel](https://github.com/seanmonstar/intel), [Redis](https://github.com/antirez/redis), and [docker](docker.com), Ravel aims to provide a pre-baked, well-tested and highly modular solution for constructing enterprise web applications by providing:
 
