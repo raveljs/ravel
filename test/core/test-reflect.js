@@ -20,7 +20,7 @@ describe('Ravel', function() {
 
     Ravel = require('../../lib/ravel');
     app = new Ravel();
-    app.Log.setLevel(app.Log.NONE);
+    app.log.setLevel(app.log.NONE);
     app.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
     done();
   });
@@ -138,7 +138,7 @@ describe('Ravel', function() {
 
       // need to call init so that it creates @mapping decorators
       mockery.registerMock('redis', require('redis-mock'));
-      app.set('log level', app.Log.NONE);
+      app.set('log level', app.log.NONE);
       app.set('redis host', 'localhost');
       app.set('redis port', 5432);
       app.set('port', '9080');

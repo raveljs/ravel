@@ -23,7 +23,7 @@ describe('Ravel', function() {
     inject = require('../../lib/ravel').inject;
     Ravel = new (require('../../lib/ravel'))();
     coreSymbols = require('../../lib/core/symbols');
-    Ravel.Log.setLevel(Ravel.Log.NONE);
+    Ravel.log.setLevel(Ravel.log.NONE);
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
     done();
   });

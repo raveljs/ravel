@@ -28,7 +28,7 @@ describe('Ravel', function() {
     Ravel = new (require('../../lib/ravel'))();
     Resource = require('../../lib/ravel').Resource;
     coreSymbols = require('../../lib/core/symbols');
-    Ravel.Log.setLevel(Ravel.Log.NONE);
+    Ravel.log.setLevel(Ravel.log.NONE);
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
     done();
   });

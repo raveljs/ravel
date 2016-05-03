@@ -91,9 +91,10 @@ class ExampleRoutes extends Routes {
     };
   }
 
-  @mapping(Routes.GET, '/app')
-  @before('middleware1','middleware2')
+  @mapping(Routes.GET, '/app') // bind this method to an endpoint and verb with @mapping
+  @before('middleware1','middleware2') // use @before to place middleware before appHandler
   appHandler(ctx) {
+    // ctx is just a koa context!
     ctx.body = '<!DOCTYPE html><html><body>Hello World!</body></html>';
     ctx.status = 200;
   }
@@ -112,6 +113,8 @@ const Resource = require('ravel').Resource;
 const inject = require('ravel').inject;
 const before = Resource.before; // decorator to add middleware to an endpoint within the Resource
 
+// using @before at the class level decorates all endpoint methods with middleware
+@before('respond') // 'respond' is built-in Ravel rest response middleware
 @inject('cities')
 class CitiesResource extends Resource {
   constructor(cities) {
@@ -124,7 +127,6 @@ class CitiesResource extends Resource {
     };
   }
 
-  @before('respond') // 'respond' is built-in Ravel rest response middleware
   getAll(ctx) {   // ctx is a koa context. this is the last middleware which will run in the chain
      return this.cities.getAllCities()
      .then((list) => {
@@ -132,7 +134,7 @@ class CitiesResource extends Resource {
      });
   }
 
-  @before('anotherMiddleware', 'respond')
+  @before('anotherMiddleware') // using @before at the method level decorates this method with middleware
   get(ctx) { // get routes automatically receive an endpoint of /cities/:id (in this case).
     return this.cities.getCity(ctx.params.id)
     .then((city) => {
@@ -145,7 +147,7 @@ class CitiesResource extends Resource {
   // this resource will result in calls using
   // those verbs returning HTTP 501 NOT IMPLEMENTED
 
-  // postAll is not supported, because that's stupid.
+  // postAll is not supported, because it makes no sense
 }
 ```
 
@@ -154,7 +156,7 @@ class CitiesResource extends Resource {
 Since decorators are not yet available in Node, you will need to use Babel to transpile them into ES2015-compliant code.
 
 ```bash
-$ npm install babel@6.3.26 babel-plugin-transform-decorators-legacy@1.3.4 babel-register@6.4.3 harmonize@1.4.4
+$ npm install babel@6.5.2 babel-plugin-transform-decorators-legacy@1.3.4 babel-register@6.8.0
 ```
 
 Place this `.babelrc` config file at the root of your source code.
@@ -174,7 +176,7 @@ Place this `.babelrc` config file at the root of your source code.
 
 *app.js*
 ```javascript
-//TODO remove when decorators land in node
+//TODO remove when decorators land in node. Should probably pre-transpile in a production app.
 require('babel-register');
 
 const app = new require('ravel')();

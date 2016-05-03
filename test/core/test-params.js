@@ -24,7 +24,7 @@ describe('Ravel', function() {
     });
     Ravel = new (require('../../lib/ravel'))();
     coreSymbols = require('../../lib/core/symbols');
-    Ravel.Log.setLevel('NONE');
+    Ravel.log.setLevel('NONE');
     done();
   });
 

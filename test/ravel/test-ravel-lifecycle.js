@@ -129,7 +129,7 @@ describe('Ravel lifeycle test', function() {
     }
 
     app = new Ravel();
-    app.set('log level', app.Log.NONE);
+    app.set('log level', app.log.NONE);
     app.set('redis host', 'localhost');
     app.set('redis port', 5432);
     app.set('redis password', 'password');

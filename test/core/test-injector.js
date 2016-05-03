@@ -20,7 +20,7 @@ describe('Ravel', function() {
     Ravel = new (require('../../lib/ravel'))();
     inject = require('../../lib/ravel').inject;
     coreSymbols = require('../../lib/core/symbols');
-    Ravel.Log.setLevel(Ravel.Log.NONE);
+    Ravel.log.setLevel(Ravel.log.NONE);
 
     done();
   });

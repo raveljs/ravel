@@ -31,7 +31,7 @@ describe('auth/authorize_token', function() {
     mockery.registerMock('redis', redisMock);
 
     Ravel = new (require('../../lib/ravel'))();
-    Ravel.Log.setLevel(Ravel.Log.NONE);
+    Ravel.log.setLevel(Ravel.log.NONE);
     Ravel.set('redis port', 0);
     Ravel.set('redis host', 'localhost');
     Ravel.set('redis password', 'password');

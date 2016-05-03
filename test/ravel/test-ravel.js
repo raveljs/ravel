@@ -116,7 +116,7 @@ describe('Ravel end-to-end test', function() {
         app = new Ravel();
         expect(Ravel).to.have.a.property('httpCodes').that.deep.equals(httpCodes);
         expect(Ravel).to.have.a.property('Error').that.deep.equals(ApplicationError.General);
-        app.set('log level', app.Log.NONE);
+        app.set('log level', app.log.NONE);
         app.set('redis host', 'localhost');
         app.set('redis port', 5432);
         app.set('port', '9080');

@@ -28,7 +28,7 @@ describe('Ravel', function() {
     coreSymbols = require('../../lib/core/symbols');
 
     Ravel = new (require('../../lib/ravel'))();
-    Ravel.Log.setLevel('NONE');
+    Ravel.log.setLevel('NONE');
     // mock kvstore and db.middleware, since they only get created during Ravel.start
     Ravel.kvstore = {};
     Ravel.db = {
@@ -395,7 +395,7 @@ describe('Ravel', function() {
           super('/api/test');
         }
       });
-      Ravel.set('log level', Ravel.Log.NONE);
+      Ravel.set('log level', Ravel.log.NONE);
       Ravel.set('redis host', 'localhost');
       Ravel.set('redis port', 5432);
       Ravel.set('port', '9080');

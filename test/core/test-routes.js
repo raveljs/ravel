@@ -26,7 +26,7 @@ describe('Ravel', function() {
     mapping = Routes.mapping;
     coreSymbols = require('../../lib/core/symbols');
     Ravel = new (require('../../lib/ravel'))();
-    Ravel.Log.setLevel('NONE');
+    Ravel.log.setLevel('NONE');
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
     done();
   });
@@ -358,7 +358,7 @@ describe('Ravel', function() {
       };
       mockery.registerMock('redis', require('redis-mock'));
       mockery.registerMock(upath.join(Ravel.cwd, 'stub'), Stub);
-      Ravel.set('log level', Ravel.Log.NONE);
+      Ravel.set('log level', Ravel.log.NONE);
       Ravel.set('redis host', 'localhost');
       Ravel.set('redis port', 5432);
       Ravel.set('port', '9080');

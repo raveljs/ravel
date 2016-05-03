@@ -20,7 +20,7 @@ describe('db/database_provider', function() {
     DatabaseProvider = require('../../lib/ravel').DatabaseProvider;
     Ravel = new (require('../../lib/ravel'))();
     dbSymbols = require('../../lib/db/symbols');
-    Ravel.Log.setLevel('NONE');
+    Ravel.log.setLevel('NONE');
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
     provider = new DatabaseProvider('name');
     done();

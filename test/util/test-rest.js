@@ -21,7 +21,7 @@ describe('util/rest', function() {
 
     app = koa();
     Ravel = new (require('../../lib/ravel'))();
-    Ravel.Log.setLevel('NONE');
+    Ravel.log.setLevel('NONE');
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
 
     rest = new (require('../../lib/util/rest'))(Ravel);

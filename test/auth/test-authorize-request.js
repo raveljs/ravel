@@ -46,7 +46,7 @@ describe('util/authorize_request', function() {
     Ravel.set('authorization providers', [provider]);
 
     AuthorizationMiddleware  = require('../../lib/auth/authorize_request');
-    Ravel.Log.setLevel('NONE');
+    Ravel.log.setLevel('NONE');
     app = koa();
     Ravel.kvstore = {}; // mock Ravel.kvstore, since we're not actually starting Ravel.
     done();

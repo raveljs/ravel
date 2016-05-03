@@ -23,7 +23,7 @@ describe('db/database', function() {
     app = koa();
     Ravel = new (require('../../lib/ravel'))();
     DatabaseProvider = require('../../lib/ravel').DatabaseProvider;
-    Ravel.Log.setLevel('NONE');
+    Ravel.log.setLevel('NONE');
     Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
 
     //load database module
