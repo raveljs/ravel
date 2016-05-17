@@ -18,7 +18,8 @@ class GoogleOAuth2 extends AuthorizationProvider {
   }
 }
 
-let Ravel, Module, app, authconfig, AuthorizationMiddleware, authorizeTokenStub, credentialToProfile, coreSymbols;
+let Ravel, Module, app, authconfig, AuthorizationMiddleware,
+  authorizeTokenStub, credentialToProfile, coreSymbols, restMiddleware;
 
 describe('util/authorize_request', function() {
   beforeEach(function(done) {
@@ -46,6 +47,8 @@ describe('util/authorize_request', function() {
     Ravel.set('authorization providers', [provider]);
 
     AuthorizationMiddleware  = require('../../lib/auth/authorize_request');
+    const Rest = require('../../lib/util/rest');
+    restMiddleware = (new Rest(Ravel)).errorHandler();
     Ravel.log.setLevel('NONE');
     app = koa();
     Ravel.kvstore = {}; // mock Ravel.kvstore, since we're not actually starting Ravel.
@@ -59,6 +62,7 @@ describe('util/authorize_request', function() {
     app = undefined;
     authconfig = undefined;
     AuthorizationMiddleware = undefined;
+    restMiddleware = undefined;
     coreSymbols = undefined;
     mockery.deregisterAll();
     mockery.disable();
@@ -81,6 +85,7 @@ describe('util/authorize_request', function() {
       const isAuthenticatedStub = sinon.stub().returns(true);
       const finalStub = sinon.stub();
 
+      app.use(restMiddleware);
       app.use(function*(next) {
         this.isAuthenticated = isAuthenticatedStub;
         yield next;
@@ -102,6 +107,7 @@ describe('util/authorize_request', function() {
     it('should use passport\'s req.isAuthenticated() to check users by default, sending HTTP 401 UNAUTHORIZED if users are unauthorized', function(done) {
       const isAuthenticatedStub = sinon.stub().returns(false);
 
+      app.use(restMiddleware);
       app.use(function*(next) {
         this.isAuthenticated = isAuthenticatedStub;
         yield next;
@@ -120,6 +126,7 @@ describe('util/authorize_request', function() {
       Ravel.set('login route', '/login');
       const isAuthenticatedStub = sinon.stub().returns(false);
 
+      app.use(restMiddleware);
       app.use(function*(next) {
         this.isAuthenticated = isAuthenticatedStub;
         yield next;
@@ -159,6 +166,7 @@ describe('util/authorize_request', function() {
       Ravel[coreSymbols.moduleInit]();
       Ravel.emit('post module init');
 
+      app.use(restMiddleware);
       app.use(function*(next) {
         this.isAuthenticated = isAuthenticatedStub;
         yield next;
@@ -205,6 +213,7 @@ describe('util/authorize_request', function() {
       Ravel[coreSymbols.moduleInit]();
       Ravel.emit('post module init');
 
+      app.use(restMiddleware);
       app.use(function*(next) {
         this.isAuthenticated = isAuthenticatedStub;
         yield next;
@@ -235,6 +244,7 @@ describe('util/authorize_request', function() {
         return Promise.reject(new Error());
       });
 
+      app.use(restMiddleware);
       app.use(function*(next) {
         this.isAuthenticated = isAuthenticatedStub;
         yield next;
@@ -279,6 +289,7 @@ describe('util/authorize_request', function() {
       Ravel[coreSymbols.moduleInit]();
       Ravel.emit('post module init');
 
+      app.use(restMiddleware);
       app.use(function*(next) {
         this.isAuthenticated = isAuthenticatedStub;
         yield next;
@@ -324,6 +335,7 @@ describe('util/authorize_request', function() {
       Ravel[coreSymbols.moduleInit]();
       Ravel.emit('post module init');
 
+      app.use(restMiddleware);
       app.use(function*(next) {
         this.isAuthenticated = isAuthenticatedStub;
         yield next;
@@ -350,6 +362,7 @@ describe('util/authorize_request', function() {
       const isAuthenticatedStub = sinon.stub().returns(true);
       const error = new Error('something went wrong');
 
+      app.use(restMiddleware);
       app.use(function*(next) {
         this.isAuthenticated = isAuthenticatedStub;
         try {
