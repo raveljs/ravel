@@ -181,7 +181,7 @@ describe('Ravel lifeycle test', function() {
 
       const gzip = function*(next) { yield next; };
       const gzipSpy = sinon.stub().returns(gzip);
-      mockery.registerMock('koa-compressor', gzipSpy);
+      mockery.registerMock('koa-compress', gzipSpy);
 
       app.init();
 
