@@ -1,6 +1,6 @@
 {
   "name": "ravel",
-  "version": "0.13.3",
+  "version": "0.13.4",
   "author": "Sean McIntyre <s.mcintyre@xverba.ca>",
   "description": "Ravel Rapid Application Development Framework",
   "keywords": [
@@ -39,7 +39,7 @@
     "hiredis":"0.4.1",
     "intel":"1.1.0",
     "koa": "1.2.0",
-    "koa-compressor": "1.0.3",
+    "koa-compress": "1.0.9",
     "koa-compose":"2.4.0",
     "koa-favicon": "1.2.1",
     "koa-generic-session": "1.10.2",
