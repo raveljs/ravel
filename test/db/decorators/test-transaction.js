@@ -23,6 +23,7 @@ describe('Ravel', function() {
     });
 
     app = new Ravel();
+    app.log.setLevel('NONE');
     transaction = Routes.transaction;
     coreSymbols = require('../../../lib/core/symbols');
     done();
@@ -67,7 +68,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should provide ', function(done) {
+    it('should provide open connections to Route handlers', function(done) {
       class Stub extends Routes {
         constructor() {
           super('/app/path');
