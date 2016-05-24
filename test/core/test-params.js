@@ -37,7 +37,7 @@ describe('Ravel', function() {
 
   describe('#set()', function() {
     it('should allow clients to set the value of a parameter', function(done) {
-      Ravel.registerSimpleParameter('test param', false);
+      Ravel.registerParameter('test param', false);
       Ravel.set('test param', 'test value');
       expect(Ravel.get('test param')).to.equal('test value');
       done();
@@ -56,20 +56,20 @@ describe('Ravel', function() {
 
   describe('#get()', function() {
     it('should allow clients to retrieve the value of a set optional parameter', function(done) {
-      Ravel.registerSimpleParameter('test param', false);
+      Ravel.registerParameter('test param', false);
       Ravel.set('test param', 'test value');
       expect(Ravel.get('test param')).to.equal('test value');
       done();
     });
 
     it('should return undefined when clients attempt to retrieve the value of an unset optional parameter', function(done) {
-      Ravel.registerSimpleParameter('test param', false);
+      Ravel.registerParameter('test param', false);
       expect(Ravel.get('test param')).to.equal(undefined);
       done();
     });
 
     it('should allow clients to retrieve the value of a set required parameter', function(done) {
-      Ravel.registerSimpleParameter('test param', true);
+      Ravel.registerParameter('test param', true);
       Ravel.set('test param', 'test value');
       expect(Ravel.get('test param')).to.equal('test value');
       done();
@@ -87,7 +87,7 @@ describe('Ravel', function() {
 
     it('should throw a Ravel.ApplicationError.NotFound error when clients attempt to retrieve the value of an unset required parameter', function(done) {
       try {
-        Ravel.registerSimpleParameter('test param', true);
+        Ravel.registerParameter('test param', true);
         Ravel.get('test param');
         done(new Error('Should never reach this line.'));
       } catch (err) {
@@ -100,8 +100,8 @@ describe('Ravel', function() {
   describe('.config', function() {
     it('should return the full configuration of the given `ravel instance`', function(done) {
       const defaultConfig = Ravel.config;
-      Ravel.registerSimpleParameter('test param', true);
-      Ravel.registerSimpleParameter('test param 2', true);
+      Ravel.registerParameter('test param', true);
+      Ravel.registerParameter('test param 2', true);
       Ravel.set('test param', false);
       Ravel.set('test param 2', 10);
 
