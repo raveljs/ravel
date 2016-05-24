@@ -71,7 +71,7 @@ class Cities extends Module {
 
 ### Routes
 
-`Routes` are Ravel's wrapper for `koa`. They support GET, POST, PUT and DELETE requests, and middleware, via decorators. Like `Module`s, they also support dependency injection. Routes are most useful for implementing non-REST things, such as static content serving or template serving (EJS, Jade, etc.). If you want to build a REST API, use `Resource`s instead (they're up next!).
+`Routes` are Ravel's wrapper for `koa`. They support GET, POST, PUT and DELETE requests, and middleware, via decorators. Like `Module`s, they also support dependency injection. Though `Routes` can do everything `Resources` can do, they are most useful for implementing non-REST things, such as static content serving or template serving (EJS, Jade, etc.). If you want to build a REST API, use `Resource`s instead (they're up next!).
 
 *routes/index.js*
 ```javascript
@@ -103,7 +103,7 @@ class ExampleRoutes extends Routes {
 
 ### Resources
 
-What might be referred to as a *controller* in other frameworks, a `Resource` module defines HTTP methods on an endpoint, supporting the session-per-request transaction pattern via Ravel middleware. `Resource`s also support dependency injection, allowing for the easy creation of RESTful interfaces to your `Module`-based application logic. Resources are really just a thin wrapper around `Routes`, using specially-named handler functions (`get`, `getAll`, `post`, `put`, `putAll`, `delete`, `deleteAll`) instead of `@mapping`, and supporting advanced functionality such as transactions-per-request.
+What might be referred to as a *controller* in other frameworks, a `Resource` module defines HTTP methods on an endpoint, supporting the session-per-request transaction pattern via Ravel middleware. `Resource`s also support dependency injection, allowing for the easy creation of RESTful interfaces to your `Module`-based application logic. Resources are really just a thin wrapper around `Routes`, using specially-named handler functions (`get`, `getAll`, `post`, `put`, `putAll`, `delete`, `deleteAll`) instead of `@mapping`. This convention-over-configuration approach makes it easier to write proper REST APIs with less code, and is recommended over carefully chosen `@mapping`s in a `Routes` class.
 
 *resources/city.js*
 ```javascript
