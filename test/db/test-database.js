@@ -93,6 +93,40 @@ describe('db/database', function() {
       .end(done);
     });
 
+    it('should populate req.transaction with a dictionary of only the correct open database connections when providers are requested by name', function(done) {
+      //reload database so it picks up database providers
+      Ravel.set('database providers', [mysqlProvider, postgresProvider]);
+      database = require('../../lib/db/database')(Ravel);
+
+      //mock stuff
+      const mysqlConnection = Object.create(null), postgresConnection = Object.create(null);
+      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function() {
+        return Promise.resolve(mysqlConnection);
+      });
+      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function() {
+        return Promise.resolve(postgresConnection);
+      });
+      sinon.stub(mysqlProvider, 'exitTransaction', function() {
+        return Promise.resolve();
+      });
+      sinon.stub(postgresProvider, 'exitTransaction', function() {
+        return Promise.resolve();
+      });
+
+      app.use(database.middleware('postgres'));
+      app.use(function*(){
+        expect(mysqlGetTransactionSpy).to.not.have.been.called;
+        expect(postgresGetTransactionSpy).to.have.been.called;
+        expect(this).to.have.a.property('transaction').that.deep.equals({
+          postgres: postgresConnection
+        });
+      });
+
+      request(app.callback())
+      .get('/')
+      .end(done);
+    });
+
     it('should throw an Error if any of the registered database providers fails to provide a connection', function(done) {
       //reload database so it picks up database providers
       Ravel.set('database providers', [mysqlProvider, postgresProvider]);
@@ -284,6 +318,36 @@ describe('db/database', function() {
         expect(postgresGetTransactionSpy).to.have.been.called;
         expect(this).to.have.a.property('transaction').that.deep.equals({
           mysql: mysqlConnection,
+          postgres: postgresConnection
+        });
+        done();
+      });
+    });
+
+    it('should populate scoped context with a dictionary of the correct open database connections when providers are requested by name', function(done) {
+      //reload database so it picks up database providers
+      Ravel.set('database providers', [mysqlProvider, postgresProvider]);
+      database = require('../../lib/db/database')(Ravel);
+
+
+      const mysqlConnection = Object.create(null), postgresConnection = Object.create(null);
+      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function() {
+        return Promise.resolve(mysqlConnection);
+      });
+      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function() {
+        return Promise.resolve(postgresConnection);
+      });
+      sinon.stub(mysqlProvider, 'exitTransaction', function() {
+        return Promise.resolve();
+      });
+      sinon.stub(postgresProvider, 'exitTransaction', function() {
+        return Promise.resolve();
+      });
+
+      database.scoped('postgres', function*() {
+        expect(mysqlGetTransactionSpy).to.not.have.been.called;
+        expect(postgresGetTransactionSpy).to.have.been.called;
+        expect(this).to.have.a.property('transaction').that.deep.equals({
           postgres: postgresConnection
         });
         done();
