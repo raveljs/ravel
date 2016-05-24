@@ -16,6 +16,7 @@ let endHandlerCalled = 0;
 
 describe('Ravel lifeycle test', function() {
   beforeEach(function(done) {
+    process.removeAllListeners('unhandledRejection');
     //enable mockery
     mockery.enable({
       useCleanCache: true,
@@ -148,6 +149,7 @@ describe('Ravel lifeycle test', function() {
 
   afterEach(function(done) {
     app = undefined;
+    process.removeAllListeners('unhandledRejection');
     mockery.deregisterAll();
     mockery.disable();
     done();

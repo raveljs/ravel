@@ -8,6 +8,8 @@ const mockery = require('mockery');
 const upath = require('upath');
 const redis = require('redis-mock');
 const request = require('supertest');
+const sinon = require('sinon');
+chai.use(require('sinon-chai'));
 
 let app, agent;
 
@@ -16,22 +18,62 @@ const u = [{id:1, name:'Joe'}, {id:2, name:'Jane'}];
 
 describe('Ravel end-to-end test', function() {
   before(function(done) {
+    process.removeAllListeners('unhandledRejection');
+    //enable mockery
+    mockery.enable({
+      useCleanCache: true,
+      warnOnReplace: false,
+      warnOnUnregistered: false
+    });
     done();
   });
 
   after(function(done) {
+    process.removeAllListeners('unhandledRejection');
+    mockery.deregisterAll();
+    mockery.disable();
     done();
   });
 
   describe('#init()', function() {
+    describe('uncaught ES6 Promise error logging', function() {
+      it('should log unhandled erors within Promises', function(done) {
+        const logger = {
+          trace: sinon.stub(),
+          verbose: sinon.stub(),
+          debug: sinon.stub(),
+          info: sinon.stub(),
+          warn: sinon.stub(),
+          error: sinon.stub(),
+          critical: sinon.stub()
+        };
+        const intel = {
+          getLogger: function() {
+            return logger;
+          },
+          setLevel: function() {}
+        };
+        mockery.registerMock('intel', intel);
+        mockery.registerMock('redis', redis);
+        const Ravel = require('../../lib/ravel');
+        app = new Ravel();
+        app.set('log level', app.log.NONE);
+        app.set('redis host', 'localhost');
+        app.set('redis port', 5432);
+        app.set('keygrip keys', ['mysecret']);
+        app.set('port', '9080');
+        app.init();
+        Promise.resolve('promised value').then(function() {
+          throw new Error('error');
+        });
+        // expect(logSpy).to.have.been.calledWith(sinon.match('Uncaught error in promise'));
+        expect(logger.trace).to.have.been.called;
+        done();
+      });
+    });
+
     describe('basic application server consisting of a module and a resource', function() {
       before(function(done) {
-        //enable mockery
-        mockery.enable({
-          useCleanCache: true,
-          warnOnReplace: false,
-          warnOnUnregistered: false
-        });
 
         const Ravel = require('../../lib/ravel');
         const httpCodes = require('../../lib/util/http_codes');
@@ -137,8 +179,6 @@ describe('Ravel end-to-end test', function() {
 
       after(function(done) {
         app = undefined;
-        mockery.deregisterAll();
-        mockery.disable();
         done();
       });
 
