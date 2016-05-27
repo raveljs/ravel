@@ -64,7 +64,7 @@ Ravel is layered on top of awesome technologies, including:
 
 > As Ravel uses the Spread operator from ES2015, you will need to use a 5.x+ distribution of node.
 
-``bash
+```bash
 $ npm install ravel
 ```
 
