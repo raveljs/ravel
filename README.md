@@ -45,9 +45,10 @@ Ravel is inspired by the simplicity of [koa](http://koajs.com/) and [express](ht
 - A standard set of well-defined architectural components so that your code stays **organized**
 - Rapid **REST API** definition
 - Easy **bootstrapping** via an enforced, reference configuration of [koa](http://koajs.com/) with critical middleware
-
 - Dependency injection (instead of relative `require`s)
+
 And a few other features, plucked from popular back-end frameworks:
+
 - Transaction-per-request
 - Simple authentication and authorization configuration (no complex [passport](https://github.com/jaredhanson/passport) setup)
 - Externalized session storage for horizontal scalability
