@@ -89,7 +89,7 @@ If you're doing it right, your applications will consist largely of `Module`s, w
 
 ### Modules (and Errors)
 
-`Module`s are plain old node.js modules containing a single class which encapsulates application logic. `Module`s support dependency injection of core Ravel services and other Modules alongside npm dependencies *(no relative `require`'s!)*. `Module`s are instantiated safely in dependency-order, and cyclical dependencies are detected automatically.
+`Module`s are plain old node.js modules exporting a single class which encapsulates application logic. `Module`s support dependency injection of core Ravel services and other Modules alongside npm dependencies *(no relative `require`'s!)*. `Module`s are instantiated safely in dependency-order, and cyclical dependencies are detected automatically.
 
 *modules/cities.js*
 ```javascript
@@ -136,6 +136,9 @@ class Cities extends Module {
     });
   }
 }
+
+// Export Module class
+module.exports = Cities;
 ```
 
 ### Routes
@@ -169,6 +172,9 @@ class ExampleRoutes extends Routes {
     ctx.status = 200;
   }
 }
+
+// Export Routes class
+module.exports = ExampleRoutes;
 ```
 
 ### Resources
@@ -221,6 +227,9 @@ class CitiesResource extends Resource {
 
   // postAll is not supported, because it makes no sense
 }
+
+// Export Resource class
+module.exports = CitiesResource;
 ```
 
 ### Babel configuration
