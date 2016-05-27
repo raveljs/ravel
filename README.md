@@ -93,6 +93,7 @@ If you're doing it right, your applications will consist largely of `Module`s, w
 *modules/cities.js*
 ```javascript
 const Ravel = require('ravel');
+const Error = Ravel.Error;
 const Module = Ravel.Module;
 const inject = Ravel.inject;
 
@@ -100,7 +101,7 @@ const inject = Ravel.inject;
  * An Error we will throw when a requested city is not found.
  * This Error will be associated with the HTTP error code 404.
  */
-class MissingCityError extends Ravel.Error {
+class MissingCityError extends Error {
   constructor(name) {
     super(`City ${name} does not exist.`, constructor, Ravel.httpCodes.NOT_FOUND);
   }
