@@ -1,4 +1,5 @@
-# ![Ravel](https://avatars2.githubusercontent.com/u/12835831?v=3&s=56) Ravel
+# Ravel
+![Ravel](https://avatars2.githubusercontent.com/u/12835831?v=3&s=128)
 
 > Forge past a tangle of modules. Make a cool app.
 
