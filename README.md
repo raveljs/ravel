@@ -15,7 +15,7 @@ Ravel is a tiny, sometimes-opinionated foundation for creating organized, mainta
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Architecture](#architecture)
-	- [Modules](#modules)
+	- [Modules (and Errors)](#modules-and-errors)
 	- [Routes](#routes)
 	- [Resources](#resources)
 	- [Babel configuration](#babel-configuration)
@@ -23,6 +23,7 @@ Ravel is a tiny, sometimes-opinionated foundation for creating organized, mainta
 - [API Documentation](#api-documentation)
 	- [Ravel](#ravel)
 	- [Ravel.Module](#ravelmodule)
+	- [Ravel.Error](#ravelerror)
 	- [Ravel.Resource](#ravelresource)
 	- [Ravel.Routes](#ravelroutes)
 	- [Dependency Injection and Namespacing](#dependency-injection-and-namespacing)
@@ -45,8 +46,8 @@ Ravel is inspired by the simplicity of [koa](http://koajs.com/) and [express](ht
 - Rapid **REST API** definition
 - Easy **bootstrapping** via an enforced, reference configuration of [koa](http://koajs.com/) with critical middleware
 
+- Dependency injection (instead of relative `require`s)
 And a few other features, plucked from popular back-end frameworks:
-- Dependency injection
 - Transaction-per-request
 - Simple authentication and authorization configuration (no complex [passport](https://github.com/jaredhanson/passport) setup)
 - Externalized session storage for horizontal scalability
@@ -85,9 +86,9 @@ Ravel applications consist of a few basic parts:
 
 If you're doing it right, your applications will consist largely of `Module`s, with a thin layer of `Routes` and `Resource`s on top.
 
-### Modules
+### Modules (and Errors)
 
-Plain old node.js modules containing a single class which encapsulates application logic. `Module`s support dependency injection of core Ravel services and other Modules alongside npm dependencies *(no relative `require`'s!)*. `Module`s are instantiated safely in dependency-order, and cyclical dependencies are detected automatically.
+`Module`s are plain old node.js modules containing a single class which encapsulates application logic. `Module`s support dependency injection of core Ravel services and other Modules alongside npm dependencies *(no relative `require`'s!)*. `Module`s are instantiated safely in dependency-order, and cyclical dependencies are detected automatically.
 
 *modules/cities.js*
 ```javascript
@@ -272,6 +273,10 @@ $ node --harmony_rest_parameters app.js
 TODO
 
 ### Ravel.Module
+
+TODO
+
+### Ravel.Error
 
 TODO
 
