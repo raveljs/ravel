@@ -1,50 +1,118 @@
-# Ravel
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/raveljs/ravel/master/LICENSE) [![npm version](https://badge.fury.io/js/ravel.svg)](http://badge.fury.io/js/ravel) [![npm](https://img.shields.io/npm/dm/ravel.svg?maxAge=2592000)]() [![Build Status](https://travis-ci.org/raveljs/ravel.svg?branch=master)](https://travis-ci.org/raveljs/ravel) [![Code Climate](https://codeclimate.com/github/raveljs/ravel/badges/gpa.svg)](https://codeclimate.com/github/raveljs/ravel) [![Test Coverage](https://codeclimate.com/github/raveljs/ravel/badges/coverage.svg)](https://codeclimate.com/github/raveljs/ravel/coverage) [![Dependency Status](https://david-dm.org/raveljs/ravel.svg)](https://david-dm.org/raveljs/ravel)
+# ![Ravel](https://avatars2.githubusercontent.com/u/12835831?v=3&s=56) Ravel
 
-Forge past a tangle of node.js modules. Make a cool app.
+> Forge past a tangle of modules. Make a cool app.
+
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/raveljs/ravel/master/LICENSE) [![npm version](https://badge.fury.io/js/ravel.svg)](http://badge.fury.io/js/ravel) [![Dependency Status](https://david-dm.org/raveljs/ravel.svg)](https://david-dm.org/raveljs/ravel) [![npm](https://img.shields.io/npm/dm/ravel.svg?maxAge=2592000)]() [![Build Status](https://travis-ci.org/raveljs/ravel.svg?branch=master)](https://travis-ci.org/raveljs/ravel) [![Code Climate](https://codeclimate.com/github/raveljs/ravel/badges/gpa.svg)](https://codeclimate.com/github/raveljs/ravel) [![Test Coverage](https://codeclimate.com/github/raveljs/ravel/badges/coverage.svg)](https://codeclimate.com/github/raveljs/ravel/coverage)
+
+Ravel is a tiny, sometimes-opinionated foundation for creating organized, maintainable, and scalable web applications in [node.js](https://github.com/joyent/node) with [ES2016/2017](http://kangax.github.io/compat-table/esnext/).
+
+## Table of Contents
+
+<!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+
+- [Table of Contents](#table-of-contents)
+- [Introduction](#introduction)
+- [Installation](#installation)
+- [Architecture](#architecture)
+	- [Modules](#modules)
+	- [Routes](#routes)
+	- [Resources](#resources)
+	- [Babel configuration](#babel-configuration)
+	- [Bringing it all together](#bringing-it-all-together)
+- [API Documentation](#api-documentation)
+	- [Ravel](#ravel)
+	- [Ravel.Module](#ravelmodule)
+	- [Ravel.Resource](#ravelresource)
+	- [Ravel.Routes](#ravelroutes)
+	- [Dependency Injection and Namespacing](#dependency-injection-and-namespacing)
+	- [Managed Parameter System](#managed-parameter-system)
+	- [Lifecycle Decorators](#lifecycle-decorators)
+	- [Transaction-per-request](#transaction-per-request)
+	- [Database Providers](#database-providers)
+	- [Authentication and Authorization](#authentication-and-authorization)
+	- [Authorization Providers](#authorization-providers)
+	- [Metadata and Reflection](#metadata-and-reflection)
+- [Deployment and Scaling](#deployment-and-scaling)
+
+<!-- /TOC -->
 
 ## Introduction
 
-Ravel is a tiny, sometimes-opinionated foundation for rapidly creating maintainable, horizontally-scalable web application back-ends in [node](https://github.com/joyent/node).
+Ravel is inspired by the simplicity of [koa](http://koajs.com/) and [express](http://expressjs.com), but aims to provide a pre-baked, well-tested and highly modular solution for creating enterprise web applications by providing:
 
-Layered on top of ES2015/2016 and awesome technologies such as [koa](http://koajs.com/), [babel](babeljs.io), [Passport](https://github.com/jaredhanson/passport), [Intel](https://github.com/seanmonstar/intel), [Redis](https://github.com/antirez/redis), and [docker](docker.com), Ravel aims to provide a pre-baked, well-tested and highly modular solution for constructing enterprise web applications by providing:
+- A standard set of well-defined architectural components so that your code stays **organized**
+- Rapid **REST API** definition
+- Easy **bootstrapping** via an enforced, reference configuration of [koa](http://koajs.com/) with critical middleware
 
- - A standard set of well-defined architectural components
- - Dependency injection
- - Automatic transaction-per-request management
- - Authentication and authorization with transparent handling of mobile (i.e. non-web) clients
- - Rapid, standards-compliant REST API definition
- - Easy bootstrapping, via an enforced, reference configuration of [koa](http://koajs.com/) and standard middleware
- - Horizontal scalability
+And a few other features, plucked from popular back-end frameworks:
+- Dependency injection
+- Transaction-per-request
+- Simple authentication and authorization configuration (no complex [passport](https://github.com/jaredhanson/passport) setup)
+- Externalized session storage for horizontal scalability
+
+Ravel is layered on top of awesome technologies, including:
+- [koa](http://koajs.com/)
+- [babel](babeljs.io)
+- [Passport](https://github.com/jaredhanson/passport)
+- [Intel](https://github.com/seanmonstar/intel)
+- [Redis](https://github.com/antirez/redis)
+- [docker](docker.com)
+
 
 ## Installation
 
 > As Ravel uses the Spread operator from ES2015, you will need to use a 5.x+ distribution of node.
 
-    $ npm install ravel
+``bash
+$ npm install ravel
+```
 
-Ravel needs [Redis](https://github.com/antirez/redis) to run. As part of the Ravel 1.0 release, a reference project including a [docker](docker.com)ized development environment will be provided as a [Yeoman](http://yeoman.io/) generator, but for now you'll need to install Redis somewhere yourself.
+Ravel also relies on [Redis](https://github.com/antirez/redis). If you don't have it installed and running, try using [docker](docker.com) to quickly spin one up:
 
+```bash
+$ docker run -d -p 6379:6379 redis
+```
 
-## Ravel Architecture
+## Architecture
 
-Ravel applications consist of three basic parts:
+Ravel applications consist of a few basic parts:
+
+- **Modules:** plain old classes which offer a great place to write modular application logic, middleware, authorization logic, etc.
+- **Routes:** a low-level place for general routing logic
+- **Resources:** built on top of `Routes`, `Resource`s are REST-focused
+- **Errors:** Node.js `Error`s which are associated with an HTTP response code. `throw` them or `reject` with them and `Routes` and `Resource`s will respond accordingly
+
+If you're doing it right, your applications will consist largely of `Module`s, with a thin layer of `Routes` and `Resource`s on top.
 
 ### Modules
 
-Plain old node.js modules containing a class which encapsulates application logic. `Module`s support dependency injection of core Ravel services and other Modules alongside npm dependencies *(no relative `require`'s!)*. `Module`s are instantiated safely in dependency-order, and cyclical dependencies are detected automatically.
+Plain old node.js modules containing a single class which encapsulates application logic. `Module`s support dependency injection of core Ravel services and other Modules alongside npm dependencies *(no relative `require`'s!)*. `Module`s are instantiated safely in dependency-order, and cyclical dependencies are detected automatically.
 
 *modules/cities.js*
 ```javascript
-const Module = require('ravel').Module;
-const inject = require('ravel').inject;
-const c = ['Toronto', 'New York', 'Chicago']; // fake 'database'
+const Ravel = require('ravel');
+const Module = Ravel.Module;
+const inject = Ravel.inject;
 
+/**
+ * An Error we will throw when a requested city is not found.
+ * This Error will be associated with the HTTP error code 404.
+ */
+class MissingCityError extends Ravel.Error {
+  constructor(name) {
+    super(`City ${name} does not exist.`, constructor, Ravel.httpCodes.NOT_FOUND);
+  }
+}
+
+/**
+ * Our main Module, defining logic for working with Cities
+ */
 @inject('async')
 class Cities extends Module {
   constructor(async) {
     super();
     this.async = async;
+    this.db = ['Toronto', 'New York', 'Chicago']; // our fake 'database'
   }
 
   getAllCities() {
@@ -53,16 +121,13 @@ class Cities extends Module {
 
   getCity(name) {
     return new Promise((resolve, reject) => {
-      const index = c.indexOf(name);
+      const index = this.db.indexOf(name);
       if (index) {
-        resolve(c[index]);
+        resolve(this.db[index]);
       } else {
         this.log.warn(`User requested unknown city ${name}`);
-        // reject the promise with a Ravel error, and
-        // Ravel will automatically respond with the
-        // appropriate HTTP status code! Feel free to
-        // implement your own errors as well via Ravel.error(name, code).
-        reject(new this.ApplicationError.NotFound(`City ${name} does not exist.`));
+        // Ravel will automatically respond with the appropriate HTTP status code!
+        reject(new MissingCityError(name));
       }
     });
   }
@@ -71,19 +136,20 @@ class Cities extends Module {
 
 ### Routes
 
-`Routes` are Ravel's wrapper for `koa`. They support GET, POST, PUT and DELETE requests, and middleware, via decorators. Like `Module`s, they also support dependency injection. Though `Routes` can do everything `Resources` can do, they are most useful for implementing non-REST things, such as static content serving or template serving (EJS, Jade, etc.). If you want to build a REST API, use `Resource`s instead (they're up next!).
+`Routes` are Ravel's lower-level wrapper for `koa` (`Resource`s are the higher-level one). They support GET, POST, PUT and DELETE requests, and middleware, via decorators. Like `Module`s, they also support dependency injection. Though `Routes` can do everything `Resources` can do, they are most useful for implementing non-REST things, such as static content serving or template serving (EJS, Jade, etc.). If you want to build a REST API, use `Resource`s instead (they're up next!).
 
 *routes/index.js*
 ```javascript
-const Routes = require('ravel').Routes;
-const inject = require('ravel').inject;
+const Ravel = require('ravel');
+const Routes = Ravel.Routes;
+const inject = Ravel.inject;
 const before = Routes.before; // decorator to add middleware to an endpoint within the Routes
-const mapping = Routes.mapping;
+const mapping = Routes.mapping; // decorator to associate a handler method with an endpoint
 
 @inject('middleware1') // middleware from NPM, or your own modules, etc.
 class ExampleRoutes extends Routes {
   constructor(middleware1) {
-    super('/'); //base path
+    super('/'); // base path for all routes in this class. Will be prepended to the @mapping.
     this.middleware1 = middleware1;
     // you can also build middleware right here!
     this.middleware2 = function*(next) {
@@ -91,10 +157,10 @@ class ExampleRoutes extends Routes {
     };
   }
 
-  @mapping(Routes.GET, '/app') // bind this method to an endpoint and verb with @mapping
+  @mapping(Routes.GET, 'app') // bind this method to an endpoint and verb with @mapping. This one will become GET /app
   @before('middleware1','middleware2') // use @before to place middleware before appHandler
   appHandler(ctx) {
-    // ctx is just a koa context!
+    // ctx is just a koa context! Have a look at the koa docs to see what methods and properties are available.
     ctx.body = '<!DOCTYPE html><html><body>Hello World!</body></html>';
     ctx.status = 200;
   }
@@ -109,8 +175,9 @@ What might be referred to as a *controller* in other frameworks, a `Resource` mo
 ```javascript
 // Resources support dependency injection too!
 // Notice that we have injected our cities Module by name.
-const Resource = require('ravel').Resource;
-const inject = require('ravel').inject;
+const Ravel = require('ravel');
+const Resource = Ravel.Resource;
+const inject = Ravel.inject;
 const before = Resource.before; // decorator to add middleware to an endpoint within the Resource
 
 // using @before at the class level decorates all endpoint methods with middleware
@@ -127,7 +194,8 @@ class CitiesResource extends Resource {
     };
   }
 
-  getAll(ctx) {   // ctx is a koa context. this is the last middleware which will run in the chain
+  // no need to use @mapping here. Routes methods are automatically mapped using their names.
+  getAll(ctx) { // just like in Routes, ctx is a koa context.
      return this.cities.getAllCities()
      .then((list) => {
        ctx.body = list;
@@ -196,16 +264,56 @@ app.start();
 $ node --harmony_rest_parameters app.js
 ```
 
-## A more complex example
+## API Documentation
 
-*"You mentioned transactions! Authentication and authorization! Mobile-ready APIs! Get on with the show, already!" --Some Impatient Guy*
-
-TODO
-
-## API Reference
+### Ravel
 
 TODO
 
-## Deploying and Scaling Ravel Applications
+### Ravel.Module
+
+TODO
+
+### Ravel.Resource
+
+TODO
+
+### Ravel.Routes
+
+TODO
+
+### Dependency Injection and Namespacing
+
+TODO
+
+### Managed Parameter System
+
+TODO
+
+### Lifecycle Decorators
+
+TODO
+
+### Transaction-per-request
+
+TODO
+
+### Database Providers
+
+TODO
+
+### Authentication and Authorization
+
+TODO
+
+### Authorization Providers
+
+TODO
+
+### Metadata and Reflection
+
+TODO
+
+## Deployment and Scaling
 
 TODO
