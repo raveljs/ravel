@@ -92,7 +92,6 @@ describe('Ravel', function() {
           expect(this.log).to.have.property('warn').that.is.a('function');
           expect(this.log).to.have.property('error').that.is.a('function');
           expect(this.log).to.have.property('critical').that.is.a('function');
-          expect(this).to.have.property('respond').that.is.a('function');
           expect(this.ApplicationError).to.equal(Ravel.ApplicationError);
           expect(this.kvstore).to.equal(Ravel.kvstore);
           expect(this.params).to.be.an.object;

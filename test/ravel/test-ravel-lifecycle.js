@@ -95,9 +95,10 @@ describe('Ravel lifeycle test', function() {
         super('/api/user');
         this.users = users;
         this.$E = $E;
+        this.someMiddleware = function*(next) { yield next; };
       }
 
-      @pre('respond')
+      @pre('someMiddleware')
       getAll(ctx) {
         return this.users.getAllUsers()
         .then((list) => {
@@ -105,7 +106,6 @@ describe('Ravel lifeycle test', function() {
         });
       }
 
-      @pre('respond')
       get(ctx) {
         // return promise and don't catch possible error so that Ravel can catch it
         return this.users.getUser(ctx.params.id)
