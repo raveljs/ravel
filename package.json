@@ -59,7 +59,7 @@
     "chai":"3.5.0",
     "chai-as-promised":"5.3.0",
     "chai-things":"0.2.0",
-    "mocha": "2.4.5",
+    "mocha": "2.5.3",
     "mocha-lcov-reporter":"1.2.0",
     "mockery":"1.6.2",
     "mr-doc":"3.2.1",

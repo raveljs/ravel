@@ -37,8 +37,11 @@ describe('util/rest', function() {
   });
 
   describe('#respond()', function() {
-    it('should produce a response with HTTP 204 NO CONTENT if no json payload is supplied', function (done) {
+    it('should produce a response with HTTP 204 NO CONTENT if no body is supplied', function (done) {
       app.use(rest.respond());
+      app.use(function*() {
+        this.status = 200;
+      });
       request(app.callback())
       .get('/')
       .expect(204, '', done);

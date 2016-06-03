@@ -170,8 +170,10 @@ describe('Ravel', function() {
       const router = require('koa-router')();
       sinon.stub(router, 'get', function() {
         expect(arguments[0]).to.equal('/app/path');
-        expect(arguments[1]).to.equal(middleware1);
-        expect(arguments[2]).to.equal(middleware2);
+        expect(arguments[1]).to.be.a.function; // respond middleware
+        expect(arguments[1].toString()).to.include('buildRestResponse');
+        expect(arguments[2]).to.equal(middleware1);
+        expect(arguments[3]).to.equal(middleware2);
         done();
       });
       Ravel[coreSymbols.routesInit](router);
@@ -201,8 +203,9 @@ describe('Ravel', function() {
       const router = require('koa-router')();
       sinon.stub(router, 'post', function() {
         expect(arguments[0]).to.equal('/app/path');
-        expect(arguments[1]).to.equal(middleware1);
-        expect(arguments[2]).to.equal(middleware2);
+        expect(arguments[1]).to.be.a.function; // respond middleware
+        expect(arguments[2]).to.equal(middleware1);
+        expect(arguments[3]).to.equal(middleware2);
         done();
       });
       Ravel[coreSymbols.routesInit](router);
@@ -232,8 +235,10 @@ describe('Ravel', function() {
       const router = require('koa-router')();
       sinon.stub(router, 'put', function() {
         expect(arguments[0]).to.equal('/app/path');
-        expect(arguments[1]).to.equal(middleware1);
-        expect(arguments[2]).to.equal(middleware2);
+        expect(arguments[1]).to.be.a.function; // respond middleware
+        expect(arguments[1].toString()).to.include('buildRestResponse');
+        expect(arguments[2]).to.equal(middleware1);
+        expect(arguments[3]).to.equal(middleware2);
         done();
       });
       Ravel[coreSymbols.routesInit](router);
@@ -263,8 +268,10 @@ describe('Ravel', function() {
       const router = require('koa-router')();
       sinon.stub(router, 'delete', function() {
         expect(arguments[0]).to.equal('/app/path');
-        expect(arguments[1]).to.equal(middleware1);
-        expect(arguments[2]).to.equal(middleware2);
+        expect(arguments[1]).to.be.a.function; // respond middleware
+        expect(arguments[1].toString()).to.include('buildRestResponse');
+        expect(arguments[2]).to.equal(middleware1);
+        expect(arguments[3]).to.equal(middleware2);
         done();
       });
       Ravel[coreSymbols.routesInit](router);
@@ -295,8 +302,10 @@ describe('Ravel', function() {
       const router = require('koa-router')();
       sinon.stub(router, 'get', function() {
         expect(arguments[0]).to.equal('/app/path');
-        expect(arguments[1]).to.equal(middleware1);
-        expect(arguments[2]).to.equal(middleware2);
+        expect(arguments[1]).to.be.a.function; // respond middleware
+        expect(arguments[1].toString()).to.include('buildRestResponse');
+        expect(arguments[2]).to.equal(middleware1);
+        expect(arguments[3]).to.equal(middleware2);
         done();
       });
       sinon.stub(router, 'post', function() {
