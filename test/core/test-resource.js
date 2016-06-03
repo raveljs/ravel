@@ -92,7 +92,6 @@ describe('Ravel', function() {
           expect(this.log).to.have.property('warn').that.is.a('function');
           expect(this.log).to.have.property('error').that.is.a('function');
           expect(this.log).to.have.property('critical').that.is.a('function');
-          expect(this).to.have.property('respond').that.is.a('function');
           expect(this.ApplicationError).to.equal(Ravel.ApplicationError);
           expect(this.kvstore).to.equal(Ravel.kvstore);
           expect(this.params).to.be.an.object;
@@ -166,9 +165,11 @@ describe('Ravel', function() {
       mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, sinon.match(function(value) {
-        return value.constructor.name === 'GeneratorFunction';
-      }));
+      expect(spy).to.have.been.calledWith('/api/test',
+        sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
+        middleware1,
+        middleware2,
+        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
       done();
     });
 
@@ -192,9 +193,12 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, sinon.match(function(value) {
-        return value.constructor.name === 'GeneratorFunction';
-      }));
+      expect(spy).to.have.been.calledWith(
+        '/api/test/:id',
+        sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
+        middleware1,
+        middleware2,
+        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
       done();
     });
 
@@ -218,9 +222,12 @@ describe('Ravel', function() {
       mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, sinon.match(function(value) {
-        return value.constructor.name === 'GeneratorFunction';
-      }));
+      expect(spy).to.have.been.calledWith(
+        '/api/test',
+        sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
+        middleware1,
+        middleware2,
+        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
       done();
     });
 
@@ -244,9 +251,12 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, sinon.match(function(value) {
-        return value.constructor.name === 'GeneratorFunction';
-      }));
+      expect(spy).to.have.been.calledWith(
+        '/api/test/:id',
+        sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
+        middleware1,
+        middleware2,
+        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
       done();
     });
 
@@ -270,9 +280,12 @@ describe('Ravel', function() {
       mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, sinon.match(function(value) {
-        return value.constructor.name === 'GeneratorFunction';
-      }));
+      expect(spy).to.have.been.calledWith(
+        '/api/test',
+        sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
+        middleware1,
+        middleware2,
+        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
       done();
     });
 
@@ -296,9 +309,12 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      expect(spy).to.have.been.calledWith('/api/test', middleware1, middleware2, sinon.match(function(value) {
-        return value.constructor.name === 'GeneratorFunction';
-      }));
+      expect(spy).to.have.been.calledWith(
+        '/api/test',
+        sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
+        middleware1,
+        middleware2,
+        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
       done();
     });
 
@@ -322,9 +338,12 @@ describe('Ravel', function() {
       mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, sinon.match(function(value) {
-        return value.constructor.name === 'GeneratorFunction';
-      }));
+      expect(spy).to.have.been.calledWith(
+        '/api/test/:id',
+        sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
+        middleware1,
+        middleware2,
+        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
       done();
     });
 
@@ -349,9 +368,12 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, sinon.match(function(value) {
-        return value.constructor.name === 'GeneratorFunction';
-      }));
+      expect(spy).to.have.been.calledWith(
+        '/api/test/:id',
+        sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
+        middleware1,
+        middleware2,
+        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
       done();
     });
 
@@ -379,12 +401,16 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      expect(spy).to.have.been.calledWith('/api/test/:id', middleware1, middleware2, sinon.match(function(value) {
-        return value.constructor.name === 'GeneratorFunction';
-      }));
-      expect(spy2).to.have.been.calledWith('/api/test/:id', sinon.match(function(value) {
-        return value.constructor.name === 'GeneratorFunction';
-      }));
+      expect(spy).to.have.been.calledWith(
+        '/api/test/:id',
+        sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
+        middleware1,
+        middleware2,
+        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
+      expect(spy2).to.have.been.calledWith(
+        '/api/test/:id',
+        sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
+        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
       done();
     });
 
@@ -429,9 +455,10 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      expect(spy).to.have.been.calledWith('/api/test', sinon.match(function(value) {
-        return value.constructor.name === 'GeneratorFunction';
-      }));
+      expect(spy).to.have.been.calledWith(
+        '/api/test',
+        sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
+        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
       done();
     });
   });

@@ -129,7 +129,9 @@ describe('Ravel', function() {
       sinon.stub(router, 'get', function() {
         expect(app.db.middleware).to.have.been.calledWith('rethinkdb', 'mysql', 'redis');
         expect(arguments[0]).to.equal('/app/path');
-        expect(arguments[1]).to.equal(transactionMiddleware);
+        expect(arguments[1]).to.be.a.function;
+        expect(arguments[1].toString()).to.include('buildRestResponse');
+        expect(arguments[2]).to.equal(transactionMiddleware);
         done();
       });
       app[coreSymbols.routesInit](router);

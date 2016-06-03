@@ -91,7 +91,8 @@ describe('Ravel', function() {
             'Symbol(get) /path':{
               path: '/path',
               verb: Routes.GET,
-              status: 404
+              status: 404,
+              suppressLog: undefined
             }
           },
           source: { path: './stub' }
@@ -103,7 +104,8 @@ describe('Ravel', function() {
               info: {
                 endpoint: Stub.prototype.pathHandler,
                 path: '/path',
-                verb: Routes.PUT
+                verb: Routes.PUT,
+                suppressLog: undefined
               }
             }
           }
@@ -154,12 +156,12 @@ describe('Ravel', function() {
           'ravel': {'instance': app },
           '@before': { middleware: ['middleware1'] },
           '@mapping': {
-            'Symbol(get) /': { verb: Resource.GET, path: '/', status: 501 },
-            'Symbol(put) /': { verb: Resource.PUT, path: '/', status: 501 },
-            'Symbol(delete) /': { verb: Resource.DELETE, path: '/', status: 501 },
-            'Symbol(post) /': { verb: Resource.POST, path: '/', status: 501 },
-            'Symbol(put) /:id': { verb: Resource.PUT, path: '/:id', status: 501 },
-            'Symbol(delete) /:id': { verb: Resource.DELETE, path: '/:id', status: 501 },
+            'Symbol(get) /': { verb: Resource.GET, path: '/', status: 501, suppressLog: true },
+            'Symbol(put) /': { verb: Resource.PUT, path: '/', status: 501, suppressLog: true },
+            'Symbol(delete) /': { verb: Resource.DELETE, path: '/', status: 501, suppressLog: true },
+            'Symbol(post) /': { verb: Resource.POST, path: '/', status: 501, suppressLog: true },
+            'Symbol(put) /:id': { verb: Resource.PUT, path: '/:id', status: 501, suppressLog: true },
+            'Symbol(delete) /:id': { verb: Resource.DELETE, path: '/:id', status: 501, suppressLog: true },
           },
           source: { path: './stub' }
         },
@@ -170,7 +172,8 @@ describe('Ravel', function() {
               info: {
                 endpoint: meta.method.get['@mapping'].info.endpoint,
                 path: '/:id',
-                verb: Resource.GET
+                verb: Resource.GET,
+                suppressLog: undefined
               }
             }
           }

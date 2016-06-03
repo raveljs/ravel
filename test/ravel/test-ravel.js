@@ -98,9 +98,9 @@ describe('Ravel end-to-end test', function() {
             super('/api/user');
             this.users = users;
             this.$E = $E;
+            this.someMiddleware = function*(next) {yield next;};
           }
 
-          @pre('respond')
           getAll(ctx) {
             expect(this).to.have.a.property('params').that.is.an('object');
             return this.users.getAllUsers()
@@ -109,7 +109,7 @@ describe('Ravel end-to-end test', function() {
             });
           }
 
-          @pre('respond')
+          @pre('someMiddleware')
           get(ctx) {
             // return promise and don't catch possible error so that Ravel can catch it
             return this.users.getUser(ctx.params.id)
