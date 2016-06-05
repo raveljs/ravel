@@ -76,10 +76,10 @@ describe('util/application_error', function() {
       done();
     });
 
-    it('should provide .Authorization', function(done) {
-      expect(Ravel.ApplicationError).to.have.a.property('Authorization')
+    it('should provide .Authentication', function(done) {
+      expect(Ravel.ApplicationError).to.have.a.property('Authentication')
         .that.is.a('function');
-      const err = new Ravel.ApplicationError.Authorization('test');
+      const err = new Ravel.ApplicationError.Authentication('test');
       expect(err).to.be.an.instanceof(Ravel.ApplicationError.General);
       expect(err).to.have.a.property('message').that.equals('test');
       expect(err).to.have.a.property('code').that.equals(httpCodes.UNAUTHORIZED);

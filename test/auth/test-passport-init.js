@@ -10,8 +10,8 @@ const sinon = require('sinon');
 const koa = require('koa');
 const upath = require('upath');
 
-const AuthorizationProvider = (require('../../lib/ravel')).AuthorizationProvider;
-class GoogleOAuth2 extends AuthorizationProvider {
+const AuthenticationProvider = (require('../../lib/ravel')).AuthenticationProvider;
+class GoogleOAuth2 extends AuthenticationProvider {
   constructor() {
     super('google-oauth2');
   }
@@ -63,7 +63,7 @@ describe('auth/passport_init', function() {
     done();
   });
 
-  it('should not initialize passport if no authorization providers are registered', function(done) {
+  it('should not initialize passport if no authentication providers are registered', function(done) {
     const app = koa();
     const passportInitSpy = sinon.spy(passportMock, 'initialize');
     const passportSessionSpy = sinon.spy(passportMock, 'session');
@@ -99,7 +99,7 @@ describe('auth/passport_init', function() {
     const provider = new GoogleOAuth2();
     provider.init = sinon.stub();
 
-    Ravel.set('authorization providers', [provider]);
+    Ravel.set('authentication providers', [provider]);
     const app = koa();
     const useSpy = sinon.spy(app, 'use');
     const passportInitSpy = sinon.spy(passportMock, 'initialize');
@@ -118,10 +118,10 @@ describe('auth/passport_init', function() {
     done();
   });
 
-  it('should throw ApplicationError.NotFound if an Authorization module is needed and one is not present', function(done) {
+  it('should throw ApplicationError.NotFound if an Authentication module is needed and one is not present', function(done) {
     const provider = new GoogleOAuth2();
     provider.init = sinon.stub();
-    Ravel.set('authorization providers', [provider]);
+    Ravel.set('authentication providers', [provider]);
     require('../../lib/auth/passport_init')(Ravel, {});
 
     const app = koa();
@@ -150,7 +150,7 @@ describe('auth/passport_init', function() {
     const provider = new GoogleOAuth2();
     provider.init = sinon.stub();
 
-    Ravel.set('authorization providers', [provider]);
+    Ravel.set('authentication providers', [provider]);
     require('../../lib/auth/passport_init')(Ravel);
     const app = koa();
 
@@ -188,7 +188,7 @@ describe('auth/passport_init', function() {
     const provider = new GoogleOAuth2();
     provider.init = sinon.stub();
 
-    Ravel.set('authorization providers', [provider]);
+    Ravel.set('authentication providers', [provider]);
     require('../../lib/auth/passport_init')(Ravel);
     const app = koa();
 
@@ -229,7 +229,7 @@ describe('auth/passport_init', function() {
     const provider = new GoogleOAuth2();
     provider.init = sinon.stub();
 
-    Ravel.set('authorization providers', [provider]);
+    Ravel.set('authentication providers', [provider]);
     require('../../lib/auth/passport_init')(Ravel);
     const app = koa();
 
@@ -270,7 +270,7 @@ describe('auth/passport_init', function() {
       });
     });
 
-    Ravel.set('authorization providers', [provider]);
+    Ravel.set('authentication providers', [provider]);
     require('../../lib/auth/passport_init')(Ravel);
     const app = koa();
 
@@ -299,7 +299,7 @@ describe('auth/passport_init', function() {
       });
     });
 
-    Ravel.set('authorization providers', [provider]);
+    Ravel.set('authentication providers', [provider]);
     require('../../lib/auth/passport_init')(Ravel);
     const app = koa();
 

@@ -11,17 +11,17 @@ const koa = require('koa');
 const request = require('supertest');
 const upath = require('upath');
 
-const AuthorizationProvider = require('../../lib/ravel').AuthorizationProvider;
-class GoogleOAuth2 extends AuthorizationProvider {
+const AuthenticationProvider = require('../../lib/ravel').AuthenticationProvider;
+class GoogleOAuth2 extends AuthenticationProvider {
   constructor() {
     super('google-oauth2');
   }
 }
 
-let Ravel, Module, app, authconfig, AuthorizationMiddleware,
-  authorizeTokenStub, credentialToProfile, coreSymbols, restMiddleware;
+let Ravel, Module, app, authconfig, AuthenticationMiddleware,
+  authenticateTokenStub, credentialToProfile, coreSymbols, restMiddleware;
 
-describe('util/authorize_request', function() {
+describe('util/authenticate_request', function() {
   beforeEach(function(done) {
     //enable mockery
     mockery.enable({
@@ -32,10 +32,10 @@ describe('util/authorize_request', function() {
     credentialToProfile = {
       credentialToProfile: function(){}
     };
-    authorizeTokenStub = function() {
+    authenticateTokenStub = function() {
       return credentialToProfile;
     };
-    mockery.registerMock('./authorize_token', authorizeTokenStub);
+    mockery.registerMock('./authenticate_token', authenticateTokenStub);
 
     Ravel = new (require('../../lib/ravel'))();
     Module = (require('../../lib/ravel')).Module;
@@ -44,9 +44,9 @@ describe('util/authorize_request', function() {
 
     const provider = new GoogleOAuth2();
     provider.init = sinon.stub();
-    Ravel.set('authorization providers', [provider]);
+    Ravel.set('authentication providers', [provider]);
 
-    AuthorizationMiddleware  = require('../../lib/auth/authorize_request');
+    AuthenticationMiddleware  = require('../../lib/auth/authenticate_request');
     const Rest = require('../../lib/util/rest');
     restMiddleware = (new Rest(Ravel)).errorHandler();
     Ravel.log.setLevel('NONE');
@@ -57,11 +57,11 @@ describe('util/authorize_request', function() {
 
   afterEach(function(done) {
     Ravel = undefined;
-    authorizeTokenStub = undefined;
+    authenticateTokenStub = undefined;
     credentialToProfile = undefined;
     app = undefined;
     authconfig = undefined;
-    AuthorizationMiddleware = undefined;
+    AuthenticationMiddleware = undefined;
     restMiddleware = undefined;
     coreSymbols = undefined;
     mockery.deregisterAll();
@@ -74,14 +74,14 @@ describe('util/authorize_request', function() {
     it('should allow read-only access to important state information, mostly for use by subclasses', function(done) {
       const shouldRedirect = Math.random() < 0.5;
       const allowMobileRegistration = Math.random() < 0.5;
-      const auth = new AuthorizationMiddleware(Ravel, shouldRedirect, allowMobileRegistration);
+      const auth = new AuthenticationMiddleware(Ravel, shouldRedirect, allowMobileRegistration);
       expect(auth).to.have.a.property('ravelInstance').that.equals(Ravel);
       expect(auth).to.have.a.property('shouldRedirect').that.equals(shouldRedirect);
       expect(auth).to.have.a.property('allowMobileRegistration').that.equals(allowMobileRegistration);
       done();
     });
 
-    it('should use passport\'s req.isAuthenticated() to check users by default, yielding to next() if users are authorized by passport', function(done) {
+    it('should use passport\'s req.isAuthenticated() to check users by default, yielding to next() if users are authenticated by passport', function(done) {
       const isAuthenticatedStub = sinon.stub().returns(true);
       const finalStub = sinon.stub();
 
@@ -90,7 +90,7 @@ describe('util/authorize_request', function() {
         this.isAuthenticated = isAuthenticatedStub;
         yield next;
       });
-      app.use((new AuthorizationMiddleware(Ravel, false, false)).middleware());
+      app.use((new AuthenticationMiddleware(Ravel, false, false)).middleware());
       app.use(function*() {
         finalStub();
       });
@@ -104,7 +104,7 @@ describe('util/authorize_request', function() {
       .end(done);
     });
 
-    it('should use passport\'s req.isAuthenticated() to check users by default, sending HTTP 401 UNAUTHORIZED if users are unauthorized', function(done) {
+    it('should use passport\'s req.isAuthenticated() to check users by default, sending HTTP 401 UNAUTHORIZED if users are unauthenticated', function(done) {
       const isAuthenticatedStub = sinon.stub().returns(false);
 
       app.use(restMiddleware);
@@ -112,7 +112,7 @@ describe('util/authorize_request', function() {
         this.isAuthenticated = isAuthenticatedStub;
         yield next;
       });
-      app.use((new AuthorizationMiddleware(Ravel, false, false)).middleware());
+      app.use((new AuthenticationMiddleware(Ravel, false, false)).middleware());
 
       request(app.callback())
       .get('/entity')
@@ -122,7 +122,7 @@ describe('util/authorize_request', function() {
       .expect(401, done);
     });
 
-    it('should use passport\'s req.isAuthenticated() to check users by default, redirecting to the login page if users are unauthorized and redirects are enabled', function(done) {
+    it('should use passport\'s req.isAuthenticated() to check users by default, redirecting to the login page if users are unauthenticated and redirects are enabled', function(done) {
       Ravel.set('login route', '/login');
       const isAuthenticatedStub = sinon.stub().returns(false);
 
@@ -131,7 +131,7 @@ describe('util/authorize_request', function() {
         this.isAuthenticated = isAuthenticatedStub;
         yield next;
       });
-      app.use((new AuthorizationMiddleware(Ravel, true, false)).middleware());
+      app.use((new AuthenticationMiddleware(Ravel, true, false)).middleware());
 
       request(app.callback())
       .get('/entity')
@@ -142,7 +142,7 @@ describe('util/authorize_request', function() {
       .expect(302, done);
     });
 
-    it('should use x-auth-token and x-auth-client headers to authorize mobile clients', function(done) {
+    it('should use x-auth-token and x-auth-client headers to authenticate mobile clients', function(done) {
       const isAuthenticatedStub = sinon.stub();
       const finalStub = sinon.stub();
 
@@ -171,7 +171,7 @@ describe('util/authorize_request', function() {
         this.isAuthenticated = isAuthenticatedStub;
         yield next;
       });
-      app.use((new AuthorizationMiddleware(Ravel, false, false)).middleware());
+      app.use((new AuthenticationMiddleware(Ravel, false, false)).middleware());
       app.use(function*() {
         expect(this).to.have.property('user').that.equals(user);
         finalStub();
@@ -188,7 +188,7 @@ describe('util/authorize_request', function() {
       .end(done);
     });
 
-    it('should use x-auth-token and x-auth-client headers to authorize mobile clients, failing with HTTP 401 UNAUTHORIZED if the user does not exist and registration is disabled', function(done) {
+    it('should use x-auth-token and x-auth-client headers to authenticate mobile clients, failing with HTTP 401 UNAUTHORIZED if the user does not exist and registration is disabled', function(done) {
       const isAuthenticatedStub = sinon.stub();
       const finalStub = sinon.stub();
 
@@ -218,7 +218,7 @@ describe('util/authorize_request', function() {
         this.isAuthenticated = isAuthenticatedStub;
         yield next;
       });
-      app.use((new AuthorizationMiddleware(Ravel, false, false)).middleware());
+      app.use((new AuthenticationMiddleware(Ravel, false, false)).middleware());
       app.use(function*() {
         finalStub();
       });
@@ -234,7 +234,7 @@ describe('util/authorize_request', function() {
       .expect(401, done);
     });
 
-    it('use x-auth-token and x-auth-client headers to authorize mobile clients, failing with HTTP 401 UNAUTHORIZED if the token cannot be validated or translated into a profile', function(done) {
+    it('use x-auth-token and x-auth-client headers to authenticate mobile clients, failing with HTTP 401 UNAUTHORIZED if the token cannot be validated or translated into a profile', function(done) {
       const isAuthenticatedStub = sinon.stub();
       const finalStub = sinon.stub();
 
@@ -249,7 +249,7 @@ describe('util/authorize_request', function() {
         this.isAuthenticated = isAuthenticatedStub;
         yield next;
       });
-      app.use((new AuthorizationMiddleware(Ravel, false, false)).middleware());
+      app.use((new AuthenticationMiddleware(Ravel, false, false)).middleware());
       app.use(function*() {
         finalStub();
       });
@@ -265,7 +265,7 @@ describe('util/authorize_request', function() {
       .expect(401, done);
     });
 
-    it('use x-auth-token and x-auth-client headers to authorize mobile clients, registering users if that functionality is enabled and they don\'t already exist', function(done) {
+    it('use x-auth-token and x-auth-client headers to authenticate mobile clients, registering users if that functionality is enabled and they don\'t already exist', function(done) {
       const isAuthenticatedStub = sinon.stub();
       const finalStub = sinon.stub();
 
@@ -294,7 +294,7 @@ describe('util/authorize_request', function() {
         this.isAuthenticated = isAuthenticatedStub;
         yield next;
       });
-      app.use((new AuthorizationMiddleware(Ravel, false, true)).middleware());
+      app.use((new AuthenticationMiddleware(Ravel, false, true)).middleware());
       app.use(function*() {
         expect(this).to.have.property('user').that.equals(user);
         finalStub();
@@ -311,7 +311,7 @@ describe('util/authorize_request', function() {
       .end(done);
     });
 
-    it('use x-auth-token and x-auth-client headers to authorize mobile clients, responding with HTTP 401 UNAUTHORIZED if user registration is enabled and registration fails', function(done) {
+    it('use x-auth-token and x-auth-client headers to authenticate mobile clients, responding with HTTP 401 UNAUTHORIZED if user registration is enabled and registration fails', function(done) {
       const isAuthenticatedStub = sinon.stub();
       const finalStub = sinon.stub();
 
@@ -340,7 +340,7 @@ describe('util/authorize_request', function() {
         this.isAuthenticated = isAuthenticatedStub;
         yield next;
       });
-      app.use((new AuthorizationMiddleware(Ravel, false, true)).middleware());
+      app.use((new AuthenticationMiddleware(Ravel, false, true)).middleware());
       app.use(function*() {
         // this assertion would fail if this middleware ever ran. But it shouldn't run.
         expect(this).to.have.property('user').that.equals(user);
@@ -374,7 +374,7 @@ describe('util/authorize_request', function() {
           this.status = 500;
         }
       });
-      app.use((new AuthorizationMiddleware(Ravel, false, false)).middleware());
+      app.use((new AuthenticationMiddleware(Ravel, false, false)).middleware());
       app.use(function*() {
         throw error;
       });
