@@ -3,14 +3,14 @@
 const chai = require('chai');
 chai.use(require('chai-as-promised'));
 const expect = chai.expect;
-const ApplicationError = require('../../lib/util/application_error');
-const Metadata = require('../../lib/util/meta');
+const ApplicationError = require('../../../lib/util/application_error');
+const Metadata = require('../../../lib/util/meta');
 
 let authconfig;
 
 describe('Ravel', function() {
   beforeEach(function(done) {
-    authconfig = require('../../lib/ravel').Module.authconfig;
+    authconfig = require('../../../lib/ravel').Module.authconfig;
     done();
   });
 
