@@ -3,6 +3,9 @@
   "version": "0.14.2",
   "author": "Sean McIntyre <s.mcintyre@xverba.ca>",
   "description": "Ravel Rapid Application Development Framework",
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "keywords": [
     "koa",
     "web",
@@ -27,11 +30,12 @@
   },
   "main":"lib/ravel.js",
   "scripts": {
-    "clean": "node --harmony_rest_parameters $(which gulp) clean",
+    "clean": "gulp clean",
     "docs":"mr-doc -n ravel -s lib",
-    "test":"node --harmony_rest_parameters $(which gulp) test",
-    "test-no-cov":"node --harmony_rest_parameters $(which gulp) test-no-cov",
-    "debug":"node --harmony_rest_parameters --debug-brk=5858 $(which gulp) test-no-cov"
+    "test":"gulp test",
+    "test-no-cov":"gulp test-no-cov",
+    "debug":"node debug $(which gulp) test-no-cov",
+    "debug-remote":"node --debug-brk=5858 $(which gulp) test-no-cov"
   },
   "dependencies": {
     "co":"4.6.0",
