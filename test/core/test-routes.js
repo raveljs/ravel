@@ -124,10 +124,6 @@ describe('Ravel', function() {
           expect(this.kvstore).to.equal(Ravel.kvstore);
           expect(this.params).to.be.an.object;
           expect(this.params).to.have.a.property('get').that.is.a.function;
-          expect(this.authorize).to.be.a('function');
-          expect(this.authorizeRedirect).to.be.a('function');
-          expect(this.authorize().toString()).to.equal('[object Generator]');
-          expect(this.authorizeRedirect().toString()).to.equal('[object Generator]');
           done();
         }
       };

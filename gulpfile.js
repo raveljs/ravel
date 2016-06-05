@@ -12,6 +12,7 @@ const TESTS = [
   'test-dist/db/decorators/test-*.js',
   'test-dist/util/test-*.js',
   'test-dist/auth/test-*.js',
+  'test-dist/auth/decorators/test-*.js',
   'test-dist/ravel/test-*.js',
   'test-dist/**/test-*.js'
 ];
