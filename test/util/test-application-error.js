@@ -33,7 +33,7 @@ describe('util/application_error', function() {
     it('constructor should reject codes which are greater than valid HTTP error codes', function(done) {
       class TestError extends Ravel.ApplicationError.General {
         constructor(msg) {
-          super(msg, constructor, 600);
+          super(msg, 600);
         }
       }
       expect(function() {
@@ -45,7 +45,7 @@ describe('util/application_error', function() {
     it('constructor should reject codes which are less than valid HTTP error codes', function(done) {
       class TestError extends Ravel.ApplicationError.General {
         constructor(msg) {
-          super(msg, constructor, 50);
+          super(msg, 50);
         }
       }
       expect(function() {
@@ -57,7 +57,7 @@ describe('util/application_error', function() {
     it('constructor should reject codes which are not numbers', function(done) {
       class TestError extends Ravel.ApplicationError.General {
         constructor(msg) {
-          super(msg, constructor, '600');
+          super(msg, '600');
         }
       }
       expect(function() {

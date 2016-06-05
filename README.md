@@ -99,12 +99,13 @@ const Module = Ravel.Module;
 const inject = Ravel.inject;
 
 /**
- * An Error we will throw when a requested city is not found.
- * This Error will be associated with the HTTP error code 404.
+ * First, we'll define an Error we will throw when a requested
+ * city is not found. This Error will be associated with the
+ * HTTP error code 404.
  */
 class MissingCityError extends Error {
   constructor(name) {
-    super(`City ${name} does not exist.`, constructor, Ravel.httpCodes.NOT_FOUND);
+    super(`City ${name} does not exist.`, Ravel.httpCodes.NOT_FOUND);
   }
 }
 
