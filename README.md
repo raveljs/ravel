@@ -31,8 +31,8 @@ Ravel is a tiny, sometimes-opinionated foundation for creating organized, mainta
 	- [Lifecycle Decorators](#lifecycle-decorators)
 	- [Transaction-per-request](#transaction-per-request)
 	- [Database Providers](#database-providers)
-	- [Authentication and Authorization](#authentication-and-authorization)
-	- [Authorization Providers](#authorization-providers)
+	- [Authentication and Authentication](#authentication-and-authentication)
+	- [Authentication Providers](#authentication-providers)
 	- [Metadata and Reflection](#metadata-and-reflection)
 - [Deployment and Scaling](#deployment-and-scaling)
 
@@ -50,7 +50,7 @@ Ravel is inspired by the simplicity of [koa](http://koajs.com/) and [express](ht
 And a few other features, plucked from popular back-end frameworks:
 
 - Transaction-per-request
-- Simple authentication and authorization configuration (no complex [passport](https://github.com/jaredhanson/passport) setup)
+- Simple authentication and authentication configuration (no complex [passport](https://github.com/jaredhanson/passport) setup)
 - Externalized session storage for horizontal scalability
 
 Ravel is layered on top of awesome technologies, including:
@@ -80,7 +80,7 @@ $ docker run -d -p 6379:6379 redis
 
 Ravel applications consist of a few basic parts:
 
-- **Modules:** plain old classes which offer a great place to write modular application logic, middleware, authorization logic, etc.
+- **Modules:** plain old classes which offer a great place to write modular application logic, middleware, authentication logic, etc.
 - **Routes:** a low-level place for general routing logic
 - **Resources:** built on top of `Routes`, `Resource`s are REST-focused
 - **Errors:** Node.js `Error`s which are associated with an HTTP response code. `throw` them or `reject` with them and `Routes` and `Resource`s will respond accordingly
@@ -321,11 +321,11 @@ TODO
 
 TODO
 
-### Authentication and Authorization
+### Authentication and Authentication
 
 TODO
 
-### Authorization Providers
+### Authentication Providers
 
 TODO
 

@@ -91,7 +91,7 @@ describe('Routes', function() {
     });
 
     describe('auth middleware insertion', function() {
-      const authorizationMiddleware = function*(next){ yield next; };
+      const authenticationMiddleware = function*(next){ yield next; };
       let Ravel, Routes, coreSymbols;
 
       beforeEach(function(done) {
@@ -101,9 +101,9 @@ describe('Routes', function() {
           warnOnReplace: false,
           warnOnUnregistered: false
         });
-        const AuthorizeRequest = class {};
-        AuthorizeRequest.prototype.middleware = authorizationMiddleware;
-        mockery.registerMock('../auth/authorize_request', AuthorizeRequest);
+        const AuthenticateRequest = class {};
+        AuthenticateRequest.prototype.middleware = authenticationMiddleware;
+        mockery.registerMock('../auth/authenticate_request', AuthenticateRequest);
         Ravel = require('../../../lib/ravel');
         Routes = Ravel.Routes;
         authenticated = Routes.authenticated;
@@ -138,7 +138,7 @@ describe('Routes', function() {
         sinon.stub(router, 'get', function() {
           expect(arguments[0]).to.equal('/app/path');
           expect(arguments[1]).to.be.a.function;
-          expect(arguments[1]).to.equal(authorizationMiddleware);
+          expect(arguments[1]).to.equal(authenticationMiddleware);
           done();
         });
         app[coreSymbols.routesInit](router);
@@ -162,7 +162,7 @@ describe('Routes', function() {
         sinon.stub(router, 'get', function() {
           expect(arguments[0]).to.equal('/app/path');
           expect(arguments[1]).to.be.a.function;
-          expect(arguments[1]).to.equal(authorizationMiddleware);
+          expect(arguments[1]).to.equal(authenticationMiddleware);
           done();
         });
         app[coreSymbols.routesInit](router);

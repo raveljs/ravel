@@ -10,7 +10,7 @@ const sinon = require('sinon');
 
 let Ravel, tokenAuth, profile, testProvider;
 
-describe('auth/authorize_token', function() {
+describe('auth/authenticate_token', function() {
   beforeEach(function(done) {
     //enable mockery
     mockery.enable({
@@ -37,14 +37,14 @@ describe('auth/authorize_token', function() {
     Ravel.set('redis password', 'password');
     Ravel.kvstore = require('../../lib/util/kvstore')(Ravel);
 
-    tokenAuth = new (require('../../lib/auth/authorize_token'))(Ravel);
+    tokenAuth = new (require('../../lib/auth/authenticate_token'))(Ravel);
 
-    //mock up an authorization provider for our tests
+    //mock up an authentication provider for our tests
     profile = {};
 
-    const AuthorizationProvider = require('../../lib/ravel').AuthorizationProvider;
+    const AuthenticationProvider = require('../../lib/ravel').AuthenticationProvider;
 
-    class TestProvider extends AuthorizationProvider {
+    class TestProvider extends AuthenticationProvider {
       constructor() {
         super('test');
       }
@@ -62,9 +62,9 @@ describe('auth/authorize_token', function() {
       }
     }
     testProvider = new TestProvider();
-    const providers = Ravel.get('authorization providers');
+    const providers = Ravel.get('authentication providers');
     providers.push(testProvider);
-    Ravel.set('authorization providers', providers);
+    Ravel.set('authentication providers', providers);
     done();
   });
 
@@ -77,7 +77,7 @@ describe('auth/authorize_token', function() {
   });
 
   describe('#credentialToProfile()', function() {
-    it('should use the appropriate authorization provider to validate and turn a client token into a profile', function(done) {
+    it('should use the appropriate authentication provider to validate and turn a client token into a profile', function(done) {
       sinon.stub(Ravel.kvstore, 'get', function(key, callback) {
         callback(null, undefined);
       });

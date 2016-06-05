@@ -8,7 +8,7 @@ const mockery = require('mockery');
 
 let Ravel, provider;
 
-describe('auth/authorization_provider', function() {
+describe('auth/authentication_provider', function() {
   beforeEach(function(done) {
     //enable mockery
     mockery.enable({
@@ -30,7 +30,7 @@ describe('auth/authorization_provider', function() {
     Ravel = new (require('../../lib/ravel'))();
     Ravel.log.setLevel('NONE');
 
-    provider = new (require('../../lib/ravel')).AuthorizationProvider('name');
+    provider = new (require('../../lib/ravel')).AuthenticationProvider('name');
     done();
   });
 
@@ -43,8 +43,8 @@ describe('auth/authorization_provider', function() {
   });
 
   describe('constructor', function() {
-    it('should allow clients to implement an authorization provider which has a name and several methods', function(done) {
-      class GoogleOAuth2 extends (require('../../lib/ravel')).AuthorizationProvider {
+    it('should allow clients to implement an authentication provider which has a name and several methods', function(done) {
+      class GoogleOAuth2 extends (require('../../lib/ravel')).AuthenticationProvider {
         constructor() {
           super('google-oauth2');
         }
