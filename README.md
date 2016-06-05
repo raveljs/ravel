@@ -64,7 +64,7 @@ Ravel is layered on top of awesome technologies, including:
 
 ## Installation
 
-> As Ravel uses the Spread operator from ES2015, you will need to use a 5.x+ distribution of node.
+> As Ravel uses several ES2015 features, you will need to use a 6.x+ distribution of node.
 
 ```bash
 $ npm install ravel
@@ -144,7 +144,7 @@ module.exports = Cities;
 
 ### Routes
 
-`Routes` are Ravel's lower-level wrapper for `koa` (`Resource`s are the higher-level one). They support GET, POST, PUT and DELETE requests, and middleware, via decorators. Like `Module`s, they also support dependency injection. Though `Routes` can do everything `Resources` can do, they are most useful for implementing non-REST things, such as static content serving or template serving (EJS, Jade, etc.). If you want to build a REST API, use `Resource`s instead (they're up next!).
+`Routes` are `Ravel`'s lower-level wrapper for `koa` (`Resource`s are the higher-level one). They support GET, POST, PUT and DELETE requests, and middleware, via decorators. Like `Module`s, they also support dependency injection. Though `Routes` can do everything `Resources` can do, they are most useful for implementing non-REST things, such as static content serving or template serving (EJS, Jade, etc.). If you want to build a REST API, use `Resource`s instead (they're up next!).
 
 *routes/index.js*
 ```javascript
@@ -165,7 +165,8 @@ class ExampleRoutes extends Routes {
     };
   }
 
-  @mapping(Routes.GET, 'app') // bind this method to an endpoint and verb with @mapping. This one will become GET /app
+	// bind this method to an endpoint and verb with @mapping. This one will become GET /app
+  @mapping(Routes.GET, 'app')
   @before('middleware1','middleware2') // use @before to place middleware before appHandler
   appHandler(ctx) {
     // ctx is just a koa context! Have a look at the koa docs to see what methods and properties are available.
@@ -180,7 +181,7 @@ module.exports = ExampleRoutes;
 
 ### Resources
 
-What might be referred to as a *controller* in other frameworks, a `Resource` module defines HTTP methods on an endpoint, supporting the session-per-request transaction pattern via Ravel middleware. `Resource`s also support dependency injection, allowing for the easy creation of RESTful interfaces to your `Module`-based application logic. Resources are really just a thin wrapper around `Routes`, using specially-named handler functions (`get`, `getAll`, `post`, `put`, `putAll`, `delete`, `deleteAll`) instead of `@mapping`. This convention-over-configuration approach makes it easier to write proper REST APIs with less code, and is recommended over carefully chosen `@mapping`s in a `Routes` class.
+What might be referred to as a *controller* in other frameworks, a `Resource` module defines HTTP methods on an endpoint, supporting the session-per-request transaction pattern via Ravel middleware. `Resource`s also support dependency injection, allowing for the easy creation of RESTful interfaces to your `Module`-based application logic. Resources are really just a thin wrapper around `Routes`, using specially-named handler functions (`get`, `getAll`, `post`, `put`, `putAll`, `delete`, `deleteAll`) instead of `@mapping`. This convention-over-configuration approach makes it easier to write proper REST APIs with less code, and is recommended over "carefully chosen" `@mapping`s in a `Routes` class.
 
 *resources/city.js*
 ```javascript
@@ -275,7 +276,7 @@ app.start();
 ```
 
 ```bash
-$ node --harmony_rest_parameters app.js
+$ node s app.js
 ```
 
 ## API Documentation
