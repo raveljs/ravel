@@ -210,7 +210,51 @@ describe('auth/passport_init', function() {
     Ravel.emit('post module init');
   });
 
-  it('should callback with an error if getUserFunction failed', function(done) {
+  it('should callback with an error if serializeUser failed', function(done) {
+    const profile = {
+      id: 9876
+    };
+
+    //mock auth config
+    @authconfig
+    class AuthConfig extends (require('../../lib/ravel')).Module {
+      serializeUser() {
+        return Promise.reject(new Error());
+      }
+      deserializeUser() {
+        return Promise.resolve(profile);
+      }
+      deserializeOrCreateUser() {
+        return Promise.resolve({});
+      }
+      verifyCredential() {
+        return Promise.resolve({});
+      }
+    }
+    mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
+    Ravel.module('./authconfig', 'authconfig');
+
+    const provider = new GoogleOAuth2();
+    provider.init = sinon.stub();
+
+    Ravel.set('authentication providers', [provider]);
+    require('../../lib/auth/passport_init')(Ravel);
+    const app = koa();
+
+    sinon.stub(passportMock, 'serializeUser', function(serializerFn) {
+      serializerFn(9876, function(err, result) {
+        expect(result).to.be.not.ok;
+        expect(err).to.be.instanceof(Error);
+        done();
+      });
+    });
+
+    Ravel.emit('post config koa', app);
+    Ravel[coreSymbols.moduleInit]();
+    Ravel.emit('post module init');
+  });
+
+  it('should callback with an error if deserializeUser failed', function(done) {
     const profile = {
       id: 9876
     };
