@@ -31,7 +31,8 @@
   "main":"lib/ravel.js",
   "scripts": {
     "clean": "gulp clean",
-    "docs":"mr-doc -n ravel -s lib",
+    "docs":"mr-doc -n Ravel -s lib --theme ravel",
+    "watch":"gulp watch",
     "test":"gulp test",
     "test-no-cov":"gulp test-no-cov",
     "debug":"node debug $(which gulp) test-no-cov",
@@ -67,7 +68,7 @@
     "mocha-lcov-reporter":"1.2.0",
     "mockery":"1.6.2",
     "mr-doc":"3.2.1",
-    "mr-doc-theme-default":"1.4.0",
+    "mr-doc-theme-ravel":"0.0.1",
     "node-inspector":"0.12.8",
     "node-mocks-http":"1.5.2",
     "redis-mock":"0.5.2",

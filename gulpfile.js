@@ -4,6 +4,7 @@ const gulp = require('gulp');
 const plugins = require( 'gulp-load-plugins' )();
 // const isparta = require('isparta');
 const del = require('del');
+const exec = require('child_process').exec;
 
 const TESTS = [
   'test-dist/core/decorators/test-*.js',
@@ -22,6 +23,14 @@ gulp.task('lint', function() {
              .pipe(plugins.eslint())
              .pipe(plugins.eslint.format())
              .pipe(plugins.eslint.failAfterError());
+});
+
+gulp.task('docs', function(done) {
+  exec('mr-doc -n Ravel -s lib --theme ravel', function (err, stdout, stderr) {
+    console.log(stdout);
+    console.log(stderr);
+    done(err);
+  });
 });
 
 gulp.task('clean', function() {
@@ -85,8 +94,8 @@ gulp.task('test', ['cover'], function () {
     .pipe(env.reset);
 });
 
-gulp.task('watch', ['lint'], function() {
-  gulp.watch(['./lib/**/*.js'], ['lint']);
+gulp.task('watch', ['lint', 'docs'], function() {
+  gulp.watch(['./lib/**/*.js'], ['lint', 'docs']);
   gulp.watch(['gulpfile.js', './test/**/*.js'], ['lint']);
 });
 
