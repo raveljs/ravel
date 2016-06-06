@@ -81,13 +81,13 @@ describe('auth/passport_init', function() {
     //mock auth config
     @authconfig
     class AuthConfig extends (require('../../lib/ravel')).Module {
-      getUserById() {
+      deserializeUser() {
         return Promise.resolve({});
       }
-      getOrCreateUserByProfile() {
+      deserializeOrCreateUser() {
         return Promise.resolve({});
       }
-      verifyCredentials() {
+      verify() {
         return Promise.resolve({});
       }
     }
@@ -133,14 +133,17 @@ describe('auth/passport_init', function() {
     done();
   });
 
-  it('should use user.id to serialize users to a session cookie', function(done) {
+  it('should use serializeUser to serialize users to a session cookie', function(done) {
     //mock auth config
     @authconfig
     class AuthConfig extends (require('../../lib/ravel')).Module {
-      getUserById() {
+      serializeUser(user) {
+        return Promise.resolve(user.id);
+      }
+      deserializeUser() {
         return Promise.resolve({});
       }
-      getOrCreateUserByProfile() {
+      deserializeOrCreateUser() {
         return Promise.resolve({});
       }
     }
@@ -166,7 +169,7 @@ describe('auth/passport_init', function() {
     Ravel.emit('post module init');
   });
 
-  it('should use user.id to deserialize users from session cookies', function(done) {
+  it('should use deserializeUser to deserialize users from session cookies', function(done) {
     const profile = {
       id: 9876
     };
@@ -174,11 +177,14 @@ describe('auth/passport_init', function() {
     //mock auth config
     @authconfig
     class AuthConfig extends (require('../../lib/ravel')).Module {
-      getUserById(userId) {
+      serializeUser(user) {
+        return Promise.resolve(user.id);
+      }
+      deserializeUser(userId) {
         expect(userId).to.equal(profile.id);
         return Promise.resolve(profile);
       }
-      getOrCreateUserByProfile() {
+      deserializeOrCreateUser() {
         return Promise.resolve({});
       }
     }
@@ -212,11 +218,14 @@ describe('auth/passport_init', function() {
     //mock auth config
     @authconfig
     class AuthConfig extends (require('../../lib/ravel')).Module {
-      getUserById(userId) {
+      serializeUser(user) {
+        return Promise.resolve(user.id);
+      }
+      deserializeUser(userId) {
         expect(userId).to.equal(profile.id);
         return Promise.reject(new Error());
       }
-      getOrCreateUserByProfile() {
+      deserializeOrCreateUser() {
         return Promise.resolve({});
       }
       verifyCredential() {
@@ -246,7 +255,7 @@ describe('auth/passport_init', function() {
     Ravel.emit('post module init');
   });
 
-  it('should delegate \'getOrCreateUserByProfile\' functionality to an @authconfig Module', function(done) {
+  it('should delegate \'deserializeOrCreateUser\' functionality to an @authconfig Module', function(done) {
     const databaseProfile = {
       id: 9876,
       name: 'Sean McIntyre'
@@ -255,7 +264,7 @@ describe('auth/passport_init', function() {
     //mock auth config
     @authconfig
     class AuthConfig extends (require('../../lib/ravel')).Module {
-      verifyCredentials() {
+      verify() {
         return Promise.resolve(databaseProfile);
       }
     }
@@ -279,11 +288,11 @@ describe('auth/passport_init', function() {
     Ravel.emit('post module init');
   });
 
-  it('should callback with an error if the verifyCredentials function prevents auth provider initialization', function(done) {
+  it('should callback with an error if the verify function prevents auth provider initialization', function(done) {
     //mock auth config
     @authconfig
     class AuthConfig extends (require('../../lib/ravel')).Module {
-      verifyCredentials() {
+      verify() {
         return Promise.reject(new Error());
       }
     }

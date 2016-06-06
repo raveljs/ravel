@@ -32,63 +32,90 @@ describe('Ravel', function() {
       @authconfig
       class Stub {}
       const instance = new Stub();
-      expect(instance).to.have.a.property('getUserById').that.is.a.function;
-      expect(instance).to.have.a.property('getOrCreateUserByProfile').that.is.a.function;
-      expect(instance).to.have.a.property('verifyCredentials').that.is.a.function;
-      expect(instance.getUserById()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
-      expect(instance.getOrCreateUserByProfile()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
-      expect(instance.verifyCredentials()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
+      expect(instance).to.have.a.property('serializeUser').that.is.a.function;
+      expect(instance).to.have.a.property('deserializeUser').that.is.a.function;
+      expect(instance).to.have.a.property('deserializeOrCreateUser').that.is.a.function;
+      expect(instance).to.have.a.property('verify').that.is.a.function;
+      expect(instance.serializeUser()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
+      expect(instance.deserializeUser()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
+      expect(instance.deserializeOrCreateUser()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
+      expect(instance.verify()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
       done();
     });
 
-    it('should retain an existing implementation of getUser()', function(done) {
+    it('should retain an existing implementation of serializeUser()', function(done) {
       @authconfig
       class Stub {
-        getUserById() {
+        serializeUser(user) {
+          return Promise.resolve(user.id);
+        }
+      }
+      const instance = new Stub();
+      expect(instance).to.have.a.property('serializeUser').that.is.a.function;
+      expect(instance).to.have.a.property('deserializeUser').that.is.a.function;
+      expect(instance).to.have.a.property('deserializeOrCreateUser').that.is.a.function;
+      expect(instance).to.have.a.property('verify').that.is.a.function;
+      expect(instance.serializeUser({id:12})).to.eventually.equal(12);
+      expect(instance.deserializeUser()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
+      expect(instance.deserializeOrCreateUser()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
+      expect(instance.verify()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
+      done();
+    });
+
+    it('should retain an existing implementation of deserializeUser()', function(done) {
+      @authconfig
+      class Stub {
+        deserializeUser() {
           return Promise.resolve({});
         }
       }
       const instance = new Stub();
-      expect(instance).to.have.a.property('getUserById').that.is.a.function;
-      expect(instance).to.have.a.property('getOrCreateUserByProfile').that.is.a.function;
-      expect(instance).to.have.a.property('verifyCredentials').that.is.a.function;
-      expect(instance.getUserById()).to.eventually.deep.equal({});
-      expect(instance.getOrCreateUserByProfile()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
-      expect(instance.verifyCredentials()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
+      expect(instance).to.have.a.property('serializeUser').that.is.a.function;
+      expect(instance).to.have.a.property('deserializeUser').that.is.a.function;
+      expect(instance).to.have.a.property('deserializeOrCreateUser').that.is.a.function;
+      expect(instance).to.have.a.property('verify').that.is.a.function;
+      expect(instance.serializeUser()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
+      expect(instance.deserializeUser()).to.eventually.deep.equal({});
+      expect(instance.deserializeOrCreateUser()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
+      expect(instance.verify()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
       done();
     });
 
-    it('should retain an existing implementation of getOrCreateUserByProfile()', function(done) {
+    it('should retain an existing implementation of deserializeOrCreateUser()', function(done) {
       @authconfig
       class Stub {
-        getOrCreateUserByProfile() {
+        deserializeOrCreateUser() {
           return Promise.resolve({});
         }
       }
       const instance = new Stub();
-      expect(instance).to.have.a.property('getUserById').that.is.a.function;
-      expect(instance).to.have.a.property('getOrCreateUserByProfile').that.is.a.function;
-      expect(instance).to.have.a.property('verifyCredentials').that.is.a.function;
-      expect(instance.getUserById()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
-      expect(instance.getOrCreateUserByProfile()).to.eventually.deep.equal({});
-      expect(instance.verifyCredentials()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
+      expect(instance).to.have.a.property('serializeUser').that.is.a.function;
+      expect(instance).to.have.a.property('deserializeUser').that.is.a.function;
+      expect(instance).to.have.a.property('deserializeOrCreateUser').that.is.a.function;
+      expect(instance).to.have.a.property('verify').that.is.a.function;
+      expect(instance.serializeUser()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
+      expect(instance.deserializeUser()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
+      expect(instance.deserializeOrCreateUser()).to.eventually.deep.equal({});
+      expect(instance.verify()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
       done();
     });
 
-    it('should retain an existing implementation of verifyCredentials()', function(done) {
+    it('should retain an existing implementation of verify()', function(done) {
       @authconfig
       class Stub {
-        verifyCredentials() {
+        verify() {
           return Promise.resolve({});
         }
       }
       const instance = new Stub();
-      expect(instance).to.have.a.property('getUserById').that.is.a.function;
-      expect(instance).to.have.a.property('getOrCreateUserByProfile').that.is.a.function;
-      expect(instance).to.have.a.property('verifyCredentials').that.is.a.function;
-      expect(instance.getUserById()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
-      expect(instance.getOrCreateUserByProfile()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
-      expect(instance.verifyCredentials()).to.eventually.deep.equal({});
+      expect(instance).to.have.a.property('serializeUser').that.is.a.function;
+      expect(instance).to.have.a.property('deserializeUser').that.is.a.function;
+      expect(instance).to.have.a.property('deserializeOrCreateUser').that.is.a.function;
+      expect(instance).to.have.a.property('verify').that.is.a.function;
+      expect(instance.serializeUser()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
+      expect(instance.deserializeUser()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
+      expect(instance.deserializeOrCreateUser()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
+      expect(instance.verify()).to.eventually.deep.equal({});
       done();
     });
   });

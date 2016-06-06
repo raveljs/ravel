@@ -154,7 +154,7 @@ describe('util/authenticate_request', function() {
       });
       @authconfig
       class AuthConfig extends Module {
-        getUserById(userId) { // eslint-disable-line no-unused-vars
+        deserializeUser(userId) { // eslint-disable-line no-unused-vars
           return Promise.resolve(user);
         }
       }
@@ -201,7 +201,7 @@ describe('util/authenticate_request', function() {
 
       @authconfig
       class AuthConfig extends Module {
-        getUserById(userId) { // eslint-disable-line no-unused-vars
+        deserializeUser(userId) { // eslint-disable-line no-unused-vars
           return Promise.reject(new Ravel.ApplicationError.NotFound('User does not exist'));
         }
       }
@@ -277,7 +277,7 @@ describe('util/authenticate_request', function() {
       });
       @authconfig
       class AuthConfig extends Module {
-        getOrCreateUserByProfile(accessToken, refreshToken, prof) { // eslint-disable-line no-unused-vars
+        deserializeOrCreateUser(accessToken, refreshToken, prof) { // eslint-disable-line no-unused-vars
           return Promise.resolve(user);
         }
       }
@@ -323,7 +323,7 @@ describe('util/authenticate_request', function() {
       });
       @authconfig
       class AuthConfig extends Module {
-        getOrCreateUserByProfile(accessToken, refreshToken, prof) { // eslint-disable-line no-unused-vars
+        deserializeOrCreateUser(accessToken, refreshToken, prof) { // eslint-disable-line no-unused-vars
           return Promise.reject(new Ravel.ApplicationError.NotFound('User does not exist'));
         }
       }
