@@ -26,7 +26,7 @@ gulp.task('lint', function() {
 });
 
 gulp.task('docs', function(done) {
-  exec('mr-doc -n Ravel -s lib --theme ravel', function (err, stdout, stderr) {
+  exec('mr-doc -n "Ravel API Documentation" -s lib --theme ravel', function (err, stdout, stderr) {
     console.log(stdout);
     console.log(stderr);
     done(err);
