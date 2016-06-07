@@ -31,7 +31,7 @@
   "main":"lib/ravel.js",
   "scripts": {
     "clean": "gulp clean",
-    "docs":"mr-doc -n \"Ravel API Documentation\" -s lib --theme ravel",
+    "docs":"gulp docs",
     "watch":"gulp watch",
     "test":"gulp test",
     "test-no-cov":"gulp test-no-cov",
