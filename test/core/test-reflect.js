@@ -50,6 +50,7 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(app.cwd, 'test'), Stub);
       app.module('./test', 'test');
 
+      expect(app.reflect('./test').registeredAt).to.be.a('number');
       const meta = app.reflect('./test').metadata;
       expect(meta).to.deep.equal({
         class: {
