@@ -68,7 +68,7 @@
     "mocha-lcov-reporter":"1.2.0",
     "mockery":"1.6.2",
     "mr-doc":"3.2.1",
-    "mr-doc-theme-ravel":"0.0.4",
+    "mr-doc-theme-ravel":"0.0.5",
     "node-inspector":"0.12.8",
     "node-mocks-http":"1.5.2",
     "redis-mock":"0.5.2",
