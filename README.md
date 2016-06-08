@@ -401,7 +401,20 @@ To make it easier to supply configuration values to Ravel, a `.ravelrc` file can
 
 ### Ravel.Error
 
-TODO
+This is the base `Error` type for Ravel, meant to be extended into semantic errors which can be used within your applications. When you create a custom `Ravel.Error`, you **must** provide an associated HTTP status code, which Ravel will automatically respond with if an HTTP request results in that particular `Error` being thrown. This helps create meaningful status codes for your REST APIs while working within traditional `node` error-handling paradigms (`throw/try/catch` and `Promise.reject()`). Errors are generally best-declared within `Module`, `Resource` or `Routes` files (and not exported), closest to where they are used.
+
+*some module file (we'll get to this next)*
+```js
+const Ravel = require('ravel');
+/**
+ * Thrown when a user tries to POST something unexpected to /upload
+ */
+class UploadError extends Ravel.Error {
+  constructor(msg) {
+    super(msg, Ravel.httpCodes.BAD_REQUEST);
+  }
+}
+```
 
 ### Ravel.Module
 
