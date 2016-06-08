@@ -271,12 +271,135 @@ app.start();
 ```
 
 ```bash
-$ node s app.js
+$ node app.js
 ```
 
 ## API Documentation
 
 ### Ravel
+
+A Ravel application is a root application file (such as `app.js`), coupled with a collection of files exporting `Module`s, `Resource`s and `Routes` (see [Architecture](#architecture) for more information). Getting started is usually as simple as creating `app.js`:
+
+*app.js*
+```js
+const Ravel = require('ravel');
+const app = new Ravel();
+
+// you'll register managed parameters, and connect Modules, Resources and Routes here
+
+app.init();
+
+// you'll set managed parameters here
+
+app.listen();
+```
+
+### Managed Configuration System
+
+Traditional `node` appliations often rely on `process.env` for configuration. This can lead to headaches when an expected value is not declared in the environment, a value is supplied but doesn't match any expected ones, or the name of an environment variable changes and refactoring mistakes are made. To help mitigate this common issue, Ravel features a simple configuration system which relies on three methods:
+
+#### app.registerParameter
+
+Create managed parameters with `app.registerParameter()`:
+
+*app.js*
+```js
+const Ravel = require('ravel');
+const app = new Ravel();
+
+// register a new optional parameter
+app.registerParameter('my optional parameter');
+// register a new required parameter
+app.registerParameter('my required parameter', true);
+// register a required parameter with a default value
+app.registerParameter('my third parameter', true, 'some value');
+
+app.init();
+app.listen();
+```
+
+Many Ravel plugin libraries will automatically create parameters which you will have to supply values for. These parameters will be documented in their `README.md`.
+
+#### app.set
+
+Provide values via `app.set()`. Setting an unknown parameter will result in an `Error`.
+
+*app.js*
+```js
+const Ravel = require('ravel');
+const app = new Ravel();
+
+// register a new optional parameter
+app.registerParameter('my optional parameter');
+
+app.init();
+
+// set a value
+app.set('my optional parameter', 'some value');
+// this won't work:
+app.set('an unknown parameter', 'some value');
+
+app.listen();
+```
+
+#### app.get
+
+Retrieve values via `app.get()`. Retrieving an unknown parameter will result in an `Error`.
+
+*app.js*
+```js
+const Ravel = require('ravel');
+const app = new Ravel();
+
+// register a new parameter
+app.registerParameter('my required parameter', true, 'default value');
+
+app.init();
+
+// set a value
+app.set('my required parameter', 'some value');
+// get a value
+app.get('my required parameter') === 'some value';
+// this won't work:
+// app.get('an unknown parameter');
+
+app.listen();
+```
+
+#### Core parameters
+
+Ravel has several core parameters:
+
+```js
+// you have to set these:
+app.set('keygrip keys', ['my super secret key']);
+
+// these are optional (default values are shown):
+app.set('redis host', '0.0.0.0');
+app.set('redis port', 6379);
+app.set('redis password', undefined);
+app.set('redis max retries', 10); // connection retries
+app.set('port', true, 8080); // port the app will run on
+app.set('app route', '/'); // if you have a UI, this is where it should be served
+app.set('login route', '/login'); // if users aren't logged in and you redirect them, this is where they'll be sent
+app.set('koa public directory', undefined); // if you want to statically serve a directory
+app.set('koa view directory', undefined); // for templated views (EJS, Pug, etc.)
+app.set('koa view engine', undefined); // for templated views (EJS, Pug, etc.)
+app.set('koa favicon path', undefined); // favicon middleware configuration
+```
+
+#### .ravelrc
+
+To make it easier to supply configuration values to Ravel, a `.ravelrc` file can be placed beside `app.js`. This is the recommended method of setting parameters, with the exception of ones derived from `process.env` (which would need to be set programmatically).
+
+*.ravelrc*
+```
+{
+  "keygrip keys": ["my super secret key"]
+}
+```
+
+### Ravel.Error
 
 TODO
 
@@ -284,7 +407,7 @@ TODO
 
 TODO
 
-### Ravel.Error
+#### Dependency Injection and Namespacing
 
 TODO
 
@@ -296,19 +419,7 @@ TODO
 
 TODO
 
-### Dependency Injection and Namespacing
-
-TODO
-
-### Managed Parameter System
-
-TODO
-
 ### Lifecycle Decorators
-
-TODO
-
-### Transaction-per-request
 
 TODO
 
@@ -316,11 +427,15 @@ TODO
 
 TODO
 
-### Authentication and Authentication
+### Transaction-per-request
 
 TODO
 
 ### Authentication Providers
+
+TODO
+
+### Authentication
 
 TODO
 
