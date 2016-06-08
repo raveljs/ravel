@@ -246,9 +246,6 @@ Place this `.babelrc` config file at the root of your source code.
 ```json
 {
   "plugins": ["transform-decorators-legacy"],
-  "only": [
-    "test/**/*.js"
-  ],
   "retainLines": true
 }
 ```
