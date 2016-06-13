@@ -96,7 +96,7 @@ gulp.task('test', ['cover'], function () {
 });
 
 gulp.task('watch', ['lint', 'docs'], function() {
-  gulp.watch(['./lib/**/*.js'], ['lint', 'docs']);
+  gulp.watch(['README.md', './lib/**/*.js'], ['lint', 'docs']);
   gulp.watch(['gulpfile.js', './test/**/*.js'], ['lint']);
 });
 

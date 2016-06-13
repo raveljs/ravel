@@ -22,17 +22,22 @@ Ravel is a tiny, sometimes-opinionated foundation for creating organized, mainta
 	- [Bringing it all together](#bringing-it-all-together)
 - [API Documentation](#api-documentation)
 	- [Ravel](#ravel)
-	- [Ravel.Module](#ravelmodule)
+	- [Managed Configuration System](#managed-configuration-system)
+		- [app.registerParameter](#appregisterparameter)
+		- [app.set](#appset)
+		- [app.get](#appget)
+		- [Core parameters](#core-parameters)
+		- [.ravelrc](#ravelrc)
 	- [Ravel.Error](#ravelerror)
+	- [Ravel.Module](#ravelmodule)
+		- [Dependency Injection and Namespacing](#dependency-injection-and-namespacing)
+		- [Lifecycle Decorators](#lifecycle-decorators)
 	- [Ravel.Resource](#ravelresource)
 	- [Ravel.Routes](#ravelroutes)
-	- [Dependency Injection and Namespacing](#dependency-injection-and-namespacing)
-	- [Managed Parameter System](#managed-parameter-system)
-	- [Lifecycle Decorators](#lifecycle-decorators)
-	- [Transaction-per-request](#transaction-per-request)
 	- [Database Providers](#database-providers)
-	- [Authentication and Authentication](#authentication-and-authentication)
+	- [Transaction-per-request](#transaction-per-request)
 	- [Authentication Providers](#authentication-providers)
+	- [Authentication](#authentication)
 	- [Metadata and Reflection](#metadata-and-reflection)
 - [Deployment and Scaling](#deployment-and-scaling)
 
@@ -405,7 +410,7 @@ To make it easier to supply configuration values to Ravel, a `.ravelrc` file can
 
 This is the base `Error` type for Ravel, meant to be extended into semantic errors which can be used within your applications. When you create a custom `Ravel.Error`, you **must** provide an associated HTTP status code, which Ravel will automatically respond with if an HTTP request results in that particular `Error` being thrown. This helps create meaningful status codes for your REST APIs while working within traditional `node` error-handling paradigms (`throw/try/catch` and `Promise.reject()`). Errors are generally best-declared within `Module`, `Resource` or `Routes` files (and not exported), closest to where they are used.
 
-*some module file (we'll get to this next)*
+*at the top of some `Module`, `Resource` or `Routes` file (we'll get to this next)*
 ```js
 const Ravel = require('ravel');
 /**
@@ -420,21 +425,124 @@ class UploadError extends Ravel.Error {
 
 ### Ravel.Module
 
-TODO
+`Module`s are meant to contain the bulk of your application logic, either to support endpoints defined in `Resource`s and `Routes`, or to perform tasks at specific points during the Ravel lifecycle (see [Lifecycle Decorators](#lifecycle-decorators) below).
+
+Here's a simple module:
+
+*modules/my-module.js*
+```js
+const Ravel = require('ravel');
+const inject = Ravel.inject; // Ravel's dependency injection decorator
+const Module = Ravel.Module; // base class for Ravel Modules
+
+@inject('path', 'fs', 'custom-module') // inject a custom ravel Module beside npm dependencies!
+class MyModule extends Module {
+  constructor(path, fs, custom) { // @inject'd modules are available here as parameters
+    super();
+    this.path = path;
+    this.fs = fs;
+    this.custom = custom;
+  }
+
+  // implement any methods you like :)
+  aMethod() {
+    //...
+  }
+}
+
+module.exports = MyModule; // you must export your Module so that Ravel can require() it.
+```
 
 #### Dependency Injection and Namespacing
 
-TODO
+Ravel's *dependency injection* system is meant to address several issues with traditional `require()`s:
+
+- Using `require()` with one's own modules in a complex project often results in statements like this: `require('../../../../my/module');`. This issue is especially pronounced when `require()`ing source modules in test files.
+- Cyclical dependencies between modules are not always obvious in a large codebase, and can result in unexpected behaviour.
+
+Ravel addresses this with the the `@inject` decorator:
+
+```js
+const Ravel = require('ravel');
+const inject = Ravel.inject;
+const Module = Ravel.Module;
+
+@inject('another-module') // inject another Module from your project without require()!
+class MyModule extends Module {
+  constructor(another) { // @inject'd modules are available here as parameters
+    super();
+    this.another = another;
+  }
+}
+module.exports = MyModule;
+```
+
+The injection name of `another-module` comes from its filename, and can be overriden in `app.js`:
+
+*app.js*
+```js
+// ...
+const app = new Ravel();
+// the first argument is the path to the module file.
+// the second is the name you assign for dependency injection.
+app.module('./modules/my-module', 'my-module');
+app.module('./modules/another-module', 'another-module');
+// assigning names manually becomes tedious fast, so Ravel can
+// infer the names from the names of your files when you use
+// app.modules to scan a directory:
+app.modules('./modules'); // this would register modules with the same names as above
+```
+
+`Module`s are singletons which are instantiated in *dependency-order* (i.e. if `A` depends on `B`, `B` is guaranteed to be constructed first). Cyclical dependencies are detected automatically and result in an `Error`.
+
+To further simplify working with imports in Ravel, you can `@inject` core `node` modules and `npm` dependencies (installed in your local `node_modules` or globally) alongside your own `Module`s:
+
+```js
+const Ravel = require('ravel');
+const inject = Ravel.inject;
+const Module = Ravel.Module;
+
+@inject('another-module', 'path', 'moment') // anything that can be require()d can be @injected
+class MyModule extends Module {
+  constructor(another, path, moment) {
+    super();
+    // ...
+  }
+}
+module.exports = MyModule;
+```
+
+#### Lifecycle Decorators
+
+`Module`s are also a great place to define logic which should run at particular points during the Ravel lifecycle. Decorating a `Module` method appropriately results in that method firing exactly once at the specified time:
+
+```js
+const Ravel = require('ravel');
+const Module = Ravel.Module;
+const prelisten = Module.prelisten;
+
+class MyInitModule extends Module {
+  // ...
+  @prelisten
+  initDBTables() {
+    // ...
+  }
+}
+module.exports = MyInitModule;
+```
+
+There are currently four lifecycle decorators:
+
+- `@postinit` fires at the end of `Ravel.init()`
+- `@prelisten` fires at the beginning of `Ravel.listen()`
+- `@postlisten` fires at the end of `Ravel.listen()`
+- `@preclose` fires at the beginning of `Ravel.close()`
 
 ### Ravel.Resource
 
 TODO
 
 ### Ravel.Routes
-
-TODO
-
-### Lifecycle Decorators
 
 TODO
 

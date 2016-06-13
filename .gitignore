@@ -6,3 +6,5 @@ init_test.sql
 docs/*
 reports/*
 test-dist/*
+.vimrc
+*.swp
