@@ -5,6 +5,7 @@ const plugins = require( 'gulp-load-plugins' )();
 // const isparta = require('isparta');
 const del = require('del');
 const exec = require('child_process').exec;
+const pkginfo = require('./package.json');
 
 const TESTS = [
   'test-dist/core/decorators/test-*.js',
@@ -26,7 +27,7 @@ gulp.task('lint', function() {
 });
 
 gulp.task('docs', function(done) {
-  exec('mr-doc -n Ravel -s lib --theme ravel', function (err, stdout, stderr) {
+  exec(`mr-doc -n "Ravel ${pkginfo.version} API Reference" -s lib --theme ravel`, function (err, stdout, stderr) {
     console.log(stdout);
     console.log(stderr);
     done(err);
@@ -95,7 +96,7 @@ gulp.task('test', ['cover'], function () {
 });
 
 gulp.task('watch', ['lint', 'docs'], function() {
-  gulp.watch(['./lib/**/*.js'], ['lint', 'docs']);
+  gulp.watch(['README.md', './lib/**/*.js'], ['lint', 'docs']);
   gulp.watch(['gulpfile.js', './test/**/*.js'], ['lint']);
 });
 
