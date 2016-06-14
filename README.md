@@ -763,6 +763,7 @@ class PersonResource extends Resource {
     });
   }
 }
+module.exports = PersonResource;
 ```
 
 ### Authentication Providers
