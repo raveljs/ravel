@@ -32,8 +32,8 @@ Ravel is a tiny, sometimes-opinionated foundation for creating organized, mainta
 	- [Ravel.Module](#ravelmodule)
 		- [Dependency Injection and Namespacing](#dependency-injection-and-namespacing)
 		- [Lifecycle Decorators](#lifecycle-decorators)
-	- [Ravel.Resource](#ravelresource)
 	- [Ravel.Routes](#ravelroutes)
+	- [Ravel.Resource](#ravelresource)
 	- [Database Providers](#database-providers)
 	- [Transaction-per-request](#transaction-per-request)
 	- [Authentication Providers](#authentication-providers)
@@ -462,6 +462,7 @@ Ravel's *dependency injection* system is meant to address several issues with tr
 
 Ravel addresses this with the the `@inject` decorator:
 
+*modules/my-module.js*
 ```js
 const Ravel = require('ravel');
 const inject = Ravel.inject;
@@ -538,11 +539,58 @@ There are currently four lifecycle decorators:
 - `@postlisten` fires at the end of `Ravel.listen()`
 - `@preclose` fires at the beginning of `Ravel.close()`
 
-### Ravel.Resource
-
-TODO
-
 ### Ravel.Routes
+
+`Routes` are Ravel's abstraction of `koa`. They provide Ravel with a simple mechanism for registering `koa` routes, which should (generally) only be used for serving templated pages or static content (not for building RESTful APIs, for which `Ravel.Resource` is more applicable). Extend this abstract superclass to create a `Routes` module.
+
+Like `Module`s, `Routes` classes support dependency injection, allowing easy connection of application logic and web layers.
+
+*routes/my-routes.js*
+```js
+const inject = require('ravel').inject;
+const Routes = require('ravel').Routes;
+const mapping = Routes.mapping; // Ravel decorator for mapping a method to an endpoint
+const before = Routes.before;   // Ravel decorator for conneting middleware to an endpoint
+
+// you can inject your own Modules and npm dependencies into Routes
+@inject('koa-better-body', 'fs', 'custom-module')
+class MyRoutes extends Routes {
+	// The constructor for a `Routes` class must call `super()` with the base
+	// path for all routes within that class. Koa path parameters such as
+	// :something are supported.
+  constructor(bodyParser, fs, custom) {
+    super('/'); // base path for all routes in this class
+    this.bodyParser = bodyParser(); // make bodyParser middleware available
+    this.fs = fs;
+    this.custom = custom;
+  }
+
+	// will map to GET /app  
+  @mapping(Routes.GET, 'app'); // Koa path parameters such as :something are supported
+  @before('bodyParser') // use bodyParser middleware before handler
+  appHandler(ctx) {
+		ctx.status = 200;
+		ctx.body = '<!doctype html><html></html>';
+    // ctx is a koa context object.
+    // return a Promise, or simply use ctx to create a body/status code for response
+    // reject with a Ravel.Error to automatically set an error status code
+  }
+}
+
+module.exports = MyRoutes;
+```
+
+Much like `Module`s, `Routes` can be added to your Ravel application via `app.routes('path/to/routes')`:
+
+*app.js*
+```js
+// ...
+const app = new Ravel();
+// you must add routes one at a time. Directory scanning is not supported.
+app.routes('routes/my-routes');
+```
+
+### Ravel.Resource
 
 TODO
 
