@@ -732,7 +732,38 @@ Ravel currently supports several `DatabaseProvider`s via external libraries.
 
 ### Transaction-per-request
 
-TODO
+The `@transaction` decorator is Ravel's way of automatically opening (and managing) database connections for a `Routes` or `Resource` handler method. It is available for import as `Routes.transaction` or `Resource.transaction`.
+
+When used at the method-level, `@transaction` opens connections for that specific handler method. When used at the class-level, it open connections for all handler methods in that `Route` or `Resource` class.
+
+Connections are available within the handler method as an object `ctx.transaction`, which contains connections as values and `DatabaseProvider` names as keys. Connections will be closed automatically when the endpoint responds (**do not close them yourself**), and will automatically roll-back changes if a `DatabaseProvider` supports it (generally a SQL-only feature).
+
+*resources/person-resource.js*
+```js
+const Resource = require('ravel').Resource;
+const transaction = Resource.transaction;
+
+class PersonResource extends Resource {
+  constructor(bodyParser, fs, custom) {
+    super('/person');
+  }
+
+  // maps to GET /person/:id
+	@transaction('mysql') // this is the name exposed by ravel-mysql-provider
+  get(ctx) {
+		// TIP: Don't write complex logic here. Pass ctx.transaction into
+		// a Module function which returns a Promise! This example is
+		// just for demonstration purposes.
+		return new Promise((resolve, reject) => {
+			// ctx.transaction.mysql is a https://github.com/felixge/node-mysql connection
+			ctx.transaction.mysql.query('SELECT 1', (err, rows) => {
+				if (err) return reject(err);
+				resolve(rows);
+			});
+		});
+  }
+}
+```
 
 ### Authentication Providers
 
