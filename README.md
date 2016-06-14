@@ -691,7 +691,44 @@ app.resources('./resources');
 
 ### Database Providers
 
-TODO
+A `DatabaseProvider` is a lightweight wrapper for a `node` database library (such as `node-mysql`) which performs all the complex set-up and configuration of the library automatically, and registers simple parameters which you must `app.set` (such as the database host ip). The true purpose of `DatabaseProvider`s is to reduce boilerplate code between applications, as well as facilitate Ravel's transaction-per-request system (coming up [next](#transaction-per-request)). Here's an example pulled from [`ravel-mysql-provider`](https://github.com/raveljs/ravel-mysql-provider):
+
+#### Example Setup
+
+*app.js*
+```javascript
+const app = new require('ravel')();
+require('ravel-mysql-provider')(app);
+
+// ... the rest of your Ravel app
+```
+
+#### Example Configuration
+
+*.ravelrc*
+```json
+{
+  "mysql options": {
+    "host": "localhost",
+    "port": 3306,
+    "user": "root",
+    "password": "a password",
+    "database": "mydatabase",
+    "idleTimeoutMillis": 5000,
+    "connectionLimit": 10
+  }
+}
+```
+
+#### List of Ravel `DatabaseProvider`s
+
+Ravel currently supports several `DatabaseProvider`s via external libraries.
+
+ - [`ravel-mysql-provider`](https://github.com/raveljs/ravel-mysql-provider)
+ - [`ravel-rethinkdb-provider`](https://github.com/raveljs/ravel-rethinkdb-provider)
+ - [`ravel-neo4j-provider`](https://github.com/raveljs/ravel-neo4j-provider)
+
+> If you've written a `DatabaseProvider` and would like to see it on this list, contact us or open an issue/PR!
 
 ### Transaction-per-request
 
