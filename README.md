@@ -15,30 +15,30 @@ Ravel is a tiny, sometimes-opinionated foundation for creating organized, mainta
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Architecture](#architecture)
-	- [Modules (and Errors)](#modules-and-errors)
-	- [Routes](#routes)
-	- [Resources](#resources)
-	- [Babel configuration](#babel-configuration)
-	- [Bringing it all together](#bringing-it-all-together)
+  - [Modules (and Errors)](#modules-and-errors)
+  - [Routes](#routes)
+  - [Resources](#resources)
+  - [Babel configuration](#babel-configuration)
+  - [Bringing it all together](#bringing-it-all-together)
 - [API Documentation](#api-documentation)
-	- [Ravel](#ravel)
-	- [Managed Configuration System](#managed-configuration-system)
-		- [app.registerParameter](#appregisterparameter)
-		- [app.set](#appset)
-		- [app.get](#appget)
-		- [Core parameters](#core-parameters)
-		- [.ravelrc](#ravelrc)
-	- [Ravel.Error](#ravelerror)
-	- [Ravel.Module](#ravelmodule)
-		- [Dependency Injection and Namespacing](#dependency-injection-and-namespacing)
-		- [Lifecycle Decorators](#lifecycle-decorators)
-	- [Ravel.Routes](#ravelroutes)
-	- [Ravel.Resource](#ravelresource)
-	- [Database Providers](#database-providers)
-	- [Transaction-per-request](#transaction-per-request)
-	- [Authentication Providers](#authentication-providers)
-	- [Authentication](#authentication)
-	- [Metadata and Reflection](#metadata-and-reflection)
+  - [Ravel](#ravel)
+  - [Managed Configuration System](#managed-configuration-system)
+    - [app.registerParameter](#appregisterparameter)
+    - [app.set](#appset)
+    - [app.get](#appget)
+    - [Core parameters](#core-parameters)
+    - [.ravelrc](#ravelrc)
+  - [Ravel.Error](#ravelerror)
+  - [Ravel.Module](#ravelmodule)
+    - [Dependency Injection and Namespacing](#dependency-injection-and-namespacing)
+    - [Lifecycle Decorators](#lifecycle-decorators)
+  - [Ravel.Routes](#ravelroutes)
+  - [Ravel.Resource](#ravelresource)
+  - [Database Providers](#database-providers)
+  - [Transaction-per-request](#transaction-per-request)
+  - [Authentication Providers](#authentication-providers)
+  - [Authentication](#authentication)
+  - [Metadata and Reflection](#metadata-and-reflection)
 - [Deployment and Scaling](#deployment-and-scaling)
 
 <!-- /TOC -->
@@ -96,6 +96,8 @@ If you're doing it right, your applications will consist largely of `Module`s, w
 
 `Module`s are plain old node.js modules exporting a single class which encapsulates application logic. `Module`s support dependency injection of core Ravel services and other Modules alongside npm dependencies *(no relative `require`'s!)*. `Module`s are instantiated safely in dependency-order, and cyclical dependencies are detected automatically.
 
+For more information about `Module`s, look at [Ravel.Module](#ravelmodule) below.
+
 *modules/cities.js*
 ```javascript
 const Ravel = require('ravel');
@@ -151,6 +153,8 @@ module.exports = Cities;
 
 `Routes` are `Ravel`'s lower-level wrapper for `koa` (`Resource`s are the higher-level one). They support GET, POST, PUT and DELETE requests, and middleware, via decorators. Like `Module`s, they also support dependency injection. Though `Routes` can do everything `Resources` can do, they are most useful for implementing non-REST things, such as static content serving or template serving (EJS, Jade, etc.). If you want to build a REST API, use `Resource`s instead (they're up next!).
 
+For more information about `Routes`, look at [Ravel.Routes](#ravelroutes) below.
+
 *routes/index.js*
 ```javascript
 const Ravel = require('ravel');
@@ -170,7 +174,7 @@ class ExampleRoutes extends Routes {
     };
   }
 
-	// bind this method to an endpoint and verb with @mapping. This one will become GET /app
+  // bind this method to an endpoint and verb with @mapping. This one will become GET /app
   @mapping(Routes.GET, 'app')
   @before('middleware1','middleware2') // use @before to place middleware before appHandler
   appHandler(ctx) {
@@ -187,6 +191,8 @@ module.exports = ExampleRoutes;
 ### Resources
 
 What might be referred to as a *controller* in other frameworks, a `Resource` module defines HTTP methods on an endpoint, supporting the session-per-request transaction pattern via Ravel middleware. `Resource`s also support dependency injection, allowing for the easy creation of RESTful interfaces to your `Module`-based application logic. Resources are really just a thin wrapper around `Routes`, using specially-named handler functions (`get`, `getAll`, `post`, `put`, `putAll`, `delete`, `deleteAll`) instead of `@mapping`. This convention-over-configuration approach makes it easier to write proper REST APIs with less code, and is recommended over "carefully chosen" `@mapping`s in a `Routes` class.
+
+For more information about `Resource`s, look at [Ravel.Resource](#ravelresouce) below.
 
 *resources/city.js*
 ```javascript
@@ -453,7 +459,7 @@ class MyModule extends Module {
 module.exports = MyModule; // you must export your Module so that Ravel can require() it.
 ```
 
-#### Dependency Injection and Namespacing
+#### Dependency Injection and Module Registration
 
 Ravel's *dependency injection* system is meant to address several issues with traditional `require()`s:
 
@@ -513,6 +519,33 @@ class MyModule extends Module {
 module.exports = MyModule;
 ```
 
+#### Module Namespacing
+
+In a large project, it may become desirable to namespace your `Module`s to avoid naming conflicts. This is easily accomplished with Ravel by separating source files for `Module`s into different directories. Let's assume the following project structure:
+
+```
+app.js
+.ravelrc
+modules/
+  core/
+    my-module.js
+  util/
+    my-module.js
+```
+
+Then, import the `Module` directory as before, using `app.modules()`:
+
+*app.js*
+```js
+// ...
+const app = new Ravel();
+app.modules('./modules');
+// core/my-module can now be injected using @inject(core.my-module)!
+// util/my-module can now be injected using @inject(util.my-module)!
+```
+
+> Essentially, Ravel ignores the path you pass to `app.modules()` and uses any remaining path components to namespace `Module`s.
+
 #### Lifecycle Decorators
 
 `Module`s are also a great place to define logic which should run at particular points during the Ravel lifecycle. Decorating a `Module` method appropriately results in that method firing exactly once at the specified time:
@@ -555,9 +588,9 @@ const before = Routes.before;   // Ravel decorator for conneting middleware to a
 // you can inject your own Modules and npm dependencies into Routes
 @inject('koa-better-body', 'fs', 'custom-module')
 class MyRoutes extends Routes {
-	// The constructor for a `Routes` class must call `super()` with the base
-	// path for all routes within that class. Koa path parameters such as
-	// :something are supported.
+  // The constructor for a `Routes` class must call `super()` with the base
+  // path for all routes within that class. Koa path parameters such as
+  // :something are supported.
   constructor(bodyParser, fs, custom) {
     super('/'); // base path for all routes in this class
     this.bodyParser = bodyParser(); // make bodyParser middleware available
@@ -565,12 +598,12 @@ class MyRoutes extends Routes {
     this.custom = custom;
   }
 
-	// will map to GET /app  
+  // will map to GET /app  
   @mapping(Routes.GET, 'app'); // Koa path parameters such as :something are supported
   @before('bodyParser') // use bodyParser middleware before handler
   appHandler(ctx) {
-		ctx.status = 200;
-		ctx.body = '<!doctype html><html></html>';
+    ctx.status = 200;
+    ctx.body = '<!doctype html><html></html>';
     // ctx is a koa context object.
     // return a Promise, or simply use ctx to create a body/status code for response
     // reject with a Ravel.Error to automatically set an error status code
@@ -580,6 +613,8 @@ class MyRoutes extends Routes {
 module.exports = MyRoutes;
 ```
 
+#### Registering Routes
+
 Much like `Module`s, `Routes` can be added to your Ravel application via `app.routes('path/to/routes')`:
 
 *app.js*
@@ -587,12 +622,72 @@ Much like `Module`s, `Routes` can be added to your Ravel application via `app.ro
 // ...
 const app = new Ravel();
 // you must add routes one at a time. Directory scanning is not supported.
-app.routes('routes/my-routes');
+app.routes('./routes/my-routes');
 ```
 
 ### Ravel.Resource
 
-TODO
+What might be referred to as a *controller* in other frameworks, a `Resource` module defines HTTP methods on an endpoint. `Resource`s also support dependency injection, allowing for the easy creation of RESTful interfaces to your `Module`-based application logic. Resources are really just a thin wrapper around `Routes`, using specially-named handler functions (`get`, `getAll`, `post`, `put`, `putAll`, `delete`, `deleteAll`) instead of `@mapping`. This convention-over-configuration approach makes it easier to write proper REST APIs with less code, and is recommended over ~~carefully chosen~~ `@mapping`s in a `Routes` class. Omitting any or all of the specially-named handler functions is fine, and will result in a `501 NOT IMPLEMENTED` status when that particular method/endpoint is requested. `Resource`s inherit all the properties, methods and decorators of `Routes`. See [core/routes](routes.js.html) for more information. Note that `@mapping` does not apply to `Resources`.
+
+*resources/person-resource.js*
+```js
+const inject = require('ravel').inject;
+const Resource = require('ravel').Resource;
+const before = Routes.before;
+
+// you can inject your own Modules and npm dependencies into Resources
+@inject('koa-better-body', 'fs', 'custom-module')
+class PersonResource extends Resource {
+  constructor(bodyParser, fs, custom) {
+    super('/person'); // base path for all routes in this class
+    this.bodyParser = bodyParser(); // make bodyParser middleware available
+    this.fs = fs;
+    this.custom = custom;
+  }
+
+  // will map to GET /person
+  @before('bodyParser') // use bodyParser middleware before handler
+  getAll(ctx) {
+    // ctx is a koa context object.
+    // return a Promise, or simply use ctx to create a body/status code for response
+    // reject with a Ravel.Error to automatically set an error status code
+  }
+
+  // will map to GET /person/:id
+  get(ctx) {
+    // can use ctx.params.id in here automatically
+  }
+
+  // will map to POST /person
+  post(ctx) {}
+
+  // will map to PUT /person
+  putAll(ctx) {}
+
+  // will map to PUT /person/:id
+  put(ctx) {}
+
+  // will map to DELETE /person
+  deleteAll(ctx) {}
+
+  // will map to DELETE /person/:id
+  delete(ctx) {}
+}
+
+module.exports = PersonResource
+```
+
+#### Registering Resources
+
+Much like `Module`s, `Resource`s can be added to your Ravel application via `app.resources('path/to/resources/directory')`:
+
+*app.js*
+```js
+// ...
+const app = new Ravel();
+// directory scanning!
+app.resources('./resources');
+```
 
 ### Database Providers
 
