@@ -749,18 +749,18 @@ class PersonResource extends Resource {
   }
 
   // maps to GET /person/:id
-	@transaction('mysql') // this is the name exposed by ravel-mysql-provider
+  @transaction('mysql') // this is the name exposed by ravel-mysql-provider
   get(ctx) {
-		// TIP: Don't write complex logic here. Pass ctx.transaction into
-		// a Module function which returns a Promise! This example is
-		// just for demonstration purposes.
-		return new Promise((resolve, reject) => {
-			// ctx.transaction.mysql is a https://github.com/felixge/node-mysql connection
-			ctx.transaction.mysql.query('SELECT 1', (err, rows) => {
-				if (err) return reject(err);
-				resolve(rows);
-			});
-		});
+    // TIP: Don't write complex logic here. Pass ctx.transaction into
+    // a Module function which returns a Promise! This example is
+    // just for demonstration purposes.
+    return new Promise((resolve, reject) => {
+      // ctx.transaction.mysql is a https://github.com/felixge/node-mysql connection
+      ctx.transaction.mysql.query('SELECT 1', (err, rows) => {
+        if (err) return reject(err);
+        resolve(rows);
+      });
+    });
   }
 }
 ```
