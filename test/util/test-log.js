@@ -44,6 +44,7 @@ describe('Ravel.Log', function() {
       setLevel: function() {
 
       },
+      basicConfig: function() {},
       trace: function() {},
       verbose: function() {},
       debug: function() {},
