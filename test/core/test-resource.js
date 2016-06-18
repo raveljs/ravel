@@ -75,6 +75,15 @@ describe('Ravel', function() {
       done();
     });
 
+    it('should throw an ApplicationError.NotImplemented when a client attempts to access @mapping on a Resource', function(done) {
+      class Stub extends Resource {}
+      const shouldThrow = function() {
+        Stub.mapping;
+      };
+      expect(shouldThrow).to.throw(Ravel.ApplicationError.NotImplemented);
+      done();
+    });
+
     it('should produce a factory function which can be used to instantiate the specified resource module and perform dependency injection with specific, resource-related services', function(done) {
       const another = {};
       mockery.registerMock('another', another);

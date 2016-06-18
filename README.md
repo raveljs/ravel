@@ -598,7 +598,7 @@ class MyRoutes extends Routes {
     this.custom = custom;
   }
 
-  // will map to GET /app  
+  // will map to GET /app
   @mapping(Routes.GET, 'app'); // Koa path parameters such as :something are supported
   @before('bodyParser') // use bodyParser middleware before handler
   appHandler(ctx) {
