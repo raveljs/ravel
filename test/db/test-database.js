@@ -29,10 +29,6 @@ describe('db/database', function() {
     //load database module
     database = require('../../lib/db/database')(Ravel);
 
-    //mock a couple of providers for us to use
-    mysqlProvider = new DatabaseProvider('mysql');
-    postgresProvider = new DatabaseProvider('postgres');
-
     done();
   });
 
@@ -59,8 +55,10 @@ describe('db/database', function() {
     });
 
     it('should populate req.transaction with a dictionary of open database connections when providers are registered', function(done) {
+      //mock a couple of providers for us to use
+      mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
+      postgresProvider = new DatabaseProvider(Ravel, 'postgres');
       //reload database so it picks up database providers
-      Ravel.set('database providers', [mysqlProvider, postgresProvider]);
       database = require('../../lib/db/database')(Ravel);
 
       //mock stuff
@@ -94,8 +92,10 @@ describe('db/database', function() {
     });
 
     it('should populate req.transaction with a dictionary of only the correct open database connections when providers are requested by name', function(done) {
+      //mock a couple of providers for us to use
+      mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
+      postgresProvider = new DatabaseProvider(Ravel, 'postgres');
       //reload database so it picks up database providers
-      Ravel.set('database providers', [mysqlProvider, postgresProvider]);
       database = require('../../lib/db/database')(Ravel);
 
       //mock stuff
@@ -128,8 +128,10 @@ describe('db/database', function() {
     });
 
     it('should throw an Error if any of the registered database providers fails to provide a connection', function(done) {
+      //mock a couple of providers for us to use
+      mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
+      postgresProvider = new DatabaseProvider(Ravel, 'postgres');
       //reload database so it picks up database providers
-      Ravel.set('database providers', [mysqlProvider, postgresProvider]);
       database = require('../../lib/db/database')(Ravel);
 
       const mysqlConnection = Object.create(null);
@@ -161,8 +163,10 @@ describe('db/database', function() {
     });
 
     it('should end all open transactions (close/commit connections) when the middleware chain wraps up', function(done) {
+      //mock a couple of providers for us to use
+      mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
+      postgresProvider = new DatabaseProvider(Ravel, 'postgres');
       //reload database so it picks up database providers
-      Ravel.set('database providers', [mysqlProvider, postgresProvider]);
       database = require('../../lib/db/database')(Ravel);
 
       const mysqlConnection = Object.create(null), postgresConnection = Object.create(null);
@@ -199,8 +203,10 @@ describe('db/database', function() {
     });
 
     it('should end all open transactions (close/rollback connections) when an exception is thrown in the middleware chain', function(done) {
+      //mock a couple of providers for us to use
+      mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
+      postgresProvider = new DatabaseProvider(Ravel, 'postgres');
       //reload database so it picks up database providers
-      Ravel.set('database providers', [mysqlProvider, postgresProvider]);
       database = require('../../lib/db/database')(Ravel);
 
       const mysqlConnection = Object.create(null), postgresConnection = Object.create(null);
@@ -245,8 +251,10 @@ describe('db/database', function() {
     });
 
     it('should respond with HTTP 500 INTERNAL SERVER ERROR when any open transactions fail to close/commit when res.end() is called', function(done) {
+      //mock a couple of providers for us to use
+      mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
+      postgresProvider = new DatabaseProvider(Ravel, 'postgres');
       //reload database so it picks up database providers
-      Ravel.set('database providers', [mysqlProvider, postgresProvider]);
       database = require('../../lib/db/database')(Ravel);
 
       const mysqlConnection = Object.create(null), postgresConnection = Object.create(null);
@@ -294,8 +302,10 @@ describe('db/database', function() {
 
   describe('#scoped()', function() {
     it('should populate scoped context with a dictionary of open database connections when providers are registered', function(done) {
+      //mock a couple of providers for us to use
+      mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
+      postgresProvider = new DatabaseProvider(Ravel, 'postgres');
       //reload database so it picks up database providers
-      Ravel.set('database providers', [mysqlProvider, postgresProvider]);
       database = require('../../lib/db/database')(Ravel);
 
 
@@ -325,10 +335,11 @@ describe('db/database', function() {
     });
 
     it('should populate scoped context with a dictionary of the correct open database connections when providers are requested by name', function(done) {
+      //mock a couple of providers for us to use
+      mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
+      postgresProvider = new DatabaseProvider(Ravel, 'postgres');
       //reload database so it picks up database providers
-      Ravel.set('database providers', [mysqlProvider, postgresProvider]);
       database = require('../../lib/db/database')(Ravel);
-
 
       const mysqlConnection = Object.create(null), postgresConnection = Object.create(null);
       const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function() {
@@ -355,10 +366,11 @@ describe('db/database', function() {
     });
 
     it('should throw an exception if any of the registered database providers fails to provide a connection', function(done) {
+      //mock a couple of providers for us to use
+      mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
+      postgresProvider = new DatabaseProvider(Ravel, 'postgres');
       //reload database so it picks up database providers
-      Ravel.set('database providers', [mysqlProvider, postgresProvider]);
       database = require('../../lib/db/database')(Ravel);
-
 
       const postgresConnection = Object.create(null);
       const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function() {
@@ -383,10 +395,11 @@ describe('db/database', function() {
     });
 
     it('should end all open transactions (close/commit connections) when inGen is finished executing', function(done) {
+      //mock a couple of providers for us to use
+      mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
+      postgresProvider = new DatabaseProvider(Ravel, 'postgres');
       //reload database so it picks up database providers
-      Ravel.set('database providers', [mysqlProvider, postgresProvider]);
       database = require('../../lib/db/database')(Ravel);
-
 
       const mysqlConnection = Object.create(null), postgresConnection = Object.create(null);
       const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function() {
@@ -417,10 +430,11 @@ describe('db/database', function() {
     });
 
     it('should end all open transactions (close/rollback connections) when inGen throws an exception', function(done) {
+      //mock a couple of providers for us to use
+      mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
+      postgresProvider = new DatabaseProvider(Ravel, 'postgres');
       //reload database so it picks up database providers
-      Ravel.set('database providers', [mysqlProvider, postgresProvider]);
       database = require('../../lib/db/database')(Ravel);
-
 
       const mysqlConnection = Object.create(null), postgresConnection = Object.create(null);
       const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function() {
@@ -456,10 +470,11 @@ describe('db/database', function() {
     });
 
     it('should reject its returned promise when any connection fails to exit cleanly', function(done) {
+      //mock a couple of providers for us to use
+      mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
+      postgresProvider = new DatabaseProvider(Ravel, 'postgres');
       //reload database so it picks up database providers
-      Ravel.set('database providers', [mysqlProvider, postgresProvider]);
       database = require('../../lib/db/database')(Ravel);
-
 
       const mysqlConnection = Object.create(null), postgresConnection = Object.create(null);
       const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function() {
