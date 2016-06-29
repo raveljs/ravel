@@ -191,4 +191,46 @@ describe('Ravel', function() {
       done();
     });
   });
+
+  describe('#knownClasses()', function() {
+    it('should respond with an Array<String> of known class file paths', function(done) {
+      const inject = Ravel.inject;
+      const another = {};
+      mockery.registerMock('another', another);
+      @inject('another')
+      class Stub extends Ravel.Module {
+        constructor(a) {
+          super();
+          expect(a).to.equal(another);
+        }
+
+        method() {}
+      }
+      mockery.registerMock(upath.join(app.cwd, 'test'), Stub);
+      app.module('./test', 'test');
+
+      const Routes = Ravel.Routes;
+      const before = Routes.before;
+      const mapping = Routes.mapping;
+      @before('middleware1')
+      @mapping(Routes.GET, '/path', 404)
+      class Stub2 extends Routes {
+        constructor() {
+          super('/app');
+        }
+
+        @mapping(Routes.PUT, '/path')
+        @before('middleware2')
+        pathHandler(ctx) {
+          ctx.status = 200;
+        }
+      };
+      mockery.registerMock(upath.join(app.cwd, './stub'), Stub2);
+      app.routes('./stub');
+
+      const knownClasses = app.knownClasses();
+      expect(knownClasses).to.deep.equal(['./test', './stub']);
+      done();
+    });
+  });
 });
