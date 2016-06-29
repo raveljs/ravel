@@ -12,8 +12,8 @@ const upath = require('upath');
 
 const AuthenticationProvider = (require('../../lib/ravel')).AuthenticationProvider;
 class GoogleOAuth2 extends AuthenticationProvider {
-  constructor() {
-    super('google-oauth2');
+  get name() {
+    return 'google-oauth2';
   }
 }
 
@@ -96,7 +96,7 @@ describe('auth/passport_init', function() {
     Ravel.module('./something', 'something');
     Ravel.module('./authconfig', 'authconfig');
 
-    const provider = new GoogleOAuth2();
+    const provider = new GoogleOAuth2(Ravel);
     provider.init = sinon.stub();
 
     Ravel.set('authentication providers', [provider]);
@@ -119,7 +119,7 @@ describe('auth/passport_init', function() {
   });
 
   it('should throw ApplicationError.NotFound if an Authentication module is needed and one is not present', function(done) {
-    const provider = new GoogleOAuth2();
+    const provider = new GoogleOAuth2(Ravel);
     provider.init = sinon.stub();
     Ravel.set('authentication providers', [provider]);
     require('../../lib/auth/passport_init')(Ravel, {});
@@ -150,7 +150,7 @@ describe('auth/passport_init', function() {
     mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
     Ravel.module('./authconfig', 'authconfig');
 
-    const provider = new GoogleOAuth2();
+    const provider = new GoogleOAuth2(Ravel);
     provider.init = sinon.stub();
 
     Ravel.set('authentication providers', [provider]);
@@ -191,7 +191,7 @@ describe('auth/passport_init', function() {
     mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
     Ravel.module('./authconfig', 'authconfig');
 
-    const provider = new GoogleOAuth2();
+    const provider = new GoogleOAuth2(Ravel);
     provider.init = sinon.stub();
 
     Ravel.set('authentication providers', [provider]);
@@ -234,7 +234,7 @@ describe('auth/passport_init', function() {
     mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
     Ravel.module('./authconfig', 'authconfig');
 
-    const provider = new GoogleOAuth2();
+    const provider = new GoogleOAuth2(Ravel);
     provider.init = sinon.stub();
 
     Ravel.set('authentication providers', [provider]);
@@ -279,7 +279,7 @@ describe('auth/passport_init', function() {
     mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
     Ravel.module('./authconfig', 'authconfig');
 
-    const provider = new GoogleOAuth2();
+    const provider = new GoogleOAuth2(Ravel);
     provider.init = sinon.stub();
 
     Ravel.set('authentication providers', [provider]);
@@ -315,7 +315,7 @@ describe('auth/passport_init', function() {
     mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
     Ravel.module('./authconfig', 'authconfig');
 
-    const provider = new GoogleOAuth2();
+    const provider = new GoogleOAuth2(Ravel);
     sinon.stub(provider, 'init', function(expressApp, passport, verify) {
       verify('testAccessToken', 'testRefreshToken', {name: 'Sean McIntyre'}, function(err, result) {
         expect(result).to.deep.equal(databaseProfile);
@@ -343,7 +343,7 @@ describe('auth/passport_init', function() {
     mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
     Ravel.module('./authconfig', 'authconfig');
 
-    const provider = new GoogleOAuth2();
+    const provider = new GoogleOAuth2(Ravel);
     sinon.stub(provider, 'init', function(router, passport, verify) {
       verify('testAccessToken', 'testRefreshToken', {name: 'Sean McIntyre'}, function(err, result) {
         expect(result).to.be.not.ok;

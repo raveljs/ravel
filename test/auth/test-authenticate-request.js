@@ -13,8 +13,8 @@ const upath = require('upath');
 
 const AuthenticationProvider = require('../../lib/ravel').AuthenticationProvider;
 class GoogleOAuth2 extends AuthenticationProvider {
-  constructor() {
-    super('google-oauth2');
+  get name() {
+    return 'google-oauth2';
   }
 }
 
@@ -42,7 +42,7 @@ describe('util/authenticate_request', function() {
     authconfig = Module.authconfig;
     coreSymbols = require('../../lib/core/symbols');
 
-    const provider = new GoogleOAuth2();
+    const provider = new GoogleOAuth2(Ravel);
     provider.init = sinon.stub();
     Ravel.set('authentication providers', [provider]);
 

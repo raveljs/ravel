@@ -45,8 +45,8 @@ describe('auth/authenticate_token', function() {
     const AuthenticationProvider = require('../../lib/ravel').AuthenticationProvider;
 
     class TestProvider extends AuthenticationProvider {
-      constructor() {
-        super('test');
+      get name() {
+        return 'test';
       }
 
       init() {
@@ -61,7 +61,7 @@ describe('auth/authenticate_token', function() {
         return Promise.resolve({profile: profile, expiry: 2000});
       }
     }
-    testProvider = new TestProvider();
+    testProvider = new TestProvider(Ravel);
     const providers = Ravel.get('authentication providers');
     providers.push(testProvider);
     Ravel.set('authentication providers', providers);
