@@ -13,6 +13,7 @@ let postinitHandlerCalled = 0;
 let prelistenHandlerCalled = 0;
 let postlistenHandlerCalled = 0;
 let endHandlerCalled = 0;
+let koaconfigHandlerCalled = 0, koaconfigAppReference;
 
 describe('Ravel lifeycle test', function() {
   beforeEach(function(done) {
@@ -39,9 +40,11 @@ describe('Ravel lifeycle test', function() {
     const prelisten = Ravel.Module.prelisten;
     const postlisten = Ravel.Module.postlisten;
     const preclose = Ravel.Module.preclose;
+    const koaconfig = Ravel.Module.koaconfig;
     postinitHandlerCalled = 0;
     prelistenHandlerCalled = 0;
     postlistenHandlerCalled = 0;
+    koaconfigHandlerCalled = 0;
     endHandlerCalled = 0;
 
     const u = [{id:1, name:'Joe'}, {id:2, name:'Jane'}];
@@ -84,6 +87,12 @@ describe('Ravel lifeycle test', function() {
       @preclose
       doEnd() {
         endHandlerCalled += 1;
+      }
+
+      @koaconfig
+      doKoaConfig(koaApp) {
+        koaconfigHandlerCalled += 1;
+        koaconfigAppReference = koaApp;
       }
     }
 
@@ -255,12 +264,14 @@ describe('Ravel lifeycle test', function() {
         expect(prelistenHandlerCalled).to.equal(1);
         expect(postlistenHandlerCalled).to.equal(1);
         expect(endHandlerCalled).to.equal(1);
+        expect(koaconfigHandlerCalled).to.equal(1);
+        expect(koaconfigAppReference).to.be.an('object');
         app.server.close.restore(); // undo stub
         app.server.close(done); // actually close server so test suite exits cleanly
-      }).catch(() =>  {
+      }).catch((err) =>  {
         app.server.close.restore(); // undo stub
         app.server.close(); // actually close server so test suite exits cleanly
-        done(new Error());
+        done(err ? err : new Error());
       });
     });
   });

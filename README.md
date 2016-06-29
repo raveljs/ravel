@@ -565,12 +565,13 @@ class MyInitModule extends Module {
 module.exports = MyInitModule;
 ```
 
-There are currently four lifecycle decorators:
+There are currently five lifecycle decorators:
 
 - `@postinit` fires at the end of `Ravel.init()`
 - `@prelisten` fires at the beginning of `Ravel.listen()`
 - `@postlisten` fires at the end of `Ravel.listen()`
 - `@preclose` fires at the beginning of `Ravel.close()`
+- `@koaconfig` fires during `Ravel.init()`, after Ravel is finished configuring the underlying `koa` app object with global middleware. Methods decorated with `@koaconfig` receive a reference to the underlying `koa` app object for customization. This decorator is meant for exceptional circumstances, since (unnecessarily) global middleware constitutes a hot path and can lead to inefficiency.
 
 ### Ravel.Routes
 
