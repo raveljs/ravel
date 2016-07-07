@@ -9,7 +9,7 @@ Ravel is a tiny, sometimes-opinionated foundation for creating organized, mainta
 
 ## Table of Contents
 
-<!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
+<!-- TOC depthFrom:2 depthTo:3 withLinks:1 updateOnSave:1 orderedList:0 -->
 
 - [Table of Contents](#table-of-contents)
 - [Introduction](#introduction)
@@ -23,29 +23,13 @@ Ravel is a tiny, sometimes-opinionated foundation for creating organized, mainta
 - [API Documentation](#api-documentation)
 	- [Ravel](#ravel)
 	- [Managed Configuration System](#managed-configuration-system)
-		- [app.registerParameter](#appregisterparameter)
-		- [app.set](#appset)
-		- [app.get](#appget)
-		- [Core parameters](#core-parameters)
-		- [.ravelrc](#ravelrc)
 	- [Ravel.Error](#ravelerror)
 	- [Ravel.Module](#ravelmodule)
-		- [Dependency Injection and Module Registration](#dependency-injection-and-module-registration)
-		- [Module Namespacing](#module-namespacing)
-		- [Lifecycle Decorators](#lifecycle-decorators)
 	- [Ravel.Routes](#ravelroutes)
-		- [Registering Routes](#registering-routes)
 	- [Ravel.Resource](#ravelresource)
-		- [Registering Resources](#registering-resources)
 	- [Database Providers](#database-providers)
-		- [Example Setup](#example-setup)
-		- [Example Configuration](#example-configuration)
-		- [List of Ravel `DatabaseProvider`s](#list-of-ravel-databaseproviders)
 	- [Transaction-per-request](#transaction-per-request)
 	- [Authentication Providers](#authentication-providers)
-		- [Example Setup](#example-setup)
-		- [Example Configuration](#example-configuration)
-		- [List of Ravel `AuthenticationProvider`s](#list-of-ravel-authenticationproviders)
 	- [Authentication](#authentication)
 - [Deployment and Scaling](#deployment-and-scaling)
 
