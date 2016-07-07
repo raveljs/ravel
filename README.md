@@ -882,6 +882,9 @@ Ravel is designed for horizontal scaling, and helps you avoid common pitfalls wh
 
  - Session storage in [Redis](https://github.com/antirez/redis) is currently mandatory, ensuring that you can safely replicate your Ravel app safely
  - The internal [koa](http://koajs.com/) application's `app.proxy` flag is set to `true`.
+ - All Ravel dependencies are strictly locked (i.e. no use of `~` or `^` in `package.json`). This helps foster repeatability between members of your team, as well as between development/testing/production environments. Adherence to semver in the node ecosystem is unfortunately varied at best, so it is recommended that you follow the same practice in your app as well.
  - While it is possible to color outside the lines, Ravel provides a framework for developing **stateless** backend applications, where all stateful data is stored in external caches or databases.
 
 It is strongly encouraged that you containerize your Ravel app using an [Alpine-based docker container](https://hub.docker.com/r/mhart/alpine-node/), and then explore technologies such as [docker-compose](https://www.docker.com/products/docker-compose) or [kubernetes](http://kubernetes.io/) to appropriately scale out and link to (at least) the [official redis container](https://hub.docker.com/_/redis/). An example project with a reference `docker-compose` environment for Ravel is forthcoming, but for now please refer to the [nom project](https://github.com/nomjs/nomjs-registry) as a current example.
+
+Ravel does not explicitly require [hiredis](https://github.com/redis/hiredis-node), but is is highly recommended that you install it alongside Ravel for improved performance.
