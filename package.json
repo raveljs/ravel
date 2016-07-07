@@ -1,6 +1,6 @@
 {
   "name": "ravel",
-  "version": "0.16.0",
+  "version": "0.16.1",
   "author": "Sean McIntyre <s.mcintyre@xverba.ca>",
   "description": "Ravel Rapid Application Development Framework",
   "engines": {

@@ -58,6 +58,9 @@ describe('auth/authentication_provider', function() {
       expect(provider).to.have.property('init').that.is.a('function');
       expect(provider).to.have.property('handlesClient').that.is.a('function');
       expect(provider).to.have.property('credentialToProfile').that.is.a('function');
+      expect(provider).to.have.property('log').that.is.an('object');
+      expect(provider).to.have.property('ravelInstance').that.is.an('object');
+      expect(provider).to.have.property('ApplicationError').that.is.an('object');
       done();
     });
 
