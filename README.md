@@ -829,7 +829,7 @@ class AuthConfig extends Module {
   }
   deserializeUser(id) {
     // retrieve profile from database using id from session
-    return this.userProfiles.getProfile(id);
+    return this.userProfiles.getProfile(id); // a Promise
   }
   verify(providerName, ...args) {
     // this method is roughly equivalent to the Passport verify callback, but
