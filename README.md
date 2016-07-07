@@ -707,7 +707,8 @@ A `DatabaseProvider` is a lightweight wrapper for a `node` database library (suc
 const app = new require('ravel')();
 const MySQLProvider = require('ravel-mysql-provider');
 new MySQLProvider(app, 'mysql');
-
+// ... other providers and parameters
+app.init();
 // ... the rest of your Ravel app
 ```
 
@@ -787,7 +788,8 @@ An `AuthenticationProvider` is a lightweight wrapper for a [Passport](https://gi
 const app = new require('ravel')();
 const GitHubProvider = require('ravel-github-oauth2-provider');
 new GitHubProvider(app);
-
+// ... other providers and parameters
+app.init();
 // ... the rest of your Ravel app
 ```
 
