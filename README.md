@@ -15,30 +15,38 @@ Ravel is a tiny, sometimes-opinionated foundation for creating organized, mainta
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Architecture](#architecture)
-  - [Modules (and Errors)](#modules-and-errors)
-  - [Routes](#routes)
-  - [Resources](#resources)
-  - [Babel configuration](#babel-configuration)
-  - [Bringing it all together](#bringing-it-all-together)
+	- [Modules (and Errors)](#modules-and-errors)
+	- [Routes](#routes)
+	- [Resources](#resources)
+	- [Babel configuration](#babel-configuration)
+	- [Bringing it all together](#bringing-it-all-together)
 - [API Documentation](#api-documentation)
-  - [Ravel](#ravel)
-  - [Managed Configuration System](#managed-configuration-system)
-    - [app.registerParameter](#appregisterparameter)
-    - [app.set](#appset)
-    - [app.get](#appget)
-    - [Core parameters](#core-parameters)
-    - [.ravelrc](#ravelrc)
-  - [Ravel.Error](#ravelerror)
-  - [Ravel.Module](#ravelmodule)
-    - [Dependency Injection and Namespacing](#dependency-injection-and-namespacing)
-    - [Lifecycle Decorators](#lifecycle-decorators)
-  - [Ravel.Routes](#ravelroutes)
-  - [Ravel.Resource](#ravelresource)
-  - [Database Providers](#database-providers)
-  - [Transaction-per-request](#transaction-per-request)
-  - [Authentication Providers](#authentication-providers)
-  - [Authentication](#authentication)
-  - [Metadata and Reflection](#metadata-and-reflection)
+	- [Ravel](#ravel)
+	- [Managed Configuration System](#managed-configuration-system)
+		- [app.registerParameter](#appregisterparameter)
+		- [app.set](#appset)
+		- [app.get](#appget)
+		- [Core parameters](#core-parameters)
+		- [.ravelrc](#ravelrc)
+	- [Ravel.Error](#ravelerror)
+	- [Ravel.Module](#ravelmodule)
+		- [Dependency Injection and Module Registration](#dependency-injection-and-module-registration)
+		- [Module Namespacing](#module-namespacing)
+		- [Lifecycle Decorators](#lifecycle-decorators)
+	- [Ravel.Routes](#ravelroutes)
+		- [Registering Routes](#registering-routes)
+	- [Ravel.Resource](#ravelresource)
+		- [Registering Resources](#registering-resources)
+	- [Database Providers](#database-providers)
+		- [Example Setup](#example-setup)
+		- [Example Configuration](#example-configuration)
+		- [List of Ravel `DatabaseProvider`s](#list-of-ravel-databaseproviders)
+	- [Transaction-per-request](#transaction-per-request)
+	- [Authentication Providers](#authentication-providers)
+		- [Example Setup](#example-setup)
+		- [Example Configuration](#example-configuration)
+		- [List of Ravel `AuthenticationProvider`s](#list-of-ravel-authenticationproviders)
+	- [Authentication](#authentication)
 - [Deployment and Scaling](#deployment-and-scaling)
 
 <!-- /TOC -->
@@ -692,14 +700,15 @@ app.resources('./resources');
 
 ### Database Providers
 
-A `DatabaseProvider` is a lightweight wrapper for a `node` database library (such as `node-mysql`) which performs all the complex set-up and configuration of the library automatically, and registers simple parameters which you must `app.set` (such as the database host ip). The true purpose of `DatabaseProvider`s is to reduce boilerplate code between applications, as well as facilitate Ravel's transaction-per-request system (coming up [next](#transaction-per-request)). Here's an example pulled from [`ravel-mysql-provider`](https://github.com/raveljs/ravel-mysql-provider):
+A `DatabaseProvider` is a lightweight wrapper for a `node` database library (such as [node-mysql](https://github.com/felixge/node-mysql)) which performs all the complex set-up and configuration of the library automatically, and registers simple parameters which you must `app.set` (such as the database host ip). The true purpose of `DatabaseProvider`s is to reduce boilerplate code between applications, as well as facilitate Ravel's transaction-per-request system (coming up [next](#transaction-per-request)). You may use as many different `DatbaseProvider`s as you wish in your application. Here's an example pulled from [`ravel-mysql-provider`](https://github.com/raveljs/ravel-mysql-provider):
 
 #### Example Setup
 
 *app.js*
 ```javascript
 const app = new require('ravel')();
-require('ravel-mysql-provider')(app);
+const MySQLProvider = require('ravel-mysql-provider');
+new MySQLProvider(app, 'mysql');
 
 // ... the rest of your Ravel app
 ```
@@ -729,7 +738,7 @@ Ravel currently supports several `DatabaseProvider`s via external libraries.
  - [`ravel-rethinkdb-provider`](https://github.com/raveljs/ravel-rethinkdb-provider)
  - [`ravel-neo4j-provider`](https://github.com/raveljs/ravel-neo4j-provider)
 
-> If you've written a `DatabaseProvider` and would like to see it on this list, contact us or open an issue/PR!
+> If you've written a `DatabaseProvider` and would like to see it on this list, contact us or open an issue/PR against this README!
 
 ### Transaction-per-request
 
@@ -769,16 +778,110 @@ module.exports = PersonResource;
 
 ### Authentication Providers
 
-TODO
+An `AuthenticationProvider` is a lightweight wrapper for a [Passport](https://github.com/jaredhanson/passport) provider library (such as [passport-github](https://github.com/jaredhanson/passport-github)) which performs all the complex set-up and configuration of the library automatically, and registers simple parameters which you must `app.set` (such as OAuth client ids and secrets). The purpose of `AuthenticationProvider`s is to reduce boilerplate code between applications, and simplify often complex `Passport` configuration code. You may use as many different `AuthenticationProvider`s as you wish in your application. Here's an example pulled from [`ravel-github-oauth2-provider`](https://github.com/raveljs/ravel-github-oauth2-provider):
+
+#### Example Setup
+
+*app.js*
+```javascript
+const app = new require('ravel')();
+const GitHubProvider = require('ravel-github-oauth2-provider');
+new GitHubProvider(app);
+
+// ... the rest of your Ravel app
+```
+
+#### Example Configuration
+
+*.ravelrc*
+```json
+{
+  "github auth callback url" : "http://localhost:8080",
+  "github auth path": "/auth/github",
+  "github auth callback path": "/auth/github/callback",
+  "github client id": "YOUR_CLIENT_ID",
+  "github client secret" : "YOUR_CLIENT_SECRET"  
+}
+```
+
+You'll also need to implement an `@authconfig` module like this:
+
+*modules/authconfig.js*
+```js
+'use strict';
+
+const Ravel = require('ravel');
+const inject = Ravel.inject;
+const Module = Ravel.Module;
+const authconfig = Module.authconfig;
+
+@authconfig
+@inject('user-profiles')
+class AuthConfig extends Module {
+  constructor(userProfiles) {
+    this.userProfiles = userProfiles;
+  }
+  serializeUser(profile) {
+    // serialize profile to session using the id field
+    return Promise.resolve(profile.id);
+  }
+  deserializeUser(id) {
+    // retrieve profile from database using id from session
+    return this.userProfiles.getProfile(id);
+  }
+  verify(providerName, ...args) {
+    // this method is roughly equivalent to the Passport verify callback, but
+    // supports multiple simultaneous AuthenticationProviders.
+    // providerName is the name of the provider which needs credentials verified
+    // args is an array containing credentials, such as username/password for
+    // verification against your database, or a profile and OAuth tokens. See
+    // specific AuthenticationProvider library READMEs for more information about
+    // how to implement this method.
+  }
+}
+
+module.exports = AuthConfig;
+```
+
+#### List of Ravel `AuthenticationProvider`s
+
+Ravel currently supports several `AuthenticationProvider`s via external libraries.
+
+ - [`ravel-github-oauth2-provider`](https://github.com/raveljs/ravel-github-oauth2-provider)
+ - [`ravel-google-oauth2-provider`](https://github.com/raveljs/ravel-google-oauth2-provider)
+
+> If you've written an `AuthenticationProvider` and would like to see it on this list, contact us or open an issue/PR against this README!
 
 ### Authentication
 
-TODO
+Once you've registered an `AuthenticationProvider`, requiring users to have an authenticated session to access a `Routes` or `Resource` endpoint is accomplished via the `@authenticated` decorator, which can be used at the class or method level:
 
-### Metadata and Reflection
+*Note: the @authenticated decorator works the same way on `Routes` and `Resource` classes/methods*
+```js
+const Routes = require('ravel').Routes;
+const mapping = Routes.mapping;
+const authenticated = Routes.authenticated;
 
-TODO
+@authenticated // protect all endpoints in this Routes class
+class MyRoutes extends Routes {
+  constructor() {
+    super('/');
+  }
+
+  @authenticated({redirect: true}) // protect one endpoint specifically
+  @mapping(Routes.GET, 'app')
+  handler(ctx) {
+    // will redirect to app.get('login route') if not signed in
+  }
+}
+```
 
 ## Deployment and Scaling
 
-TODO
+Ravel is designed for horizontal scaling, and helps you avoid common pitfalls when designing your node.js backend application. In particular:
+
+ - Session storage in [Redis](https://github.com/antirez/redis) is currently mandatory, ensuring that you can safely replicate your Ravel app safely
+ - The internal [koa](http://koajs.com/) application's `app.proxy` flag is set to `true`.
+ - While it is possible to color outside the lines, Ravel provides a framework for developing **stateless** backend applications, where all stateful data is stored in external caches or databases.
+
+It is strongly encouraged that you containerize your Ravel app using an [Alpine-based docker container](https://hub.docker.com/r/mhart/alpine-node/), and then explore technologies such as [docker-compose](https://www.docker.com/products/docker-compose) or [kubernetes](http://kubernetes.io/) to appropriately scale out and link to (at least) the [official redis container](https://hub.docker.com/_/redis/). An example project with a reference `docker-compose` environment for Ravel is forthcoming, but for now please refer to the [nom project](https://github.com/nomjs/nomjs-registry) as a current example.
