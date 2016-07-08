@@ -283,7 +283,7 @@ $ node app.js
 > [<small>View API docs &#128366;</small>](http://raveljs.github.io/docs/latest/)
 
 ### Ravel App
-> [<small>View API docs &#128366;</small>](http://raveljs.github.io/docs/latest/core/ravel.js.html)
+> [<small>View API docs &#128366;</small>](http://raveljs.github.io/docs/latest/ravel.js.html)
 
 A Ravel application is a root application file (such as `app.js`), coupled with a collection of files exporting `Module`s, `Resource`s and `Routes` (see [Architecture](#architecture) for more information). Getting started is usually as simple as creating `app.js`:
 
@@ -802,7 +802,7 @@ app.init();
   "github auth path": "/auth/github",
   "github auth callback path": "/auth/github/callback",
   "github client id": "YOUR_CLIENT_ID",
-  "github client secret" : "YOUR_CLIENT_SECRET"  
+  "github client secret" : "YOUR_CLIENT_SECRET"
 }
 ```
 
