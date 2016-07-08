@@ -54,6 +54,7 @@ describe('auth/authentication_provider', function() {
         }
       }
       provider = new GoogleOAuth2(Ravel);
+      Ravel.emit('pre listen');
       expect(provider.name).to.equal('google-oauth2');
       expect(provider).to.have.property('init').that.is.a('function');
       expect(provider).to.have.property('handlesClient').that.is.a('function');
