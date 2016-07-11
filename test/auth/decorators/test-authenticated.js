@@ -102,7 +102,7 @@ describe('Routes', function() {
           warnOnUnregistered: false
         });
         const AuthenticateRequest = class {};
-        AuthenticateRequest.prototype.middleware = authenticationMiddleware;
+        AuthenticateRequest.prototype.middleware = () => authenticationMiddleware;
         mockery.registerMock('../auth/authenticate_request', AuthenticateRequest);
         Ravel = require('../../../lib/ravel');
         Routes = Ravel.Routes;

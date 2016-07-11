@@ -108,8 +108,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should provide open connections to Route handlers', function(done) {
-      @transaction('rethinkdb')
+    it('should provide open connections to Route handlers (method-level)', function(done) {
       class Stub extends Routes {
         constructor() {
           super('/app/path');
@@ -127,8 +126,37 @@ describe('Ravel', function() {
       app.routes('stub');
       const router = require('koa-router')();
       sinon.stub(router, 'get', function() {
-        expect(app.db.middleware).to.have.been.calledWith('rethinkdb', 'mysql', 'redis');
+        expect(app.db.middleware).to.have.been.calledWith('mysql', 'redis');
         expect(arguments[0]).to.equal('/app/path');
+        expect(arguments[1]).to.be.a.function;
+        expect(arguments[1].toString()).to.include('buildRestResponse');
+        expect(arguments[2]).to.equal(transactionMiddleware);
+        done();
+      });
+      app[coreSymbols.routesInit](router);
+    });
+
+    it('should provide open connections to Route handlers (mixed class-level and method-level)', function(done) {
+      @transaction('rethinkdb')
+      class Stub2 extends Routes {
+        constructor() {
+          super('/app/another/path');
+        }
+
+        @Routes.mapping(Routes.GET, '')
+        @transaction('mysql', 'redis')
+        handler() {}
+      }
+      mockery.registerMock(upath.join(app.cwd, 'stub2'), Stub2);
+      const transactionMiddleware = function*(next){ yield next; };
+      app.db = {
+        middleware: sinon.stub().returns(transactionMiddleware)
+      };
+      app.routes('stub2');
+      const router = require('koa-router')();
+      sinon.stub(router, 'get', function() {
+        expect(app.db.middleware).to.have.been.calledWith('rethinkdb', 'mysql', 'redis');
+        expect(arguments[0]).to.equal('/app/another/path');
         expect(arguments[1]).to.be.a.function;
         expect(arguments[1].toString()).to.include('buildRestResponse');
         expect(arguments[2]).to.equal(transactionMiddleware);
