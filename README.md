@@ -52,11 +52,11 @@ And a few other features, plucked from popular back-end frameworks:
 
 Ravel is layered on top of awesome technologies, including:
 - [koa](http://koajs.com/)
-- [babel](babeljs.io)
+- [babel](http://babeljs.io)
 - [Passport](https://github.com/jaredhanson/passport)
 - [Intel](https://github.com/seanmonstar/intel)
 - [Redis](https://github.com/antirez/redis)
-- [docker](docker.com)
+- [docker](http://docker.com)
 
 
 ## Installation
