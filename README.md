@@ -467,7 +467,7 @@ Ravel's *dependency injection* system is meant to address several issues with tr
 - Using `require()` with one's own modules in a complex project often results in statements like this: `require('../../../../my/module');`. This issue is especially pronounced when `require()`ing source modules in test files.
 - Cyclical dependencies between modules are not always obvious in a large codebase, and can result in unexpected behaviour.
 
-Ravel addresses this with the the `@inject` decorator:
+Ravel addresses this with the the [`@inject`](http://raveljs.github.io/docs/latest/core/decorators/inject.js.html) decorator:
 
 *modules/my-module.js*
 ```js
@@ -582,6 +582,8 @@ There are currently five lifecycle decorators:
 
 Like `Module`s, `Routes` classes support dependency injection, allowing easy connection of application logic and web layers.
 
+Endpoints are created within a `Routes` class by creating a method and then decorating it with [`@mapping`](http://raveljs.github.io/docs/latest/core/decorators/mapping.js.html). The `@mapping` decorator indicates the path for the route (concatenated with the base path passed to `super()` in the `constructor`), as well as the HTTP verb. The method handler accepts a single argument `ctx` which is a [koa context](http://koajs.com/#context). Savvy readers with `koa` experience will note that this handler method is **not a generator** and, thus, cannot `yield` `Promise`s the way a traditional `koa` handler would. This is because ES7 decorators do not yet support decorating generator methods; Ravel will migrate to using generator handler methods when this is supported. In the meantime, if you want to use more traditional `koa` syntax, write the bulk of your logic as middleware in a `Module` generator method instead, `@inject` it, and then connect it to the endpoint using [`@before`](http://raveljs.github.io/docs/latest/core/decorators/before.js.html).
+
 *routes/my-routes.js*
 ```js
 const inject = require('ravel').inject;
@@ -604,7 +606,7 @@ class MyRoutes extends Routes {
 
   // will map to GET /app
   @mapping(Routes.GET, 'app'); // Koa path parameters such as :something are supported
-  @before('bodyParser') // use bodyParser middleware before handler
+  @before('bodyParser') // use bodyParser middleware before handler. Matches this.bodyParser created in the constructor.
   appHandler(ctx) {
     ctx.status = 200;
     ctx.body = '<!doctype html><html></html>';
@@ -632,7 +634,9 @@ app.routes('./routes/my-routes');
 ### Ravel.Resource
 > [<small>View API docs &#128366;</small>](http://raveljs.github.io/docs/latest/core/resource.js.html)
 
-What might be referred to as a *controller* in other frameworks, a `Resource` module defines HTTP methods on an endpoint. `Resource`s also support dependency injection, allowing for the easy creation of RESTful interfaces to your `Module`-based application logic. Resources are really just a thin wrapper around `Routes`, using specially-named handler functions (`get`, `getAll`, `post`, `put`, `putAll`, `delete`, `deleteAll`) instead of `@mapping`. This convention-over-configuration approach makes it easier to write proper REST APIs with less code, and is recommended over ~~carefully chosen~~ `@mapping`s in a `Routes` class. Omitting any or all of the specially-named handler functions is fine, and will result in a `501 NOT IMPLEMENTED` status when that particular method/endpoint is requested. `Resource`s inherit all the properties, methods and decorators of `Routes`. See [core/routes](routes.js.html) for more information. Note that `@mapping` does not apply to `Resources`.
+What might be referred to as a *controller* in other frameworks, a `Resource` module defines HTTP methods on an endpoint. `Resource`s also support dependency injection, allowing for the easy creation of RESTful interfaces to your `Module`-based application logic. Resources are really just a thin wrapper around `Routes`, using specially-named handler methods (`get`, `getAll`, `post`, `put`, `putAll`, `delete`, `deleteAll`) instead of `@mapping`. This convention-over-configuration approach makes it easier to write proper REST APIs with less code, and is recommended over ~~carefully chosen~~ `@mapping`s in a `Routes` class. Omitting any or all of the specially-named handler functions is fine, and will result in a `501 NOT IMPLEMENTED` status when that particular method/endpoint is requested. `Resource`s inherit all the properties, methods and decorators of `Routes`. See [core/routes](routes.js.html) for more information. Note that `@mapping` does not apply to `Resources`.
+
+As with `Routes` classes, `Resource` handler methods are functions (not generators) which receive a [koa context](http://koajs.com/#context) as their only argument. Ravel will migrate to using generator methods once ES7 decorators support decorating them.
 
 *resources/person-resource.js*
 ```js
