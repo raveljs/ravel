@@ -894,4 +894,4 @@ Ravel is designed for horizontal scaling, and helps you avoid common pitfalls wh
 
 It is strongly encouraged that you containerize your Ravel app using an [Alpine-based docker container](https://hub.docker.com/r/mhart/alpine-node/), and then explore technologies such as [docker-compose](https://www.docker.com/products/docker-compose) or [kubernetes](http://kubernetes.io/) to appropriately scale out and link to (at least) the [official redis container](https://hub.docker.com/_/redis/). An example project with a reference `docker-compose` environment for Ravel is forthcoming, but for now please refer to the [nom project](https://github.com/nomjs/nomjs-registry) as a current example.
 
-Ravel does not explicitly require [hiredis](https://github.com/redis/hiredis-node), but is is highly recommended that you install it alongside Ravel for improved performance.
+Ravel does not explicitly require [hiredis](https://github.com/redis/hiredis-node), but is is highly recommended that you install it alongside Ravel for improved redis performance.
