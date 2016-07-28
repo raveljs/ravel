@@ -1,6 +1,6 @@
 {
   "name": "ravel",
-  "version": "0.17.3",
+  "version": "0.17.4",
   "author": "Sean McIntyre <s.mcintyre@xverba.ca>",
   "description": "Ravel Rapid Application Development Framework",
   "engines": {
@@ -57,9 +57,6 @@
     "rc": "1.1.6",
     "redis":"2.5.3",
     "upath": "0.1.7"
-  },
-  "optionalDependencies": {
-    "hiredis":">=0.5.0"
   },
   "devDependencies": {
     "async":"1.5.2",
