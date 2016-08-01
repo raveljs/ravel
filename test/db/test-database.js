@@ -12,7 +12,7 @@ const request = require('supertest');
 let Ravel, DatabaseProvider, app, database, mysqlProvider, postgresProvider;
 
 describe('db/database', function() {
-  beforeEach(function(done) {
+  beforeEach((done) => {
     //enable mockery
     mockery.enable({
       useCleanCache: true,
@@ -32,7 +32,7 @@ describe('db/database', function() {
     done();
   });
 
-  afterEach(function(done) {
+  afterEach((done) => {
     app = undefined;
     Ravel = undefined;
     DatabaseProvider = undefined;
@@ -43,7 +43,7 @@ describe('db/database', function() {
   });
 
   describe('#middleware()', function() {
-    it('should populate context.transaction with an empty dictionary of database connection objects when no database providers are registered.', function(done) {
+    it('should populate context.transaction with an empty dictionary of database connection objects when no database providers are registered.', (done) => {
       app.use(database.middleware());
       app.use(function*(){
         expect(this).to.have.a.property('transaction').that.deep.equals({});
@@ -54,7 +54,7 @@ describe('db/database', function() {
       .end(done);
     });
 
-    it('should populate req.transaction with a dictionary of open database connections when providers are registered', function(done) {
+    it('should populate req.transaction with a dictionary of open database connections when providers are registered', (done) => {
       //mock a couple of providers for us to use
       mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
       postgresProvider = new DatabaseProvider(Ravel, 'postgres');
@@ -91,7 +91,7 @@ describe('db/database', function() {
       .end(done);
     });
 
-    it('should populate req.transaction with a dictionary of only the correct open database connections when providers are requested by name', function(done) {
+    it('should populate req.transaction with a dictionary of only the correct open database connections when providers are requested by name', (done) => {
       //mock a couple of providers for us to use
       mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
       postgresProvider = new DatabaseProvider(Ravel, 'postgres');
@@ -127,7 +127,7 @@ describe('db/database', function() {
       .end(done);
     });
 
-    it('should throw an Error if any of the registered database providers fails to provide a connection', function(done) {
+    it('should throw an Error if any of the registered database providers fails to provide a connection', (done) => {
       //mock a couple of providers for us to use
       mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
       postgresProvider = new DatabaseProvider(Ravel, 'postgres');
@@ -162,7 +162,7 @@ describe('db/database', function() {
       request(app.callback()).get('/').expect(500, randomMessage, done);
     });
 
-    it('should end all open transactions (close/commit connections) when the middleware chain wraps up', function(done) {
+    it('should end all open transactions (close/commit connections) when the middleware chain wraps up', (done) => {
       //mock a couple of providers for us to use
       mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
       postgresProvider = new DatabaseProvider(Ravel, 'postgres');
@@ -202,7 +202,7 @@ describe('db/database', function() {
       .end(done);
     });
 
-    it('should end all open transactions (close/rollback connections) when an exception is thrown in the middleware chain', function(done) {
+    it('should end all open transactions (close/rollback connections) when an exception is thrown in the middleware chain', (done) => {
       //mock a couple of providers for us to use
       mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
       postgresProvider = new DatabaseProvider(Ravel, 'postgres');
@@ -250,7 +250,7 @@ describe('db/database', function() {
       .expect(300, done);
     });
 
-    it('should respond with HTTP 500 INTERNAL SERVER ERROR when any open transactions fail to close/commit when res.end() is called', function(done) {
+    it('should respond with HTTP 500 INTERNAL SERVER ERROR when any open transactions fail to close/commit when res.end() is called', (done) => {
       //mock a couple of providers for us to use
       mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
       postgresProvider = new DatabaseProvider(Ravel, 'postgres');
@@ -301,7 +301,7 @@ describe('db/database', function() {
   });
 
   describe('#scoped()', function() {
-    it('should populate scoped context with a dictionary of open database connections when providers are registered', function(done) {
+    it('should populate scoped context with a dictionary of open database connections when providers are registered', (done) => {
       //mock a couple of providers for us to use
       mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
       postgresProvider = new DatabaseProvider(Ravel, 'postgres');
@@ -334,7 +334,7 @@ describe('db/database', function() {
       });
     });
 
-    it('should populate scoped context with a dictionary of the correct open database connections when providers are requested by name', function(done) {
+    it('should populate scoped context with a dictionary of the correct open database connections when providers are requested by name', (done) => {
       //mock a couple of providers for us to use
       mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
       postgresProvider = new DatabaseProvider(Ravel, 'postgres');
@@ -365,7 +365,7 @@ describe('db/database', function() {
       });
     });
 
-    it('should throw an exception if any of the registered database providers fails to provide a connection', function(done) {
+    it('should throw an exception if any of the registered database providers fails to provide a connection', (done) => {
       //mock a couple of providers for us to use
       mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
       postgresProvider = new DatabaseProvider(Ravel, 'postgres');
@@ -394,7 +394,7 @@ describe('db/database', function() {
       done();
     });
 
-    it('should end all open transactions (close/commit connections) when inGen is finished executing', function(done) {
+    it('should end all open transactions (close/commit connections) when inGen is finished executing', (done) => {
       //mock a couple of providers for us to use
       mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
       postgresProvider = new DatabaseProvider(Ravel, 'postgres');
@@ -429,7 +429,7 @@ describe('db/database', function() {
       });
     });
 
-    it('should end all open transactions (close/rollback connections) when inGen throws an exception', function(done) {
+    it('should end all open transactions (close/rollback connections) when inGen throws an exception', (done) => {
       //mock a couple of providers for us to use
       mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
       postgresProvider = new DatabaseProvider(Ravel, 'postgres');
@@ -469,7 +469,7 @@ describe('db/database', function() {
       });
     });
 
-    it('should reject its returned promise when any connection fails to exit cleanly', function(done) {
+    it('should reject its returned promise when any connection fails to exit cleanly', (done) => {
       //mock a couple of providers for us to use
       mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
       postgresProvider = new DatabaseProvider(Ravel, 'postgres');

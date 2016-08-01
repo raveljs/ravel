@@ -10,18 +10,18 @@ const Metadata = require('../../../lib/util/meta');
 let authenticated;
 
 describe('Routes', function() {
-  beforeEach(function(done) {
+  beforeEach((done) => {
     authenticated = require('../../../lib/ravel').Routes.authenticated;
     done();
   });
 
-  afterEach(function(done) {
+  afterEach((done) => {
     authenticated = undefined;
     done();
   });
 
   describe('@authenticated()', function() {
-    it('should decorate a class indicating that auth middleware should precede every endpoint defined within', function(done) {
+    it('should decorate a class indicating that auth middleware should precede every endpoint defined within', (done) => {
       @authenticated
       class Stub1 {
       }
@@ -30,7 +30,7 @@ describe('Routes', function() {
       done();
     });
 
-    it('should decorate a class indicating that auth middleware should precede every endpoint defined within (no args)', function(done) {
+    it('should decorate a class indicating that auth middleware should precede every endpoint defined within (no args)', (done) => {
       @authenticated()
       class Stub1 {
       }
@@ -39,7 +39,7 @@ describe('Routes', function() {
       done();
     });
 
-    it('should decorate a class indicating that auth middleware which supports configuration should precede every endpoint defined within', function(done) {
+    it('should decorate a class indicating that auth middleware which supports configuration should precede every endpoint defined within', (done) => {
       @authenticated({
         redirect: true,
         register: false
@@ -54,7 +54,7 @@ describe('Routes', function() {
       done();
     });
 
-    it('should decorate a method indicating that auth middleware should precede it', function(done) {
+    it('should decorate a method indicating that auth middleware should precede it', (done) => {
       class Stub1 {
         @authenticated
         handler() {}
@@ -64,7 +64,7 @@ describe('Routes', function() {
       done();
     });
 
-    it('should decorate a method indicating that auth middleware that should precede it (no args)', function(done) {
+    it('should decorate a method indicating that auth middleware that should precede it (no args)', (done) => {
       class Stub1 {
         @authenticated()
         handler() {}
@@ -74,7 +74,7 @@ describe('Routes', function() {
       done();
     });
 
-    it('should decorate a method indicating that auth middleware which supports configuration should precede it', function(done) {
+    it('should decorate a method indicating that auth middleware which supports configuration should precede it', (done) => {
       class Stub1 {
         @authenticated({
           redirect: true,
@@ -94,7 +94,7 @@ describe('Routes', function() {
       const authenticationMiddleware = function*(next){ yield next; };
       let Ravel, Routes, coreSymbols;
 
-      beforeEach(function(done) {
+      beforeEach((done) => {
         //enable mockery
         mockery.enable({
           useCleanCache: true,
@@ -111,7 +111,7 @@ describe('Routes', function() {
         done();
       });
 
-      afterEach(function(done) {
+      afterEach((done) => {
         mockery.deregisterAll();mockery.disable();
         authenticated = undefined;
         Ravel = undefined;
@@ -120,7 +120,7 @@ describe('Routes', function() {
         done();
       });
 
-      it('should decorate route handlers with authentication-enforcing middleware', function(done) {
+      it('should decorate route handlers with authentication-enforcing middleware', (done) => {
         class Stub extends Routes {
           constructor() {
             super('/app/path');
@@ -144,7 +144,7 @@ describe('Routes', function() {
         app[coreSymbols.routesInit](router);
       });
 
-      it('should decorate all route handlers with authentication-enforcing middleware when used at the class-level', function(done) {
+      it('should decorate all route handlers with authentication-enforcing middleware when used at the class-level', (done) => {
         @Routes.authenticated
         class Stub extends Routes {
           constructor() {

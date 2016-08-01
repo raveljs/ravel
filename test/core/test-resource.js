@@ -14,7 +14,7 @@ const koa = require('koa');
 let Ravel, Resource, before, inject, coreSymbols;
 
 describe('Ravel', function() {
-  beforeEach(function(done) {
+  beforeEach((done) => {
     // enable mockery
     mockery.enable({
       useCleanCache: true,
@@ -37,7 +37,7 @@ describe('Ravel', function() {
     done();
   });
 
-  afterEach(function(done) {
+  afterEach((done) => {
     Ravel = undefined;
     Resource = undefined;
     before = undefined;
@@ -48,7 +48,7 @@ describe('Ravel', function() {
   });
 
   describe('#resource()', function() {
-    it('should allow clients to register resource modules for instantiation in Ravel.start', function(done) {
+    it('should allow clients to register resource modules for instantiation in Ravel.start', (done) => {
       mockery.registerMock(upath.join(Ravel.cwd, './resources/test'), class extends Resource {});
       Ravel.resource('./resources/test');
       expect(Ravel[coreSymbols.resourceFactories]).to.have.property('./resources/test');
@@ -56,7 +56,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should throw a Ravel.ApplicationError.DuplicateEntry error when clients attempt to register the same resource module twice', function(done) {
+    it('should throw a Ravel.ApplicationError.DuplicateEntry error when clients attempt to register the same resource module twice', (done) => {
       mockery.registerMock(upath.join(Ravel.cwd, './resources/test'), class extends Resource {});
       const shouldThrow = function() {
         Ravel.resource('./resources/test');
@@ -66,7 +66,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should throw an ApplicationError.IllegalValue when a client attempts to register a resource module which is not a subclass of Resource', function(done) {
+    it('should throw an ApplicationError.IllegalValue when a client attempts to register a resource module which is not a subclass of Resource', (done) => {
       mockery.registerMock(upath.join(Ravel.cwd, './test'), class {});
       const shouldThrow = function() {
         Ravel.resource('./test');
@@ -75,7 +75,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should throw an ApplicationError.NotImplemented when a client attempts to access @mapping on a Resource', function(done) {
+    it('should throw an ApplicationError.NotImplemented when a client attempts to access @mapping on a Resource', (done) => {
       class Stub extends Resource {}
       const shouldThrow = function() {
         Stub.mapping;
@@ -84,7 +84,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should produce a factory function which can be used to instantiate the specified resource module and perform dependency injection with specific, resource-related services', function(done) {
+    it('should produce a factory function which can be used to instantiate the specified resource module and perform dependency injection with specific, resource-related services', (done) => {
       const another = {};
       mockery.registerMock('another', another);
       @inject('another')
@@ -115,7 +115,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should throw a Ravel.ApplicationError.DuplicateEntry error when clients attempt to register multiple resource modules with the same base path', function(done) {
+    it('should throw a Ravel.ApplicationError.DuplicateEntry error when clients attempt to register multiple resource modules with the same base path', (done) => {
       const stub1 = class extends Resource {
         constructor() {
           super('/api/test');
@@ -138,7 +138,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should throw Ravel.ApplicationError.IllegalValue when Resource constructor super() is called without a basePath', function(done) {
+    it('should throw Ravel.ApplicationError.IllegalValue when Resource constructor super() is called without a basePath', (done) => {
       const stub = class extends Resource {
         constructor() {
           super();
@@ -154,7 +154,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should facilitate the creation of GET routes via $Resource.getAll', function(done) {
+    it('should facilitate the creation of GET routes via $Resource.getAll', (done) => {
       const middleware1 = function*(next) { yield next; };
       const middleware2 = function*(next) { yield next; };
 
@@ -182,7 +182,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should facilitate the creation of GET routes via $Resource.get', function(done) {
+    it('should facilitate the creation of GET routes via $Resource.get', (done) => {
       const middleware1 = function*(next) { yield next; };
       const middleware2 = function*(next) { yield next; };
 
@@ -211,7 +211,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should facilitate the creation of POST routes via $Resource.post', function(done) {
+    it('should facilitate the creation of POST routes via $Resource.post', (done) => {
       const middleware1 = function*(next) { yield next; };
       const middleware2 = function*(next) { yield next; };
 
@@ -240,7 +240,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should facilitate the creation of PUT routes via $Resource.put', function(done) {
+    it('should facilitate the creation of PUT routes via $Resource.put', (done) => {
       const middleware1 = function*(next) { yield next; };
       const middleware2 = function*(next) { yield next; };
 
@@ -269,7 +269,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should facilitate the creation of PUT routes via $Resource.putAll', function(done) {
+    it('should facilitate the creation of PUT routes via $Resource.putAll', (done) => {
       const middleware1 = function*(next) { yield next; };
       const middleware2 = function*(next) { yield next; };
 
@@ -298,7 +298,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should facilitate the creation of DELETE routes via $Resource.deleteAll', function(done) {
+    it('should facilitate the creation of DELETE routes via $Resource.deleteAll', (done) => {
       const middleware1 = function*(next) { yield next; };
       const middleware2 = function*(next) { yield next; };
 
@@ -327,7 +327,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should facilitate the creation of DELETE routes via $Resource.delete', function(done) {
+    it('should facilitate the creation of DELETE routes via $Resource.delete', (done) => {
       const middleware1 = function*(next) { yield next; };
       const middleware2 = function*(next) { yield next; };
 
@@ -356,7 +356,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should support the use of @before at the class level', function(done) {
+    it('should support the use of @before at the class level', (done) => {
       const middleware1 = function*(next) { yield next; };
       const middleware2 = function*(next) { yield next; };
 
@@ -386,7 +386,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should support the use of @before on some, but not all, endpoints', function(done) {
+    it('should support the use of @before on some, but not all, endpoints', (done) => {
       const middleware1 = function*(next) { yield next; };
       const middleware2 = function*(next) { yield next; };
 
@@ -423,7 +423,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should implement stub endpoints for unused HTTP verbs, all of which return a status httpCodes.NOT_IMPLEMENTED', function(done) {
+    it('should implement stub endpoints for unused HTTP verbs, all of which return a status httpCodes.NOT_IMPLEMENTED', (done) => {
       mockery.registerMock('redis', require('redis-mock'));
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), class extends Resource {
         constructor() {
@@ -451,7 +451,7 @@ describe('Ravel', function() {
       ], done);
     });
 
-    it('should facilitate the creation of routes which are not decorated with middleware', function(done) {
+    it('should facilitate the creation of routes which are not decorated with middleware', (done) => {
       class Stub extends Resource {
         constructor() {
           super('/api/test');
@@ -473,7 +473,7 @@ describe('Ravel', function() {
   });
 
   describe('Resource Integration Test', function() {
-    it('should integrate properly with koa and koa-router', function(done) {
+    it('should integrate properly with koa and koa-router', (done) => {
       const middleware1 = function*(next) { yield next; };
       const middleware2 = function*(next) { yield next; };
 

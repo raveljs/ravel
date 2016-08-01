@@ -9,18 +9,18 @@ const Metadata = require('../../../lib/util/meta');
 let authconfig;
 
 describe('Ravel', function() {
-  beforeEach(function(done) {
+  beforeEach((done) => {
     authconfig = require('../../../lib/ravel').Module.authconfig;
     done();
   });
 
-  afterEach(function(done) {
+  afterEach((done) => {
     authconfig = undefined;
     done();
   });
 
   describe('@authconfig()', function() {
-    it('should decorate a class with a hidden property indicating it is an authconfig module', function(done) {
+    it('should decorate a class with a hidden property indicating it is an authconfig module', (done) => {
       @authconfig
       class Stub {}
       const instance = new Stub();
@@ -28,7 +28,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should add auth-related, stub prototype methods to a module if they are not already present', function(done) {
+    it('should add auth-related, stub prototype methods to a module if they are not already present', (done) => {
       @authconfig
       class Stub {}
       const instance = new Stub();
@@ -43,7 +43,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should retain an existing implementation of serializeUser()', function(done) {
+    it('should retain an existing implementation of serializeUser()', (done) => {
       @authconfig
       class Stub {
         serializeUser(user) {
@@ -62,7 +62,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should retain an existing implementation of deserializeUser()', function(done) {
+    it('should retain an existing implementation of deserializeUser()', (done) => {
       @authconfig
       class Stub {
         deserializeUser() {
@@ -81,7 +81,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should retain an existing implementation of deserializeOrCreateUser()', function(done) {
+    it('should retain an existing implementation of deserializeOrCreateUser()', (done) => {
       @authconfig
       class Stub {
         deserializeOrCreateUser() {
@@ -100,7 +100,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should retain an existing implementation of verify()', function(done) {
+    it('should retain an existing implementation of verify()', (done) => {
       @authconfig
       class Stub {
         verify() {

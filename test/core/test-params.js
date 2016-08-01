@@ -8,7 +8,7 @@ const mockery = require('mockery');
 let Ravel, files, conf, coreSymbols;
 
 describe('Ravel', function() {
-  beforeEach(function(done) {
+  beforeEach((done) => {
     //enable mockery
     mockery.enable({
       useCleanCache: true,
@@ -28,7 +28,7 @@ describe('Ravel', function() {
     done();
   });
 
-  afterEach(function(done) {
+  afterEach((done) => {
     Ravel = undefined;
     coreSymbols = undefined;
     mockery.deregisterAll();mockery.disable();
@@ -36,14 +36,14 @@ describe('Ravel', function() {
   });
 
   describe('#set()', function() {
-    it('should allow clients to set the value of a parameter', function(done) {
+    it('should allow clients to set the value of a parameter', (done) => {
       Ravel.registerParameter('test param', false);
       Ravel.set('test param', 'test value');
       expect(Ravel.get('test param')).to.equal('test value');
       done();
     });
 
-    it ('should throw a Ravel.ApplicationError.IllegalValue error when a client attempts to set an unknown parameter', function(done) {
+    it ('should throw a Ravel.ApplicationError.IllegalValue error when a client attempts to set an unknown parameter', (done) => {
       try {
         Ravel.set('unknown param', 'test value');
         done(new Error('Should never reach this line.'));
@@ -55,27 +55,27 @@ describe('Ravel', function() {
   });
 
   describe('#get()', function() {
-    it('should allow clients to retrieve the value of a set optional parameter', function(done) {
+    it('should allow clients to retrieve the value of a set optional parameter', (done) => {
       Ravel.registerParameter('test param', false);
       Ravel.set('test param', 'test value');
       expect(Ravel.get('test param')).to.equal('test value');
       done();
     });
 
-    it('should return undefined when clients attempt to retrieve the value of an unset optional parameter', function(done) {
+    it('should return undefined when clients attempt to retrieve the value of an unset optional parameter', (done) => {
       Ravel.registerParameter('test param', false);
       expect(Ravel.get('test param')).to.equal(undefined);
       done();
     });
 
-    it('should allow clients to retrieve the value of a set required parameter', function(done) {
+    it('should allow clients to retrieve the value of a set required parameter', (done) => {
       Ravel.registerParameter('test param', true);
       Ravel.set('test param', 'test value');
       expect(Ravel.get('test param')).to.equal('test value');
       done();
     });
 
-    it('should throw a Ravel.ApplicationError.NotFound error when clients attempt to retrieve an unregistered parameter', function(done) {
+    it('should throw a Ravel.ApplicationError.NotFound error when clients attempt to retrieve an unregistered parameter', (done) => {
       try {
         Ravel.get('test param');
         done(new Error('Should never reach this line.'));
@@ -85,7 +85,7 @@ describe('Ravel', function() {
       }
     });
 
-    it('should throw a Ravel.ApplicationError.NotFound error when clients attempt to retrieve the value of an unset required parameter', function(done) {
+    it('should throw a Ravel.ApplicationError.NotFound error when clients attempt to retrieve the value of an unset required parameter', (done) => {
       try {
         Ravel.registerParameter('test param', true);
         Ravel.get('test param');
@@ -98,7 +98,7 @@ describe('Ravel', function() {
   });
 
   describe('.config', function() {
-    it('should return the full configuration of the given `ravel instance`', function(done) {
+    it('should return the full configuration of the given `ravel instance`', (done) => {
       const defaultConfig = Ravel.config;
       Ravel.registerParameter('test param', true);
       Ravel.registerParameter('test param 2', true);
@@ -117,7 +117,7 @@ describe('Ravel', function() {
   });
 
   describe('#_loadParameters()', function() {
-    it('should allow users to specify Ravel config parameters via a .ravelrc config file', function(done) {
+    it('should allow users to specify Ravel config parameters via a .ravelrc config file', (done) => {
       files = ['./ravelrc'];
       conf = {
         'koa view engine': 'ejs',
@@ -130,7 +130,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should not override parameters set programmatically via Ravel.set', function(done) {
+    it('should not override parameters set programmatically via Ravel.set', (done) => {
       files = ['./ravelrc'];
       conf = {
         'koa view engine': 'ejs',
@@ -144,7 +144,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should throw a Ravel.ApplicationError.IllegalValue if an unregistered paramter is specified in the config file', function(done) {
+    it('should throw a Ravel.ApplicationError.IllegalValue if an unregistered paramter is specified in the config file', (done) => {
       files = ['./ravelrc'];
       conf = {
         'koa view engine': 'ejs',
@@ -159,7 +159,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should do nothing if no configuration files are present', function(done) {
+    it('should do nothing if no configuration files are present', (done) => {
       files = [];
       conf = undefined;
 

@@ -11,7 +11,7 @@ const httpCodes = require('../../lib/util/http_codes');
 let Ravel, rest, app;
 
 describe('util/rest', function() {
-  beforeEach(function(done) {
+  beforeEach((done) => {
     //enable mockery
     mockery.enable({
       useCleanCache: true,
@@ -28,7 +28,7 @@ describe('util/rest', function() {
     done();
   });
 
-  afterEach(function(done) {
+  afterEach((done) => {
     app = undefined;
     Ravel = undefined;
     rest = undefined;
@@ -59,7 +59,7 @@ describe('util/rest', function() {
       .expect(200, result, done);
     });
 
-    it('should produce a response with HTTP 201 CREATED and an appropriate location header if a json body containing a property \'id\' is supplied along with an okCode of CREATED', function(done) {
+    it('should produce a response with HTTP 201 CREATED and an appropriate location header if a json body containing a property \'id\' is supplied along with an okCode of CREATED', (done) => {
       const result = {
         id:1
       };
@@ -88,7 +88,7 @@ describe('util/rest', function() {
       .expect(201, 'Created', done);
     });
 
-    it('should produce a response with HTTP 206 PARTIAL CONTENT if it is supplied as an okCode along with options.start, options.end and options.count', function(done) {
+    it('should produce a response with HTTP 206 PARTIAL CONTENT if it is supplied as an okCode along with options.start, options.end and options.count', (done) => {
       const result = [];
 
       const options = {
@@ -114,7 +114,7 @@ describe('util/rest', function() {
   });
 
   describe('#errorHandler()', function() {
-    it('should respond with HTTP 404 NOT FOUND when ApplicationError.NotFound is passed as err', function(done) {
+    it('should respond with HTTP 404 NOT FOUND when ApplicationError.NotFound is passed as err', (done) => {
       const message = 'a message';
       app.use(rest.errorHandler());
       app.use(function*() {
@@ -125,7 +125,7 @@ describe('util/rest', function() {
       .expect(404, message, done);
     });
 
-    it('should respond with HTTP 403 Forbidden when ApplicationError.Access is passed as err', function(done) {
+    it('should respond with HTTP 403 Forbidden when ApplicationError.Access is passed as err', (done) => {
       const message = 'a message';
       app.use(rest.errorHandler());
       app.use(function*() {
@@ -136,7 +136,7 @@ describe('util/rest', function() {
       .expect(403, message, done);
     });
 
-    it('should respond with HTTP 405 METHOD NOT ALLOWED when ApplicationError.NotAllowed is passed as err', function(done) {
+    it('should respond with HTTP 405 METHOD NOT ALLOWED when ApplicationError.NotAllowed is passed as err', (done) => {
       const message = 'a message';
       app.use(rest.errorHandler());
       app.use(function*() {
@@ -147,7 +147,7 @@ describe('util/rest', function() {
       .expect(405, message, done);
     });
 
-    it('should respond with HTTP 501 NOT IMPLEMENTED when ApplicationError.NotImplemented is passed as err', function(done) {
+    it('should respond with HTTP 501 NOT IMPLEMENTED when ApplicationError.NotImplemented is passed as err', (done) => {
       const message = 'a message';
       app.use(rest.errorHandler());
       app.use(function*() {
@@ -158,7 +158,7 @@ describe('util/rest', function() {
       .expect(501, message, done);
     });
 
-    it('should respond with HTTP 409 CONFLICT when ApplicationError.DuplicateEntry is passed as err', function(done) {
+    it('should respond with HTTP 409 CONFLICT when ApplicationError.DuplicateEntry is passed as err', (done) => {
       const message = 'a message';
       app.use(rest.errorHandler());
       app.use(function*() {
@@ -169,7 +169,7 @@ describe('util/rest', function() {
       .expect(409, message, done);
     });
 
-    it('should respond with HTTP 416 REQUESTED_RANGE_NOT_SATISFIABLE when ApplicationError.RangeOutOfBounds is passed as err', function(done) {
+    it('should respond with HTTP 416 REQUESTED_RANGE_NOT_SATISFIABLE when ApplicationError.RangeOutOfBounds is passed as err', (done) => {
       const message = 'a message';
       app.use(rest.errorHandler());
       app.use(function*() {
@@ -180,7 +180,7 @@ describe('util/rest', function() {
       .expect(416, message, done);
     });
 
-    it('should respond with HTTP 400 BAD REQUEST when ApplicationError.IllegalValue is passed as err', function(done) {
+    it('should respond with HTTP 400 BAD REQUEST when ApplicationError.IllegalValue is passed as err', (done) => {
       const message = 'a message';
       app.use(rest.errorHandler());
       app.use(function*() {
@@ -191,7 +191,7 @@ describe('util/rest', function() {
       .expect(400, message, done);
     });
 
-    it('should respond with HTTP 500 INTERNAL SERVER ERROR when an unknown Error type is passed as err', function(done) {
+    it('should respond with HTTP 500 INTERNAL SERVER ERROR when an unknown Error type is passed as err', (done) => {
       const message = 'a message';
       app.use(rest.errorHandler());
       app.use(function*() {

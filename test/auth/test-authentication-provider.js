@@ -9,7 +9,7 @@ const mockery = require('mockery');
 let Ravel, provider;
 
 describe('auth/authentication_provider', function() {
-  beforeEach(function(done) {
+  beforeEach((done) => {
     //enable mockery
     mockery.enable({
       useCleanCache: true,
@@ -38,7 +38,7 @@ describe('auth/authentication_provider', function() {
     done();
   });
 
-  afterEach(function(done) {
+  afterEach((done) => {
     Ravel = undefined;
     provider = undefined;
     mockery.deregisterAll();
@@ -47,7 +47,7 @@ describe('auth/authentication_provider', function() {
   });
 
   describe('constructor', function() {
-    it('should allow clients to implement an authentication provider which has a name and several methods', function(done) {
+    it('should allow clients to implement an authentication provider which has a name and several methods', (done) => {
       class GoogleOAuth2 extends (require('../../lib/ravel')).AuthenticationProvider {
         get name() {
           return 'google-oauth2';
@@ -65,7 +65,7 @@ describe('auth/authentication_provider', function() {
       done();
     });
 
-    it('should require clients to supply a name for the provider', function(done) {
+    it('should require clients to supply a name for the provider', (done) => {
       expect(function() {
         new (require('../../lib/ravel')).AuthenticationProvider(Ravel); //eslint-disable-line no-new
       }).to.throw(Ravel.ApplicationError.NotImplemented);
@@ -74,7 +74,7 @@ describe('auth/authentication_provider', function() {
   });
 
   describe('#init()', function() {
-    it('should throw Ravel.ApplicationError.NotImplemented, since this is a template', function(done) {
+    it('should throw Ravel.ApplicationError.NotImplemented, since this is a template', (done) => {
       try {
         provider.init();
         done(new Error('It should be impossible to call init() on the template authoriation provider.'));
@@ -86,7 +86,7 @@ describe('auth/authentication_provider', function() {
   });
 
   describe('#handlesClient()', function() {
-    it('should throw Ravel.ApplicationError.NotImplemented, since this is a template', function(done) {
+    it('should throw Ravel.ApplicationError.NotImplemented, since this is a template', (done) => {
       try {
         provider.handlesClient();
         done(new Error('It should be impossible to call handlesClient() on the template authoriation provider.'));
@@ -98,14 +98,14 @@ describe('auth/authentication_provider', function() {
   });
 
   describe('#credentialToProfile()', function() {
-    it('should throw Ravel.ApplicationError.NotImplemented, since this is a template', function(done) {
+    it('should throw Ravel.ApplicationError.NotImplemented, since this is a template', (done) => {
       expect(provider.credentialToProfile()).to.eventually.be.rejectedWith(Ravel.ApplicationError.NotImplemented);
       done();
     });
   });
 
   describe('Ravel.authorizationProviders', function() {
-    it('should return an empty Array if no AuthorizationProviders are registered', function(done) {
+    it('should return an empty Array if no AuthorizationProviders are registered', (done) => {
       Ravel = new (require('../../lib/ravel'))();
       Ravel.log.setLevel('NONE');
       expect(Ravel.authenticationProviders).to.be.a('function');
@@ -114,7 +114,7 @@ describe('auth/authentication_provider', function() {
       done();
     });
 
-    it('should return an Array of registered AuthorizationProviders', function(done) {
+    it('should return an Array of registered AuthorizationProviders', (done) => {
       class GoogleOAuth2 extends (require('../../lib/ravel')).AuthenticationProvider {
         get name() {
           return 'google-oauth2';
@@ -128,7 +128,7 @@ describe('auth/authentication_provider', function() {
       done();
     });
 
-    it('should require clients to supply a name for the provider', function(done) {
+    it('should require clients to supply a name for the provider', (done) => {
       expect(function() {
         new (require('../../lib/ravel')).AuthenticationProvider(Ravel); //eslint-disable-line no-new
       }).to.throw(Ravel.ApplicationError.NotImplemented);

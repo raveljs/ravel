@@ -11,7 +11,7 @@ chai.use(require('sinon-chai'));
 let Ravel, Resource, fs, stub, coreSymbols;
 
 describe('Ravel', function() {
-  beforeEach(function(done) {
+  beforeEach((done) => {
     //enable mockery
     mockery.enable({
       useCleanCache: true,
@@ -33,7 +33,7 @@ describe('Ravel', function() {
     done();
   });
 
-  afterEach(function(done) {
+  afterEach((done) => {
     Ravel = undefined;
     Resource = undefined;
     coreSymbols = undefined;
@@ -47,7 +47,7 @@ describe('Ravel', function() {
 
 
   describe('#resources()', function() {
-    it('should allow clients to recursively register resource files for instantiation in Ravel.start, ignoring non-js files', function(done) {
+    it('should allow clients to recursively register resource files for instantiation in Ravel.start, ignoring non-js files', (done) => {
       stub = sinon.stub(fs, 'lstatSync', function() {
         return {
           isDirectory: function(){return true;}
@@ -65,7 +65,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should throw an ApplicationError.IllegalValue when supplied with a base path which is not a directory', function(done) {
+    it('should throw an ApplicationError.IllegalValue when supplied with a base path which is not a directory', (done) => {
       stub = sinon.stub(fs, 'lstatSync', function() {
         return {
           isDirectory: function(){return false;}

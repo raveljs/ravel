@@ -11,7 +11,7 @@ chai.use(require('sinon-chai'));
 let Ravel, Module, inject, coreSymbols;
 
 describe('Ravel', function() {
-  beforeEach(function(done) {
+  beforeEach((done) => {
     //enable mockery
     mockery.enable({
       useCleanCache: true,
@@ -28,7 +28,7 @@ describe('Ravel', function() {
     done();
   });
 
-  afterEach(function(done) {
+  afterEach((done) => {
     Ravel = undefined;
     Module = undefined;
     inject = undefined;
@@ -39,7 +39,7 @@ describe('Ravel', function() {
   });
 
   describe('#module()', function() {
-    it('should allow clients to register module files for instantiation in Ravel.start', function(done) {
+    it('should allow clients to register module files for instantiation in Ravel.start', (done) => {
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test'), class extends Module {
         constructor() {super();}
       });
@@ -49,7 +49,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should allow clients to register module files with an extension and still derive the correct name', function(done) {
+    it('should allow clients to register module files with an extension and still derive the correct name', (done) => {
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test.js'), class extends Module {
         constructor() {super();}
       });
@@ -59,7 +59,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should throw a Ravel.ApplicationError.IllegalValue error when clients attempt to register a module without a name', function(done) {
+    it('should throw a Ravel.ApplicationError.IllegalValue error when clients attempt to register a module without a name', (done) => {
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test'), class extends Module {
         constructor() {super();}
       });
@@ -70,7 +70,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should throw a Ravel.ApplicationError.DuplicateEntry error when clients attempt to register multiple modules with the same name', function(done) {
+    it('should throw a Ravel.ApplicationError.DuplicateEntry error when clients attempt to register multiple modules with the same name', (done) => {
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test'), class extends Module {
         constructor() {super();}
       });
@@ -85,7 +85,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should produce a module factory which can be used to instantiate the specified module and perform dependency injection', function(done) {
+    it('should produce a module factory which can be used to instantiate the specified module and perform dependency injection', (done) => {
       const scopedStub = sinon.stub();
       Ravel.db = {
         scoped: scopedStub
@@ -124,7 +124,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should produce module factories which support dependency injection of client modules', function(done) {
+    it('should produce module factories which support dependency injection of client modules', (done) => {
       class Stub1 extends Module {
         constructor() {super();}
         method(){}
@@ -145,7 +145,7 @@ describe('Ravel', function() {
       Ravel[coreSymbols.moduleInit]();
     });
 
-    it('should not allow client modules to depend on themselves', function(done) {
+    it('should not allow client modules to depend on themselves', (done) => {
       @inject('test')
       class Stub extends Module {
         constructor(test) { //eslint-disable-line no-unused-vars
@@ -161,7 +161,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should instantiate modules in dependency order', function(done) {
+    it('should instantiate modules in dependency order', (done) => {
       const instantiatedModules = {};
       class Stub1 extends Module {
         constructor() {
@@ -229,7 +229,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should detect basic cyclical dependencies between client modules', function(done) {
+    it('should detect basic cyclical dependencies between client modules', (done) => {
       @inject('test2')
       class Stub1 extends Module {
         constructor(test2) { //eslint-disable-line no-unused-vars
@@ -253,7 +253,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should detect complex cyclical dependencies between client modules', function(done) {
+    it('should detect complex cyclical dependencies between client modules', (done) => {
       class Stub1 extends Module {
         constructor() {
           super();
@@ -292,7 +292,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should produce a module factory which facilitates dependency injection of npm modules', function(done) {
+    it('should produce a module factory which facilitates dependency injection of npm modules', (done) => {
       const stubMoment = {
         method: function() {}
       };
@@ -313,7 +313,7 @@ describe('Ravel', function() {
       Ravel[coreSymbols.moduleInit]();
     });
 
-    it('should support array notation for specifying module dependencies which use invalid js constiable names', function(done) {
+    it('should support array notation for specifying module dependencies which use invalid js constiable names', (done) => {
       const stubBadName = {
         method: function() {}
       };
@@ -334,7 +334,7 @@ describe('Ravel', function() {
       Ravel[coreSymbols.moduleInit]();
     });
 
-    it('should throw an ApplicationError.NotFound when a module factory which utilizes an unknown module/npm dependency is instantiated', function(done) {
+    it('should throw an ApplicationError.NotFound when a module factory which utilizes an unknown module/npm dependency is instantiated', (done) => {
       @inject('unknownModule')
       class Stub extends Module {
         constructor(unknownModule) {
@@ -351,7 +351,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should allow clients to register modules which are plain classes without a static dependency injection member', function(done) {
+    it('should allow clients to register modules which are plain classes without a static dependency injection member', (done) => {
       const Stub = class extends Module {
         constructor() {super();}
         method(){}
@@ -363,7 +363,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should throw an ApplicationError.IllegalValue when a client attempts to register a module which is not a subclass of Module', function(done) {
+    it('should throw an ApplicationError.IllegalValue when a client attempts to register a module which is not a subclass of Module', (done) => {
       mockery.registerMock(upath.join(Ravel.cwd, './test'), class {});
       const shouldThrow = function() {
         Ravel.module('./test', 'test');
@@ -372,7 +372,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should perform dependency injection on module factories which works regardless of the order of specified dependencies', function(done) {
+    it('should perform dependency injection on module factories which works regardless of the order of specified dependencies', (done) => {
       const momentStub = {};
       mockery.registerMock('moment', momentStub);
       @inject('$E', 'moment')
@@ -407,7 +407,7 @@ describe('Ravel', function() {
       Ravel[coreSymbols.moduleInit]();
     });
 
-    it('should inject the same instance of a module into all modules which reference it', function(done) {
+    it('should inject the same instance of a module into all modules which reference it', (done) => {
       class Stub1 extends Module {
         method() {}
       }

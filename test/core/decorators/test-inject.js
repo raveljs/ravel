@@ -8,18 +8,18 @@ const Metadata = require('../../../lib/util/meta');
 let inject;
 
 describe('Ravel', function() {
-  beforeEach(function(done) {
+  beforeEach((done) => {
     inject = require('../../../lib/ravel').inject;
     done();
   });
 
-  afterEach(function(done) {
+  afterEach((done) => {
     inject = undefined;
     done();
   });
 
   describe('@inject()', function() {
-    it('should decorate a class with inject metadata', function(done) {
+    it('should decorate a class with inject metadata', (done) => {
       @inject('test1', 'test2')
       class Stub1 {
         constructor(test1, test2) { //eslint-disable-line no-unused-vars
@@ -30,7 +30,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should be able to be used more than once on the same class', function(done) {
+    it('should be able to be used more than once on the same class', (done) => {
       @inject('test1', 'test2')
       @inject('test3')
       class Stub1 {
@@ -42,7 +42,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should throw an ApplicationError.IllegalValue if a non-string type is passed to @inject', function(done) {
+    it('should throw an ApplicationError.IllegalValue if a non-string type is passed to @inject', (done) => {
       const test = function() {
         @inject([])
         class Stub {} //eslint-disable-line no-unused-vars
@@ -51,7 +51,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should throw an ApplicationError.NotFound if @inject is supplied without an argument', function(done) {
+    it('should throw an ApplicationError.NotFound if @inject is supplied without an argument', (done) => {
       const test = function() {
         @inject()
         class Stub {} //eslint-disable-line no-unused-vars

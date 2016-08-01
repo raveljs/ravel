@@ -22,7 +22,7 @@ let Ravel, Module, app, authconfig, AuthenticationMiddleware,
   authenticateTokenStub, credentialToProfile, coreSymbols, restMiddleware;
 
 describe('util/authenticate_request', function() {
-  beforeEach(function(done) {
+  beforeEach((done) => {
     //enable mockery
     mockery.enable({
       useCleanCache: true,
@@ -55,7 +55,7 @@ describe('util/authenticate_request', function() {
     done();
   });
 
-  afterEach(function(done) {
+  afterEach((done) => {
     Ravel = undefined;
     authenticateTokenStub = undefined;
     credentialToProfile = undefined;
@@ -71,7 +71,7 @@ describe('util/authenticate_request', function() {
 
   describe('middleware', function() {
 
-    it('should allow read-only access to important state information, mostly for use by subclasses', function(done) {
+    it('should allow read-only access to important state information, mostly for use by subclasses', (done) => {
       const shouldRedirect = Math.random() < 0.5;
       const allowMobileRegistration = Math.random() < 0.5;
       const auth = new AuthenticationMiddleware(Ravel, shouldRedirect, allowMobileRegistration);
@@ -81,7 +81,7 @@ describe('util/authenticate_request', function() {
       done();
     });
 
-    it('should use passport\'s req.isAuthenticated() to check users by default, yielding to next() if users are authenticated by passport', function(done) {
+    it('should use passport\'s req.isAuthenticated() to check users by default, yielding to next() if users are authenticated by passport', (done) => {
       const isAuthenticatedStub = sinon.stub().returns(true);
       const finalStub = sinon.stub();
 
@@ -104,7 +104,7 @@ describe('util/authenticate_request', function() {
       .end(done);
     });
 
-    it('should use passport\'s req.isAuthenticated() to check users by default, sending HTTP 401 UNAUTHORIZED if users are unauthenticated', function(done) {
+    it('should use passport\'s req.isAuthenticated() to check users by default, sending HTTP 401 UNAUTHORIZED if users are unauthenticated', (done) => {
       const isAuthenticatedStub = sinon.stub().returns(false);
 
       app.use(restMiddleware);
@@ -122,7 +122,7 @@ describe('util/authenticate_request', function() {
       .expect(401, done);
     });
 
-    it('should use passport\'s req.isAuthenticated() to check users by default, redirecting to the login page if users are unauthenticated and redirects are enabled', function(done) {
+    it('should use passport\'s req.isAuthenticated() to check users by default, redirecting to the login page if users are unauthenticated and redirects are enabled', (done) => {
       Ravel.set('login route', '/login');
       const isAuthenticatedStub = sinon.stub().returns(false);
 
@@ -142,7 +142,7 @@ describe('util/authenticate_request', function() {
       .expect(302, done);
     });
 
-    it('should use x-auth-token and x-auth-client headers to authenticate mobile clients', function(done) {
+    it('should use x-auth-token and x-auth-client headers to authenticate mobile clients', (done) => {
       const isAuthenticatedStub = sinon.stub();
       const finalStub = sinon.stub();
 
@@ -188,7 +188,7 @@ describe('util/authenticate_request', function() {
       .end(done);
     });
 
-    it('should use x-auth-token and x-auth-client headers to authenticate mobile clients, failing with HTTP 401 UNAUTHORIZED if the user does not exist and registration is disabled', function(done) {
+    it('should use x-auth-token and x-auth-client headers to authenticate mobile clients, failing with HTTP 401 UNAUTHORIZED if the user does not exist and registration is disabled', (done) => {
       const isAuthenticatedStub = sinon.stub();
       const finalStub = sinon.stub();
 
@@ -234,7 +234,7 @@ describe('util/authenticate_request', function() {
       .expect(401, done);
     });
 
-    it('use x-auth-token and x-auth-client headers to authenticate mobile clients, failing with HTTP 401 UNAUTHORIZED if the token cannot be validated or translated into a profile', function(done) {
+    it('use x-auth-token and x-auth-client headers to authenticate mobile clients, failing with HTTP 401 UNAUTHORIZED if the token cannot be validated or translated into a profile', (done) => {
       const isAuthenticatedStub = sinon.stub();
       const finalStub = sinon.stub();
 
@@ -265,7 +265,7 @@ describe('util/authenticate_request', function() {
       .expect(401, done);
     });
 
-    it('use x-auth-token and x-auth-client headers to authenticate mobile clients, registering users if that functionality is enabled and they don\'t already exist', function(done) {
+    it('use x-auth-token and x-auth-client headers to authenticate mobile clients, registering users if that functionality is enabled and they don\'t already exist', (done) => {
       const isAuthenticatedStub = sinon.stub();
       const finalStub = sinon.stub();
 
@@ -311,7 +311,7 @@ describe('util/authenticate_request', function() {
       .end(done);
     });
 
-    it('use x-auth-token and x-auth-client headers to authenticate mobile clients, responding with HTTP 401 UNAUTHORIZED if user registration is enabled and registration fails', function(done) {
+    it('use x-auth-token and x-auth-client headers to authenticate mobile clients, responding with HTTP 401 UNAUTHORIZED if user registration is enabled and registration fails', (done) => {
       const isAuthenticatedStub = sinon.stub();
       const finalStub = sinon.stub();
 
@@ -358,7 +358,7 @@ describe('util/authenticate_request', function() {
       .expect(401, done);
     });
 
-    it('should rethrow errors which are not related to auth', function(done) {
+    it('should rethrow errors which are not related to auth', (done) => {
       const isAuthenticatedStub = sinon.stub().returns(true);
       const error = new Error('something went wrong');
 

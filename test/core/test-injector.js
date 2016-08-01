@@ -9,7 +9,7 @@ const upath = require('upath');
 let Ravel, Module, coreSymbols, inject;
 
 describe('Ravel', function() {
-  beforeEach(function(done) {
+  beforeEach((done) => {
     //enable mockery
     mockery.enable({
       useCleanCache: true,
@@ -25,7 +25,7 @@ describe('Ravel', function() {
     done();
   });
 
-  afterEach(function(done) {
+  afterEach((done) => {
     Ravel = undefined;
     Module = undefined;
     coreSymbols = undefined;
@@ -35,7 +35,7 @@ describe('Ravel', function() {
   });
 
   describe('#inject()', function() {
-    it('should facilitate dependency injection of client modules into other client modules', function(done) {
+    it('should facilitate dependency injection of client modules into other client modules', (done) => {
       const Stub1 = class extends Module {
         constructor() {super();}
         method() {}
@@ -58,7 +58,7 @@ describe('Ravel', function() {
       Ravel[coreSymbols.moduleInit]();
     });
 
-    it('should facilitate dependency injection of npm modules into client modules', function(done) {
+    it('should facilitate dependency injection of npm modules into client modules', (done) => {
       const stubMoment = {
         method: function() {}
       };
@@ -79,7 +79,7 @@ describe('Ravel', function() {
       Ravel[coreSymbols.injector].inject({}, Stub);
     });
 
-    it('should throw an ApplicationError.NotFound when attempting to inject an unknown module/npm dependency', function(done) {
+    it('should throw an ApplicationError.NotFound when attempting to inject an unknown module/npm dependency', (done) => {
       @inject('unknownModule')
       class Stub extends Module {
         static get inject() {
@@ -101,7 +101,7 @@ describe('Ravel', function() {
       }
     });
 
-    it('should support a module map which allows different Ravel services to make pseudo-modules available for injection. One of these, $E, is always available.', function(done) {
+    it('should support a module map which allows different Ravel services to make pseudo-modules available for injection. One of these, $E, is always available.', (done) => {
       const moduleMap = {
         pseudoModule: {}
       };
@@ -119,7 +119,7 @@ describe('Ravel', function() {
       Ravel[coreSymbols.injector].inject(moduleMap, Stub);
     });
 
-    it('should support array notation for declaring dependencies which are not valid js constiable names', function(done) {
+    it('should support array notation for declaring dependencies which are not valid js constiable names', (done) => {
       const stubBadName = {
         method: function() {}
       };

@@ -11,7 +11,7 @@ const sinon = require('sinon');
 let Ravel, tokenAuth, profile, testProvider;
 
 describe('auth/authenticate_token', function() {
-  beforeEach(function(done) {
+  beforeEach((done) => {
     //enable mockery
     mockery.enable({
       useCleanCache: true,
@@ -68,7 +68,7 @@ describe('auth/authenticate_token', function() {
     done();
   });
 
-  afterEach(function(done) {
+  afterEach((done) => {
     Ravel = undefined;
     tokenAuth = undefined;
     mockery.deregisterAll();
@@ -77,7 +77,7 @@ describe('auth/authenticate_token', function() {
   });
 
   describe('#credentialToProfile()', function() {
-    it('should use the appropriate authentication provider to validate and turn a client token into a profile', function(done) {
+    it('should use the appropriate authentication provider to validate and turn a client token into a profile', (done) => {
       sinon.stub(Ravel.kvstore, 'get', function(key, callback) {
         callback(null, undefined);
       });
@@ -86,12 +86,12 @@ describe('auth/authenticate_token', function() {
       done();
     });
 
-    it('should throw a Ravel.ApplicationError.NotFound error if there is no provider for the given client type', function(done) {
+    it('should throw a Ravel.ApplicationError.NotFound error if there is no provider for the given client type', (done) => {
       expect(tokenAuth.credentialToProfile('oauth-token', 'test-ios')).to.eventually.be.rejectedWith(Ravel.ApplicationError.NotFound);
       done();
     });
 
-    it('should cache profiles in redis using an expiry time which matches the token expiry time', function(done) {
+    it('should cache profiles in redis using an expiry time which matches the token expiry time', (done) => {
       sinon.stub(Ravel.kvstore, 'get', function(key, callback) {
         callback(null, undefined);
       });
@@ -104,7 +104,7 @@ describe('auth/authenticate_token', function() {
       });
     });
 
-    it('should satisfy profile translates from redis when possible', function(done) {
+    it('should satisfy profile translates from redis when possible', (done) => {
       sinon.stub(Ravel.kvstore, 'get', function(key, callback) {
         callback(null, JSON.stringify(profile));
       });
@@ -119,7 +119,7 @@ describe('auth/authenticate_token', function() {
       });
     });
 
-    it('should callback with an error if anything goes wrong while translating the token into a profile, such an encountering an invalid token', function(done) {
+    it('should callback with an error if anything goes wrong while translating the token into a profile, such an encountering an invalid token', (done) => {
       sinon.stub(Ravel.kvstore, 'get', function(key, callback) {
         callback(null, undefined);
       });

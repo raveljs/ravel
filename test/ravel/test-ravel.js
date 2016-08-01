@@ -17,7 +17,7 @@ const u = [{id:1, name:'Joe'}, {id:2, name:'Jane'}];
 
 
 describe('Ravel end-to-end test', function() {
-  before(function(done) {
+  before((done) => {
     process.removeAllListeners('unhandledRejection');
     //enable mockery
     mockery.enable({
@@ -28,7 +28,7 @@ describe('Ravel end-to-end test', function() {
     done();
   });
 
-  after(function(done) {
+  after((done) => {
     process.removeAllListeners('unhandledRejection');
     mockery.deregisterAll();
     mockery.disable();
@@ -37,7 +37,7 @@ describe('Ravel end-to-end test', function() {
 
   describe('#init()', function() {
     describe('uncaught ES6 Promise errors logging', function() {
-      it('should log unhandled erors within Promises', function(done) {
+      it('should log unhandled erors within Promises', (done) => {
         mockery.registerMock('redis', redis);
         const Ravel = require('../../lib/ravel');
         app = new Ravel();
@@ -61,7 +61,7 @@ describe('Ravel end-to-end test', function() {
     });
 
     describe('basic application server consisting of a module and a resource', function() {
-      before(function(done) {
+      before((done) => {
 
         const Ravel = require('../../lib/ravel');
         const httpCodes = require('../../lib/util/http_codes');
@@ -165,40 +165,40 @@ describe('Ravel end-to-end test', function() {
         done();
       });
 
-      after(function(done) {
+      after((done) => {
         app = undefined;
         done();
       });
 
-      it('should respond with the list of registered users', function(done) {
+      it('should respond with the list of registered users', (done) => {
         agent
         .get('/api/user')
         .expect(200, JSON.stringify(u))
         .end(done);
       });
 
-      it('should respond with a single existing user', function(done) {
+      it('should respond with a single existing user', (done) => {
         agent
         .get('/api/user/1')
         .expect(200, JSON.stringify(u[0]))
         .end(done);
       });
 
-      it('should respond with HTTP 404 NOT FOUND for non-existent users', function(done) {
+      it('should respond with HTTP 404 NOT FOUND for non-existent users', (done) => {
         agent
         .get('/api/user/3')
         .expect(404)
         .end(done);
       });
 
-      it('should respond with html on the route /app', function(done) {
+      it('should respond with html on the route /app', (done) => {
         agent
         .get('/app')
         .expect(200, '<!DOCTYPE html><html></html>')
         .end(done);
       });
 
-      it('should respond with html on the route /login', function(done) {
+      it('should respond with html on the route /login', (done) => {
         agent
         .get('/login')
         .expect(200, '<!DOCTYPE html><html><head><title>login</title></head></html>')

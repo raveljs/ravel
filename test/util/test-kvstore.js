@@ -9,7 +9,7 @@ let Ravel, redisClientStub, redisMock;
 
 describe('Ravel', function() {
 
-  beforeEach(function(done) {
+  beforeEach((done) => {
     //enable mockery
     mockery.enable({
       useCleanCache: true,
@@ -33,7 +33,7 @@ describe('Ravel', function() {
     done();
   });
 
-  afterEach(function(done) {
+  afterEach((done) => {
     Ravel = undefined;
     mockery.deregisterAll();mockery.disable();
     done();
@@ -41,14 +41,14 @@ describe('Ravel', function() {
 
   describe('util/kvstore', function() {
     describe('retryStrategy', function() {
-      it('should return an error when redis refuses the connection', function(done) {
+      it('should return an error when redis refuses the connection', (done) => {
         const retryStrategy = require('../../lib/util/kvstore').retryStrategy(Ravel);
         expect(retryStrategy).to.be.a('function');
         expect(retryStrategy({error:{code:'ECONNREFUSED'}})).to.be.an.instanceof(Ravel.ApplicationError.General);
         done();
       });
 
-      it('should return an error when the maximum number of retries is exceeded', function(done) {
+      it('should return an error when the maximum number of retries is exceeded', (done) => {
         const retryStrategy = require('../../lib/util/kvstore').retryStrategy(Ravel);
         expect(retryStrategy).to.be.a('function');
         Ravel.set('redis max retries', 10);
@@ -60,7 +60,7 @@ describe('Ravel', function() {
         done();
       });
 
-      it('should return the time to the next reconnect if the number of retries does not exceed the maximum', function(done) {
+      it('should return the time to the next reconnect if the number of retries does not exceed the maximum', (done) => {
         const retryStrategy = require('../../lib/util/kvstore').retryStrategy(Ravel);
         expect(retryStrategy).to.be.a('function');
         Ravel.set('redis max retries', 10);

@@ -20,7 +20,7 @@ class GoogleOAuth2 extends AuthenticationProvider {
 let Ravel, authconfig, passportMock, coreSymbols;
 
 describe('auth/passport_init', function() {
-  beforeEach(function(done) {
+  beforeEach((done) => {
     //enable mockery
     mockery.enable({
       useCleanCache: true,
@@ -53,7 +53,7 @@ describe('auth/passport_init', function() {
     done();
   });
 
-  afterEach(function(done) {
+  afterEach((done) => {
     Ravel = undefined;
     authconfig = undefined;
     passportMock = undefined;
@@ -63,7 +63,7 @@ describe('auth/passport_init', function() {
     done();
   });
 
-  it('should not initialize passport if no authentication providers are registered', function(done) {
+  it('should not initialize passport if no authentication providers are registered', (done) => {
     const app = koa();
     const passportInitSpy = sinon.spy(passportMock, 'initialize');
     const passportSessionSpy = sinon.spy(passportMock, 'session');
@@ -77,7 +77,7 @@ describe('auth/passport_init', function() {
     done();
   });
 
-  it('should initialize passport and sessions for koa', function(done) {
+  it('should initialize passport and sessions for koa', (done) => {
     //mock auth config
     @authconfig
     class AuthConfig extends (require('../../lib/ravel')).Module {
@@ -118,7 +118,7 @@ describe('auth/passport_init', function() {
     done();
   });
 
-  it('should throw ApplicationError.NotFound if an Authentication module is needed and one is not present', function(done) {
+  it('should throw ApplicationError.NotFound if an Authentication module is needed and one is not present', (done) => {
     const provider = new GoogleOAuth2(Ravel);
     provider.init = sinon.stub();
     Ravel.set('authentication providers', [provider]);
@@ -133,7 +133,7 @@ describe('auth/passport_init', function() {
     done();
   });
 
-  it('should use serializeUser to serialize users to a session cookie', function(done) {
+  it('should use serializeUser to serialize users to a session cookie', (done) => {
     //mock auth config
     @authconfig
     class AuthConfig extends (require('../../lib/ravel')).Module {
@@ -169,7 +169,7 @@ describe('auth/passport_init', function() {
     Ravel.emit('post module init');
   });
 
-  it('should use deserializeUser to deserialize users from session cookies', function(done) {
+  it('should use deserializeUser to deserialize users from session cookies', (done) => {
     const profile = {
       id: 9876
     };
@@ -210,7 +210,7 @@ describe('auth/passport_init', function() {
     Ravel.emit('post module init');
   });
 
-  it('should callback with an error if serializeUser failed', function(done) {
+  it('should callback with an error if serializeUser failed', (done) => {
     const profile = {
       id: 9876
     };
@@ -254,7 +254,7 @@ describe('auth/passport_init', function() {
     Ravel.emit('post module init');
   });
 
-  it('should callback with an error if deserializeUser failed', function(done) {
+  it('should callback with an error if deserializeUser failed', (done) => {
     const profile = {
       id: 9876
     };
@@ -299,7 +299,7 @@ describe('auth/passport_init', function() {
     Ravel.emit('post module init');
   });
 
-  it('should delegate \'deserializeOrCreateUser\' functionality to an @authconfig Module', function(done) {
+  it('should delegate \'deserializeOrCreateUser\' functionality to an @authconfig Module', (done) => {
     const databaseProfile = {
       id: 9876,
       name: 'Sean McIntyre'
@@ -332,7 +332,7 @@ describe('auth/passport_init', function() {
     Ravel.emit('post module init');
   });
 
-  it('should callback with an error if the verify function prevents auth provider initialization', function(done) {
+  it('should callback with an error if the verify function prevents auth provider initialization', (done) => {
     //mock auth config
     @authconfig
     class AuthConfig extends (require('../../lib/ravel')).Module {

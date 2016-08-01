@@ -16,7 +16,7 @@ let endHandlerCalled = 0;
 let koaconfigHandlerCalled = 0, koaconfigAppReference;
 
 describe('Ravel lifeycle test', function() {
-  beforeEach(function(done) {
+  beforeEach((done) => {
     process.removeAllListeners('unhandledRejection');
     //enable mockery
     mockery.enable({
@@ -156,7 +156,7 @@ describe('Ravel lifeycle test', function() {
     done();
   });
 
-  afterEach(function(done) {
+  afterEach((done) => {
     app = undefined;
     process.removeAllListeners('unhandledRejection');
     mockery.deregisterAll();
@@ -165,7 +165,7 @@ describe('Ravel lifeycle test', function() {
   });
 
   describe('#init()', function() {
-    it('should initialize an koa server with appropriate middleware and parameters', function(done) {
+    it('should initialize an koa server with appropriate middleware and parameters', (done) => {
       app.set('koa public directory', 'public');
       app.set('koa view engine', 'ejs');
       app.set('koa view directory', 'views');
@@ -217,7 +217,7 @@ describe('Ravel lifeycle test', function() {
       return expect(app.listen()).to.eventually.be.rejectedWith(app.ApplicationError.NotAllowed);
     });
 
-    it('should start the underlying HTTP server when called after init()', function(done) {
+    it('should start the underlying HTTP server when called after init()', (done) => {
       app.init();
       expect(postinitHandlerCalled).to.equal(1);
       const listenSpy = sinon.stub(app.server, 'listen', function(port, callback) {
@@ -234,7 +234,7 @@ describe('Ravel lifeycle test', function() {
   });
 
   describe('#start()', function() {
-    it('should be a wrapper for Ravel.init() and Ravel.listen()', function(done) {
+    it('should be a wrapper for Ravel.init() and Ravel.listen()', (done) => {
       const initSpy = sinon.stub(app, 'init');
       const listenSpy = sinon.stub(app, 'listen');
       app.start();
@@ -245,12 +245,12 @@ describe('Ravel lifeycle test', function() {
   });
 
   describe('#close()', function() {
-    it('should be a no-op if the underlying HTTP server isn\'t listening', function(done) {
+    it('should be a no-op if the underlying HTTP server isn\'t listening', (done) => {
       expect(app.close()).to.be.fulfilled;
       done();
     });
 
-    it('should stop the underlying HTTP server if the server is listening', function(done) {
+    it('should stop the underlying HTTP server if the server is listening', (done) => {
       app.init();
       sinon.stub(app.server, 'close', function(callback) {
         callback();

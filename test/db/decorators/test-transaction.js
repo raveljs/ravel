@@ -14,7 +14,7 @@ const Routes = Ravel.Routes;
 let app, transaction, coreSymbols;
 
 describe('Ravel', function() {
-  beforeEach(function(done) {
+  beforeEach((done) => {
     //enable mockery
     mockery.enable({
       useCleanCache: true,
@@ -29,7 +29,7 @@ describe('Ravel', function() {
     done();
   });
 
-  afterEach(function(done) {
+  afterEach((done) => {
     app = undefined;
     transaction = undefined;
     coreSymbols = undefined;
@@ -39,7 +39,7 @@ describe('Ravel', function() {
 
   describe('@transaction()', function() {
 
-    it('should throw an ApplicationError.IllegalValue if a non-string type is passed to @transaction', function(done) {
+    it('should throw an ApplicationError.IllegalValue if a non-string type is passed to @transaction', (done) => {
       const test = function() {
         @transaction([])
         class Stub {} //eslint-disable-line no-unused-vars
@@ -48,7 +48,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should indicate that all connections should be opened when used with no arguments', function(done) {
+    it('should indicate that all connections should be opened when used with no arguments', (done) => {
       class Stub1 {
         @transaction
         get() {}
@@ -58,7 +58,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should indicate that all connections should be opened when used without an argument', function(done) {
+    it('should indicate that all connections should be opened when used without an argument', (done) => {
       class Stub1 {
         @transaction()
         get() {}
@@ -68,7 +68,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should indicate which connections should be opened when used with arguments', function(done) {
+    it('should indicate which connections should be opened when used with arguments', (done) => {
       class Stub1 {
         @transaction('mysql', 'redis')
         get() {}
@@ -78,7 +78,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should be available at the class-level as well, indicating that all connections should be opened when used with no arguments', function(done) {
+    it('should be available at the class-level as well, indicating that all connections should be opened when used with no arguments', (done) => {
       @transaction
       class Stub1 {
         get() {}
@@ -88,7 +88,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should be available at the class-level as well, indicating that all connections should be opened when used without an argument', function(done) {
+    it('should be available at the class-level as well, indicating that all connections should be opened when used without an argument', (done) => {
       @transaction()
       class Stub1 {
         get() {}
@@ -98,7 +98,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should be available at the class-level as well, indicating which connections should be opened when used with arguments', function(done) {
+    it('should be available at the class-level as well, indicating which connections should be opened when used with arguments', (done) => {
       @transaction('mysql', 'redis')
       class Stub1 {
         get() {}
@@ -108,7 +108,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should provide open connections to Route handlers (method-level)', function(done) {
+    it('should provide open connections to Route handlers (method-level)', (done) => {
       class Stub extends Routes {
         constructor() {
           super('/app/path');
@@ -136,7 +136,7 @@ describe('Ravel', function() {
       app[coreSymbols.routesInit](router);
     });
 
-    it('should provide open connections to Route handlers (mixed class-level and method-level)', function(done) {
+    it('should provide open connections to Route handlers (mixed class-level and method-level)', (done) => {
       @transaction('rethinkdb')
       class Stub2 extends Routes {
         constructor() {

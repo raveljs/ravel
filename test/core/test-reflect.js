@@ -10,7 +10,7 @@ const upath = require('upath');
 let Ravel, app;
 
 describe('Ravel', function() {
-  beforeEach(function(done) {
+  beforeEach((done) => {
     //enable mockery
     mockery.enable({
       useCleanCache: true,
@@ -25,7 +25,7 @@ describe('Ravel', function() {
     done();
   });
 
-  afterEach(function(done) {
+  afterEach((done) => {
     Ravel = undefined;
     app = undefined;
     mockery.deregisterAll();
@@ -34,7 +34,7 @@ describe('Ravel', function() {
   });
 
   describe('#reflect()', function() {
-    it('should allow clients to retrieve metadata from Modules', function(done) {
+    it('should allow clients to retrieve metadata from Modules', (done) => {
       const inject = Ravel.inject;
       const another = {};
       mockery.registerMock('another', another);
@@ -63,7 +63,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should allow clients to retrieve metadata from Routes', function(done) {
+    it('should allow clients to retrieve metadata from Routes', (done) => {
       const Routes = Ravel.Routes;
       const before = Routes.before;
       const mapping = Routes.mapping;
@@ -115,7 +115,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should allow clients to retrieve metadata from Resources', function(done) {
+    it('should allow clients to retrieve metadata from Resources', (done) => {
       const middleware1 = function*(next) { yield next; };
       const middleware2 = function*(next) { yield next; };
       const Resource = Ravel.Resource;
@@ -183,7 +183,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should throw an ApplicationError.NotFound if the specified path is not a known Ravel component', function(done) {
+    it('should throw an ApplicationError.NotFound if the specified path is not a known Ravel component', (done) => {
       function test() {
         app.reflect('./stub');
       }
@@ -193,7 +193,7 @@ describe('Ravel', function() {
   });
 
   describe('#knownClasses()', function() {
-    it('should respond with an Array<String> of known class file paths', function(done) {
+    it('should respond with an Array<String> of known class file paths', (done) => {
       const inject = Ravel.inject;
       const another = {};
       mockery.registerMock('another', another);

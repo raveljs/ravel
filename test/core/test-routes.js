@@ -12,7 +12,7 @@ const async = require('async');
 let Ravel, Routes, inject, mapping, before, coreSymbols;
 
 describe('Ravel', function() {
-  beforeEach(function(done) {
+  beforeEach((done) => {
     //enable mockery
     mockery.enable({
       useCleanCache: true,
@@ -31,7 +31,7 @@ describe('Ravel', function() {
     done();
   });
 
-  afterEach(function(done) {
+  afterEach((done) => {
     Ravel = undefined;
     inject = undefined;
     Routes = undefined;
@@ -43,7 +43,7 @@ describe('Ravel', function() {
   });
 
   describe('#routes()', function() {
-    it('should permit clients to register route modules for instantiation in Ravel.start', function(done) {
+    it('should permit clients to register route modules for instantiation in Ravel.start', (done) => {
       mockery.registerMock(upath.join(Ravel.cwd, './routes/index_r'), class extends Routes {constructor() {super('/');}});
       Ravel.routes('./routes/index_r');
       expect(Ravel[coreSymbols.routesFactories]).to.have.property('./routes/index_r');
@@ -51,7 +51,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should throw Ravel.ApplicationError.IllegalValue when Resource constructor super() is called without a basePath', function(done) {
+    it('should throw Ravel.ApplicationError.IllegalValue when Resource constructor super() is called without a basePath', (done) => {
       const stub = class extends Routes {
         constructor() {
           super();
@@ -67,7 +67,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should throw ApplicationError.DuplicateEntry when a client attempts to register the same route module twice', function(done) {
+    it('should throw ApplicationError.DuplicateEntry when a client attempts to register the same route module twice', (done) => {
       try {
         mockery.registerMock(upath.join(Ravel.cwd, './routes/index_r'), class extends Routes {});
         Ravel.routes('./routes/index_r');
@@ -79,7 +79,7 @@ describe('Ravel', function() {
       }
     });
 
-    it('should throw a Ravel.ApplicationError.DuplicateEntry error when clients attempt to register multiple routes modules with the same base path', function(done) {
+    it('should throw a Ravel.ApplicationError.DuplicateEntry error when clients attempt to register multiple routes modules with the same base path', (done) => {
       const stub1 = class extends Routes {
         constructor() {
           super('/api/test');
@@ -102,7 +102,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should produce a factory function which can be used to instantiate the specified routes module and perform dependency injection', function(done) {
+    it('should produce a factory function which can be used to instantiate the specified routes module and perform dependency injection', (done) => {
       const another = {};
       mockery.registerMock('another', another);
       @inject('another')
@@ -133,7 +133,7 @@ describe('Ravel', function() {
       Ravel[coreSymbols.routesInit](router);
     });
 
-    it('should throw an ApplicationError.IllegalValue when a client attempts to register a routes module which is not a subclass of Routes', function(done) {
+    it('should throw an ApplicationError.IllegalValue when a client attempts to register a routes module which is not a subclass of Routes', (done) => {
       mockery.registerMock(upath.join(Ravel.cwd, './test'), class {});
       const shouldThrow = function() {
         Ravel.routes('./test');
@@ -142,7 +142,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should facilitate the creation of GET routes via @mapping', function(done) {
+    it('should facilitate the creation of GET routes via @mapping', (done) => {
       const middleware1 = function(/*req, res*/) {};
       const middleware2 = function(/*req, res*/) {};
 
@@ -175,7 +175,7 @@ describe('Ravel', function() {
       Ravel[coreSymbols.routesInit](router);
     });
 
-    it('should facilitate the creation of POST routes via @mapping', function(done) {
+    it('should facilitate the creation of POST routes via @mapping', (done) => {
       const middleware1 = function(/*req, res*/) {};
       const middleware2 = function(/*req, res*/) {};
 
@@ -207,7 +207,7 @@ describe('Ravel', function() {
       Ravel[coreSymbols.routesInit](router);
     });
 
-    it('should facilitate the creation of PUT routes via @mapping', function(done) {
+    it('should facilitate the creation of PUT routes via @mapping', (done) => {
       const middleware1 = function(/*req, res*/) {};
       const middleware2 = function(/*req, res*/) {};
 
@@ -240,7 +240,7 @@ describe('Ravel', function() {
       Ravel[coreSymbols.routesInit](router);
     });
 
-    it('should facilitate the creation of DELETE routes via @mapping', function(done) {
+    it('should facilitate the creation of DELETE routes via @mapping', (done) => {
       const middleware1 = function(/*req, res*/) {};
       const middleware2 = function(/*req, res*/) {};
 
@@ -273,7 +273,7 @@ describe('Ravel', function() {
       Ravel[coreSymbols.routesInit](router);
     });
 
-    it('should support the use of @before at the class level as well', function(done) {
+    it('should support the use of @before at the class level as well', (done) => {
       const middleware1 = function(/*req, res*/) {};
       const middleware2 = function(/*req, res*/) {};
 
@@ -316,7 +316,7 @@ describe('Ravel', function() {
       Ravel[coreSymbols.routesInit](router);
     });
 
-    it('should support the use of @mapping without @before', function(done) {
+    it('should support the use of @mapping without @before', (done) => {
       class Stub extends Routes {
         constructor() {
           super('/app');
@@ -353,7 +353,7 @@ describe('Ravel', function() {
       Ravel[coreSymbols.routesInit](router);
     });
 
-    it('should support the use of @mapping at the class level as well, to denote unsupported routes', function(done) {
+    it('should support the use of @mapping at the class level as well, to denote unsupported routes', (done) => {
       @mapping(Routes.GET, '/path') // will respond with NOT_IMPLEMENTED
       @mapping(Routes.POST, '/another', 404) // will respond with 404
       class Stub extends Routes {

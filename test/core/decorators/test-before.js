@@ -8,18 +8,18 @@ const Metadata = require('../../../lib/util/meta');
 let before;
 
 describe('Ravel', function() {
-  beforeEach(function(done) {
+  beforeEach((done) => {
     before = require('../../../lib/ravel').Resource.before;
     done();
   });
 
-  afterEach(function(done) {
+  afterEach((done) => {
     before = undefined;
     done();
   });
 
   describe('@before()', function() {
-    it('should decorate a class with middleware that should precede every endpoint defined within', function(done) {
+    it('should decorate a class with middleware that should precede every endpoint defined within', (done) => {
       @before('test1', 'test2')
       class Stub1 {
       }
@@ -28,7 +28,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should throw an ApplicationError.IllegalValue if a non-string type is passed to @before', function(done) {
+    it('should throw an ApplicationError.IllegalValue if a non-string type is passed to @before', (done) => {
       const test = function() {
         @before([])
         class Stub {} //eslint-disable-line no-unused-vars
@@ -37,7 +37,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should throw an ApplicationError.NotFound if @before is supplied without an argument', function(done) {
+    it('should throw an ApplicationError.NotFound if @before is supplied without an argument', (done) => {
       const test = function() {
         @before()
         class Stub {} //eslint-disable-line no-unused-vars
@@ -46,7 +46,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should decorate a class with method-specific middleware if @before is applied to a method', function(done) {
+    it('should decorate a class with method-specific middleware if @before is applied to a method', (done) => {
       class Stub1 {
         @before('test1', 'test2')
         get() {
