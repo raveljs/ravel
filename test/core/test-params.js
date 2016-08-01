@@ -22,6 +22,7 @@ describe('Ravel', function() {
       target.configs = files;
       return target;
     });
+    mockery.registerMock('redis', require('redis-mock'));
     Ravel = new (require('../../lib/ravel'))();
     coreSymbols = require('../../lib/core/symbols');
     Ravel.log.setLevel('NONE');
@@ -159,13 +160,25 @@ describe('Ravel', function() {
       done();
     });
 
-    it('should do nothing if no configuration files are present', (done) => {
+    it('should load defaults if no configuration files are present', (done) => {
       files = [];
       conf = undefined;
 
-      const oldParams = Object.create(null);
-      Object.assign(oldParams, Ravel.config);
-      Ravel[coreSymbols.loadParameters]();
+      const oldParams = {
+        'redis host': '0.0.0.0',
+        'redis port': 6379,
+        'redis max retries': 10,
+        'port':  8080,
+        'app route': '/',
+        'login route': '/login',
+        'keygrip keys': ['123abc'],
+        'log level': 'DEBUG',
+        'configs': [],
+        'authentication providers': []
+      };
+      Ravel.set('keygrip keys', ['123abc']);
+      Ravel.init();
+      // now load params from non-existent ravelrc file
       expect(Ravel.config).to.deep.equal(oldParams);
       done();
     });

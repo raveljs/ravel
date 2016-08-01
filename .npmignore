@@ -1,1 +1,8 @@
 /test
+.babelrc
+.codeclimate.yml
+.editorconfig
+.eslintrc.json
+.travis.yml
+gulpfile.js
+/lib/.eslintrc.json
