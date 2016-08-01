@@ -173,8 +173,7 @@ describe('Ravel', function() {
         'login route': '/login',
         'keygrip keys': ['123abc'],
         'log level': 'DEBUG',
-        'configs': [],
-        'authentication providers': []
+        'configs': []
       };
       Ravel.set('keygrip keys', ['123abc']);
       Ravel.init();

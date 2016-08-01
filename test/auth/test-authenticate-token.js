@@ -62,9 +62,6 @@ describe('auth/authenticate_token', function() {
       }
     }
     testProvider = new TestProvider(Ravel);
-    const providers = Ravel.get('authentication providers');
-    providers.push(testProvider);
-    Ravel.set('authentication providers', providers);
     done();
   });
 

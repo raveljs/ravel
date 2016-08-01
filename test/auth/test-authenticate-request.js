@@ -44,7 +44,6 @@ describe('util/authenticate_request', function() {
 
     const provider = new GoogleOAuth2(Ravel);
     provider.init = sinon.stub();
-    Ravel.set('authentication providers', [provider]);
 
     AuthenticationMiddleware  = require('../../lib/auth/authenticate_request');
     const Rest = require('../../lib/util/rest');
