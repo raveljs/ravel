@@ -1,6 +1,6 @@
 {
   "name": "ravel",
-  "version": "0.17.5",
+  "version": "0.17.6",
   "author": "Sean McIntyre <s.mcintyre@xverba.ca>",
   "description": "Ravel Rapid Application Development Framework",
   "engines": {
@@ -35,6 +35,7 @@
     "watch":"gulp watch",
     "test":"gulp test",
     "test-no-cov":"gulp test-no-cov",
+    "show-coverage":"gulp show-coverage",
     "debug":"node debug $(which gulp) test-no-cov",
     "debug-remote":"node --debug-brk=5858 $(which gulp) test-no-cov"
   },

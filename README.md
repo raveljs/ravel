@@ -780,6 +780,51 @@ class PersonResource extends Resource {
 module.exports = PersonResource;
 ```
 
+### Scoped Transactions
+> [<small>View API docs &#128366;</small>](http://raveljs.github.io/docs/latest/core/module.js.html)
+
+Sometimes, you may need to open a transaction outside of a code path triggered by an HTTP request. Good examples of this might include database initialization at application start-time, or logic triggered by a websocket connection. In these cases, a `Module` class can open a `scoped` transaction using the names of the DatabaseProviders you are interested in, and a generator function (scope) in which to use the connections. Scoped transactions only exist for the scope of the generator function and are automatically cleaned up at the end of the function. It is best to view `Module.db.scoped()` as an identical mechanism to `@transaction`, behaving in exactly the same way, with a slightly different API:
+
+*modules/database-initializer.js*
+```js
+const Module = require('ravel').Module;
+const prelisten = Module.prelisten;
+
+class DatabaseInitializer extends Module {
+
+	@prelisten // trigger db init on application startup
+  doDbInit(ctx) {
+		const self = this;
+		// specify one or more providers to open connections to, or none
+		// to open connections to all known DatabaseProviders.
+    this.db.scoped('mysql', function*() {
+			// this generator function behaves like koa middleware,
+			// so feel free to yield promises!
+			yield self.createTables(this.transaction.mysql);
+			yield self.insertRows(this.transaction.mysql);
+			// notice that this.transaction is identical to ctx.transaction
+			// from @transaction! It's just a hash of open, named connections
+			// to the DatabaseProviders specified.
+		}).catch((err) => {
+			self.log.error(err.stack);
+			process.exit(1); // in this case, we might want to kill our app if db init fails!
+		});
+  }
+
+	/**
+	 * @return {Promise}
+	 */
+	createTables(mysqlConnection) { /* ... */ }
+
+	/**
+	 * @return {Promise}
+	 */
+	insertRows(mysqlConnection) { /* ... */ }
+}
+
+module.exports = DatabaseInitializer;
+```
+
 ### Authentication Providers
 > [<small>View API docs &#128366;</small>](http://raveljs.github.io/docs/latest/auth/authentication_provider.js.html)
 

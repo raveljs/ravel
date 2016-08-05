@@ -90,6 +90,7 @@ describe('Ravel', function() {
       Ravel.db = {
         scoped: scopedStub
       };
+      const gen = function*() {};
 
       const another = {};
       mockery.registerMock('another', another);
@@ -112,8 +113,8 @@ describe('Ravel', function() {
           expect(this.params).to.be.an.object;
           expect(this.params).to.have.a.property('get').that.is.a.function;
           expect(this.db).to.have.a.property('scoped').that.is.an.function;
-          this.db.scoped();
-          expect(scopedStub).to.have.been.called;
+          this.db.scoped('mysql', 'rethinkdb', gen);
+          expect(scopedStub).to.have.been.calledWith('mysql', 'rethinkdb', gen);
         }
 
         method() {}
