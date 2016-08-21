@@ -792,7 +792,7 @@ const prelisten = Module.prelisten;
 
 class DatabaseInitializer extends Module {
 
-	@prelisten // trigger db init on application startup
+  @prelisten // trigger db init on application startup
   doDbInit(ctx) {
 		const self = this;
 		// specify one or more providers to open connections to, or none
