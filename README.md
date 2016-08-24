@@ -242,7 +242,7 @@ module.exports = CitiesResource;
 Since decorators are not yet available in Node, you will need to use Babel to transpile them into ES2015-compliant code.
 
 ```bash
-$ npm install babel@6.5.2 babel-plugin-transform-decorators-legacy@1.3.4 babel-register@6.8.0
+$ npm install babel-core@6.13.2 babel-plugin-transform-decorators-legacy@1.3.4 babel-register@6.11.6
 ```
 
 Place this `.babelrc` config file at the root of your source code.
