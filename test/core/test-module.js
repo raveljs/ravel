@@ -375,26 +375,28 @@ describe('Ravel', function() {
 
     it('should perform dependency injection on module factories which works regardless of the order of specified dependencies', (done) => {
       const momentStub = {};
+      const underscoreStub = {};
       mockery.registerMock('moment', momentStub);
-      @inject('$E', 'moment')
+      mockery.registerMock('underscore', underscoreStub);
+      @inject('underscore', 'moment')
       class Stub1 extends Module {
-        constructor($E, moment) {
+        constructor(underscore, moment) {
           super();
-          expect($E).to.be.ok;
-          expect($E).to.be.an('object');
-          expect($E).to.equal(Ravel.ApplicationError);
+          expect(underscore).to.be.ok;
+          expect(underscore).to.be.an('object');
+          expect(underscore).to.equal(underscoreStub);
           expect(moment).to.be.ok;
           expect(moment).to.be.an('object');
           expect(moment).to.equal(momentStub);
         }
       }
-      @inject('moment', '$E')
+      @inject('moment', 'underscore')
       class Stub2 extends Module {
-        constructor(moment, $E) {
+        constructor(moment, underscore) {
           super();
-          expect($E).to.be.ok;
-          expect($E).to.be.an('object');
-          expect($E).to.equal(Ravel.ApplicationError);
+          expect(underscore).to.be.ok;
+          expect(underscore).to.be.an('object');
+          expect(underscore).to.equal(underscoreStub);
           expect(moment).to.be.ok;
           expect(moment).to.be.an('object');
           expect(moment).to.equal(momentStub);

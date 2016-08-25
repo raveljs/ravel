@@ -101,15 +101,14 @@ describe('Ravel', function() {
       }
     });
 
-    it('should support a module map which allows different Ravel services to make pseudo-modules available for injection. One of these, $E, is always available.', (done) => {
+    it('should support a module map which allows different Ravel services to make pseudo-modules available for injection.', (done) => {
       const moduleMap = {
         pseudoModule: {}
       };
-      @inject('$E', 'pseudoModule')
+      @inject('pseudoModule')
       class Stub extends Module {
-        constructor($E, pseudoModule) {
+        constructor(pseudoModule) {
           super();
-          expect($E).to.equal(Ravel.ApplicationError);
           expect(pseudoModule).to.equal(moduleMap.pseudoModule);
           done();
         }

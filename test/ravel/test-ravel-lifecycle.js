@@ -50,13 +50,7 @@ describe('Ravel lifeycle test', function() {
     const u = [{id:1, name:'Joe'}, {id:2, name:'Jane'}];
 
     //stub Module (business logic container)
-    @inject('$E')
     class Users extends Ravel.Module {
-      constructor($E) {
-        super();
-        this.$E = $E;
-      }
-
       getAllUsers() {
         return Promise.resolve(u);
       }
@@ -65,7 +59,7 @@ describe('Ravel lifeycle test', function() {
         if (userId < u.length) {
           return Promise.resolve(u[userId-1]);
         } else {
-          return Promise.reject(new this.$E.NotFound('User id=' + userId + ' does not exist!'));
+          return Promise.reject(new this.ApplicationError.NotFound('User id=' + userId + ' does not exist!'));
         }
       }
 
@@ -98,12 +92,11 @@ describe('Ravel lifeycle test', function() {
 
     //stub Resource (REST interface)
     const pre = Ravel.Resource.before;  //have to alias to @pre instead of proper @before, since the latter clashes with mocha
-    @inject('users', '$E')
+    @inject('users')
     class UsersResource extends Ravel.Resource {
-      constructor(users, $E) {
+      constructor(users) {
         super('/api/user');
         this.users = users;
-        this.$E = $E;
         this.someMiddleware = function*(next) { yield next; };
       }
 

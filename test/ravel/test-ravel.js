@@ -69,11 +69,9 @@ describe('Ravel end-to-end test', function() {
         const inject = Ravel.inject;
 
         //stub Module (business logic container)
-        @inject('$E')
         class Users extends Ravel.Module {
-          constructor($E) {
+          constructor() {
             super();
-            this.$E = $E;
           }
 
           getAllUsers() {
@@ -84,19 +82,18 @@ describe('Ravel end-to-end test', function() {
             if (userId < u.length) {
               return Promise.resolve(u[userId-1]);
             } else {
-              return Promise.reject(new this.$E.NotFound('User id=' + userId + ' does not exist!'));
+              return Promise.reject(new this.ApplicationError.NotFound('User id=' + userId + ' does not exist!'));
             }
           }
         }
 
         //stub Resource (REST interface)
         const pre = Ravel.Resource.before;  //have to alias to @pre instead of proper @before, since the latter clashes with mocha
-        @inject('users', '$E')
+        @inject('users')
         class UsersResource extends Ravel.Resource {
-          constructor(users, $E) {
+          constructor(users) {
             super('/api/user');
             this.users = users;
-            this.$E = $E;
             this.someMiddleware = function*(next) {yield next;};
           }
 
