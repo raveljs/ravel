@@ -77,7 +77,6 @@ describe('Ravel end-to-end test', function() {
           }
 
           getAllUsers() {
-            expect(this).to.have.a.property('params').that.is.an('object');
             return Promise.resolve(u);
           }
 
@@ -102,11 +101,10 @@ describe('Ravel end-to-end test', function() {
           }
 
           getAll(ctx) {
-            expect(this).to.have.a.property('params').that.is.an('object');
-            return this.users.getAllUsers()
-            .then((list) => {
+            return function*() {
+              const list = yield this.users.getAllUsers();
               ctx.body = list;
-            });
+            }.bind(this);
           }
 
           @pre('someMiddleware')
@@ -128,7 +126,6 @@ describe('Ravel end-to-end test', function() {
 
           @mapping(Ravel.Routes.GET, '/app')
           appHandler(ctx) {
-            expect(this).to.have.a.property('params').that.is.an('object');
             ctx.body = '<!DOCTYPE html><html></html>';
             ctx.status = 200;
           }
