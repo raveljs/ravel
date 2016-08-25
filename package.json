@@ -42,7 +42,7 @@
   "dependencies": {
     "co":"4.6.0",
     "fs-readdir-recursive":"1.0.0",
-    "intel":"1.1.0",
+    "intel":"1.1.1",
     "koa": "1.2.1",
     "koa-compress": "1.0.9",
     "koa-compose":"2.4.0",
@@ -55,8 +55,8 @@
     "node-fs":"0.1.7",
     "passport": "0.3.2",
     "rc": "1.1.6",
-    "redis":"2.5.3",
-    "upath": "0.1.7"
+    "redis":"2.6.2",
+    "upath": "0.2.0"
   },
   "devDependencies": {
     "async":"2.0.1",
