@@ -97,11 +97,9 @@ describe('Ravel end-to-end test', function() {
             this.someMiddleware = function*(next) {yield next;};
           }
 
-          getAll(ctx) {
-            return function*() {
-              const list = yield this.users.getAllUsers();
-              ctx.body = list;
-            }.bind(this);
+          *getAll(ctx) {
+            const list = yield this.users.getAllUsers();
+            ctx.body = list;
           }
 
           @pre('someMiddleware')
@@ -123,8 +121,10 @@ describe('Ravel end-to-end test', function() {
 
           @mapping(Ravel.Routes.GET, '/app')
           appHandler(ctx) {
-            ctx.body = '<!DOCTYPE html><html></html>';
-            ctx.status = 200;
+            return function*() {
+              ctx.body = '<!DOCTYPE html><html></html>';
+              ctx.status = 200;
+            };
           }
 
           @mapping(Ravel.Routes.GET, '/login')

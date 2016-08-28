@@ -470,6 +470,26 @@ describe('Ravel', function() {
         sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
       done();
     });
+
+    it('should facilitate the creation of generator routes which are not decorated with middleware', (done) => {
+      class Stub extends Resource {
+        constructor() {
+          super('/api/test');
+        }
+        *getAll() {
+        }
+      }
+      const router = require('koa-router')();
+      const spy = sinon.stub(router, 'get');
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
+      Ravel.resource('test');
+      Ravel[coreSymbols.resourceInit](router);
+      expect(spy).to.have.been.calledWith(
+        '/api/test',
+        sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
+        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
+      done();
+    });
   });
 
   describe('Resource Integration Test', function() {
