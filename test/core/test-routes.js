@@ -153,7 +153,7 @@ describe('Ravel', function() {
 
         @mapping(Routes.GET, '/path')
         @before('middleware1','middleware2')
-        pathHandler(ctx) {
+        *pathHandler(ctx) {
           ctx.status = 200;
         }
       };
@@ -186,7 +186,7 @@ describe('Ravel', function() {
 
         @mapping(Routes.POST, '/path')
         @before('middleware1','middleware2')
-        pathHandler(ctx) {
+        *pathHandler(ctx) {
           ctx.status = 200;
         }
       };
@@ -218,7 +218,7 @@ describe('Ravel', function() {
 
         @mapping(Routes.PUT, '/path')
         @before('middleware1','middleware2')
-        pathHandler(ctx) {
+        *pathHandler(ctx) {
           ctx.status = 200;
         }
       };
@@ -251,7 +251,7 @@ describe('Ravel', function() {
 
         @mapping(Routes.DELETE, '/path')
         @before('middleware1','middleware2')
-        pathHandler(ctx) {
+        *pathHandler(ctx) {
           ctx.status = 200;
         }
       };
@@ -285,7 +285,7 @@ describe('Ravel', function() {
 
         @mapping(Routes.GET, '/path')
         @before('middleware2')
-        pathHandler(ctx) {
+        *pathHandler(ctx) {
           ctx.status(200);
         }
       };
@@ -323,12 +323,12 @@ describe('Ravel', function() {
         }
 
         @mapping(Routes.GET, '/path')
-        pathHandler(ctx) {
+        *pathHandler(ctx) {
           ctx.status(200);
         }
 
         @before('middleware2') // this should just be ignored, since @mapping isn't present
-        ignoredHandler(ctx) {
+        *ignoredHandler(ctx) {
           ctx.status(200);
         }
       };

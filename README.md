@@ -15,22 +15,24 @@ Ravel is a tiny, sometimes-opinionated foundation for creating organized, mainta
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Architecture](#architecture)
-	- [Modules (and Errors)](#modules-and-errors)
-	- [Routes](#routes)
-	- [Resources](#resources)
-	- [Babel configuration](#babel-configuration)
-	- [Bringing it all together](#bringing-it-all-together)
+  - [Modules (and Errors)](#modules-and-errors)
+  - [Routes](#routes)
+  - [Resources](#resources)
+  - [Bringing it all together](#bringing-it-all-together)
+  - [Decorator Transpilation](#decorator-transpilation)
+  - [Running the Application](#running-the-application)
 - [API Documentation](#api-documentation)
-	- [Ravel](#ravel-app)
-	- [Managed Configuration System](#managed-configuration-system)
-	- [Ravel.Error](#ravelerror)
-	- [Ravel.Module](#ravelmodule)
-	- [Ravel.Routes](#ravelroutes)
-	- [Ravel.Resource](#ravelresource)
-	- [Database Providers](#database-providers)
-	- [Transaction-per-request](#transaction-per-request)
-	- [Authentication Providers](#authentication-providers)
-	- [Authentication](#authentication)
+  - [Ravel App](#ravel-app)
+  - [Managed Configuration System](#managed-configuration-system)
+  - [Ravel.Error](#ravelerror)
+  - [Ravel.Module](#ravelmodule)
+  - [Ravel.Routes](#ravelroutes)
+  - [Ravel.Resource](#ravelresource)
+  - [Database Providers](#database-providers)
+  - [Transaction-per-request](#transaction-per-request)
+  - [Scoped Transactions](#scoped-transactions)
+  - [Authentication Providers](#authentication-providers)
+  - [Authentication](#authentication)
 - [Deployment and Scaling](#deployment-and-scaling)
 
 <!-- /TOC -->
@@ -52,7 +54,6 @@ And a few other features, plucked from popular back-end frameworks:
 
 Ravel is layered on top of awesome technologies, including:
 - [koa](http://koajs.com/)
-- [babel](http://babeljs.io)
 - [Passport](https://github.com/jaredhanson/passport)
 - [Intel](https://github.com/seanmonstar/intel)
 - [Redis](https://github.com/antirez/redis)
@@ -169,7 +170,7 @@ class ExampleRoutes extends Routes {
   // bind this method to an endpoint and verb with @mapping. This one will become GET /app
   @mapping(Routes.GET, 'app')
   @before('middleware1','middleware2') // use @before to place middleware before appHandler
-  appHandler(ctx) {
+  *appHandler(ctx) {
     // ctx is just a koa context! Have a look at the koa docs to see what methods and properties are available.
     ctx.body = '<!DOCTYPE html><html><body>Hello World!</body></html>';
     ctx.status = 200;
@@ -203,26 +204,20 @@ class CitiesResource extends Resource {
     super('/cities'); //base path
     this.cities = cities;
 
-    // some other middleware, which you might have injected or created here
+    // some other middleware, which you might have injected from a Module or created here
     this.anotherMiddleware = function*(next) {
       yield next;
     };
   }
 
   // no need to use @mapping here. Routes methods are automatically mapped using their names.
-  getAll(ctx) { // just like in Routes, ctx is a koa context.
-     return this.cities.getAllCities()
-     .then((list) => {
-       ctx.body = list;
-     });
+  *getAll(ctx) { // just like in Routes, ctx is a koa context.
+    ctx.body = yield this.cities.getAllCities();
   }
 
   @before('anotherMiddleware') // using @before at the method level decorates this method with middleware
-  get(ctx) { // get routes automatically receive an endpoint of /cities/:id (in this case).
-    return this.cities.getCity(ctx.params.id)
-    .then((city) => {
-      ctx.body = city;
-    });
+  *get(ctx) { // get routes automatically receive an endpoint of /cities/:id (in this case).
+    ctx.body = yield this.cities.getCity(ctx.params.id);
   }
 
   // post, put, putAll, delete and deleteAll are
@@ -237,31 +232,10 @@ class CitiesResource extends Resource {
 module.exports = CitiesResource;
 ```
 
-### Babel configuration
-
-Since decorators are not yet available in Node, you will need to use Babel to transpile them into ES2015-compliant code.
-
-```bash
-$ npm install babel-core@6.13.2 babel-plugin-transform-decorators-legacy@1.3.4 babel-register@6.11.6
-```
-
-Place this `.babelrc` config file at the root of your source code.
-
-*.babelrc*
-```json
-{
-  "plugins": ["transform-decorators-legacy"],
-  "retainLines": true
-}
-```
-
 ### Bringing it all together
 
 *app.js*
 ```javascript
-//TODO remove when decorators land in node. Should probably pre-transpile in a production app.
-require('babel-register');
-
 const app = new require('ravel')();
 
 // parameters like this can be supplied via a .ravelrc file
@@ -275,8 +249,38 @@ app.routes('./routes/index.js');  //import all Routes from a file
 app.start();
 ```
 
+### Decorator Transpilation
+
+Since decorators are not yet available in Node, you will need to use a transpiler to convert them into ES2016-compliant code. We have chosen Typescript as our recommended transpiler, as Babel [cannot currently transpile decorators on generator methods](https://github.com/babel/babylon/issues/13). We will likely switch back to Babel when this issue is resolved (likely when the Decorator level 2 spec is implemented).
+
+To be clear, we are apply Typescript as *a transpiler for JavaScript*, not using Typescript itself (though nothing should stop you from using Typescript with Ravel if you wish).
+
 ```bash
-$ node app.js
+$ npm install gulp-sourcemaps@1.6.0 typescript@1.8.10 gulp-typescript@2.13.6
+```
+
+*gulpfile.js*
+```js
+gulp.task('transpile', function() {
+  return gulp.src('src/**/*.js') // point it at your source directory, containing Modules, Resources and Routes
+      .pipe(plugins.sourcemaps.init())
+      .pipe(plugins.typescript({
+        typescript: require('typescript'),
+        allowJs: true,
+        experimentalDecorators: true,
+        target: 'ES6',
+      }))
+      .pipe(plugins.sourcemaps.write('.'))
+      .pipe(gulp.dest('dist'));  // your transpiled Ravel app will appear here!
+});
+```
+
+Check out the [starter project](https://github.com/raveljs/ravel-github-mariadb-starter) to see a working example of this build process.
+
+### Running the Application
+
+```bash
+$ node dist/app.js
 ```
 
 ## API Documentation
@@ -582,7 +586,7 @@ There are currently five lifecycle decorators:
 
 Like `Module`s, `Routes` classes support dependency injection, allowing easy connection of application logic and web layers.
 
-Endpoints are created within a `Routes` class by creating a method and then decorating it with [`@mapping`](http://raveljs.github.io/docs/latest/core/decorators/mapping.js.html). The `@mapping` decorator indicates the path for the route (concatenated with the base path passed to `super()` in the `constructor`), as well as the HTTP verb. The method handler accepts a single argument `ctx` which is a [koa context](http://koajs.com/#context). Savvy readers with `koa` experience will note that this handler method is **not a generator** and, thus, cannot `yield` `Promise`s the way a traditional `koa` handler would. This is because ES7 decorators do not yet support decorating generator methods; Ravel will migrate to using generator handler methods when this is supported. In the meantime, if you want to use more traditional `koa` syntax, write the bulk of your logic as middleware in a `Module` generator method instead, `@inject` it, and then connect it to the endpoint using [`@before`](http://raveljs.github.io/docs/latest/core/decorators/before.js.html).
+Endpoints are created within a `Routes` class by creating a generator method and then decorating it with [`@mapping`](http://raveljs.github.io/docs/latest/core/decorators/mapping.js.html). The `@mapping` decorator indicates the path for the route (concatenated with the base path passed to `super()` in the `constructor`), as well as the HTTP verb. The method handler accepts a single argument `ctx` which is a [koa context](http://koajs.com/#context). Savvy readers with `koa` experience will note that, within the handler, `this` refers to the instance of the Routes class (to make it easy to access injected `Module`s), and the passed `ctx` argument is a reference to the `koa` context (rather than `this`).
 
 *routes/my-routes.js*
 ```js
@@ -607,12 +611,12 @@ class MyRoutes extends Routes {
   // will map to GET /app
   @mapping(Routes.GET, 'app'); // Koa path parameters such as :something are supported
   @before('bodyParser') // use bodyParser middleware before handler. Matches this.bodyParser created in the constructor.
-  appHandler(ctx) {
+  *appHandler(ctx) {
     ctx.status = 200;
     ctx.body = '<!doctype html><html></html>';
     // ctx is a koa context object.
-    // return a Promise, or simply use ctx to create a body/status code for response
-    // reject with a Ravel.Error to automatically set an error status code
+    // yield to Promises and use ctx to create a body/status code for response
+    // throw a Ravel.Error to automatically set an error status code
   }
 }
 
@@ -636,7 +640,7 @@ app.routes('./routes/my-routes');
 
 What might be referred to as a *controller* in other frameworks, a `Resource` module defines HTTP methods on an endpoint. `Resource`s also support dependency injection, allowing for the easy creation of RESTful interfaces to your `Module`-based application logic. Resources are really just a thin wrapper around `Routes`, using specially-named handler methods (`get`, `getAll`, `post`, `put`, `putAll`, `delete`, `deleteAll`) instead of `@mapping`. This convention-over-configuration approach makes it easier to write proper REST APIs with less code, and is recommended over ~~carefully chosen~~ `@mapping`s in a `Routes` class. Omitting any or all of the specially-named handler functions is fine, and will result in a `501 NOT IMPLEMENTED` status when that particular method/endpoint is requested. `Resource`s inherit all the properties, methods and decorators of `Routes`. See [core/routes](routes.js.html) for more information. Note that `@mapping` does not apply to `Resources`.
 
-As with `Routes` classes, `Resource` handler methods are functions (not generators) which receive a [koa context](http://koajs.com/#context) as their only argument. Ravel will migrate to using generator methods once ES7 decorators support decorating them.
+As with `Routes` classes, `Resource` handler methods are generator functions which receive a [koa context](http://koajs.com/#context) as their only argument.
 
 *resources/person-resource.js*
 ```js
@@ -656,31 +660,31 @@ class PersonResource extends Resource {
 
   // will map to GET /person
   @before('bodyParser') // use bodyParser middleware before handler
-  getAll(ctx) {
+  *getAll(ctx) {
     // ctx is a koa context object.
-    // return a Promise, or simply use ctx to create a body/status code for response
-    // reject with a Ravel.Error to automatically set an error status code
+    // yield to Promises and use ctx to create a body/status code for response
+    // throw a Ravel.Error to automatically set an error status code
   }
 
   // will map to GET /person/:id
-  get(ctx) {
+  *get(ctx) {
     // can use ctx.params.id in here automatically
   }
 
   // will map to POST /person
-  post(ctx) {}
+  *post(ctx) {}
 
   // will map to PUT /person
-  putAll(ctx) {}
+  *putAll(ctx) {}
 
   // will map to PUT /person/:id
-  put(ctx) {}
+  *put(ctx) {}
 
   // will map to DELETE /person
-  deleteAll(ctx) {}
+  *deleteAll(ctx) {}
 
   // will map to DELETE /person/:id
-  delete(ctx) {}
+  *delete(ctx) {}
 }
 
 module.exports = PersonResource
@@ -764,11 +768,11 @@ class PersonResource extends Resource {
 
   // maps to GET /person/:id
   @transaction('mysql') // this is the name exposed by ravel-mysql-provider
-  get(ctx) {
+  *get(ctx) {
     // TIP: Don't write complex logic here. Pass ctx.transaction into
     // a Module function which returns a Promise! This example is
     // just for demonstration purposes.
-    return new Promise((resolve, reject) => {
+    ctx.body = yield new Promise((resolve, reject) => {
       // ctx.transaction.mysql is a https://github.com/felixge/node-mysql connection
       ctx.transaction.mysql.query('SELECT 1', (err, rows) => {
         if (err) return reject(err);
@@ -794,32 +798,32 @@ class DatabaseInitializer extends Module {
 
   @prelisten // trigger db init on application startup
   doDbInit(ctx) {
-		const self = this;
-		// specify one or more providers to open connections to, or none
-		// to open connections to all known DatabaseProviders.
+    const self = this;
+    // specify one or more providers to open connections to, or none
+    // to open connections to all known DatabaseProviders.
     this.db.scoped('mysql', function*() {
-			// this generator function behaves like koa middleware,
-			// so feel free to yield promises!
-			yield self.createTables(this.transaction.mysql);
-			yield self.insertRows(this.transaction.mysql);
-			// notice that this.transaction is identical to ctx.transaction
-			// from @transaction! It's just a hash of open, named connections
-			// to the DatabaseProviders specified.
-		}).catch((err) => {
-			self.log.error(err.stack);
-			process.exit(1); // in this case, we might want to kill our app if db init fails!
-		});
+      // this generator function behaves like koa middleware,
+      // so feel free to yield promises!
+      yield self.createTables(this.transaction.mysql);
+      yield self.insertRows(this.transaction.mysql);
+      // notice that this.transaction is identical to ctx.transaction
+      // from @transaction! It's just a hash of open, named connections
+      // to the DatabaseProviders specified.
+    }).catch((err) => {
+      self.log.error(err.stack);
+      process.exit(1); // in this case, we might want to kill our app if db init fails!
+    });
   }
 
-	/**
-	 * @return {Promise}
-	 */
-	createTables(mysqlConnection) { /* ... */ }
+  /**
+   * @return {Promise}
+   */
+  createTables(mysqlConnection) { /* ... */ }
 
-	/**
-	 * @return {Promise}
-	 */
-	insertRows(mysqlConnection) { /* ... */ }
+  /**
+   * @return {Promise}
+   */
+  insertRows(mysqlConnection) { /* ... */ }
 }
 
 module.exports = DatabaseInitializer;
@@ -922,7 +926,7 @@ class MyRoutes extends Routes {
 
   @authenticated({redirect: true}) // protect one endpoint specifically
   @mapping(Routes.GET, 'app')
-  handler(ctx) {
+  *handler(ctx) {
     // will redirect to app.get('login route') if not signed in
   }
 }

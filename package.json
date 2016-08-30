@@ -33,11 +33,11 @@
     "clean": "gulp clean",
     "docs":"gulp docs",
     "watch":"gulp watch",
-    "test":"gulp test",
-    "test-no-cov":"gulp test-no-cov",
+    "test":"gulp --require source-map-support/register test",
+    "test-no-cov":"gulp --require source-map-support/register test-no-cov",
     "show-coverage":"gulp show-coverage",
-    "debug":"node debug $(which gulp) test-no-cov",
-    "debug-remote":"node --debug-brk=5858 $(which gulp) test-no-cov"
+    "debug":"node debug $(which gulp) --require source-map-support/register test-no-cov",
+    "debug-remote":"node --debug-brk=5858 $(which gulp) --require source-map-support/register test-no-cov"
   },
   "dependencies": {
     "co":"4.6.0",
@@ -87,9 +87,9 @@
     "gulp-open": "2.0.0",
 
     "gulp-sourcemaps": "1.6.0",
-    "gulp-babel":"6.1.2",
-    "babel-core":"6.14.0",
-    "babel-eslint": "6.1.2",
-    "babel-plugin-transform-decorators-legacy": "1.3.4"
+    "gulp-typescript": "2.13.6",
+    "typescript": "1.8.10",
+    "source-map-support": "0.4.2",
+    "typescript-eslint-parser": "0.1.3"
   }
 }
