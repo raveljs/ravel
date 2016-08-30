@@ -251,9 +251,9 @@ app.start();
 
 ### Decorator Transpilation
 
-Since decorators are not yet available in Node, you will need to use a transpiler to convert them into ES2016-compliant code. We have chosen Typescript as our recommended transpiler, as Babel [cannot currently transpile decorators on generator methods](https://github.com/babel/babylon/issues/13). We will likely switch back to Babel when this issue is resolved (likely when the Decorator level 2 spec is implemented).
+Since decorators are not yet available in Node, you will need to use a transpiler to convert them into ES2016-compliant code. We have chosen TypeScript as our recommended transpiler, as Babel [cannot currently transpile decorators on generator methods](https://github.com/babel/babylon/issues/13). Ravel will likely switch back to Babel when this issue is resolved (when the Decorator level 2+ spec is implemented).
 
-To be clear, we are apply Typescript as *a transpiler for JavaScript*, not using Typescript itself (though nothing should stop you from using Typescript with Ravel if you wish).
+To be clear, we are apply TypeScript as *a transpiler for JavaScript*, not using TypeScript itself (though nothing should stop you from using TypeScript with Ravel if you wish).
 
 ```bash
 $ npm install gulp-sourcemaps@1.6.0 typescript@1.8.10 gulp-typescript@2.13.6
