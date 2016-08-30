@@ -87,8 +87,9 @@ describe('Ravel end-to-end test', function() {
           }
         }
 
-        //stub Resource (REST interface)
-        const pre = Ravel.Resource.before;  //have to alias to @pre instead of proper @before, since the latter clashes with mocha
+        // stub Resource (REST interface)
+        // have to alias to @pre instead of proper @before, since the latter clashes with mocha
+        const pre = Ravel.Resource.before;
         @inject('users')
         class UsersResource extends Ravel.Resource {
           constructor(users) {
@@ -97,6 +98,7 @@ describe('Ravel end-to-end test', function() {
             this.someMiddleware = function*(next) {yield next;};
           }
 
+          @pre('someMiddleware')
           *getAll(ctx) {
             const list = yield this.users.getAllUsers();
             ctx.body = list;
@@ -110,10 +112,17 @@ describe('Ravel end-to-end test', function() {
               ctx.body = result;
             });
           }
+
+          @pre('someMiddleware')
+          *post(ctx) {
+            throw new this.ApplicationError.DuplicateEntry();
+          }
         }
 
         //stub Routes (miscellaneous routes, such as templated HTML content)
         const mapping = Ravel.Routes.mapping;
+
+        @mapping(Ravel.Routes.DELETE, '/app', Ravel.httpCodes.NOT_IMPLEMENTED)
         class TestRoutes extends Ravel.Routes {
           constructor() {
             super('/');
@@ -185,10 +194,24 @@ describe('Ravel end-to-end test', function() {
         .end(done);
       });
 
-      it('should respond with html on the route /app', (done) => {
+      it('should respond with CONFLICT 409 for POST users', (done) => {
+        agent
+        .post('/api/user')
+        .expect(409)
+        .end(done);
+      });
+
+      it('should respond with html on the route GET /app', (done) => {
         agent
         .get('/app')
         .expect(200, '<!DOCTYPE html><html></html>')
+        .end(done);
+      });
+
+      it('should respond with NOT_IMPLEMENTED 501 on the route DELETE /app', (done) => {
+        agent
+        .delete('/app')
+        .expect(501)
         .end(done);
       });
 

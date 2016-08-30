@@ -1,6 +1,7 @@
 {
   "extends": "../.eslintrc.json",
-  "parser": "babel-eslint",
+  /*"parser": "babel-eslint",*/
+  "parser": "typescript-eslint-parser",
   "globals": {
     "describe":   false,
     "before":     false,
@@ -15,6 +16,7 @@
     "mocha": true
   },
   "rules":  {
-    "strict": 0
+    "strict": 0,
+    "no-unused-vars": 0
   }
 }

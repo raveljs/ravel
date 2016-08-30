@@ -164,7 +164,7 @@ describe('Ravel', function() {
         }
 
         @before('middleware1', 'middleware2')
-        getAll() {
+        *getAll() {
         }
       }
       const router = require('koa-router')();
@@ -194,7 +194,7 @@ describe('Ravel', function() {
         }
 
         @before('middleware1', 'middleware2')
-        get() {
+        *get() {
         }
       }
       const router = require('koa-router')();
@@ -221,7 +221,7 @@ describe('Ravel', function() {
         }
 
         @before('middleware1', 'middleware2')
-        post() {
+        *post() {
         }
       }
       const router = require('koa-router')();
@@ -252,7 +252,7 @@ describe('Ravel', function() {
         }
 
         @before('middleware1', 'middleware2')
-        put() {
+        *put() {
         }
       }
       const router = require('koa-router')();
@@ -279,7 +279,7 @@ describe('Ravel', function() {
         }
 
         @before('middleware1', 'middleware2')
-        putAll() {
+        *putAll() {
         }
       }
       const router = require('koa-router')();
@@ -310,7 +310,7 @@ describe('Ravel', function() {
         }
 
         @before('middleware1', 'middleware2')
-        deleteAll() {
+        *deleteAll() {
         }
       }
       const router = require('koa-router')();
@@ -337,7 +337,7 @@ describe('Ravel', function() {
         }
 
         @before('middleware1', 'middleware2')
-        delete() {
+        *delete() {
         }
       }
       const router = require('koa-router')();
@@ -369,7 +369,7 @@ describe('Ravel', function() {
         }
 
         @before('middleware2')
-        get() {
+        *get() {
         }
       }
       const router = require('koa-router')();
@@ -398,10 +398,10 @@ describe('Ravel', function() {
         }
 
         @before('middleware1', 'middleware2')
-        get() {
+        *get() {
         }
 
-        put() {
+        *put() {
         }
       }
       const router = require('koa-router')();
@@ -456,7 +456,7 @@ describe('Ravel', function() {
         constructor() {
           super('/api/test');
         }
-        getAll() {
+        *getAll() {
         }
       }
       const router = require('koa-router')();
@@ -505,7 +505,7 @@ describe('Ravel', function() {
         }
 
         @before('middleware1', 'middleware2')
-        get(ctx) {
+        *get(ctx) {
           ctx.body = ctx.params;
         }
       }
