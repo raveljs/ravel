@@ -15,24 +15,24 @@ Ravel is a tiny, sometimes-opinionated foundation for creating organized, mainta
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Architecture](#architecture)
-	- [Modules (and Errors)](#modules-and-errors)
-	- [Routes](#routes)
-	- [Resources](#resources)
-	- [Bringing it all together](#bringing-it-all-together)
-	- [Decorator Transpilation](#decorator-transpilation)
-	- [Running the Application](#running-the-application)
+  - [Modules (and Errors)](#modules-and-errors)
+  - [Routes](#routes)
+  - [Resources](#resources)
+  - [Bringing it all together](#bringing-it-all-together)
+  - [Decorator Transpilation](#decorator-transpilation)
+  - [Running the Application](#running-the-application)
 - [API Documentation](#api-documentation)
-	- [Ravel App](#ravel-app)
-	- [Managed Configuration System](#managed-configuration-system)
-	- [Ravel.Error](#ravelerror)
-	- [Ravel.Module](#ravelmodule)
-	- [Ravel.Routes](#ravelroutes)
-	- [Ravel.Resource](#ravelresource)
-	- [Database Providers](#database-providers)
-	- [Transaction-per-request](#transaction-per-request)
-	- [Scoped Transactions](#scoped-transactions)
-	- [Authentication Providers](#authentication-providers)
-	- [Authentication](#authentication)
+  - [Ravel App](#ravel-app)
+  - [Managed Configuration System](#managed-configuration-system)
+  - [Ravel.Error](#ravelerror)
+  - [Ravel.Module](#ravelmodule)
+  - [Ravel.Routes](#ravelroutes)
+  - [Ravel.Resource](#ravelresource)
+  - [Database Providers](#database-providers)
+  - [Transaction-per-request](#transaction-per-request)
+  - [Scoped Transactions](#scoped-transactions)
+  - [Authentication Providers](#authentication-providers)
+  - [Authentication](#authentication)
 - [Deployment and Scaling](#deployment-and-scaling)
 
 <!-- /TOC -->
@@ -212,12 +212,12 @@ class CitiesResource extends Resource {
 
   // no need to use @mapping here. Routes methods are automatically mapped using their names.
   *getAll(ctx) { // just like in Routes, ctx is a koa context.
-		ctx.body = yield this.cities.getAllCities();
+    ctx.body = yield this.cities.getAllCities();
   }
 
   @before('anotherMiddleware') // using @before at the method level decorates this method with middleware
   *get(ctx) { // get routes automatically receive an endpoint of /cities/:id (in this case).
-		ctx.body = yield this.cities.getCity(ctx.params.id);
+    ctx.body = yield this.cities.getCity(ctx.params.id);
   }
 
   // post, put, putAll, delete and deleteAll are
@@ -798,32 +798,32 @@ class DatabaseInitializer extends Module {
 
   @prelisten // trigger db init on application startup
   doDbInit(ctx) {
-		const self = this;
-		// specify one or more providers to open connections to, or none
-		// to open connections to all known DatabaseProviders.
+    const self = this;
+    // specify one or more providers to open connections to, or none
+    // to open connections to all known DatabaseProviders.
     this.db.scoped('mysql', function*() {
-			// this generator function behaves like koa middleware,
-			// so feel free to yield promises!
-			yield self.createTables(this.transaction.mysql);
-			yield self.insertRows(this.transaction.mysql);
-			// notice that this.transaction is identical to ctx.transaction
-			// from @transaction! It's just a hash of open, named connections
-			// to the DatabaseProviders specified.
-		}).catch((err) => {
-			self.log.error(err.stack);
-			process.exit(1); // in this case, we might want to kill our app if db init fails!
-		});
+      // this generator function behaves like koa middleware,
+      // so feel free to yield promises!
+      yield self.createTables(this.transaction.mysql);
+      yield self.insertRows(this.transaction.mysql);
+      // notice that this.transaction is identical to ctx.transaction
+      // from @transaction! It's just a hash of open, named connections
+      // to the DatabaseProviders specified.
+    }).catch((err) => {
+      self.log.error(err.stack);
+      process.exit(1); // in this case, we might want to kill our app if db init fails!
+    });
   }
 
-	/**
-	 * @return {Promise}
-	 */
-	createTables(mysqlConnection) { /* ... */ }
+  /**
+   * @return {Promise}
+   */
+  createTables(mysqlConnection) { /* ... */ }
 
-	/**
-	 * @return {Promise}
-	 */
-	insertRows(mysqlConnection) { /* ... */ }
+  /**
+   * @return {Promise}
+   */
+  insertRows(mysqlConnection) { /* ... */ }
 }
 
 module.exports = DatabaseInitializer;
