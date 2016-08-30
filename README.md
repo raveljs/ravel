@@ -197,7 +197,6 @@ const inject = Ravel.inject;
 const before = Resource.before; // decorator to add middleware to an endpoint within the Resource
 
 // using @before at the class level decorates all endpoint methods with middleware
-@before('respond') // 'respond' is built-in Ravel rest response middleware
 @inject('cities')
 class CitiesResource extends Resource {
   constructor(cities) {
