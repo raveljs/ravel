@@ -8,7 +8,7 @@ chai.use(require('sinon-chai'));
 const mockery = require('mockery');
 const sinon = require('sinon');
 
-let Ravel, tokenAuth, profile, testProvider;
+let Ravel, tokenAuth, profile, testProvider, coreSymbols;
 
 describe('auth/authenticate_token', function() {
   beforeEach((done) => {
@@ -31,10 +31,12 @@ describe('auth/authenticate_token', function() {
     mockery.registerMock('redis', redisMock);
 
     Ravel = new (require('../../lib/ravel'))();
+    coreSymbols = require('../../lib/core/symbols');
     Ravel.log.setLevel(Ravel.log.NONE);
     Ravel.set('redis port', 0);
     Ravel.set('redis host', 'localhost');
     Ravel.set('redis password', 'password');
+    Ravel[coreSymbols.parametersLoaded] = true;
     Ravel.kvstore = require('../../lib/util/kvstore')(Ravel);
 
     tokenAuth = new (require('../../lib/auth/authenticate_token'))(Ravel);
@@ -67,6 +69,7 @@ describe('auth/authenticate_token', function() {
 
   afterEach((done) => {
     Ravel = undefined;
+    coreSymbols = undefined;
     tokenAuth = undefined;
     mockery.deregisterAll();
     mockery.disable();

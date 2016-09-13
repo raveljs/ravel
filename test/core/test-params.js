@@ -40,6 +40,7 @@ describe('Ravel', function() {
     it('should allow clients to set the value of a parameter', (done) => {
       Ravel.registerParameter('test param', false);
       Ravel.set('test param', 'test value');
+      Ravel[coreSymbols.parametersLoaded] = true;
       expect(Ravel.get('test param')).to.equal('test value');
       done();
     });
@@ -59,12 +60,14 @@ describe('Ravel', function() {
     it('should allow clients to retrieve the value of a set optional parameter', (done) => {
       Ravel.registerParameter('test param', false);
       Ravel.set('test param', 'test value');
+      Ravel[coreSymbols.parametersLoaded] = true;
       expect(Ravel.get('test param')).to.equal('test value');
       done();
     });
 
     it('should return undefined when clients attempt to retrieve the value of an unset optional parameter', (done) => {
       Ravel.registerParameter('test param', false);
+      Ravel[coreSymbols.parametersLoaded] = true;
       expect(Ravel.get('test param')).to.equal(undefined);
       done();
     });
@@ -72,12 +75,25 @@ describe('Ravel', function() {
     it('should allow clients to retrieve the value of a set required parameter', (done) => {
       Ravel.registerParameter('test param', true);
       Ravel.set('test param', 'test value');
+      Ravel[coreSymbols.parametersLoaded] = true;
       expect(Ravel.get('test param')).to.equal('test value');
       done();
     });
 
+    it('should throw a Ravel.ApplicationError.General error when clients attempt to retrieve a parameter before loading', (done) => {
+      try {
+        Ravel[coreSymbols.parametersLoaded] = false;
+        Ravel.get('test param');
+        done(new Error('Should never reach this line.'));
+      } catch (err) {
+        expect(err).to.be.instanceof(Ravel.ApplicationError.General);
+        done();
+      }
+    });
+
     it('should throw a Ravel.ApplicationError.NotFound error when clients attempt to retrieve an unregistered parameter', (done) => {
       try {
+        Ravel[coreSymbols.parametersLoaded] = true;
         Ravel.get('test param');
         done(new Error('Should never reach this line.'));
       } catch (err) {
@@ -89,6 +105,7 @@ describe('Ravel', function() {
     it('should throw a Ravel.ApplicationError.NotFound error when clients attempt to retrieve the value of an unset required parameter', (done) => {
       try {
         Ravel.registerParameter('test param', true);
+        Ravel[coreSymbols.parametersLoaded] = true;
         Ravel.get('test param');
         done(new Error('Should never reach this line.'));
       } catch (err) {

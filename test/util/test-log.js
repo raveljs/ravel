@@ -7,7 +7,7 @@ chai.use(require('sinon-chai'));
 const sinon = require('sinon');
 const mockery = require('mockery');
 
-let Ravel, intel, intelLogger;
+let Ravel, intel, intelLogger, coreSymbols;
 
 describe('Ravel.Log', function() {
   beforeEach((done) => {
@@ -55,11 +55,13 @@ describe('Ravel.Log', function() {
     };
     mockery.registerMock('intel', intel);
     Ravel = new (require('../../lib/ravel'))();
+    coreSymbols = require('../../lib/core/symbols');
     done();
   });
 
   afterEach((done) => {
     Ravel = undefined;
+    coreSymbols = undefined;
     mockery.deregisterAll();mockery.disable();
     done();
   });
@@ -210,6 +212,9 @@ describe('Ravel.Log', function() {
     it('should set the default log level on \'start\' if none was specified via Ravel.set(\'log level\')', (done) => {
       const stub = sinon.stub(intel, 'setLevel');
       Ravel.emit('pre init');
+      Ravel.emit('pre load parameters');
+      Ravel[coreSymbols.parametersLoaded] = true;
+      Ravel.emit('post load parameters');
       expect(stub).to.have.been.calledOnce;
       expect(stub).to.have.been.calledWith(intel.DEBUG);
       done();
@@ -219,6 +224,9 @@ describe('Ravel.Log', function() {
       const stub = sinon.stub(intel, 'setLevel');
       Ravel.set('log level', Ravel.log.ERROR);
       Ravel.emit('pre init');
+      Ravel.emit('pre load parameters');
+      Ravel[coreSymbols.parametersLoaded] = true;
+      Ravel.emit('post load parameters');
       expect(stub).to.have.been.calledOnce;
       expect(stub).to.have.been.calledWith(intel.ERROR);
       done();
