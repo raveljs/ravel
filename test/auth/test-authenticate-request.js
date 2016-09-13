@@ -51,6 +51,7 @@ describe('util/authenticate_request', function() {
     Ravel.log.setLevel('NONE');
     app = koa();
     Ravel.kvstore = {}; // mock Ravel.kvstore, since we're not actually starting Ravel.
+    Ravel[coreSymbols.parametersLoaded] = true;
     done();
   });
 

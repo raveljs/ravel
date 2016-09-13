@@ -5,7 +5,7 @@ const expect = chai.expect;
 chai.use(require('chai-things'));
 const mockery = require('mockery');
 
-let Ravel, redisClientStub, redisMock;
+let Ravel, redisClientStub, redisMock, coreSymbols;
 
 describe('Ravel', function() {
 
@@ -26,6 +26,7 @@ describe('Ravel', function() {
     };
     mockery.registerMock('redis', redisMock);
     Ravel = new (require('../../lib/ravel'))();
+    coreSymbols = require('../../lib/core/symbols');
     Ravel.log.setLevel(Ravel.log.NONE);
     Ravel.set('redis port', 0);
     Ravel.set('redis host', 'localhost');
@@ -35,6 +36,7 @@ describe('Ravel', function() {
 
   afterEach((done) => {
     Ravel = undefined;
+    coreSymbols = undefined;
     mockery.deregisterAll();mockery.disable();
     done();
   });
@@ -52,6 +54,7 @@ describe('Ravel', function() {
         const retryStrategy = require('../../lib/util/kvstore').retryStrategy(Ravel);
         expect(retryStrategy).to.be.a('function');
         Ravel.set('redis max retries', 10);
+        Ravel[coreSymbols.parametersLoaded] = true;
         const options = {
           error:{code:'something'},
           attempt: Ravel.get('redis max retries') + 1
@@ -64,6 +67,7 @@ describe('Ravel', function() {
         const retryStrategy = require('../../lib/util/kvstore').retryStrategy(Ravel);
         expect(retryStrategy).to.be.a('function');
         Ravel.set('redis max retries', 10);
+        Ravel[coreSymbols.parametersLoaded] = true;
         const options = {
           error:{code:'something'},
           attempt: 1
