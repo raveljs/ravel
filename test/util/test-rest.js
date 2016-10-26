@@ -192,14 +192,14 @@ describe('util/rest', function() {
     });
 
     it('should respond with HTTP 500 INTERNAL SERVER ERROR when an unknown Error type is passed as err', (done) => {
-      const message = 'a message';
+      const err = new Error('a message');
       app.use(rest.errorHandler());
       app.use(function*() {
-        throw new Error(message);
+        throw err;
       });
       request(app.callback())
       .get('/')
-      .expect(500, 'a message', done); // error message should not be exposed
+      .expect(500, err.stack, done); // error message should not be exposed
     });
   });
 });
