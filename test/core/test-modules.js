@@ -74,7 +74,7 @@ describe('Ravel', function() {
         };
       });
       const test = function() {
-        Ravel.modules();
+        Ravel.modules('./blah/blah');
       };
       expect(test).to.throw(Ravel.ApplicationError.IllegalValue);
       done();
