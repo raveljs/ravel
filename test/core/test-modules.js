@@ -74,9 +74,30 @@ describe('Ravel', function() {
         };
       });
       const test = function() {
-        Ravel.modules();
+        Ravel.modules('./blah/blah');
       };
       expect(test).to.throw(Ravel.ApplicationError.IllegalValue);
+      done();
+    });
+
+    it('should support absolute base paths', (done) => {
+      stub = sinon.stub(fs, 'lstatSync', function() {
+        return {
+          isDirectory: function(){return true;}
+        };
+      });
+
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/test1.js'), class extends Module {});
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/test2.js'), class extends Module {});
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/package/test3.js'), class extends Module {});
+      Ravel.modules(upath.join(Ravel.cwd, './modules'));
+      expect(Ravel[coreSymbols.moduleFactories]).to.have.property('test1');
+      expect(Ravel[coreSymbols.moduleFactories].test1).to.be.a('function');
+      expect(Ravel[coreSymbols.moduleFactories]).to.have.property('test2');
+      expect(Ravel[coreSymbols.moduleFactories].test2).to.be.a('function');
+      expect(Ravel[coreSymbols.moduleFactories]).to.have.property('package.test3');
+      expect(Ravel[coreSymbols.moduleFactories].test2).to.be.a('function');
+      expect(Ravel[coreSymbols.moduleFactories]).to.not.have.property('.eslintrc');
       done();
     });
   });
