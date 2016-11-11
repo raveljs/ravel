@@ -51,6 +51,14 @@ describe('Ravel', function() {
       done();
     });
 
+    it('should permit clients to register route modules using absolute paths', (done) => {
+      mockery.registerMock(upath.join(Ravel.cwd, './routes/index_r'), class extends Routes {constructor() {super('/');}});
+      Ravel.routes(upath.join(Ravel.cwd, './routes/index_r'));
+      expect(Ravel[coreSymbols.routesFactories]).to.have.property(upath.join(Ravel.cwd, './routes/index_r'));
+      expect(Ravel[coreSymbols.routesFactories][upath.join(Ravel.cwd, './routes/index_r')]).to.be.a('function');
+      done();
+    });
+
     it('should throw Ravel.ApplicationError.IllegalValue when Resource constructor super() is called without a basePath', (done) => {
       const stub = class extends Routes {
         constructor() {

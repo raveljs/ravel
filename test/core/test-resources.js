@@ -57,10 +57,10 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, './resources/test1.js'), class extends Resource {});
       mockery.registerMock(upath.join(Ravel.cwd, './resources/test2.js'), class extends Resource {});
       Ravel.resources('./resources');
-      expect(Ravel[coreSymbols.resourceFactories]).to.have.property('resources/test1.js');
-      expect(Ravel[coreSymbols.resourceFactories]['resources/test1.js']).to.be.a('function');
-      expect(Ravel[coreSymbols.resourceFactories]).to.have.property('resources/test2.js');
-      expect(Ravel[coreSymbols.resourceFactories]['resources/test2.js']).to.be.a('function');
+      expect(Ravel[coreSymbols.resourceFactories]).to.have.property(upath.join(Ravel.cwd, 'resources/test1.js'));
+      expect(Ravel[coreSymbols.resourceFactories][upath.join(Ravel.cwd, 'resources/test1.js')]).to.be.a('function');
+      expect(Ravel[coreSymbols.resourceFactories]).to.have.property(upath.join(Ravel.cwd, 'resources/test2.js'));
+      expect(Ravel[coreSymbols.resourceFactories][upath.join(Ravel.cwd, 'resources/test2.js')]).to.be.a('function');
       expect(Ravel[coreSymbols.resourceFactories]).to.not.have.property('.eslintrc');
       done();
     });
@@ -73,9 +73,27 @@ describe('Ravel', function() {
       });
 
       const test = function() {
-        Ravel.resources();
+        Ravel.resources('./blah/blah');
       };
       expect(test).to.throw(Ravel.ApplicationError.IllegalValue);
+      done();
+    });
+
+    it('should allow clients to recursively register resource files using absolute paths', (done) => {
+      stub = sinon.stub(fs, 'lstatSync', function() {
+        return {
+          isDirectory: function(){return true;}
+        };
+      });
+
+      mockery.registerMock(upath.join(Ravel.cwd, './resources/test1.js'), class extends Resource {});
+      mockery.registerMock(upath.join(Ravel.cwd, './resources/test2.js'), class extends Resource {});
+      Ravel.resources(upath.join(Ravel.cwd, './resources'));
+      expect(Ravel[coreSymbols.resourceFactories]).to.have.property(upath.join(Ravel.cwd, 'resources/test1.js'));
+      expect(Ravel[coreSymbols.resourceFactories][upath.join(Ravel.cwd, 'resources/test1.js')]).to.be.a('function');
+      expect(Ravel[coreSymbols.resourceFactories]).to.have.property(upath.join(Ravel.cwd, 'resources/test2.js'));
+      expect(Ravel[coreSymbols.resourceFactories][upath.join(Ravel.cwd, 'resources/test2.js')]).to.be.a('function');
+      expect(Ravel[coreSymbols.resourceFactories]).to.not.have.property('.eslintrc');
       done();
     });
   });
