@@ -9,7 +9,8 @@ addons:
     packages:
     - g++-4.8
 node_js:
-  - "6.2.1"
+  - "7"
+  - "6"
 before_install:
   - $CXX --version
   - npm install
