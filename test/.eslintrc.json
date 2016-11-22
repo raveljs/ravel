@@ -2,6 +2,9 @@
   "extends": "../.eslintrc.json",
   /*"parser": "babel-eslint",*/
   "parser": "typescript-eslint-parser",
+  "plugins": [
+    "typescript"
+  ],
   "globals": {
     "describe":   false,
     "before":     false,
@@ -16,7 +19,6 @@
     "mocha": true
   },
   "rules":  {
-    "strict": 0,
     "no-unused-vars": 0
   }
 }
