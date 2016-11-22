@@ -54,7 +54,6 @@ gulp.task('transpile', ['clean', 'lint'], function() {
       .pipe(plugins.sourcemaps.init())
       // .pipe(plugins.babel())
       .pipe(plugins.typescript({
-        typescript: require('typescript'),
         allowJs: true,
         experimentalDecorators: true,
         // emitDecoratorMetadata: true,

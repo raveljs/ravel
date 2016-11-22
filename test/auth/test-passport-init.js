@@ -17,7 +17,7 @@ class GoogleOAuth2 extends AuthenticationProvider {
   }
 }
 
-let Ravel, authconfig, passportMock, coreSymbols;
+let Ravel, ravelApp, lib, authconfig, passportMock, coreSymbols;
 
 describe('auth/passport_init', function() {
   beforeEach((done) => {
@@ -45,16 +45,17 @@ describe('auth/passport_init', function() {
 
     mockery.registerMock('koa-passport', passportMock);
 
-    Ravel = new (require('../../lib/ravel'))();
-    authconfig = (require('../../lib/ravel')).Module.authconfig;
+    Ravel = require('../../lib/ravel');
+    ravelApp = new Ravel();
+    authconfig = Ravel.Module.authconfig;
     coreSymbols = require('../../lib/core/symbols');
-    Ravel.log.setLevel(Ravel.log.NONE);
-    Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
+    ravelApp.log.setLevel(ravelApp.log.NONE);
+    ravelApp.kvstore = {}; //mock ravelApp.kvstore, since we're not actually starting ravelApp.
     done();
   });
 
   afterEach((done) => {
-    Ravel = undefined;
+    ravelApp = undefined;
     authconfig = undefined;
     passportMock = undefined;
     coreSymbols = undefined;
@@ -68,10 +69,10 @@ describe('auth/passport_init', function() {
     const passportInitSpy = sinon.spy(passportMock, 'initialize');
     const passportSessionSpy = sinon.spy(passportMock, 'session');
 
-    require('../../lib/auth/passport_init')(Ravel);
+    require('../../lib/auth/passport_init')(ravelApp);
 
-    Ravel.emit('post config koa', app);
-    Ravel.emit('post module init');
+    ravelApp.emit('post config koa', app);
+    ravelApp.emit('post module init');
     expect(passportInitSpy).to.not.have.been.called;
     expect(passportSessionSpy).to.not.have.been.called;
     done();
@@ -80,7 +81,7 @@ describe('auth/passport_init', function() {
   it('should initialize passport and sessions for koa', (done) => {
     //mock auth config
     @authconfig
-    class AuthConfig extends (require('../../lib/ravel')).Module {
+    class AuthConfig extends Ravel.Module {
       deserializeUser() {
         return Promise.resolve({});
       }
@@ -91,12 +92,12 @@ describe('auth/passport_init', function() {
         return Promise.resolve({});
       }
     }
-    mockery.registerMock(upath.join(Ravel.cwd, './something'), class extends (require('../../lib/ravel')).Module {});
-    mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
-    Ravel.module('./something', 'something');
-    Ravel.module('./authconfig', 'authconfig');
+    mockery.registerMock(upath.join(ravelApp.cwd, './something'), class extends Ravel.Module {});
+    mockery.registerMock(upath.join(ravelApp.cwd, './authconfig'), AuthConfig);
+    ravelApp.module('./something', 'something');
+    ravelApp.module('./authconfig', 'authconfig');
 
-    const provider = new GoogleOAuth2(Ravel);
+    const provider = new GoogleOAuth2(ravelApp);
     provider.init = sinon.stub();
 
     const app = koa();
@@ -105,11 +106,11 @@ describe('auth/passport_init', function() {
     const passportSessionSpy = sinon.spy(passportMock, 'session');
 
     const routerMock = {};
-    require('../../lib/auth/passport_init')(Ravel, routerMock);
+    require('../../lib/auth/passport_init')(ravelApp, routerMock);
 
-    Ravel.emit('post config koa', app);
-    Ravel[coreSymbols.moduleInit]();
-    Ravel.emit('post module init');
+    ravelApp.emit('post config koa', app);
+    ravelApp[coreSymbols.moduleInit]();
+    ravelApp.emit('post module init');
     expect(useSpy).to.have.been.called;
     expect(passportInitSpy).to.have.been.called;
     expect(passportSessionSpy).to.have.been.called;
@@ -118,23 +119,23 @@ describe('auth/passport_init', function() {
   });
 
   it('should throw ApplicationError.NotFound if an Authentication module is needed and one is not present', (done) => {
-    const provider = new GoogleOAuth2(Ravel);
+    const provider = new GoogleOAuth2(ravelApp);
     provider.init = sinon.stub();
-    require('../../lib/auth/passport_init')(Ravel, {});
+    require('../../lib/auth/passport_init')(ravelApp, {});
 
     const app = koa();
     function test() {
-      Ravel.emit('post config koa', app);
-      Ravel.emit('post module init');
+      ravelApp.emit('post config koa', app);
+      ravelApp.emit('post module init');
     }
-    expect(test).to.throw(Ravel.ApplicationError.NotFound);
+    expect(test).to.throw(ravelApp.ApplicationError.NotFound);
     done();
   });
 
   it('should use serializeUser to serialize users to a session cookie', (done) => {
     //mock auth config
     @authconfig
-    class AuthConfig extends (require('../../lib/ravel')).Module {
+    class AuthConfig extends Ravel.Module {
       serializeUser(user) {
         return Promise.resolve(user.id);
       }
@@ -145,13 +146,13 @@ describe('auth/passport_init', function() {
         return Promise.resolve({});
       }
     }
-    mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
-    Ravel.module('./authconfig', 'authconfig');
+    mockery.registerMock(upath.join(ravelApp.cwd, './authconfig'), AuthConfig);
+    ravelApp.module('./authconfig', 'authconfig');
 
-    const provider = new GoogleOAuth2(Ravel);
+    const provider = new GoogleOAuth2(ravelApp);
     provider.init = sinon.stub();
 
-    require('../../lib/auth/passport_init')(Ravel);
+    require('../../lib/auth/passport_init')(ravelApp);
     const app = koa();
 
     sinon.stub(passportMock, 'serializeUser', function(serializerFn) {
@@ -161,9 +162,9 @@ describe('auth/passport_init', function() {
       });
     });
 
-    Ravel.emit('post config koa', app);
-    Ravel[coreSymbols.moduleInit]();
-    Ravel.emit('post module init');
+    ravelApp.emit('post config koa', app);
+    ravelApp[coreSymbols.moduleInit]();
+    ravelApp.emit('post module init');
   });
 
   it('should use deserializeUser to deserialize users from session cookies', (done) => {
@@ -173,7 +174,7 @@ describe('auth/passport_init', function() {
 
     //mock auth config
     @authconfig
-    class AuthConfig extends (require('../../lib/ravel')).Module {
+    class AuthConfig extends Ravel.Module {
       serializeUser(user) {
         return Promise.resolve(user.id);
       }
@@ -185,13 +186,13 @@ describe('auth/passport_init', function() {
         return Promise.resolve({});
       }
     }
-    mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
-    Ravel.module('./authconfig', 'authconfig');
+    mockery.registerMock(upath.join(ravelApp.cwd, './authconfig'), AuthConfig);
+    ravelApp.module('./authconfig', 'authconfig');
 
-    const provider = new GoogleOAuth2(Ravel);
+    const provider = new GoogleOAuth2(ravelApp);
     provider.init = sinon.stub();
 
-    require('../../lib/auth/passport_init')(Ravel);
+    require('../../lib/auth/passport_init')(ravelApp);
     const app = koa();
 
     sinon.stub(passportMock, 'deserializeUser', function(deserializerFn) {
@@ -201,9 +202,9 @@ describe('auth/passport_init', function() {
       });
     });
 
-    Ravel.emit('post config koa', app);
-    Ravel[coreSymbols.moduleInit]();
-    Ravel.emit('post module init');
+    ravelApp.emit('post config koa', app);
+    ravelApp[coreSymbols.moduleInit]();
+    ravelApp.emit('post module init');
   });
 
   it('should callback with an error if serializeUser failed', (done) => {
@@ -213,7 +214,7 @@ describe('auth/passport_init', function() {
 
     //mock auth config
     @authconfig
-    class AuthConfig extends (require('../../lib/ravel')).Module {
+    class AuthConfig extends Ravel.Module {
       serializeUser() {
         return Promise.reject(new Error());
       }
@@ -227,13 +228,13 @@ describe('auth/passport_init', function() {
         return Promise.resolve({});
       }
     }
-    mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
-    Ravel.module('./authconfig', 'authconfig');
+    mockery.registerMock(upath.join(ravelApp.cwd, './authconfig'), AuthConfig);
+    ravelApp.module('./authconfig', 'authconfig');
 
-    const provider = new GoogleOAuth2(Ravel);
+    const provider = new GoogleOAuth2(ravelApp);
     provider.init = sinon.stub();
 
-    require('../../lib/auth/passport_init')(Ravel);
+    require('../../lib/auth/passport_init')(ravelApp);
     const app = koa();
 
     sinon.stub(passportMock, 'serializeUser', function(serializerFn) {
@@ -244,9 +245,9 @@ describe('auth/passport_init', function() {
       });
     });
 
-    Ravel.emit('post config koa', app);
-    Ravel[coreSymbols.moduleInit]();
-    Ravel.emit('post module init');
+    ravelApp.emit('post config koa', app);
+    ravelApp[coreSymbols.moduleInit]();
+    ravelApp.emit('post module init');
   });
 
   it('should callback with an error if deserializeUser failed', (done) => {
@@ -256,7 +257,7 @@ describe('auth/passport_init', function() {
 
     //mock auth config
     @authconfig
-    class AuthConfig extends (require('../../lib/ravel')).Module {
+    class AuthConfig extends Ravel.Module {
       serializeUser(user) {
         return Promise.resolve(user.id);
       }
@@ -271,13 +272,13 @@ describe('auth/passport_init', function() {
         return Promise.resolve({});
       }
     }
-    mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
-    Ravel.module('./authconfig', 'authconfig');
+    mockery.registerMock(upath.join(ravelApp.cwd, './authconfig'), AuthConfig);
+    ravelApp.module('./authconfig', 'authconfig');
 
-    const provider = new GoogleOAuth2(Ravel);
+    const provider = new GoogleOAuth2(ravelApp);
     provider.init = sinon.stub();
 
-    require('../../lib/auth/passport_init')(Ravel);
+    require('../../lib/auth/passport_init')(ravelApp);
     const app = koa();
 
     sinon.stub(passportMock, 'deserializeUser', function(deserializerFn) {
@@ -288,9 +289,9 @@ describe('auth/passport_init', function() {
       });
     });
 
-    Ravel.emit('post config koa', app);
-    Ravel[coreSymbols.moduleInit]();
-    Ravel.emit('post module init');
+    ravelApp.emit('post config koa', app);
+    ravelApp[coreSymbols.moduleInit]();
+    ravelApp.emit('post module init');
   });
 
   it('should delegate \'deserializeOrCreateUser\' functionality to an @authconfig Module', (done) => {
@@ -301,15 +302,15 @@ describe('auth/passport_init', function() {
 
     //mock auth config
     @authconfig
-    class AuthConfig extends (require('../../lib/ravel')).Module {
+    class AuthConfig extends Ravel.Module {
       verify() {
         return Promise.resolve(databaseProfile);
       }
     }
-    mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
-    Ravel.module('./authconfig', 'authconfig');
+    mockery.registerMock(upath.join(ravelApp.cwd, './authconfig'), AuthConfig);
+    ravelApp.module('./authconfig', 'authconfig');
 
-    const provider = new GoogleOAuth2(Ravel);
+    const provider = new GoogleOAuth2(ravelApp);
     sinon.stub(provider, 'init', function(expressApp, passport, verify) {
       verify('testAccessToken', 'testRefreshToken', {name: 'Sean McIntyre'}, function(err, result) {
         expect(result).to.deep.equal(databaseProfile);
@@ -317,26 +318,26 @@ describe('auth/passport_init', function() {
       });
     });
 
-    require('../../lib/auth/passport_init')(Ravel);
+    require('../../lib/auth/passport_init')(ravelApp);
     const app = koa();
 
-    Ravel.emit('post config koa', app);
-    Ravel[coreSymbols.moduleInit]();
-    Ravel.emit('post module init');
+    ravelApp.emit('post config koa', app);
+    ravelApp[coreSymbols.moduleInit]();
+    ravelApp.emit('post module init');
   });
 
   it('should callback with an error if the verify function prevents auth provider initialization', (done) => {
     //mock auth config
     @authconfig
-    class AuthConfig extends (require('../../lib/ravel')).Module {
+    class AuthConfig extends Ravel.Module {
       verify() {
         return Promise.reject(new Error());
       }
     }
-    mockery.registerMock(upath.join(Ravel.cwd, './authconfig'), AuthConfig);
-    Ravel.module('./authconfig', 'authconfig');
+    mockery.registerMock(upath.join(ravelApp.cwd, './authconfig'), AuthConfig);
+    ravelApp.module('./authconfig', 'authconfig');
 
-    const provider = new GoogleOAuth2(Ravel);
+    const provider = new GoogleOAuth2(ravelApp);
     sinon.stub(provider, 'init', function(router, passport, verify) {
       verify('testAccessToken', 'testRefreshToken', {name: 'Sean McIntyre'}, function(err, result) {
         expect(result).to.be.not.ok;
@@ -345,11 +346,11 @@ describe('auth/passport_init', function() {
       });
     });
 
-    require('../../lib/auth/passport_init')(Ravel);
+    require('../../lib/auth/passport_init')(ravelApp);
     const app = koa();
 
-    Ravel.emit('post config koa', app);
-    Ravel[coreSymbols.moduleInit]();
-    Ravel.emit('post module init');
+    ravelApp.emit('post config koa', app);
+    ravelApp[coreSymbols.moduleInit]();
+    ravelApp.emit('post module init');
   });
 });
