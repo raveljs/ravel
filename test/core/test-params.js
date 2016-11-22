@@ -134,7 +134,7 @@ describe('Ravel', function() {
         'koa view engine': 'ejs',
         'redis port': 6379
       };
-      mockery.registerMock(upath.join(Ravel.cwd, '.ravelrc.json'), conf);
+      mockery.registerMock(upath.join(Ravel.cwd, '.ravelrc'), conf);
       Ravel[coreSymbols.loadParameters]();
       expect(Ravel.get('koa view engine')).to.equal(conf['koa view engine']);
       expect(Ravel.get('redis port')).to.equal(conf['redis port']);
@@ -147,7 +147,7 @@ describe('Ravel', function() {
         'redis port': 6379
       };
       const parent = Ravel.cwd.split(upath.sep).slice(0,-1).join(upath.sep);
-      mockery.registerMock(upath.join(parent, '.ravelrc.json'), conf);
+      mockery.registerMock(upath.join(parent, '.ravelrc'), conf);
       Ravel[coreSymbols.loadParameters]();
       expect(Ravel.get('koa view engine')).to.equal(conf['koa view engine']);
       expect(Ravel.get('redis port')).to.equal(conf['redis port']);
@@ -159,7 +159,7 @@ describe('Ravel', function() {
         'koa view engine': 'ejs',
         'redis port': 6379
       };
-      mockery.registerMock('/.ravelrc.json', conf);
+      mockery.registerMock('/.ravelrc', conf);
       Ravel[coreSymbols.loadParameters]();
       expect(Ravel.get('koa view engine')).to.equal(conf['koa view engine']);
       expect(Ravel.get('redis port')).to.equal(conf['redis port']);
@@ -171,7 +171,7 @@ describe('Ravel', function() {
         'koa view engine': 'ejs',
         'redis port': 6379
       };
-      mockery.registerMock(upath.join(Ravel.cwd, '.ravelrc.json'), conf);
+      mockery.registerMock(upath.join(Ravel.cwd, '.ravelrc'), conf);
 
       Ravel.set('redis port', 6380);
       Ravel[coreSymbols.loadParameters]();
@@ -186,7 +186,7 @@ describe('Ravel', function() {
         'redis port': 6379,
       };
       conf[Math.random().toString()] = false;
-      mockery.registerMock(upath.join(Ravel.cwd, '.ravelrc.json'), conf);
+      mockery.registerMock(upath.join(Ravel.cwd, '.ravelrc'), conf);
 
       Ravel.set('redis port', 6380);
       expect(function() {
