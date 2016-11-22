@@ -4,8 +4,9 @@ const chai = require('chai');
 const expect = chai.expect;
 chai.use(require('chai-things'));
 const mockery = require('mockery');
+const upath = require('upath');
 
-let Ravel, files, conf, coreSymbols;
+let Ravel, conf, coreSymbols;
 
 describe('Ravel', function() {
   beforeEach((done) => {
@@ -14,13 +15,6 @@ describe('Ravel', function() {
       useCleanCache: true,
       warnOnReplace: false,
       warnOnUnregistered: false
-    });
-    files = [];
-    conf = {};
-    mockery.registerMock('rc', function(appName, target) {
-      Object.assign(target, conf);
-      target.configs = files;
-      return target;
     });
     mockery.registerMock('redis', require('redis-mock'));
     Ravel = new (require('../../lib/ravel'))();
@@ -135,13 +129,12 @@ describe('Ravel', function() {
   });
 
   describe('#_loadParameters()', function() {
-    it('should allow users to specify Ravel config parameters via a .ravelrc config file', (done) => {
-      files = ['./ravelrc'];
+    it('should allow users to specify Ravel config parameters via a .ravelrc.json config file', (done) => {
       conf = {
         'koa view engine': 'ejs',
         'redis port': 6379
       };
-
+      mockery.registerMock(upath.join(Ravel.cwd, '.ravelrc.json'), conf);
       Ravel[coreSymbols.loadParameters]();
       expect(Ravel.get('koa view engine')).to.equal(conf['koa view engine']);
       expect(Ravel.get('redis port')).to.equal(conf['redis port']);
@@ -149,11 +142,11 @@ describe('Ravel', function() {
     });
 
     it('should not override parameters set programmatically via Ravel.set', (done) => {
-      files = ['./ravelrc'];
       conf = {
         'koa view engine': 'ejs',
         'redis port': 6379
       };
+      mockery.registerMock(upath.join(Ravel.cwd, '.ravelrc.json'), conf);
 
       Ravel.set('redis port', 6380);
       Ravel[coreSymbols.loadParameters]();
@@ -163,12 +156,12 @@ describe('Ravel', function() {
     });
 
     it('should throw a Ravel.ApplicationError.IllegalValue if an unregistered paramter is specified in the config file', (done) => {
-      files = ['./ravelrc'];
       conf = {
         'koa view engine': 'ejs',
         'redis port': 6379,
       };
       conf[Math.random().toString()] = false;
+      mockery.registerMock(upath.join(Ravel.cwd, '.ravelrc.json'), conf);
 
       Ravel.set('redis port', 6380);
       expect(function() {
@@ -178,9 +171,6 @@ describe('Ravel', function() {
     });
 
     it('should load defaults if no configuration files are present', (done) => {
-      files = [];
-      conf = undefined;
-
       const oldParams = {
         'redis host': '0.0.0.0',
         'redis port': 6379,
@@ -189,8 +179,7 @@ describe('Ravel', function() {
         'app route': '/',
         'login route': '/login',
         'keygrip keys': ['123abc'],
-        'log level': 'DEBUG',
-        'configs': []
+        'log level': 'DEBUG'
       };
       Ravel.set('keygrip keys', ['123abc']);
       Ravel.init();
