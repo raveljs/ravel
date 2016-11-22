@@ -237,7 +237,7 @@ module.exports = CitiesResource;
 ```javascript
 const app = new require('ravel')();
 
-// parameters like this can be supplied via a .ravelrc file
+// parameters like this can be supplied via a .ravelrc.json file
 app.set('keygrip keys', ['mysecret']);
 
 app.modules('./modules'); //import all Modules from a directory
@@ -402,11 +402,11 @@ app.set('koa view engine', undefined); // for templated views (EJS, Pug, etc.)
 app.set('koa favicon path', undefined); // favicon middleware configuration
 ```
 
-#### .ravelrc
+#### .ravelrc.json
 
-To make it easier to supply configuration values to Ravel, a `.ravelrc` file can be placed beside `app.js`. This is the recommended method of setting parameters, with the exception of ones derived from `process.env` (which would need to be set programmatically).
+To make it easier to supply configuration values to Ravel, a `.ravelrc.json` file can be placed beside `app.js` (or in any parent directory of `app.js`). This is the recommended method of setting parameters, with the exception of ones derived from `process.env` (which would need to be set programmatically).
 
-*.ravelrc*
+*.ravelrc.json*
 ```
 {
   "keygrip keys": ["my super secret key"]
@@ -529,7 +529,7 @@ In a large project, it may become desirable to namespace your `Module`s to avoid
 
 ```
 app.js
-.ravelrc
+.ravelrc.json
 modules/
   core/
     my-module.js
@@ -721,7 +721,7 @@ app.init();
 
 #### Example Configuration
 
-*.ravelrc*
+*.ravelrc.json*
 ```json
 {
   "mysql options": {
@@ -847,7 +847,7 @@ app.init();
 
 #### Example Configuration
 
-*.ravelrc*
+*.ravelrc.json*
 ```json
 {
   "github auth callback url" : "http://localhost:8080",
@@ -944,4 +944,4 @@ It is strongly encouraged that you containerize your Ravel app using an [Alpine-
 
 Ravel does not explicitly require [hiredis](https://github.com/redis/hiredis-node), but is is highly recommended that you install it alongside Ravel for improved redis performance.
 
-If you are looking for a good way to share `.ravelrc` configuration between multiple replicas of the same Ravel app, have a look at [ravel-etcd-config](https://github.com/raveljs/ravel-etcd-config).
+If you are looking for a good way to share `.ravelrc.json` configuration between multiple replicas of the same Ravel app, have a look at [ravel-etcd-config](https://github.com/raveljs/ravel-etcd-config).
