@@ -404,7 +404,7 @@ app.set('koa favicon path', undefined); // favicon middleware configuration
 
 #### .ravelrc.json
 
-To make it easier to supply configuration values to Ravel, a `.ravelrc.json` file can be placed beside `app.js`. This is the recommended method of setting parameters, with the exception of ones derived from `process.env` (which would need to be set programmatically).
+To make it easier to supply configuration values to Ravel, a `.ravelrc.json` file can be placed beside `app.js` (or in any parent directory of `app.js`). This is the recommended method of setting parameters, with the exception of ones derived from `process.env` (which would need to be set programmatically).
 
 *.ravelrc.json*
 ```

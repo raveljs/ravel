@@ -141,6 +141,31 @@ describe('Ravel', function() {
       done();
     });
 
+    it('should should support searching for .ravelrc.json files in any parent directory of app.cwd', (done) => {
+      conf = {
+        'koa view engine': 'ejs',
+        'redis port': 6379
+      };
+      const parent = Ravel.cwd.split(upath.sep).slice(0,-1).join(upath.sep);
+      mockery.registerMock(upath.join(parent, '.ravelrc.json'), conf);
+      Ravel[coreSymbols.loadParameters]();
+      expect(Ravel.get('koa view engine')).to.equal(conf['koa view engine']);
+      expect(Ravel.get('redis port')).to.equal(conf['redis port']);
+      done();
+    });
+
+    it('should should support searching for .ravelrc.json files in any parent directory of app.cwd, including root', (done) => {
+      conf = {
+        'koa view engine': 'ejs',
+        'redis port': 6379
+      };
+      mockery.registerMock('/.ravelrc.json', conf);
+      Ravel[coreSymbols.loadParameters]();
+      expect(Ravel.get('koa view engine')).to.equal(conf['koa view engine']);
+      expect(Ravel.get('redis port')).to.equal(conf['redis port']);
+      done();
+    });
+
     it('should not override parameters set programmatically via Ravel.set', (done) => {
       conf = {
         'koa view engine': 'ejs',
