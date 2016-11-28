@@ -52,13 +52,7 @@ gulp.task('cover', ['transpile'], function() {
 gulp.task('transpile', ['clean', 'lint'], function() {
   return gulp.src('test/**/*.js')
       .pipe(plugins.sourcemaps.init())
-      // .pipe(plugins.babel())
-      .pipe(plugins.typescript({
-        allowJs: true,
-        experimentalDecorators: true,
-        // emitDecoratorMetadata: true,
-        target: 'ES6',
-      }))
+      .pipe(plugins.babel())
       .pipe(plugins.sourcemaps.write('.'))
       .pipe(gulp.dest('test-dist'));
 });

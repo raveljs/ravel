@@ -17,7 +17,7 @@ class GoogleOAuth2 extends AuthenticationProvider {
   }
 }
 
-let Ravel, ravelApp, lib, authconfig, passportMock, coreSymbols;
+let Ravel, ravelApp, authconfig, passportMock, coreSymbols;
 
 describe('auth/passport_init', function() {
   beforeEach((done) => {

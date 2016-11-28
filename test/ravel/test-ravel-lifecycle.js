@@ -101,12 +101,12 @@ describe('Ravel lifeycle test', function() {
       }
 
       @pre('someMiddleware')
-      *getAll(ctx) {
-        ctx.body = yield this.users.getAllUsers();
+      async getAll(ctx) {
+        ctx.body = await this.users.getAllUsers();
       }
 
-      *get(ctx) {
-        ctx.body = yield this.users.getUser(ctx.params.id);
+      async get(ctx) {
+        ctx.body = await this.users.getUser(ctx.params.id);
       }
     }
 
@@ -118,7 +118,7 @@ describe('Ravel lifeycle test', function() {
       }
 
       @mapping(Ravel.Routes.GET, '/app')
-      *handler(ctx) {
+      async handler(ctx) {
         ctx.body = '<!DOCTYPE html><html></html>';
         ctx.status = 200;
       }

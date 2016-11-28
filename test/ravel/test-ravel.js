@@ -99,8 +99,8 @@ describe('Ravel end-to-end test', function() {
           }
 
           @pre('someMiddleware')
-          *getAll(ctx) {
-            const list = yield this.users.getAllUsers();
+          async getAll(ctx) {
+            const list = await this.users.getAllUsers();
             ctx.body = list;
           }
 
@@ -114,7 +114,7 @@ describe('Ravel end-to-end test', function() {
           }
 
           @pre('someMiddleware')
-          *post(ctx) {
+          async post() {
             throw new this.ApplicationError.DuplicateEntry();
           }
         }

@@ -77,7 +77,7 @@ describe('Ravel', function() {
 
         @mapping(Routes.PUT, '/path')
         @before('middleware2')
-        *pathHandler(ctx) {
+        async pathHandler(ctx) {
           ctx.status = 200;
         }
       };
@@ -128,7 +128,7 @@ describe('Ravel', function() {
         }
 
         @before('middleware2')
-        *get(ctx) {
+        async get(ctx) {
           ctx.status = 200;
         }
       };
@@ -221,7 +221,7 @@ describe('Ravel', function() {
 
         @mapping(Routes.PUT, '/path')
         @before('middleware2')
-        *pathHandler(ctx) {
+        async pathHandler(ctx) {
           ctx.status = 200;
         }
       };

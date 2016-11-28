@@ -1,0 +1,7 @@
+{
+  "plugins": ["transform-decorators-legacy", "transform-async-to-generator"],
+  "only": [
+    "test/**/*.js"
+  ],
+  "retainLines": true
+}
