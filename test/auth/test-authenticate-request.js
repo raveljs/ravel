@@ -86,12 +86,12 @@ describe('util/authenticate_request', function() {
       const finalStub = sinon.stub();
 
       app.use(restMiddleware);
-      app.use(function*(next) {
-        this.isAuthenticated = isAuthenticatedStub;
-        yield next;
+      app.use(async function(ctx, next) {
+        ctx.isAuthenticated = isAuthenticatedStub;
+        await next;
       });
       app.use((new AuthenticationMiddleware(Ravel, false, false)).middleware());
-      app.use(function*() {
+      app.use(function() {
         finalStub();
       });
 
@@ -108,9 +108,9 @@ describe('util/authenticate_request', function() {
       const isAuthenticatedStub = sinon.stub().returns(false);
 
       app.use(restMiddleware);
-      app.use(function*(next) {
+      app.use(async function(ctx, next) {
         this.isAuthenticated = isAuthenticatedStub;
-        yield next;
+        await next;
       });
       app.use((new AuthenticationMiddleware(Ravel, false, false)).middleware());
 
@@ -127,9 +127,9 @@ describe('util/authenticate_request', function() {
       const isAuthenticatedStub = sinon.stub().returns(false);
 
       app.use(restMiddleware);
-      app.use(function*(next) {
+      app.use(async function(ctx, next) {
         this.isAuthenticated = isAuthenticatedStub;
-        yield next;
+        await next;
       });
       app.use((new AuthenticationMiddleware(Ravel, true, false)).middleware());
 
@@ -167,13 +167,13 @@ describe('util/authenticate_request', function() {
       Ravel.emit('post module init');
 
       app.use(restMiddleware);
-      app.use(function*(next) {
+      app.use(async function(ctx, next) {
         this.isAuthenticated = isAuthenticatedStub;
-        yield next;
+        await next;
       });
       app.use((new AuthenticationMiddleware(Ravel, false, false)).middleware());
-      app.use(function*() {
-        expect(this).to.have.property('user').that.equals(user);
+      app.use(async function(ctx) {
+        expect(ctx).to.have.property('user').that.equals(user);
         finalStub();
       });
 
@@ -214,12 +214,12 @@ describe('util/authenticate_request', function() {
       Ravel.emit('post module init');
 
       app.use(restMiddleware);
-      app.use(function*(next) {
+      app.use(async function(ctx, next) {
         this.isAuthenticated = isAuthenticatedStub;
-        yield next;
+        await next;
       });
       app.use((new AuthenticationMiddleware(Ravel, false, false)).middleware());
-      app.use(function*() {
+      app.use(async function() {
         finalStub();
       });
 
@@ -245,12 +245,12 @@ describe('util/authenticate_request', function() {
       });
 
       app.use(restMiddleware);
-      app.use(function*(next) {
-        this.isAuthenticated = isAuthenticatedStub;
-        yield next;
+      app.use(async function(ctx, next) {
+        ctx.isAuthenticated = isAuthenticatedStub;
+        await next;
       });
       app.use((new AuthenticationMiddleware(Ravel, false, false)).middleware());
-      app.use(function*() {
+      app.use(function() {
         finalStub();
       });
 
@@ -290,13 +290,13 @@ describe('util/authenticate_request', function() {
       Ravel.emit('post module init');
 
       app.use(restMiddleware);
-      app.use(function*(next) {
-        this.isAuthenticated = isAuthenticatedStub;
-        yield next;
+      app.use(async function(ctx,  next) {
+        ctx.isAuthenticated = isAuthenticatedStub;
+        await next;
       });
       app.use((new AuthenticationMiddleware(Ravel, false, true)).middleware());
-      app.use(function*() {
-        expect(this).to.have.property('user').that.equals(user);
+      app.use(async function(ctx) {
+        expect(ctx).to.have.property('user').that.equals(user);
         finalStub();
       });
 
@@ -336,14 +336,14 @@ describe('util/authenticate_request', function() {
       Ravel.emit('post module init');
 
       app.use(restMiddleware);
-      app.use(function*(next) {
-        this.isAuthenticated = isAuthenticatedStub;
-        yield next;
+      app.use(async function(ctx, next) {
+        ctx.isAuthenticated = isAuthenticatedStub;
+        await next;
       });
       app.use((new AuthenticationMiddleware(Ravel, false, true)).middleware());
-      app.use(function*() {
+      app.use(async function(ctx) {
         // this assertion would fail if this middleware ever ran. But it shouldn't run.
-        expect(this).to.have.property('user').that.equals(user);
+        expect(ctx).to.have.property('user').that.equals(user);
         finalStub();
       });
 
@@ -363,24 +363,24 @@ describe('util/authenticate_request', function() {
       const error = new Error('something went wrong');
 
       app.use(restMiddleware);
-      app.use(function*(next) {
-        this.isAuthenticated = isAuthenticatedStub;
+      app.use(async function(ctx, next) {
+        ctx.isAuthenticated = isAuthenticatedStub;
         try {
-          yield next;
-          this.status = 200;
+          await next;
+          ctx.status = 200;
         } catch (err) {
           expect(err).to.equal(error);
-          this.body = 'something went wrong';
-          this.status = 500;
+          ctx.body = 'something went wrong';
+          ctx.status = 500;
         }
       });
       app.use((new AuthenticationMiddleware(Ravel, false, false)).middleware());
-      app.use(function*() {
+      app.use(async function() {
         throw error;
       });
       request(app.callback())
       .get('/entity')
-      .expect(function() {
+      .expect(async function() {
         expect(isAuthenticatedStub).to.have.been.called;
       })
       .expect(500, 'something went wrong', done);

@@ -1,5 +1,5 @@
 {
-  "plugins": ["transform-decorators-legacy", "transform-async-to-generator"],
+  "plugins": ["transform-decorators-legacy"],
   "only": [
     "test/**/*.js"
   ],

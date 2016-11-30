@@ -97,7 +97,7 @@ describe('Ravel lifeycle test', function() {
       constructor(users) {
         super('/api/user');
         this.users = users;
-        this.someMiddleware = function*(next) { yield next; };
+        this.someMiddleware = async function(ctx, next) { await next; };
       }
 
       @pre('someMiddleware')
@@ -160,23 +160,23 @@ describe('Ravel lifeycle test', function() {
       const useSpy = sinon.spy(koaAppMock, 'use');
       mockery.registerMock('koa', function() { return koaAppMock; });
 
-      const session = function*(next) { yield next; };
+      const session = async function(ctx, next) { await next; };
       const sessionSpy = sinon.stub().returns(session);
       mockery.registerMock('koa-generic-session', sessionSpy);
 
-      const staticMiddleware = function*(next) { yield next; };
+      const staticMiddleware = async function(ctx, next) { await next; };
       const staticSpy = sinon.stub().returns(staticMiddleware);
       mockery.registerMock('koa-static', staticSpy);
 
-      const views = function*(next) { yield next; };
+      const views = async function(ctx, next) { await next; };
       const viewSpy = sinon.stub().returns(views);
       mockery.registerMock('koa-views', viewSpy);
 
-      const favicon = function*(next) { yield next; };
+      const favicon = async function(ctx, next) { await next; };
       const faviconSpy = sinon.stub().returns(favicon);
       mockery.registerMock('koa-favicon', faviconSpy);
 
-      const gzip = function*(next) { yield next; };
+      const gzip = async function(ctx, next) { await next; };
       const gzipSpy = sinon.stub().returns(gzip);
       mockery.registerMock('koa-compress', gzipSpy);
 

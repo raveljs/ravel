@@ -91,7 +91,7 @@ describe('Routes', function() {
     });
 
     describe('auth middleware insertion', function() {
-      const authenticationMiddleware = function*(next){ yield next; };
+      const authenticationMiddleware = async function(ctx, next){ await next; };
       let Ravel, Routes, coreSymbols;
 
       beforeEach((done) => {

@@ -95,7 +95,7 @@ describe('Ravel end-to-end test', function() {
           constructor(users) {
             super('/api/user');
             this.users = users;
-            this.someMiddleware = function*(next) {yield next;};
+            this.someMiddleware = async function(ctx, next) {await next;};
           }
 
           @pre('someMiddleware')
@@ -129,11 +129,9 @@ describe('Ravel end-to-end test', function() {
           }
 
           @mapping(Ravel.Routes.GET, '/app')
-          appHandler(ctx) {
-            return function*() {
-              ctx.body = '<!DOCTYPE html><html></html>';
-              ctx.status = 200;
-            };
+          async appHandler(ctx) {
+            ctx.body = '<!DOCTYPE html><html></html>';
+            ctx.status = 200;
           }
 
           @mapping(Ravel.Routes.GET, '/login')

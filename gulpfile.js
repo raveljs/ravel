@@ -8,15 +8,16 @@ const exec = require('child_process').exec;
 const pkginfo = require('./package.json');
 
 const TESTS = [
-  'test-dist/core/decorators/test-*.js',
-  'test-dist/core/test-*.js',
-  'test-dist/db/test-*.js',
-  'test-dist/db/decorators/test-*.js',
-  'test-dist/util/test-*.js',
-  'test-dist/auth/test-*.js',
-  'test-dist/auth/decorators/test-*.js',
-  'test-dist/ravel/test-*.js',
-  'test-dist/**/test-*.js'
+  // 'test-dist/core/decorators/test-*.js',
+  // 'test-dist/core/test-*.js',
+  'test-dist/core/test-resource.js',
+  // 'test-dist/db/test-*.js',
+  // 'test-dist/db/decorators/test-*.js',
+  // 'test-dist/util/test-*.js',
+  // 'test-dist/auth/test-*.js',
+  // 'test-dist/auth/decorators/test-*.js',
+  // 'test-dist/ravel/test-*.js',
+  // 'test-dist/**/test-*.js'
 ];
 
 gulp.task('lint', function() {

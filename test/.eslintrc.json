@@ -1,6 +1,5 @@
 {
   "extends": "../.eslintrc.json",
-  "parser": "babel-eslint",
   "globals": {
     "describe":   false,
     "before":     false,

@@ -9,7 +9,7 @@ const mockery = require('mockery');
 const upath = require('upath');
 const sinon = require('sinon');
 const request = require('supertest');
-const koa = require('koa');
+const Koa = require('koa');
 
 let Ravel, Resource, before, inject, coreSymbols;
 
@@ -155,8 +155,8 @@ describe('Ravel', function() {
     });
 
     it('should facilitate the creation of GET routes via $Resource.getAll', (done) => {
-      const middleware1 = function*(next) { yield next; };
-      const middleware2 = function*(next) { yield next; };
+      const middleware1 = async function(ctx, next) { await next; };
+      const middleware2 = async function(ctx, next) { await next; };
 
       class Stub extends Resource {
         constructor() {
@@ -178,13 +178,13 @@ describe('Ravel', function() {
         sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
         middleware1,
         middleware2,
-        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
+        sinon.match((value) => value.constructor.name === 'AsyncFunction'));
       done();
     });
 
     it('should facilitate the creation of GET routes via $Resource.get', (done) => {
-      const middleware1 = function*(next) { yield next; };
-      const middleware2 = function*(next) { yield next; };
+      const middleware1 = async function(ctx, next) { await next; };
+      const middleware2 = async function(ctx, next) { await next; };
 
       class Stub extends Resource {
         constructor() {
@@ -207,13 +207,13 @@ describe('Ravel', function() {
         sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
         middleware1,
         middleware2,
-        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
+        sinon.match((value) => value.constructor.name === 'AsyncFunction'));
       done();
     });
 
     it('should facilitate the creation of POST routes via $Resource.post', (done) => {
-      const middleware1 = function*(next) { yield next; };
-      const middleware2 = function*(next) { yield next; };
+      const middleware1 = async function(ctx, next) { await next; };
+      const middleware2 = async function(ctx, next) { await next; };
 
       class Stub extends Resource {
         constructor() {
@@ -236,13 +236,13 @@ describe('Ravel', function() {
         sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
         middleware1,
         middleware2,
-        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
+        sinon.match((value) => value.constructor.name === 'AsyncFunction'));
       done();
     });
 
     it('should facilitate the creation of PUT routes via $Resource.put', (done) => {
-      const middleware1 = function*(next) { yield next; };
-      const middleware2 = function*(next) { yield next; };
+      const middleware1 = async function(ctx, next) { await next; };
+      const middleware2 = async function(ctx, next) { await next; };
 
       class Stub extends Resource {
         constructor() {
@@ -265,13 +265,13 @@ describe('Ravel', function() {
         sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
         middleware1,
         middleware2,
-        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
+        sinon.match((value) => value.constructor.name === 'AsyncFunction'));
       done();
     });
 
     it('should facilitate the creation of PUT routes via $Resource.putAll', (done) => {
-      const middleware1 = function*(next) { yield next; };
-      const middleware2 = function*(next) { yield next; };
+      const middleware1 = async function(ctx, next) { await next; };
+      const middleware2 = async function(ctx, next) { await next; };
 
       class Stub extends Resource {
         constructor() {
@@ -294,13 +294,13 @@ describe('Ravel', function() {
         sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
         middleware1,
         middleware2,
-        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
+        sinon.match((value) => value.constructor.name === 'AsyncFunction'));
       done();
     });
 
     it('should facilitate the creation of DELETE routes via $Resource.deleteAll', (done) => {
-      const middleware1 = function*(next) { yield next; };
-      const middleware2 = function*(next) { yield next; };
+      const middleware1 = async function(ctx, next) { await next; };
+      const middleware2 = async function(ctx, next) { await next; };
 
       class Stub extends Resource {
         constructor() {
@@ -323,13 +323,13 @@ describe('Ravel', function() {
         sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
         middleware1,
         middleware2,
-        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
+        sinon.match((value) => value.constructor.name === 'AsyncFunction'));
       done();
     });
 
     it('should facilitate the creation of DELETE routes via $Resource.delete', (done) => {
-      const middleware1 = function*(next) { yield next; };
-      const middleware2 = function*(next) { yield next; };
+      const middleware1 = async function(ctx, next) { await next; };
+      const middleware2 = async function(ctx, next) { await next; };
 
       class Stub extends Resource {
         constructor() {
@@ -352,13 +352,13 @@ describe('Ravel', function() {
         sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
         middleware1,
         middleware2,
-        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
+        sinon.match((value) => value.constructor.name === 'AsyncFunction'));
       done();
     });
 
     it('should support the use of @before at the class level', (done) => {
-      const middleware1 = function*(next) { yield next; };
-      const middleware2 = function*(next) { yield next; };
+      const middleware1 = async function(ctx, next) { await next; };
+      const middleware2 = async function(ctx, next) { await next; };
 
       @before('middleware1')
       class Stub extends Resource {
@@ -382,13 +382,13 @@ describe('Ravel', function() {
         sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
         middleware1,
         middleware2,
-        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
+        sinon.match((value) => value.constructor.name === 'AsyncFunction'));
       done();
     });
 
     it('should support the use of @before on some, but not all, endpoints', (done) => {
-      const middleware1 = function*(next) { yield next; };
-      const middleware2 = function*(next) { yield next; };
+      const middleware1 = async function(ctx, next) { await next; };
+      const middleware2 = async function(ctx, next) { await next; };
 
       class Stub extends Resource {
         constructor() {
@@ -415,11 +415,11 @@ describe('Ravel', function() {
         sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
         middleware1,
         middleware2,
-        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
+        sinon.match((value) => value.constructor.name === 'AsyncFunction'));
       expect(spy2).to.have.been.calledWith(
         '/api/test/:id',
         sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
-        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
+        sinon.match((value) => value.constructor.name === 'AsyncFunction'));
       done();
     });
 
@@ -467,7 +467,7 @@ describe('Ravel', function() {
       expect(spy).to.have.been.calledWith(
         '/api/test',
         sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
-        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
+        sinon.match((value) => value.constructor.name === 'AsyncFunction'));
       done();
     });
 
@@ -487,15 +487,15 @@ describe('Ravel', function() {
       expect(spy).to.have.been.calledWith(
         '/api/test',
         sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
-        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
+        sinon.match((value) => value.constructor.name === 'AsyncFunction'));
       done();
     });
   });
 
   describe('Resource Integration Test', function() {
     it('should integrate properly with koa and koa-router', (done) => {
-      const middleware1 = function*(next) { yield next; };
-      const middleware2 = function*(next) { yield next; };
+      const middleware1 = async function(ctx, next) { await next; };
+      const middleware2 = async function(ctx, next) { await next; };
 
       class Stub extends Resource {
         constructor() {
@@ -509,8 +509,8 @@ describe('Ravel', function() {
           ctx.body = ctx.params;
         }
       }
-      const router = require('koa-router')();
-      const app = koa();
+      const router = new (require('koa-router'))();
+      const app = new Koa();
 
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');

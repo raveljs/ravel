@@ -116,8 +116,8 @@ describe('Ravel', function() {
     });
 
     it('should allow clients to retrieve metadata from Resources', (done) => {
-      const middleware1 = function*(next) { yield next; };
-      const middleware2 = function*(next) { yield next; };
+      const middleware1 = async function(ctx, next) { await next; };
+      const middleware2 = async function(ctx, next) { await next; };
       const Resource = Ravel.Resource;
       const before = Resource.before;
 
@@ -136,7 +136,7 @@ describe('Ravel', function() {
       mockery.registerMock('middleware1', middleware1);
       mockery.registerMock('middleware2', middleware2);
       app.db = { // mock app.db
-        middleware: function*(next){ yield next;}
+        middleware: async function(ctx, next){ await next;}
       };
 
       // need to call init so that it creates @mapping decorators
