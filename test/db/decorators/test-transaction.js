@@ -128,9 +128,7 @@ describe('Ravel', function() {
       sinon.stub(router, 'get', function() {
         expect(app.db.middleware).to.have.been.calledWith('mysql', 'redis');
         expect(arguments[0]).to.equal('/app/path');
-        expect(arguments[1]).to.be.a.function;
-        expect(arguments[1].toString()).to.include('buildRestResponse');
-        expect(arguments[2]).to.equal(transactionMiddleware);
+        expect(Array.from(arguments).indexOf(transactionMiddleware)).to.be.greaterThan(0);
         done();
       });
       app[coreSymbols.routesInit](router);
@@ -157,9 +155,7 @@ describe('Ravel', function() {
       sinon.stub(router, 'get', function() {
         expect(app.db.middleware).to.have.been.calledWith('rethinkdb', 'mysql', 'redis');
         expect(arguments[0]).to.equal('/app/another/path');
-        expect(arguments[1]).to.be.a.function;
-        expect(arguments[1].toString()).to.include('buildRestResponse');
-        expect(arguments[2]).to.equal(transactionMiddleware);
+        expect(Array.from(arguments).indexOf(transactionMiddleware)).to.be.greaterThan(0);
         done();
       });
       app[coreSymbols.routesInit](router);

@@ -33,11 +33,11 @@
     "clean": "gulp clean",
     "docs":"gulp docs",
     "watch":"gulp watch",
-    "test":"node --harmony_async_await $(which gulp) --require source-map-support/register test",
+    "test":"node $(which gulp) --require source-map-support/register test",
     "test-no-cov":"node --harmony_async_await $(which gulp) --require source-map-support/register test-no-cov",
     "show-coverage":"gulp show-coverage",
-    "debug":"node  --harmony_async_await debug $(which gulp) --require source-map-support/register test-no-cov",
-    "debug-remote":"node  --harmony_async_await --debug-brk=5858 $(which gulp) --require source-map-support/register test-no-cov"
+    "debug":"node --harmony_async_await debug $(which gulp) --require source-map-support/register test-no-cov",
+    "debug-remote":"node --harmony_async_await --debug-brk=5858 $(which gulp) --require source-map-support/register test-no-cov"
   },
   "dependencies": {
     "fs-readdir-recursive":"1.0.0",
@@ -90,6 +90,7 @@
     "gulp-babel":"6.1.2",
     "babel-core":"6.18.2",
     "babel-eslint": "7.1.1",
+    "babel-plugin-transform-async-to-generator": "6.16.0",
     "babel-plugin-transform-decorators-legacy": "1.3.4"
   }
 }
