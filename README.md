@@ -112,11 +112,11 @@ class MissingCityError extends Error {
 /**
  * Our main Module, defining logic for working with Cities
  */
-@inject('async')
+@inject('moment')
 class Cities extends Module {
-  constructor(async) {
+  constructor(moment) {
     super();
-    this.async = async;
+    this.moment = moment;
     this.db = ['Toronto', 'New York', 'Chicago']; // our fake 'database'
   }
 
