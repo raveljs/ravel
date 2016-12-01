@@ -803,8 +803,8 @@ class DatabaseInitializer extends Module {
     // specify one or more providers to open connections to, or none
     // to open connections to all known DatabaseProviders.
     this.db.scoped('mysql', async function(ctx) {
-      // this generator function behaves like koa middleware,
-      // so feel free to yield promises!
+      // this async function behaves like koa middleware,
+      // so feel free to await on promises!
       await self.createTables(ctx.transaction.mysql);
       await self.insertRows(ctx.transaction.mysql);
       // notice that this.transaction is identical to ctx.transaction

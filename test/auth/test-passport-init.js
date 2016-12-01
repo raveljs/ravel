@@ -28,6 +28,7 @@ describe('auth/passport_init', function() {
       warnOnUnregistered: false
     });
 
+    // koa-passport still uses generators!
     passportMock = {
       initialize: function() {
         return function*(next) {
