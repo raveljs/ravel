@@ -6,7 +6,7 @@ chai.use(require('chai-things'));
 chai.use(require('sinon-chai'));
 const sinon = require('sinon');
 const mockery = require('mockery');
-const koa = require('koa');
+const Koa = require('koa');
 const request = require('supertest');
 
 let Ravel, DatabaseProvider, app, database, mysqlProvider, postgresProvider;
@@ -20,7 +20,7 @@ describe('db/database', function() {
       warnOnUnregistered: false
     });
 
-    app = koa();
+    app = new Koa();
     Ravel = new (require('../../lib/ravel'))();
     DatabaseProvider = require('../../lib/ravel').DatabaseProvider;
     Ravel.log.setLevel('NONE');
@@ -151,7 +151,7 @@ describe('db/database', function() {
       const randomMessage = Math.random().toString();
       app.use(async function(ctx, next) {
         try {
-          await next;
+          await next();
         } catch (err) {
           ctx.status = 500;
           ctx.body = randomMessage;
@@ -225,9 +225,9 @@ describe('db/database', function() {
 
       app.use(async function(ctx,next) {
         try {
-          await next;
+          await next();
         } catch (err) {
-          this.status = 300;
+          ctx.status = 300;
         }
       });
       app.use(database.middleware());
@@ -273,9 +273,9 @@ describe('db/database', function() {
 
       app.use(async function(ctx, next) {
         try {
-          await next;
+          await next();
         } catch (err) {
-          this.status = 500;
+          ctx.status = 500;
         }
       });
       app.use(database.middleware());
@@ -286,8 +286,8 @@ describe('db/database', function() {
           mysql: mysqlConnection,
           postgres: postgresConnection
         });
-        this.status = 200;
-        this.body = {};
+        ctx.status = 200;
+        ctx.body = {};
       });
 
       request(app.callback())

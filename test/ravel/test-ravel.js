@@ -95,7 +95,7 @@ describe('Ravel end-to-end test', function() {
           constructor(users) {
             super('/api/user');
             this.users = users;
-            this.someMiddleware = async function(ctx, next) {await next;};
+            this.someMiddleware = async function(ctx, next) {await next();};
           }
 
           @pre('someMiddleware')

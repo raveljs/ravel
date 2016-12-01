@@ -7,7 +7,7 @@ chai.use(require('chai-as-promised'));
 chai.use(require('sinon-chai'));
 const sinon = require('sinon');
 const mockery = require('mockery');
-const koa = require('koa');
+const Koa = require('koa');
 const request = require('supertest');
 const upath = require('upath');
 
@@ -49,7 +49,7 @@ describe('util/authenticate_request', function() {
     const Rest = require('../../lib/util/rest');
     restMiddleware = (new Rest(Ravel)).errorHandler();
     Ravel.log.setLevel('NONE');
-    app = koa();
+    app = new Koa();
     Ravel.kvstore = {}; // mock Ravel.kvstore, since we're not actually starting Ravel.
     Ravel[coreSymbols.parametersLoaded] = true;
     done();
@@ -81,14 +81,14 @@ describe('util/authenticate_request', function() {
       done();
     });
 
-    it('should use passport\'s req.isAuthenticated() to check users by default, yielding to next() if users are authenticated by passport', (done) => {
+    it('should use passport\'s req.isAuthenticated() to check users by default, awaiting next() if users are authenticated by passport', (done) => {
       const isAuthenticatedStub = sinon.stub().returns(true);
       const finalStub = sinon.stub();
 
       app.use(restMiddleware);
       app.use(async function(ctx, next) {
         ctx.isAuthenticated = isAuthenticatedStub;
-        await next;
+        await next();
       });
       app.use((new AuthenticationMiddleware(Ravel, false, false)).middleware());
       app.use(function() {
@@ -109,8 +109,8 @@ describe('util/authenticate_request', function() {
 
       app.use(restMiddleware);
       app.use(async function(ctx, next) {
-        this.isAuthenticated = isAuthenticatedStub;
-        await next;
+        ctx.isAuthenticated = isAuthenticatedStub;
+        await next();
       });
       app.use((new AuthenticationMiddleware(Ravel, false, false)).middleware());
 
@@ -128,8 +128,8 @@ describe('util/authenticate_request', function() {
 
       app.use(restMiddleware);
       app.use(async function(ctx, next) {
-        this.isAuthenticated = isAuthenticatedStub;
-        await next;
+        ctx.isAuthenticated = isAuthenticatedStub;
+        await next();
       });
       app.use((new AuthenticationMiddleware(Ravel, true, false)).middleware());
 
@@ -168,8 +168,8 @@ describe('util/authenticate_request', function() {
 
       app.use(restMiddleware);
       app.use(async function(ctx, next) {
-        this.isAuthenticated = isAuthenticatedStub;
-        await next;
+        ctx.isAuthenticated = isAuthenticatedStub;
+        await next();
       });
       app.use((new AuthenticationMiddleware(Ravel, false, false)).middleware());
       app.use(async function(ctx) {
@@ -215,8 +215,8 @@ describe('util/authenticate_request', function() {
 
       app.use(restMiddleware);
       app.use(async function(ctx, next) {
-        this.isAuthenticated = isAuthenticatedStub;
-        await next;
+        ctx.isAuthenticated = isAuthenticatedStub;
+        await next();
       });
       app.use((new AuthenticationMiddleware(Ravel, false, false)).middleware());
       app.use(async function() {
@@ -247,7 +247,7 @@ describe('util/authenticate_request', function() {
       app.use(restMiddleware);
       app.use(async function(ctx, next) {
         ctx.isAuthenticated = isAuthenticatedStub;
-        await next;
+        await next();
       });
       app.use((new AuthenticationMiddleware(Ravel, false, false)).middleware());
       app.use(function() {
@@ -292,7 +292,7 @@ describe('util/authenticate_request', function() {
       app.use(restMiddleware);
       app.use(async function(ctx,  next) {
         ctx.isAuthenticated = isAuthenticatedStub;
-        await next;
+        await next();
       });
       app.use((new AuthenticationMiddleware(Ravel, false, true)).middleware());
       app.use(async function(ctx) {
@@ -338,7 +338,7 @@ describe('util/authenticate_request', function() {
       app.use(restMiddleware);
       app.use(async function(ctx, next) {
         ctx.isAuthenticated = isAuthenticatedStub;
-        await next;
+        await next();
       });
       app.use((new AuthenticationMiddleware(Ravel, false, true)).middleware());
       app.use(async function(ctx) {
@@ -366,7 +366,7 @@ describe('util/authenticate_request', function() {
       app.use(async function(ctx, next) {
         ctx.isAuthenticated = isAuthenticatedStub;
         try {
-          await next;
+          await next();
           ctx.status = 200;
         } catch (err) {
           expect(err).to.equal(error);

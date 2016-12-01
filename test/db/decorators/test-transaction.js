@@ -119,7 +119,7 @@ describe('Ravel', function() {
         handler() {}
       }
       mockery.registerMock(upath.join(app.cwd, 'stub'), Stub);
-      const transactionMiddleware = async function(ctx, next){ await next; };
+      const transactionMiddleware = async function(ctx, next){ await next(); };
       app.db = {
         middleware: sinon.stub().returns(transactionMiddleware)
       };
@@ -148,7 +148,7 @@ describe('Ravel', function() {
         handler() {}
       }
       mockery.registerMock(upath.join(app.cwd, 'stub2'), Stub2);
-      const transactionMiddleware = async function(ctx, next){ await next; };
+      const transactionMiddleware = async function(ctx, next){ await next(); };
       app.db = {
         middleware: sinon.stub().returns(transactionMiddleware)
       };

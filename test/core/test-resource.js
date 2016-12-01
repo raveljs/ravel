@@ -155,8 +155,8 @@ describe('Ravel', function() {
     });
 
     it('should facilitate the creation of GET routes via $Resource.getAll', (done) => {
-      const middleware1 = async function(ctx, next) { await next; };
-      const middleware2 = async function(ctx, next) { await next; };
+      const middleware1 = async function(ctx, next) { await next(); };
+      const middleware2 = async function(ctx, next) { await next(); };
 
       class Stub extends Resource {
         constructor() {
@@ -183,8 +183,8 @@ describe('Ravel', function() {
     });
 
     it('should facilitate the creation of GET routes via $Resource.get', (done) => {
-      const middleware1 = async function(ctx, next) { await next; };
-      const middleware2 = async function(ctx, next) { await next; };
+      const middleware1 = async function(ctx, next) { await next(); };
+      const middleware2 = async function(ctx, next) { await next(); };
 
       class Stub extends Resource {
         constructor() {
@@ -212,8 +212,8 @@ describe('Ravel', function() {
     });
 
     it('should facilitate the creation of POST routes via $Resource.post', (done) => {
-      const middleware1 = async function(ctx, next) { await next; };
-      const middleware2 = async function(ctx, next) { await next; };
+      const middleware1 = async function(ctx, next) { await next(); };
+      const middleware2 = async function(ctx, next) { await next(); };
 
       class Stub extends Resource {
         constructor() {
@@ -241,8 +241,8 @@ describe('Ravel', function() {
     });
 
     it('should facilitate the creation of PUT routes via $Resource.put', (done) => {
-      const middleware1 = async function(ctx, next) { await next; };
-      const middleware2 = async function(ctx, next) { await next; };
+      const middleware1 = async function(ctx, next) { await next(); };
+      const middleware2 = async function(ctx, next) { await next(); };
 
       class Stub extends Resource {
         constructor() {
@@ -270,8 +270,8 @@ describe('Ravel', function() {
     });
 
     it('should facilitate the creation of PUT routes via $Resource.putAll', (done) => {
-      const middleware1 = async function(ctx, next) { await next; };
-      const middleware2 = async function(ctx, next) { await next; };
+      const middleware1 = async function(ctx, next) { await next(); };
+      const middleware2 = async function(ctx, next) { await next(); };
 
       class Stub extends Resource {
         constructor() {
@@ -299,8 +299,8 @@ describe('Ravel', function() {
     });
 
     it('should facilitate the creation of DELETE routes via $Resource.deleteAll', (done) => {
-      const middleware1 = async function(ctx, next) { await next; };
-      const middleware2 = async function(ctx, next) { await next; };
+      const middleware1 = async function(ctx, next) { await next(); };
+      const middleware2 = async function(ctx, next) { await next(); };
 
       class Stub extends Resource {
         constructor() {
@@ -328,8 +328,8 @@ describe('Ravel', function() {
     });
 
     it('should facilitate the creation of DELETE routes via $Resource.delete', (done) => {
-      const middleware1 = async function(ctx, next) { await next; };
-      const middleware2 = async function(ctx, next) { await next; };
+      const middleware1 = async function(ctx, next) { await next(); };
+      const middleware2 = async function(ctx, next) { await next(); };
 
       class Stub extends Resource {
         constructor() {
@@ -357,8 +357,8 @@ describe('Ravel', function() {
     });
 
     it('should support the use of @before at the class level', (done) => {
-      const middleware1 = async function(ctx, next) { await next; };
-      const middleware2 = async function(ctx, next) { await next; };
+      const middleware1 = async function(ctx, next) { await next(); };
+      const middleware2 = async function(ctx, next) { await next(); };
 
       @before('middleware1')
       class Stub extends Resource {
@@ -387,8 +387,8 @@ describe('Ravel', function() {
     });
 
     it('should support the use of @before on some, but not all, endpoints', (done) => {
-      const middleware1 = async function(ctx, next) { await next; };
-      const middleware2 = async function(ctx, next) { await next; };
+      const middleware1 = async function(ctx, next) { await next(); };
+      const middleware2 = async function(ctx, next) { await next(); };
 
       class Stub extends Resource {
         constructor() {
@@ -494,8 +494,8 @@ describe('Ravel', function() {
 
   describe('Resource Integration Test', function() {
     it('should integrate properly with koa and koa-router', (done) => {
-      const middleware1 = async function(ctx, next) { await next; };
-      const middleware2 = async function(ctx, next) { await next; };
+      const middleware1 = async function(ctx, next) { await next(); };
+      const middleware2 = async function(ctx, next) { await next(); };
 
       class Stub extends Resource {
         constructor() {

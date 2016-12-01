@@ -53,6 +53,7 @@
     "koa-views": "5.2.0",
     "node-fs":"0.1.7",
     "passport": "0.3.2",
+    "path-to-regexp": "1.7.0",
     "redis":"2.6.3",
     "upath": "0.2.0"
   },

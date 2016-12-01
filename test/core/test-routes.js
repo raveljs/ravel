@@ -382,7 +382,7 @@ describe('Ravel', function() {
       const agent = request.agent(Ravel.server);
       async.series([
         function(next) {agent.get('/app/path').expect(501).end(next);},
-        function(next) {agent.get('/app/another').expect(404).end(next);}
+        function(next) {agent.post('/app/another').expect(404).end(next);}
       ], done);
     });
   });
