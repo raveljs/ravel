@@ -62,7 +62,7 @@ Ravel is layered on top of awesome technologies, including:
 
 ## Installation
 
-> As Ravel uses several ES2015 features, you will need to use a 6.x+ distribution of node.
+> As Ravel uses several ES2015/2016 features, you will need to use a 7.x+ distribution of node with the --harmony_async_await flag.
 
 ```bash
 $ npm install ravel
@@ -162,15 +162,15 @@ class ExampleRoutes extends Routes {
     super('/'); // base path for all routes in this class. Will be prepended to the @mapping.
     this.middleware1 = middleware1;
     // you can also build middleware right here!
-    this.middleware2 = function*(next) {
-      yield next;
+    this.middleware2 = async function(next) {
+      await next;
     };
   }
 
   // bind this method to an endpoint and verb with @mapping. This one will become GET /app
   @mapping(Routes.GET, 'app')
   @before('middleware1','middleware2') // use @before to place middleware before appHandler
-  *appHandler(ctx) {
+  async appHandler(ctx) {
     // ctx is just a koa context! Have a look at the koa docs to see what methods and properties are available.
     ctx.body = '<!DOCTYPE html><html><body>Hello World!</body></html>';
     ctx.status = 200;
@@ -204,19 +204,19 @@ class CitiesResource extends Resource {
     this.cities = cities;
 
     // some other middleware, which you might have injected from a Module or created here
-    this.anotherMiddleware = function*(next) {
-      yield next;
+    this.anotherMiddleware = async function(next) {
+      await next;
     };
   }
 
   // no need to use @mapping here. Routes methods are automatically mapped using their names.
-  *getAll(ctx) { // just like in Routes, ctx is a koa context.
-    ctx.body = yield this.cities.getAllCities();
+  async getAll(ctx) { // just like in Routes, ctx is a koa context.
+    ctx.body = await this.cities.getAllCities();
   }
 
   @before('anotherMiddleware') // using @before at the method level decorates this method with middleware
-  *get(ctx) { // get routes automatically receive an endpoint of /cities/:id (in this case).
-    ctx.body = yield this.cities.getCity(ctx.params.id);
+  async get(ctx) { // get routes automatically receive an endpoint of /cities/:id (in this case).
+    ctx.body = await this.cities.getCity(ctx.params.id);
   }
 
   // post, put, putAll, delete and deleteAll are
@@ -250,25 +250,23 @@ app.start();
 
 ### Decorator Transpilation
 
-Since decorators are not yet available in Node, you will need to use a transpiler to convert them into ES2016-compliant code. We have chosen TypeScript as our recommended transpiler, as Babel [cannot currently transpile decorators on generator methods](https://github.com/babel/babylon/issues/13). Ravel will likely switch back to Babel when this issue is resolved (when the Decorator level 2+ spec is implemented).
-
-To be clear, we are apply TypeScript as *a transpiler for JavaScript*, not using TypeScript itself (though nothing should stop you from using TypeScript with Ravel if you wish).
+Since async functions are not yet available in Node, you will need to use a transpiler to convert them into ES2016-compliant code. We have chosen [Babel](https://babeljs.io/) as our recommended transpiler.
 
 ```bash
-$ npm install gulp-sourcemaps@1.6.0 typescript@1.8.10 gulp-typescript@2.13.6
+$ npm install gulp-sourcemaps@1.6.0 babel-core@6.18.2 babel-plugin-transform-decorators-legacy@1.3.4 gulp-babel@6.1.2
+# Note, please add babel-plugin-transform-async-to-generator@6.16.0 if you are using Node v6 instead of v7.
 ```
 
 *gulpfile.js*
 ```js
+const babelConfig = {
+  'retainLines': true,
+  'plugins': ['transform-decorators-legacy'] // add 'transform-async-to-generator' if you are using Node v6 instead of v7
+};
 gulp.task('transpile', function() {
   return gulp.src('src/**/*.js') // point it at your source directory, containing Modules, Resources and Routes
       .pipe(plugins.sourcemaps.init())
-      .pipe(plugins.typescript({
-        typescript: require('typescript'),
-        allowJs: true,
-        experimentalDecorators: true,
-        target: 'ES6',
-      }))
+      .pipe(plugins.babel(babelConfig))
       .pipe(plugins.sourcemaps.write('.'))
       .pipe(gulp.dest('dist'));  // your transpiled Ravel app will appear here!
 });
@@ -455,7 +453,11 @@ class MyModule extends Module {
 
   // implement any methods you like :)
   aMethod() {
-    //...
+    // ...
+  }
+
+  async anAsyncMethod() {
+    // ...
   }
 }
 
@@ -585,7 +587,7 @@ There are currently five lifecycle decorators:
 
 Like `Module`s, `Routes` classes support dependency injection, allowing easy connection of application logic and web layers.
 
-Endpoints are created within a `Routes` class by creating a generator method and then decorating it with [`@mapping`](http://raveljs.github.io/docs/latest/core/decorators/mapping.js.html). The `@mapping` decorator indicates the path for the route (concatenated with the base path passed to `super()` in the `constructor`), as well as the HTTP verb. The method handler accepts a single argument `ctx` which is a [koa context](http://koajs.com/#context). Savvy readers with `koa` experience will note that, within the handler, `this` refers to the instance of the Routes class (to make it easy to access injected `Module`s), and the passed `ctx` argument is a reference to the `koa` context (rather than `this`).
+Endpoints are created within a `Routes` class by creating an `async` method and then decorating it with [`@mapping`](http://raveljs.github.io/docs/latest/core/decorators/mapping.js.html). The `@mapping` decorator indicates the path for the route (concatenated with the base path passed to `super()` in the `constructor`), as well as the HTTP verb. The method handler accepts a single argument `ctx` which is a [koa context](http://koajs.com/#context). Savvy readers with `koa` experience will note that, within the handler, `this` refers to the instance of the Routes class (to make it easy to access injected `Module`s), and the passed `ctx` argument is a reference to the `koa` context.
 
 *routes/my-routes.js*
 ```js
@@ -595,14 +597,14 @@ const mapping = Routes.mapping; // Ravel decorator for mapping a method to an en
 const before = Routes.before;   // Ravel decorator for conneting middleware to an endpoint
 
 // you can inject your own Modules and npm dependencies into Routes
-@inject('koa-better-body', 'fs', 'custom-module')
+@inject('koa-convert', 'koa-better-body', 'fs', 'custom-module')
 class MyRoutes extends Routes {
   // The constructor for a `Routes` class must call `super()` with the base
   // path for all routes within that class. Koa path parameters such as
   // :something are supported.
-  constructor(bodyParser, fs, custom) {
+  constructor(convert, bodyParser, fs, custom) {
     super('/'); // base path for all routes in this class
-    this.bodyParser = bodyParser(); // make bodyParser middleware available
+    this.bodyParser = convert(bodyParser()); // make bodyParser middleware available, and async-await compatible
     this.fs = fs;
     this.custom = custom;
   }
@@ -610,11 +612,11 @@ class MyRoutes extends Routes {
   // will map to GET /app
   @mapping(Routes.GET, 'app'); // Koa path parameters such as :something are supported
   @before('bodyParser') // use bodyParser middleware before handler. Matches this.bodyParser created in the constructor.
-  *appHandler(ctx) {
+  async appHandler(ctx) {
     ctx.status = 200;
     ctx.body = '<!doctype html><html></html>';
     // ctx is a koa context object.
-    // yield to Promises and use ctx to create a body/status code for response
+    // await on Promises and use ctx to create a body/status code for response
     // throw a Ravel.Error to automatically set an error status code
   }
 }
@@ -639,7 +641,7 @@ app.routes('./routes/my-routes');
 
 What might be referred to as a *controller* in other frameworks, a `Resource` module defines HTTP methods on an endpoint. `Resource`s also support dependency injection, allowing for the easy creation of RESTful interfaces to your `Module`-based application logic. Resources are really just a thin wrapper around `Routes`, using specially-named handler methods (`get`, `getAll`, `post`, `put`, `putAll`, `delete`, `deleteAll`) instead of `@mapping`. This convention-over-configuration approach makes it easier to write proper REST APIs with less code, and is recommended over ~~carefully chosen~~ `@mapping`s in a `Routes` class. Omitting any or all of the specially-named handler functions is fine, and will result in a `501 NOT IMPLEMENTED` status when that particular method/endpoint is requested. `Resource`s inherit all the properties, methods and decorators of `Routes`. See [core/routes](routes.js.html) for more information. Note that `@mapping` does not apply to `Resources`.
 
-As with `Routes` classes, `Resource` handler methods are generator functions which receive a [koa context](http://koajs.com/#context) as their only argument.
+As with `Routes` classes, `Resource` handler methods are `async` functions which receive a [koa context](http://koajs.com/#context) as their only argument.
 
 *resources/person-resource.js*
 ```js
@@ -648,42 +650,42 @@ const Resource = require('ravel').Resource;
 const before = Routes.before;
 
 // you can inject your own Modules and npm dependencies into Resources
-@inject('koa-better-body', 'fs', 'custom-module')
+@inject('koa-convert', 'koa-better-body', 'fs', 'custom-module')
 class PersonResource extends Resource {
-  constructor(bodyParser, fs, custom) {
+  constructor(convert, bodyParser, fs, custom) {
     super('/person'); // base path for all routes in this class
-    this.bodyParser = bodyParser(); // make bodyParser middleware available
+    this.bodyParser = convert(bodyParser()); // make bodyParser middleware available
     this.fs = fs;
     this.custom = custom;
   }
 
   // will map to GET /person
   @before('bodyParser') // use bodyParser middleware before handler
-  *getAll(ctx) {
+  async getAll(ctx) {
     // ctx is a koa context object.
-    // yield to Promises and use ctx to create a body/status code for response
+    // await on Promises and use ctx to create a body/status code for response
     // throw a Ravel.Error to automatically set an error status code
   }
 
   // will map to GET /person/:id
-  *get(ctx) {
+  async get(ctx) {
     // can use ctx.params.id in here automatically
   }
 
   // will map to POST /person
-  *post(ctx) {}
+  async post(ctx) {}
 
   // will map to PUT /person
-  *putAll(ctx) {}
+  async putAll(ctx) {}
 
   // will map to PUT /person/:id
-  *put(ctx) {}
+  async put(ctx) {}
 
   // will map to DELETE /person
-  *deleteAll(ctx) {}
+  async deleteAll(ctx) {}
 
   // will map to DELETE /person/:id
-  *delete(ctx) {}
+  async delete(ctx) {}
 }
 
 module.exports = PersonResource
@@ -767,11 +769,11 @@ class PersonResource extends Resource {
 
   // maps to GET /person/:id
   @transaction('mysql') // this is the name exposed by ravel-mysql-provider
-  *get(ctx) {
+  async get(ctx) {
     // TIP: Don't write complex logic here. Pass ctx.transaction into
     // a Module function which returns a Promise! This example is
     // just for demonstration purposes.
-    ctx.body = yield new Promise((resolve, reject) => {
+    ctx.body = await new Promise((resolve, reject) => {
       // ctx.transaction.mysql is a https://github.com/felixge/node-mysql connection
       ctx.transaction.mysql.query('SELECT 1', (err, rows) => {
         if (err) return reject(err);
@@ -786,7 +788,7 @@ module.exports = PersonResource;
 ### Scoped Transactions
 > [<small>View API docs &#128366;</small>](http://raveljs.github.io/docs/latest/core/module.js.html)
 
-Sometimes, you may need to open a transaction outside of a code path triggered by an HTTP request. Good examples of this might include database initialization at application start-time, or logic triggered by a websocket connection. In these cases, a `Module` class can open a `scoped` transaction using the names of the DatabaseProviders you are interested in, and a generator function (scope) in which to use the connections. Scoped transactions only exist for the scope of the generator function and are automatically cleaned up at the end of the function. It is best to view `Module.db.scoped()` as an identical mechanism to `@transaction`, behaving in exactly the same way, with a slightly different API:
+Sometimes, you may need to open a transaction outside of a code path triggered by an HTTP request. Good examples of this might include database initialization at application start-time, or logic triggered by a websocket connection. In these cases, a `Module` class can open a `scoped` transaction using the names of the DatabaseProviders you are interested in, and an `async` function (scope) in which to use the connections. Scoped transactions only exist for the scope of the `async` function and are automatically cleaned up at the end of the function. It is best to view `Module.db.scoped()` as an identical mechanism to `@transaction`, behaving in exactly the same way, with a slightly different API:
 
 *modules/database-initializer.js*
 ```js
@@ -800,11 +802,11 @@ class DatabaseInitializer extends Module {
     const self = this;
     // specify one or more providers to open connections to, or none
     // to open connections to all known DatabaseProviders.
-    this.db.scoped('mysql', function*() {
-      // this generator function behaves like koa middleware,
-      // so feel free to yield promises!
-      yield self.createTables(this.transaction.mysql);
-      yield self.insertRows(this.transaction.mysql);
+    this.db.scoped('mysql', async function(ctx) {
+      // this async function behaves like koa middleware,
+      // so feel free to await on promises!
+      await self.createTables(ctx.transaction.mysql);
+      await self.insertRows(ctx.transaction.mysql);
       // notice that this.transaction is identical to ctx.transaction
       // from @transaction! It's just a hash of open, named connections
       // to the DatabaseProviders specified.
@@ -925,7 +927,7 @@ class MyRoutes extends Routes {
 
   @authenticated({redirect: true}) // protect one endpoint specifically
   @mapping(Routes.GET, 'app')
-  *handler(ctx) {
+  async handler(ctx) {
     // will redirect to app.get('login route') if not signed in
   }
 }
@@ -940,8 +942,8 @@ Ravel is designed for horizontal scaling, and helps you avoid common pitfalls wh
  - All Ravel dependencies are strictly locked (i.e. no use of `~` or `^` in `package.json`). This helps foster repeatability between members of your team, as well as between development/testing/production environments. Adherence to semver in the node ecosystem is unfortunately varied at best, so it is recommended that you follow the same practice in your app as well.
  - While it is possible to color outside the lines, Ravel provides a framework for developing **stateless** backend applications, where all stateful data is stored in external caches or databases.
 
-It is strongly encouraged that you containerize your Ravel app using an [Alpine-based docker container](https://hub.docker.com/r/mhart/alpine-node/), and then explore technologies such as [docker-compose](https://www.docker.com/products/docker-compose) or [kubernetes](http://kubernetes.io/) to appropriately scale out and link to (at least) the [official redis container](https://hub.docker.com/_/redis/). An example project with a reference `docker-compose` environment for Ravel is forthcoming, but for now please refer to the [nom project](https://github.com/nomjs/nomjs-registry) as a current example.
+It is strongly encouraged that you containerize your Ravel app using an [Alpine-based docker container](https://hub.docker.com/r/mhart/alpine-node/), and then explore technologies such as [docker-compose](https://www.docker.com/products/docker-compose) or [kubernetes](http://kubernetes.io/) to appropriately scale out and link to (at least) the [official redis container](https://hub.docker.com/_/redis/). An example project with a reference `docker-compose` environment for Ravel can be found in the [starter project](https://github.com/raveljs/ravel-github-mariadb-starter).
 
 Ravel does not explicitly require [hiredis](https://github.com/redis/hiredis-node), but is is highly recommended that you install it alongside Ravel for improved redis performance.
 
-If you are looking for a good way to share `.ravelrc.json` configuration between multiple replicas of the same Ravel app, have a look at [ravel-etcd-config](https://github.com/raveljs/ravel-etcd-config).
+If you are looking for a good way to share `.ravelrc.json` configuration between multiple replicas of the same Ravel app, have a look at [ravel-etcd-config](https://github.com/raveljs/ravel-etcd-config) for easy distributed configuration.

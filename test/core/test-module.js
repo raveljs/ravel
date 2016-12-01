@@ -90,7 +90,7 @@ describe('Ravel', function() {
       Ravel.db = {
         scoped: scopedStub
       };
-      const gen = function*() {};
+      const gen = async function() {};
 
       const another = {};
       mockery.registerMock('another', another);

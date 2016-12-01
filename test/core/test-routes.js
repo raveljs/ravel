@@ -5,9 +5,9 @@ const expect = chai.expect;
 chai.use(require('chai-things'));
 const mockery = require('mockery');
 const upath = require('upath');
-const sinon = require('sinon');
 const request = require('supertest');
 const async = require('async');
+const Koa = require('koa');
 
 let Ravel, Routes, inject, mapping, before, coreSymbols;
 
@@ -151,219 +151,204 @@ describe('Ravel', function() {
     });
 
     it('should facilitate the creation of GET routes via @mapping', (done) => {
-      const middleware1 = function(/*req, res*/) {};
-      const middleware2 = function(/*req, res*/) {};
+      const middleware1 = async function(ctx, next) { await next(); };
+      const middleware2 = async function(ctx, next) { await next(); };
 
       class Stub extends Routes {
         constructor() {
-          super('/app');
+          super('/api');
+          this.middleware1 = middleware1;
+          this.middleware2 = middleware2;
         }
 
-        @mapping(Routes.GET, '/path')
+        @mapping(Routes.GET, '/test')
         @before('middleware1','middleware2')
-        *pathHandler(ctx) {
+        async pathHandler(ctx) {
           ctx.status = 200;
+          ctx.body = {id: 3};
         }
       };
-      mockery.registerMock(upath.join(Ravel.cwd, 'stub'), Stub);
-      mockery.registerMock('middleware1', middleware1);
-      mockery.registerMock('middleware2', middleware2);
-      Ravel.routes('stub');
+      const router = new (require('koa-router'))();
+      const app = new Koa();
 
-      //load up koa
-      const router = require('koa-router')();
-      sinon.stub(router, 'get', function() {
-        expect(arguments[0]).to.equal('/app/path');
-        expect(arguments[1]).to.be.a.function; // respond middleware
-        expect(arguments[1].toString()).to.include('buildRestResponse');
-        expect(arguments[2]).to.equal(middleware1);
-        expect(arguments[3]).to.equal(middleware2);
-        done();
-      });
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
+      Ravel.routes('test');
       Ravel[coreSymbols.routesInit](router);
+
+      app.use(router.routes());
+      app.use(router.allowedMethods());
+
+      request(app.callback())
+      .get('/api/test')
+      .expect(200, {id: 3}, done);
     });
 
     it('should facilitate the creation of POST routes via @mapping', (done) => {
-      const middleware1 = function(/*req, res*/) {};
-      const middleware2 = function(/*req, res*/) {};
+      const middleware1 = async function(ctx, next) { await next(); };
+      const middleware2 = async function(ctx, next) { await next(); };
+      const body = {id: 1};
 
       class Stub extends Routes {
         constructor() {
-          super('/app');
+          super('/api');
+          this.middleware1 = middleware1;
+          this.middleware2 = middleware2;
         }
 
-        @mapping(Routes.POST, '/path')
+        @mapping(Routes.POST, '/test')
         @before('middleware1','middleware2')
-        *pathHandler(ctx) {
+        async pathHandler(ctx) {
           ctx.status = 200;
+          ctx.body = body;
         }
       };
-      mockery.registerMock(upath.join(Ravel.cwd, 'stub'), Stub);
-      mockery.registerMock('middleware1', middleware1);
-      mockery.registerMock('middleware2', middleware2);
-      Ravel.routes('stub');
+      const router = new (require('koa-router'))();
+      const app = new Koa();
 
-      //load up koa
-      const router = require('koa-router')();
-      sinon.stub(router, 'post', function() {
-        expect(arguments[0]).to.equal('/app/path');
-        expect(arguments[1]).to.be.a.function; // respond middleware
-        expect(arguments[2]).to.equal(middleware1);
-        expect(arguments[3]).to.equal(middleware2);
-        done();
-      });
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
+      Ravel.routes('test');
       Ravel[coreSymbols.routesInit](router);
+
+      app.use(router.routes());
+      app.use(router.allowedMethods());
+
+      request(app.callback())
+      .post('/api/test')
+      .expect(201, body, done);
     });
 
     it('should facilitate the creation of PUT routes via @mapping', (done) => {
-      const middleware1 = function(/*req, res*/) {};
-      const middleware2 = function(/*req, res*/) {};
+      const middleware1 = async function(ctx, next) { await next(); };
+      const middleware2 = async function(ctx, next) { await next(); };
 
       class Stub extends Routes {
         constructor() {
-          super('/app');
+          super('/api');
+          this.middleware1 = middleware1;
+          this.middleware2 = middleware2;
         }
 
-        @mapping(Routes.PUT, '/path')
+        @mapping(Routes.PUT, '/test')
         @before('middleware1','middleware2')
-        *pathHandler(ctx) {
-          ctx.status = 200;
+        async pathHandler(ctx) {
+          ctx.body = {id: 1};
         }
       };
-      mockery.registerMock(upath.join(Ravel.cwd, 'stub'), Stub);
-      mockery.registerMock('middleware1', middleware1);
-      mockery.registerMock('middleware2', middleware2);
-      Ravel.routes('stub');
+      const router = new (require('koa-router'))();
+      const app = new Koa();
 
-      //load up koa
-      const router = require('koa-router')();
-      sinon.stub(router, 'put', function() {
-        expect(arguments[0]).to.equal('/app/path');
-        expect(arguments[1]).to.be.a.function; // respond middleware
-        expect(arguments[1].toString()).to.include('buildRestResponse');
-        expect(arguments[2]).to.equal(middleware1);
-        expect(arguments[3]).to.equal(middleware2);
-        done();
-      });
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
+      Ravel.routes('test');
       Ravel[coreSymbols.routesInit](router);
+
+      app.use(router.routes());
+      app.use(router.allowedMethods());
+
+      request(app.callback())
+      .put('/api/test')
+      .expect(200, {id: 1}, done);
     });
 
     it('should facilitate the creation of DELETE routes via @mapping', (done) => {
-      const middleware1 = function(/*req, res*/) {};
-      const middleware2 = function(/*req, res*/) {};
+      const middleware1 = async function(ctx, next) { await next(); };
+      const middleware2 = async function(ctx, next) { await next(); };
 
       class Stub extends Routes {
         constructor() {
-          super('/app');
+          super('/api');
+          this.middleware1 = middleware1;
+          this.middleware2 = middleware2;
         }
 
-        @mapping(Routes.DELETE, '/path')
+        @mapping(Routes.DELETE, '/test')
         @before('middleware1','middleware2')
-        *pathHandler(ctx) {
-          ctx.status = 200;
+        async pathHandler(ctx) {
+          ctx.body = {id: 1};
         }
       };
-      mockery.registerMock(upath.join(Ravel.cwd, 'stub'), Stub);
-      mockery.registerMock('middleware1', middleware1);
-      mockery.registerMock('middleware2', middleware2);
-      Ravel.routes('stub');
+      const router = new (require('koa-router'))();
+      const app = new Koa();
 
-      //load up koa
-      const router = require('koa-router')();
-      sinon.stub(router, 'delete', function() {
-        expect(arguments[0]).to.equal('/app/path');
-        expect(arguments[1]).to.be.a.function; // respond middleware
-        expect(arguments[1].toString()).to.include('buildRestResponse');
-        expect(arguments[2]).to.equal(middleware1);
-        expect(arguments[3]).to.equal(middleware2);
-        done();
-      });
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
+      Ravel.routes('test');
       Ravel[coreSymbols.routesInit](router);
+
+      app.use(router.routes());
+      app.use(router.allowedMethods());
+
+      request(app.callback())
+      .delete('/api/test')
+      .expect(200, {id: 1}, done);
     });
 
-    it('should support the use of @before at the class level as well', (done) => {
-      const middleware1 = function(/*req, res*/) {};
-      const middleware2 = function(/*req, res*/) {};
+    it('should support the use of @before at the method and class levels', (done) => {
+      const middleware1 = async function(ctx, next) { ctx.body = {id: ctx.params.id}; await next(); };
+      const middleware2 = async function(ctx, next) { ctx.body.name = 'sean'; await next(); };
 
       @before('middleware1')
       class Stub extends Routes {
         constructor() {
-          super('/app');
+          super('/api');
+          this.middleware1 = middleware1;
+          this.middleware2 = middleware2;
         }
 
-        @mapping(Routes.GET, '/path')
+        @mapping(Routes.GET, '/test/:id')
         @before('middleware2')
-        *pathHandler(ctx) {
-          ctx.status(200);
+        async pathHandler(ctx) {
+          ctx.status = 200;
         }
       };
-      mockery.registerMock(upath.join(Ravel.cwd, 'stub'), Stub);
-      mockery.registerMock('middleware1', middleware1);
-      mockery.registerMock('middleware2', middleware2);
-      Ravel.routes('stub');
+      const router = new (require('koa-router'))();
+      const app = new Koa();
 
-      //load up koa
-      const router = require('koa-router')();
-      sinon.stub(router, 'get', function() {
-        expect(arguments[0]).to.equal('/app/path');
-        expect(arguments[1]).to.be.a.function; // respond middleware
-        expect(arguments[1].toString()).to.include('buildRestResponse');
-        expect(arguments[2]).to.equal(middleware1);
-        expect(arguments[3]).to.equal(middleware2);
-        done();
-      });
-      sinon.stub(router, 'post', function() {
-        done(new Error('Routes class should never use app.post.'));
-      });
-      sinon.stub(router, 'put', function() {
-        done(new Error('Routes class should never use app.put.'));
-      });
-      sinon.stub(router, 'delete', function() {
-        done(new Error('Routes class should never use app.delete.'));
-      });
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
+      Ravel.routes('test');
       Ravel[coreSymbols.routesInit](router);
+
+      app.use(router.routes());
+      app.use(router.allowedMethods());
+
+      request(app.callback())
+      .get('/api/test/3')
+      .expect(200, {id: 3, name: 'sean'}, done);
     });
 
     it('should support the use of @mapping without @before', (done) => {
       class Stub extends Routes {
         constructor() {
-          super('/app');
+          super('/api');
         }
 
-        @mapping(Routes.GET, '/path')
-        *pathHandler(ctx) {
-          ctx.status(200);
+        @mapping(Routes.GET, '/test')
+        async pathHandler(ctx) {
+          ctx.status = 200;
+          ctx.body = {};
         }
 
         @before('middleware2') // this should just be ignored, since @mapping isn't present
-        *ignoredHandler(ctx) {
-          ctx.status(200);
+        async ignoredHandler(ctx) {
+          ctx.status = 200;
         }
       };
-      mockery.registerMock(upath.join(Ravel.cwd, 'stub'), Stub);
-      Ravel.routes('stub');
+      const router = new (require('koa-router'))();
+      const app = new Koa();
 
-      //load up koa
-      const router = require('koa-router')();
-      sinon.stub(router, 'get', function() {
-        expect(arguments[0]).to.equal('/app/path');
-        done();
-      });
-      sinon.stub(router, 'post', function() {
-        done(new Error('Routes class should never use app.post.'));
-      });
-      sinon.stub(router, 'put', function() {
-        done(new Error('Routes class should never use app.put.'));
-      });
-      sinon.stub(router, 'delete', function() {
-        done(new Error('Routes class should never use app.delete.'));
-      });
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
+      Ravel.routes('test');
       Ravel[coreSymbols.routesInit](router);
+
+      app.use(router.routes());
+      app.use(router.allowedMethods());
+
+      request(app.callback())
+      .get('/api/test')
+      .expect(200, {}, done);
     });
 
     it('should support the use of @mapping at the class level as well, to denote unsupported routes', (done) => {
-      @mapping(Routes.GET, '/path') // will respond with NOT_IMPLEMENTED
-      @mapping(Routes.POST, '/another', 404) // will respond with 404
+      @mapping(Routes.GET, '/path') // should respond with NOT_IMPLEMENTED
+      @mapping(Routes.POST, '/another', 404) // should respond with 404
       class Stub extends Routes {
         constructor() {
           super('/app');
@@ -382,8 +367,41 @@ describe('Ravel', function() {
       const agent = request.agent(Ravel.server);
       async.series([
         function(next) {agent.get('/app/path').expect(501).end(next);},
-        function(next) {agent.get('/app/another').expect(404).end(next);}
+        function(next) {agent.post('/app/another').expect(404).end(next);}
       ], done);
     });
+  });
+
+  it('should support non-async handlers as well', (done) => {
+    const middleware1 = async function(ctx, next) { await next(); };
+    const middleware2 = async function(ctx, next) { await next(); };
+
+    class Stub extends Routes {
+      constructor() {
+        super('/api');
+        this.middleware1 = middleware1;
+        this.middleware2 = middleware2;
+      }
+
+      @mapping(Routes.GET, '/test')
+      @before('middleware1','middleware2')
+      pathHandler(ctx) {
+        ctx.status = 200;
+        ctx.body = {id: 3};
+      }
+    };
+    const router = new (require('koa-router'))();
+    const app = new Koa();
+
+    mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
+    Ravel.routes('test');
+    Ravel[coreSymbols.routesInit](router);
+
+    app.use(router.routes());
+    app.use(router.allowedMethods());
+
+    request(app.callback())
+    .get('/api/test')
+    .expect(200, {id: 3}, done);
   });
 });

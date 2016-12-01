@@ -8,16 +8,27 @@ const exec = require('child_process').exec;
 const pkginfo = require('./package.json');
 
 const TESTS = [
-  'test-dist/core/decorators/test-*.js',
-  'test-dist/core/test-*.js',
-  'test-dist/db/test-*.js',
-  'test-dist/db/decorators/test-*.js',
-  'test-dist/util/test-*.js',
-  'test-dist/auth/test-*.js',
-  'test-dist/auth/decorators/test-*.js',
-  'test-dist/ravel/test-*.js',
-  'test-dist/**/test-*.js'
+  'test-dist/test/core/decorators/test-*.js',
+  'test-dist/test/core/test-*.js',
+  'test-dist/test/db/test-*.js',
+  'test-dist/test/db/decorators/test-*.js',
+  'test-dist/test/util/test-*.js',
+  'test-dist/test/auth/test-*.js',
+  'test-dist/test/auth/decorators/test-*.js',
+  'test-dist/test/ravel/test-*.js',
+  'test-dist/test/**/test-*.js'
 ];
+
+const babelConfig = {
+  'retainLines': true
+};
+if (process.execArgv.indexOf('--harmony_async_await') < 0) {
+  console.log('Transpiling async/await...');
+  babelConfig.plugins = ['transform-decorators-legacy', 'transform-async-to-generator'];
+} else {
+  console.log('Using native async/await...');
+  babelConfig.plugins = ['transform-decorators-legacy'];
+}
 
 gulp.task('lint', function() {
   return gulp.src(['./lib/**/*.js', './test/**/*.js', 'gulpfile.js'])
@@ -40,8 +51,8 @@ gulp.task('clean', function() {
   ]);
 });
 
-gulp.task('cover', ['transpile'], function() {
-  return gulp.src(['./lib/**/*.js'])
+gulp.task('cover-lib', ['transpile-lib'], function() {
+  return gulp.src(['./test-dist/lib/**/*.js'])
              .pipe(plugins.istanbul({
               //  instrumenter: isparta.Instrumenter,
                includeUntested: true
@@ -49,22 +60,29 @@ gulp.task('cover', ['transpile'], function() {
              .pipe(plugins.istanbul.hookRequire());
 });
 
-gulp.task('transpile', ['clean', 'lint'], function() {
+gulp.task('copy-lib', ['clean', 'lint'], function() {
+  return gulp.src('lib/**/*.js')
+      .pipe(gulp.dest('test-dist/lib'));
+});
+
+gulp.task('transpile-lib', ['clean', 'lint'], function() {
+  return gulp.src('lib/**/*.js')
+      .pipe(plugins.sourcemaps.init())
+      .pipe(plugins.babel(babelConfig))
+      .pipe(plugins.sourcemaps.write('.'))
+      .pipe(gulp.dest('test-dist/lib'));
+});
+
+gulp.task('transpile-tests', ['clean', 'lint'], function() {
   return gulp.src('test/**/*.js')
       .pipe(plugins.sourcemaps.init())
-      // .pipe(plugins.babel())
-      .pipe(plugins.typescript({
-        allowJs: true,
-        experimentalDecorators: true,
-        // emitDecoratorMetadata: true,
-        target: 'ES6',
-      }))
+      .pipe(plugins.babel(babelConfig))
       .pipe(plugins.sourcemaps.write('.'))
-      .pipe(gulp.dest('test-dist'));
+      .pipe(gulp.dest('test-dist/test'));
 });
 
 //necessary to locate issues in code, due to https://github.com/gotwarlost/istanbul/issues/274
-gulp.task('test-no-cov', ['transpile'], function () {
+gulp.task('test-no-cov', ['copy-lib', 'transpile-tests'], function () {
   const env = plugins.env.set({
     LOG_LEVEL : 'critical'
   });
@@ -79,7 +97,7 @@ gulp.task('test-no-cov', ['transpile'], function () {
     .pipe(env.reset);
 });
 
-gulp.task('test', ['cover'], function () {
+gulp.task('test', ['cover-lib', 'transpile-tests'], function () {
   const env = plugins.env.set({
     LOG_LEVEL : 'critical'
   });

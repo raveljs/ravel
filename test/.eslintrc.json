@@ -1,10 +1,5 @@
 {
   "extends": "../.eslintrc.json",
-  /*"parser": "babel-eslint",*/
-  "parser": "typescript-eslint-parser",
-  "plugins": [
-    "typescript"
-  ],
   "globals": {
     "describe":   false,
     "before":     false,
@@ -18,7 +13,5 @@
   "env": {
     "mocha": true
   },
-  "rules":  {
-    "no-unused-vars": 0
-  }
+  "rules":  {}
 }

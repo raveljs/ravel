@@ -95,12 +95,12 @@ describe('Ravel end-to-end test', function() {
           constructor(users) {
             super('/api/user');
             this.users = users;
-            this.someMiddleware = function*(next) {yield next;};
+            this.someMiddleware = async function(ctx, next) {await next();};
           }
 
           @pre('someMiddleware')
-          *getAll(ctx) {
-            const list = yield this.users.getAllUsers();
+          async getAll(ctx) {
+            const list = await this.users.getAllUsers();
             ctx.body = list;
           }
 
@@ -114,7 +114,7 @@ describe('Ravel end-to-end test', function() {
           }
 
           @pre('someMiddleware')
-          *post(ctx) {
+          async post() {
             throw new this.ApplicationError.DuplicateEntry();
           }
         }
@@ -129,11 +129,9 @@ describe('Ravel end-to-end test', function() {
           }
 
           @mapping(Ravel.Routes.GET, '/app')
-          appHandler(ctx) {
-            return function*() {
-              ctx.body = '<!DOCTYPE html><html></html>';
-              ctx.status = 200;
-            };
+          async appHandler(ctx) {
+            ctx.body = '<!DOCTYPE html><html></html>';
+            ctx.status = 200;
           }
 
           @mapping(Ravel.Routes.GET, '/login')

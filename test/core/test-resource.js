@@ -4,12 +4,10 @@ const async = require('async');
 const chai = require('chai');
 const expect = chai.expect;
 chai.use(require('chai-things'));
-chai.use(require('sinon-chai'));
 const mockery = require('mockery');
 const upath = require('upath');
-const sinon = require('sinon');
 const request = require('supertest');
-const koa = require('koa');
+const Koa = require('koa');
 
 let Ravel, Resource, before, inject, coreSymbols;
 
@@ -155,36 +153,41 @@ describe('Ravel', function() {
     });
 
     it('should facilitate the creation of GET routes via $Resource.getAll', (done) => {
-      const middleware1 = function*(next) { yield next; };
-      const middleware2 = function*(next) { yield next; };
+      const middleware1 = async function(ctx, next) { await next(); };
+      const middleware2 = async function(ctx, next) { await next(); };
+      const body = [{id: 1}];
 
       class Stub extends Resource {
         constructor() {
           super('/api/test');
+          this.middleware1 = middleware1;
+          this.middleware2 = middleware2;
         }
 
         @before('middleware1', 'middleware2')
-        *getAll() {
+        async getAll(ctx) {
+          ctx.status = 200;
+          ctx.body = body;
         }
       }
-      const router = require('koa-router')();
-      const spy = sinon.stub(router, 'get');
+      const router = new (require('koa-router'))();
+      const app = new Koa();
+
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
-      mockery.registerMock('middleware1', middleware1);
-      mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      expect(spy).to.have.been.calledWith('/api/test',
-        sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
-        middleware1,
-        middleware2,
-        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
-      done();
+
+      app.use(router.routes());
+      app.use(router.allowedMethods());
+
+      request(app.callback())
+      .get('/api/test')
+      .expect(200, body, done);
     });
 
     it('should facilitate the creation of GET routes via $Resource.get', (done) => {
-      const middleware1 = function*(next) { yield next; };
-      const middleware2 = function*(next) { yield next; };
+      const middleware1 = async function(ctx, next) { await next(); };
+      const middleware2 = async function(ctx, next) { await next(); };
 
       class Stub extends Resource {
         constructor() {
@@ -194,55 +197,61 @@ describe('Ravel', function() {
         }
 
         @before('middleware1', 'middleware2')
-        *get() {
+        async get(ctx) {
+          ctx.status = 200;
+          ctx.body = {id:ctx.params.id};
         }
       }
-      const router = require('koa-router')();
-      const spy = sinon.stub(router, 'get');
+      const router = new (require('koa-router'))();
+      const app = new Koa();
+
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      expect(spy).to.have.been.calledWith(
-        '/api/test/:id',
-        sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
-        middleware1,
-        middleware2,
-        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
-      done();
+
+      app.use(router.routes());
+      app.use(router.allowedMethods());
+
+      request(app.callback())
+      .get('/api/test/3')
+      .expect(200, {id: 3}, done);
     });
 
     it('should facilitate the creation of POST routes via $Resource.post', (done) => {
-      const middleware1 = function*(next) { yield next; };
-      const middleware2 = function*(next) { yield next; };
+      const middleware1 = async function(ctx, next) { await next(); };
+      const middleware2 = async function(ctx, next) { await next(); };
+      const body = {id: 1};
 
       class Stub extends Resource {
         constructor() {
           super('/api/test');
+          this.middleware1 = middleware1;
+          this.middleware2 = middleware2;
         }
 
         @before('middleware1', 'middleware2')
-        *post() {
+        async post(ctx) {
+          ctx.body = body;
         }
       }
-      const router = require('koa-router')();
-      const spy = sinon.stub(router, 'post');
+      const router = new (require('koa-router'))();
+      const app = new Koa();
+
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
-      mockery.registerMock('middleware1', middleware1);
-      mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      expect(spy).to.have.been.calledWith(
-        '/api/test',
-        sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
-        middleware1,
-        middleware2,
-        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
-      done();
+
+      app.use(router.routes());
+      app.use(router.allowedMethods());
+
+      request(app.callback())
+      .post('/api/test')
+      .expect(201, body, done);
     });
 
     it('should facilitate the creation of PUT routes via $Resource.put', (done) => {
-      const middleware1 = function*(next) { yield next; };
-      const middleware2 = function*(next) { yield next; };
+      const middleware1 = async function(ctx, next) { await next(); };
+      const middleware2 = async function(ctx, next) { await next(); };
 
       class Stub extends Resource {
         constructor() {
@@ -252,55 +261,28 @@ describe('Ravel', function() {
         }
 
         @before('middleware1', 'middleware2')
-        *put() {
+        async put(ctx) {
+          ctx.body = {id: ctx.params.id};
         }
       }
-      const router = require('koa-router')();
-      const spy = sinon.stub(router, 'put');
+      const router = new (require('koa-router'))();
+      const app = new Koa();
+
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      expect(spy).to.have.been.calledWith(
-        '/api/test/:id',
-        sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
-        middleware1,
-        middleware2,
-        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
-      done();
+
+      app.use(router.routes());
+      app.use(router.allowedMethods());
+
+      request(app.callback())
+      .put('/api/test/3')
+      .expect(200, {id: 3}, done);
     });
 
     it('should facilitate the creation of PUT routes via $Resource.putAll', (done) => {
-      const middleware1 = function*(next) { yield next; };
-      const middleware2 = function*(next) { yield next; };
-
-      class Stub extends Resource {
-        constructor() {
-          super('/api/test');
-        }
-
-        @before('middleware1', 'middleware2')
-        *putAll() {
-        }
-      }
-      const router = require('koa-router')();
-      const spy = sinon.stub(router, 'put');
-      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
-      mockery.registerMock('middleware1', middleware1);
-      mockery.registerMock('middleware2', middleware2);
-      Ravel.resource('test');
-      Ravel[coreSymbols.resourceInit](router);
-      expect(spy).to.have.been.calledWith(
-        '/api/test',
-        sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
-        middleware1,
-        middleware2,
-        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
-      done();
-    });
-
-    it('should facilitate the creation of DELETE routes via $Resource.deleteAll', (done) => {
-      const middleware1 = function*(next) { yield next; };
-      const middleware2 = function*(next) { yield next; };
+      const middleware1 = async function(ctx, next) { await next(); };
+      const middleware2 = async function(ctx, next) { await next(); };
 
       class Stub extends Resource {
         constructor() {
@@ -310,55 +292,91 @@ describe('Ravel', function() {
         }
 
         @before('middleware1', 'middleware2')
-        *deleteAll() {
+        async putAll(ctx) {
+          ctx.body = {id: 1};
         }
       }
-      const router = require('koa-router')();
-      const spy = sinon.stub(router, 'delete');
+      const router = new (require('koa-router'))();
+      const app = new Koa();
+
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      expect(spy).to.have.been.calledWith(
-        '/api/test',
-        sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
-        middleware1,
-        middleware2,
-        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
-      done();
+
+      app.use(router.routes());
+      app.use(router.allowedMethods());
+
+      request(app.callback())
+      .put('/api/test')
+      .expect(200, {id: 1}, done);
     });
 
-    it('should facilitate the creation of DELETE routes via $Resource.delete', (done) => {
-      const middleware1 = function*(next) { yield next; };
-      const middleware2 = function*(next) { yield next; };
+    it('should facilitate the creation of DELETE routes via $Resource.deleteAll', (done) => {
+      const middleware1 = async function(ctx, next) { await next(); };
+      const middleware2 = async function(ctx, next) { await next(); };
+      const body = [{id: 1}];
 
       class Stub extends Resource {
         constructor() {
           super('/api/test');
+          this.middleware1 = middleware1;
+          this.middleware2 = middleware2;
         }
 
         @before('middleware1', 'middleware2')
-        *delete() {
+        async deleteAll(ctx) {
+          ctx.body = body;
         }
       }
-      const router = require('koa-router')();
-      const spy = sinon.stub(router, 'delete');
+      const router = new (require('koa-router'))();
+      const app = new Koa();
+
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
-      mockery.registerMock('middleware1', middleware1);
-      mockery.registerMock('middleware2', middleware2);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      expect(spy).to.have.been.calledWith(
-        '/api/test/:id',
-        sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
-        middleware1,
-        middleware2,
-        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
-      done();
+
+      app.use(router.routes());
+      app.use(router.allowedMethods());
+
+      request(app.callback())
+      .delete('/api/test')
+      .expect(200, body, done);
+    });
+
+    it('should facilitate the creation of DELETE routes via $Resource.delete', (done) => {
+      const middleware1 = async function(ctx, next) { await next(); };
+      const middleware2 = async function(ctx, next) { await next(); };
+
+      class Stub extends Resource {
+        constructor() {
+          super('/api/test');
+          this.middleware1 = middleware1;
+          this.middleware2 = middleware2;
+        }
+
+        @before('middleware1', 'middleware2')
+        async delete(ctx) {
+          ctx.body = {id: ctx.params.id};
+        }
+      }
+      const router = new (require('koa-router'))();
+      const app = new Koa();
+
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
+      Ravel.resource('test');
+      Ravel[coreSymbols.resourceInit](router);
+
+      app.use(router.routes());
+      app.use(router.allowedMethods());
+
+      request(app.callback())
+      .delete('/api/test/3')
+      .expect(200, {id: 3}, done);
     });
 
     it('should support the use of @before at the class level', (done) => {
-      const middleware1 = function*(next) { yield next; };
-      const middleware2 = function*(next) { yield next; };
+      const middleware1 = async function(ctx, next) { ctx.body = {id: ctx.params.id}; await next(); };
+      const middleware2 = async function(ctx, next) { ctx.body.name = 'sean'; await next(); };
 
       @before('middleware1')
       class Stub extends Resource {
@@ -369,26 +387,27 @@ describe('Ravel', function() {
         }
 
         @before('middleware2')
-        *get() {
+        async get() {
         }
       }
-      const router = require('koa-router')();
-      const spy = sinon.stub(router, 'get');
+      const router = new (require('koa-router'))();
+      const app = new Koa();
+
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      expect(spy).to.have.been.calledWith(
-        '/api/test/:id',
-        sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
-        middleware1,
-        middleware2,
-        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
-      done();
+
+      app.use(router.routes());
+      app.use(router.allowedMethods());
+
+      request(app.callback())
+      .get('/api/test/3')
+      .expect(200, {id: 3, name: 'sean'}, done);
     });
 
     it('should support the use of @before on some, but not all, endpoints', (done) => {
-      const middleware1 = function*(next) { yield next; };
-      const middleware2 = function*(next) { yield next; };
+      const middleware1 = async function(ctx, next) { ctx.body = {id: ctx.params.id}; await next(); };
+      const middleware2 = async function(ctx, next) { ctx.body.name = 'sean'; await next(); };
 
       class Stub extends Resource {
         constructor() {
@@ -398,29 +417,28 @@ describe('Ravel', function() {
         }
 
         @before('middleware1', 'middleware2')
-        *get() {
+        async get() {
         }
 
-        *put() {
+        async put(ctx) {
+          ctx.body = '';
         }
       }
-      const router = require('koa-router')();
-      const spy = sinon.stub(router, 'get');
-      const spy2 = sinon.stub(router, 'put');
+      const router = new (require('koa-router'))();
+      const app = new Koa();
+
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
       Ravel[coreSymbols.resourceInit](router);
-      expect(spy).to.have.been.calledWith(
-        '/api/test/:id',
-        sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
-        middleware1,
-        middleware2,
-        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
-      expect(spy2).to.have.been.calledWith(
-        '/api/test/:id',
-        sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
-        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
-      done();
+
+      app.use(router.routes());
+      app.use(router.allowedMethods());
+      const agent = request(app.callback());
+
+      async.series([
+        function(next) {agent.get('/api/test/3').expect(200, {id: 3, name: 'sean'}).end(next);},
+        function(next) {agent.put('/api/test/1').expect(204).end(next);}
+      ], done);
     });
 
     it('should implement stub endpoints for unused HTTP verbs, all of which return a status httpCodes.NOT_IMPLEMENTED', (done) => {
@@ -456,61 +474,13 @@ describe('Ravel', function() {
         constructor() {
           super('/api/test');
         }
-        *getAll() {
+        async getAll(ctx) {
+          ctx.body = '';
         }
       }
-      const router = require('koa-router')();
-      const spy = sinon.stub(router, 'get');
-      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
-      Ravel.resource('test');
-      Ravel[coreSymbols.resourceInit](router);
-      expect(spy).to.have.been.calledWith(
-        '/api/test',
-        sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
-        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
-      done();
-    });
 
-    it('should facilitate the creation of generator routes which are not decorated with middleware', (done) => {
-      class Stub extends Resource {
-        constructor() {
-          super('/api/test');
-        }
-        *getAll() {
-        }
-      }
-      const router = require('koa-router')();
-      const spy = sinon.stub(router, 'get');
-      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
-      Ravel.resource('test');
-      Ravel[coreSymbols.resourceInit](router);
-      expect(spy).to.have.been.calledWith(
-        '/api/test',
-        sinon.match((v) => typeof v === 'function' && v.toString().indexOf('buildRestResponse') > 0),
-        sinon.match((value) => value.constructor.name === 'GeneratorFunction'));
-      done();
-    });
-  });
-
-  describe('Resource Integration Test', function() {
-    it('should integrate properly with koa and koa-router', (done) => {
-      const middleware1 = function*(next) { yield next; };
-      const middleware2 = function*(next) { yield next; };
-
-      class Stub extends Resource {
-        constructor() {
-          super('/api/test');
-          this.middleware1 = middleware1;
-          this.middleware2 = middleware2;
-        }
-
-        @before('middleware1', 'middleware2')
-        *get(ctx) {
-          ctx.body = ctx.params;
-        }
-      }
-      const router = require('koa-router')();
-      const app = koa();
+      const router = new (require('koa-router'))();
+      const app = new Koa();
 
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.resource('test');
@@ -520,8 +490,8 @@ describe('Ravel', function() {
       app.use(router.allowedMethods());
 
       request(app.callback())
-      .get('/api/test/1')
-      .expect(200, {id: 1}, done);
+      .get('/api/test')
+      .expect(204, done);
     });
   });
 });

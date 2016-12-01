@@ -7,7 +7,7 @@ chai.use(require('chai-as-promised'));
 chai.use(require('sinon-chai'));
 const mockery = require('mockery');
 const sinon = require('sinon');
-const koa = require('koa');
+const Koa = require('koa');
 const upath = require('upath');
 
 const AuthenticationProvider = (require('../../lib/ravel')).AuthenticationProvider;
@@ -17,7 +17,7 @@ class GoogleOAuth2 extends AuthenticationProvider {
   }
 }
 
-let Ravel, ravelApp, lib, authconfig, passportMock, coreSymbols;
+let Ravel, ravelApp, authconfig, passportMock, coreSymbols;
 
 describe('auth/passport_init', function() {
   beforeEach((done) => {
@@ -28,6 +28,7 @@ describe('auth/passport_init', function() {
       warnOnUnregistered: false
     });
 
+    // koa-passport still uses generators!
     passportMock = {
       initialize: function() {
         return function*(next) {
@@ -65,7 +66,7 @@ describe('auth/passport_init', function() {
   });
 
   it('should not initialize passport if no authentication providers are registered', (done) => {
-    const app = koa();
+    const app = new Koa();
     const passportInitSpy = sinon.spy(passportMock, 'initialize');
     const passportSessionSpy = sinon.spy(passportMock, 'session');
 
@@ -100,7 +101,7 @@ describe('auth/passport_init', function() {
     const provider = new GoogleOAuth2(ravelApp);
     provider.init = sinon.stub();
 
-    const app = koa();
+    const app = new Koa();
     const useSpy = sinon.spy(app, 'use');
     const passportInitSpy = sinon.spy(passportMock, 'initialize');
     const passportSessionSpy = sinon.spy(passportMock, 'session');
@@ -123,7 +124,7 @@ describe('auth/passport_init', function() {
     provider.init = sinon.stub();
     require('../../lib/auth/passport_init')(ravelApp, {});
 
-    const app = koa();
+    const app = new Koa();
     function test() {
       ravelApp.emit('post config koa', app);
       ravelApp.emit('post module init');
@@ -153,7 +154,7 @@ describe('auth/passport_init', function() {
     provider.init = sinon.stub();
 
     require('../../lib/auth/passport_init')(ravelApp);
-    const app = koa();
+    const app = new Koa();
 
     sinon.stub(passportMock, 'serializeUser', function(serializerFn) {
       serializerFn({id:9876}, function(err, result) {
@@ -193,7 +194,7 @@ describe('auth/passport_init', function() {
     provider.init = sinon.stub();
 
     require('../../lib/auth/passport_init')(ravelApp);
-    const app = koa();
+    const app = new Koa();
 
     sinon.stub(passportMock, 'deserializeUser', function(deserializerFn) {
       deserializerFn(9876, function(err, result) {
@@ -235,7 +236,7 @@ describe('auth/passport_init', function() {
     provider.init = sinon.stub();
 
     require('../../lib/auth/passport_init')(ravelApp);
-    const app = koa();
+    const app = new Koa();
 
     sinon.stub(passportMock, 'serializeUser', function(serializerFn) {
       serializerFn(9876, function(err, result) {
@@ -279,7 +280,7 @@ describe('auth/passport_init', function() {
     provider.init = sinon.stub();
 
     require('../../lib/auth/passport_init')(ravelApp);
-    const app = koa();
+    const app = new Koa();
 
     sinon.stub(passportMock, 'deserializeUser', function(deserializerFn) {
       deserializerFn(9876, function(err, result) {
@@ -319,7 +320,7 @@ describe('auth/passport_init', function() {
     });
 
     require('../../lib/auth/passport_init')(ravelApp);
-    const app = koa();
+    const app = new Koa();
 
     ravelApp.emit('post config koa', app);
     ravelApp[coreSymbols.moduleInit]();
@@ -347,7 +348,7 @@ describe('auth/passport_init', function() {
     });
 
     require('../../lib/auth/passport_init')(ravelApp);
-    const app = koa();
+    const app = new Koa();
 
     ravelApp.emit('post config koa', app);
     ravelApp[coreSymbols.moduleInit]();

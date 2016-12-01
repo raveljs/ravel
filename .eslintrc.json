@@ -4,6 +4,7 @@
     "builtin": true,
     "es6": true
   },
+  "parser": "babel-eslint",
   "globals": {},
   "rules": {
     "block-scoped-var": 2,

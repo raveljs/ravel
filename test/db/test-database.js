@@ -6,7 +6,7 @@ chai.use(require('chai-things'));
 chai.use(require('sinon-chai'));
 const sinon = require('sinon');
 const mockery = require('mockery');
-const koa = require('koa');
+const Koa = require('koa');
 const request = require('supertest');
 
 let Ravel, DatabaseProvider, app, database, mysqlProvider, postgresProvider;
@@ -20,7 +20,7 @@ describe('db/database', function() {
       warnOnUnregistered: false
     });
 
-    app = koa();
+    app = new Koa();
     Ravel = new (require('../../lib/ravel'))();
     DatabaseProvider = require('../../lib/ravel').DatabaseProvider;
     Ravel.log.setLevel('NONE');
@@ -45,8 +45,8 @@ describe('db/database', function() {
   describe('#middleware()', function() {
     it('should populate context.transaction with an empty dictionary of database connection objects when no database providers are registered.', (done) => {
       app.use(database.middleware());
-      app.use(function*(){
-        expect(this).to.have.a.property('transaction').that.deep.equals({});
+      app.use(async function(ctx){
+        expect(ctx).to.have.a.property('transaction').that.deep.equals({});
       });
 
       request(app.callback())
@@ -77,10 +77,10 @@ describe('db/database', function() {
       });
 
       app.use(database.middleware());
-      app.use(function*(){
+      app.use(async function(ctx){
         expect(mysqlGetTransactionSpy).to.have.been.called;
         expect(postgresGetTransactionSpy).to.have.been.called;
-        expect(this).to.have.a.property('transaction').that.deep.equals({
+        expect(ctx).to.have.a.property('transaction').that.deep.equals({
           mysql: mysqlConnection,
           postgres: postgresConnection
         });
@@ -114,10 +114,10 @@ describe('db/database', function() {
       });
 
       app.use(database.middleware('postgres'));
-      app.use(function*(){
+      app.use(async function(ctx){
         expect(mysqlGetTransactionSpy).to.not.have.been.called;
         expect(postgresGetTransactionSpy).to.have.been.called;
-        expect(this).to.have.a.property('transaction').that.deep.equals({
+        expect(ctx).to.have.a.property('transaction').that.deep.equals({
           postgres: postgresConnection
         });
       });
@@ -149,12 +149,12 @@ describe('db/database', function() {
       });
 
       const randomMessage = Math.random().toString();
-      app.use(function*(next) {
+      app.use(async function(ctx, next) {
         try {
-          yield next;
+          await next();
         } catch (err) {
-          this.status = 500;
-          this.body = randomMessage;
+          ctx.status = 500;
+          ctx.body = randomMessage;
         }
       });
       app.use(database.middleware());
@@ -184,10 +184,10 @@ describe('db/database', function() {
       });
 
       app.use(database.middleware());
-      app.use(function*(){
+      app.use(async function(ctx){
         expect(mysqlGetTransactionSpy).to.have.been.called;
         expect(postgresGetTransactionSpy).to.have.been.called;
-        expect(this).to.have.a.property('transaction').that.deep.equals({
+        expect(ctx).to.have.a.property('transaction').that.deep.equals({
           mysql: mysqlConnection,
           postgres: postgresConnection
         });
@@ -223,18 +223,18 @@ describe('db/database', function() {
         return Promise.resolve(null);
       });
 
-      app.use(function*(next) {
+      app.use(async function(ctx,next) {
         try {
-          yield next;
+          await next();
         } catch (err) {
-          this.status = 300;
+          ctx.status = 300;
         }
       });
       app.use(database.middleware());
-      app.use(function*(){
+      app.use(async function(ctx){
         expect(mysqlGetTransactionSpy).to.have.been.called;
         expect(postgresGetTransactionSpy).to.have.been.called;
-        expect(this).to.have.a.property('transaction').that.deep.equals({
+        expect(ctx).to.have.a.property('transaction').that.deep.equals({
           mysql: mysqlConnection,
           postgres: postgresConnection
         });
@@ -271,23 +271,23 @@ describe('db/database', function() {
         return Promise.resolve();
       });
 
-      app.use(function*(next) {
+      app.use(async function(ctx, next) {
         try {
-          yield next;
+          await next();
         } catch (err) {
-          this.status = 500;
+          ctx.status = 500;
         }
       });
       app.use(database.middleware());
-      app.use(function*(){
+      app.use(async function(ctx){
         expect(mysqlGetTransactionSpy).to.have.been.called;
         expect(postgresGetTransactionSpy).to.have.been.called;
-        expect(this).to.have.a.property('transaction').that.deep.equals({
+        expect(ctx).to.have.a.property('transaction').that.deep.equals({
           mysql: mysqlConnection,
           postgres: postgresConnection
         });
-        this.status = 200;
-        this.body = {};
+        ctx.status = 200;
+        ctx.body = {};
       });
 
       request(app.callback())
@@ -323,10 +323,10 @@ describe('db/database', function() {
         return Promise.resolve();
       });
 
-      database.scoped(function*() {
+      database.scoped(async function(ctx) {
         expect(mysqlGetTransactionSpy).to.have.been.called;
         expect(postgresGetTransactionSpy).to.have.been.called;
-        expect(this).to.have.a.property('transaction').that.deep.equals({
+        expect(ctx).to.have.a.property('transaction').that.deep.equals({
           mysql: mysqlConnection,
           postgres: postgresConnection
         });
@@ -355,10 +355,10 @@ describe('db/database', function() {
         return Promise.resolve();
       });
 
-      database.scoped('postgres', function*() {
+      database.scoped('postgres', async function(ctx) {
         expect(mysqlGetTransactionSpy).to.not.have.been.called;
         expect(postgresGetTransactionSpy).to.have.been.called;
-        expect(this).to.have.a.property('transaction').that.deep.equals({
+        expect(ctx).to.have.a.property('transaction').that.deep.equals({
           postgres: postgresConnection
         });
         done();
@@ -386,7 +386,7 @@ describe('db/database', function() {
         return Promise.resolve();
       });
 
-      const promise = database.scoped(function*() {
+      const promise = database.scoped(async function() {
       });
       expect(promise).to.eventually.be.rejectedWith(Error);
       expect(mysqlGetTransactionSpy).to.have.been.called;
@@ -415,10 +415,10 @@ describe('db/database', function() {
         return Promise.resolve();
       });
 
-      database.scoped(function*() {
+      database.scoped(async function(ctx) {
         expect(mysqlGetTransactionSpy).to.have.been.called;
         expect(postgresGetTransactionSpy).to.have.been.called;
-        expect(this).to.have.a.property('transaction').that.deep.equals({
+        expect(ctx).to.have.a.property('transaction').that.deep.equals({
           mysql: mysqlConnection,
           postgres: postgresConnection
         });
@@ -450,10 +450,10 @@ describe('db/database', function() {
         return Promise.resolve();
       });
 
-      database.scoped(function*() {
+      database.scoped(async function(ctx) {
         expect(mysqlGetTransactionSpy).to.have.been.called;
         expect(postgresGetTransactionSpy).to.have.been.called;
-        expect(this).to.have.a.property('transaction').that.deep.equals({
+        expect(ctx).to.have.a.property('transaction').that.deep.equals({
           mysql: mysqlConnection,
           postgres: postgresConnection
         });
@@ -490,10 +490,10 @@ describe('db/database', function() {
         return Promise.reject(null);
       });
 
-      database.scoped(function*() {
+      database.scoped(async function(ctx) {
         expect(mysqlGetTransactionSpy).to.have.been.called;
         expect(postgresGetTransactionSpy).to.have.been.called;
-        expect(this).to.have.a.property('transaction').that.deep.equals({
+        expect(ctx).to.have.a.property('transaction').that.deep.equals({
           mysql: mysqlConnection,
           postgres: postgresConnection
         });
