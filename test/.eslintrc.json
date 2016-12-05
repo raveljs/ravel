@@ -12,6 +12,5 @@
   },
   "env": {
     "mocha": true
-  },
-  "rules":  {}
+  }
 }
