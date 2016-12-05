@@ -5,6 +5,6 @@
     "es6": true
   },
   "parser": "babel-eslint",
-  "extends": "standard",
+  "extends": "semistandard",
   "globals": {}
 }
