@@ -1,7 +1,7 @@
 # Ravel
 > Forge past a tangle of modules. Make a cool app.
 
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/raveljs/ravel/master/LICENSE) [![npm version](https://badge.fury.io/js/ravel.svg)](http://badge.fury.io/js/ravel) [![Dependency Status](https://david-dm.org/raveljs/ravel.svg)](https://david-dm.org/raveljs/ravel) [![npm](https://img.shields.io/npm/dm/ravel.svg?maxAge=2592000)](https://www.npmjs.com/package/ravel) [![Build Status](https://travis-ci.org/raveljs/ravel.svg?branch=master)](https://travis-ci.org/raveljs/ravel) [![Code Climate](https://codeclimate.com/github/raveljs/ravel/badges/gpa.svg)](https://codeclimate.com/github/raveljs/ravel) [![Test Coverage](https://codeclimate.com/github/raveljs/ravel/badges/coverage.svg)](https://codeclimate.com/github/raveljs/ravel/coverage)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/raveljs/ravel/master/LICENSE) [![npm version](https://badge.fury.io/js/ravel.svg)](http://badge.fury.io/js/ravel) [![Dependency Status](https://david-dm.org/raveljs/ravel.svg)](https://david-dm.org/raveljs/ravel) [![npm](https://img.shields.io/npm/dm/ravel.svg?maxAge=2592000)](https://www.npmjs.com/package/ravel) [![Build Status](https://travis-ci.org/raveljs/ravel.svg?branch=master)](https://travis-ci.org/raveljs/ravel) [![Code Climate](https://codeclimate.com/github/raveljs/ravel/badges/gpa.svg)](https://codeclimate.com/github/raveljs/ravel) [![Test Coverage](https://codeclimate.com/github/raveljs/ravel/badges/coverage.svg)](https://codeclimate.com/github/raveljs/ravel/coverage) [![js-semistandard-style](https://img.shields.io/badge/code%20style-semistandard-brightgreen.svg?style=flat-square)](https://github.com/Flet/semistandard)
 
 Ravel is a tiny, sometimes-opinionated foundation for creating organized, maintainable, and scalable web applications in [node.js](https://github.com/joyent/node) with [ES2016/2017](http://kangax.github.io/compat-table/esnext/).
 
@@ -162,7 +162,7 @@ class ExampleRoutes extends Routes {
     super('/'); // base path for all routes in this class. Will be prepended to the @mapping.
     this.middleware1 = middleware1;
     // you can also build middleware right here!
-    this.middleware2 = async function(next) {
+    this.middleware2 = async function (next) {
       await next;
     };
   }
@@ -204,7 +204,7 @@ class CitiesResource extends Resource {
     this.cities = cities;
 
     // some other middleware, which you might have injected from a Module or created here
-    this.anotherMiddleware = async function(next) {
+    this.anotherMiddleware = async function (next) {
       await next;
     };
   }
@@ -263,7 +263,7 @@ const babelConfig = {
   'retainLines': true,
   'plugins': ['transform-decorators-legacy'] // add 'transform-async-to-generator' if you are using Node v6 instead of v7
 };
-gulp.task('transpile', function() {
+gulp.task('transpile', function () {
   return gulp.src('src/**/*.js') // point it at your source directory, containing Modules, Resources and Routes
       .pipe(plugins.sourcemaps.init())
       .pipe(plugins.babel(babelConfig))
@@ -802,7 +802,7 @@ class DatabaseInitializer extends Module {
     const self = this;
     // specify one or more providers to open connections to, or none
     // to open connections to all known DatabaseProviders.
-    this.db.scoped('mysql', async function(ctx) {
+    this.db.scoped('mysql', async function (ctx) {
       // this async function behaves like koa middleware,
       // so feel free to await on promises!
       await self.createTables(ctx.transaction.mysql);

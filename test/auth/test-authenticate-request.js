@@ -13,7 +13,7 @@ const upath = require('upath');
 
 const AuthenticationProvider = require('../../lib/ravel').AuthenticationProvider;
 class GoogleOAuth2 extends AuthenticationProvider {
-  get name() {
+  get name () {
     return 'google-oauth2';
   }
 }
@@ -21,18 +21,18 @@ class GoogleOAuth2 extends AuthenticationProvider {
 let Ravel, Module, app, authconfig, AuthenticationMiddleware,
   authenticateTokenStub, credentialToProfile, coreSymbols, restMiddleware;
 
-describe('util/authenticate_request', function() {
+describe('util/authenticate_request', function () {
   beforeEach((done) => {
-    //enable mockery
+    // enable mockery
     mockery.enable({
       useCleanCache: true,
       warnOnReplace: false,
       warnOnUnregistered: false
     });
     credentialToProfile = {
-      credentialToProfile: function(){}
+      credentialToProfile: function () {}
     };
-    authenticateTokenStub = function() {
+    authenticateTokenStub = function () {
       return credentialToProfile;
     };
     mockery.registerMock('./authenticate_token', authenticateTokenStub);
@@ -45,7 +45,7 @@ describe('util/authenticate_request', function() {
     const provider = new GoogleOAuth2(Ravel);
     provider.init = sinon.stub();
 
-    AuthenticationMiddleware  = require('../../lib/auth/authenticate_request');
+    AuthenticationMiddleware = require('../../lib/auth/authenticate_request');
     const Rest = require('../../lib/util/rest');
     restMiddleware = (new Rest(Ravel)).errorHandler();
     Ravel.log.setLevel('NONE');
@@ -69,8 +69,7 @@ describe('util/authenticate_request', function() {
     done();
   });
 
-  describe('middleware', function() {
-
+  describe('middleware', function () {
     it('should allow read-only access to important state information, mostly for use by subclasses', (done) => {
       const shouldRedirect = Math.random() < 0.5;
       const allowMobileRegistration = Math.random() < 0.5;
@@ -86,18 +85,18 @@ describe('util/authenticate_request', function() {
       const finalStub = sinon.stub();
 
       app.use(restMiddleware);
-      app.use(async function(ctx, next) {
+      app.use(async function (ctx, next) {
         ctx.isAuthenticated = isAuthenticatedStub;
         await next();
       });
       app.use((new AuthenticationMiddleware(Ravel, false, false)).middleware());
-      app.use(function() {
+      app.use(function () {
         finalStub();
       });
 
       request(app.callback())
       .get('/entity')
-      .expect(function() {
+      .expect(function () {
         expect(isAuthenticatedStub).to.have.been.called;
         expect(finalStub).to.have.been.called;
       })
@@ -108,7 +107,7 @@ describe('util/authenticate_request', function() {
       const isAuthenticatedStub = sinon.stub().returns(false);
 
       app.use(restMiddleware);
-      app.use(async function(ctx, next) {
+      app.use(async function (ctx, next) {
         ctx.isAuthenticated = isAuthenticatedStub;
         await next();
       });
@@ -116,7 +115,7 @@ describe('util/authenticate_request', function() {
 
       request(app.callback())
       .get('/entity')
-      .expect(function() {
+      .expect(function () {
         expect(isAuthenticatedStub).to.have.been.called;
       })
       .expect(401, done);
@@ -127,7 +126,7 @@ describe('util/authenticate_request', function() {
       const isAuthenticatedStub = sinon.stub().returns(false);
 
       app.use(restMiddleware);
-      app.use(async function(ctx, next) {
+      app.use(async function (ctx, next) {
         ctx.isAuthenticated = isAuthenticatedStub;
         await next();
       });
@@ -135,7 +134,7 @@ describe('util/authenticate_request', function() {
 
       request(app.callback())
       .get('/entity')
-      .expect(function() {
+      .expect(function () {
         expect(isAuthenticatedStub).to.have.been.called;
       })
       .expect('Location', /\/login/)
@@ -146,15 +145,16 @@ describe('util/authenticate_request', function() {
       const isAuthenticatedStub = sinon.stub();
       const finalStub = sinon.stub();
 
-      const profile = {id: 1}, user = {name: 'smcintyre'};
-      sinon.stub(credentialToProfile, 'credentialToProfile', function(token, client) {
+      const profile = {id: 1};
+      const user = {name: 'smcintyre'};
+      sinon.stub(credentialToProfile, 'credentialToProfile', function (token, client) {
         expect(token).to.equal('oauth-token');
         expect(client).to.equal('test-ios');
         return Promise.resolve(profile);
       });
       @authconfig
       class AuthConfig extends Module {
-        deserializeUser(userId) { // eslint-disable-line no-unused-vars
+        deserializeUser (userId) { // eslint-disable-line no-unused-vars
           return Promise.resolve(user);
         }
       }
@@ -167,12 +167,12 @@ describe('util/authenticate_request', function() {
       Ravel.emit('post module init');
 
       app.use(restMiddleware);
-      app.use(async function(ctx, next) {
+      app.use(async function (ctx, next) {
         ctx.isAuthenticated = isAuthenticatedStub;
         await next();
       });
       app.use((new AuthenticationMiddleware(Ravel, false, false)).middleware());
-      app.use(async function(ctx) {
+      app.use(async function (ctx) {
         expect(ctx).to.have.property('user').that.equals(user);
         finalStub();
       });
@@ -181,7 +181,7 @@ describe('util/authenticate_request', function() {
       .get('/entity')
       .set('x-auth-token', 'oauth-token')
       .set('x-auth-client', 'test-ios')
-      .expect(function() {
+      .expect(function () {
         expect(isAuthenticatedStub).to.not.have.been.called;
         expect(finalStub).to.have.been.called;
       })
@@ -193,7 +193,7 @@ describe('util/authenticate_request', function() {
       const finalStub = sinon.stub();
 
       const profile = {};
-      sinon.stub(credentialToProfile, 'credentialToProfile', function(token, client) {
+      sinon.stub(credentialToProfile, 'credentialToProfile', function (token, client) {
         expect(token).to.equal('oauth-token');
         expect(client).to.equal('test-ios');
         return Promise.resolve(profile);
@@ -201,7 +201,7 @@ describe('util/authenticate_request', function() {
 
       @authconfig
       class AuthConfig extends Module {
-        deserializeUser(userId) { // eslint-disable-line no-unused-vars
+        deserializeUser (userId) { // eslint-disable-line no-unused-vars
           return Promise.reject(new Ravel.ApplicationError.NotFound('User does not exist'));
         }
       }
@@ -214,12 +214,12 @@ describe('util/authenticate_request', function() {
       Ravel.emit('post module init');
 
       app.use(restMiddleware);
-      app.use(async function(ctx, next) {
+      app.use(async function (ctx, next) {
         ctx.isAuthenticated = isAuthenticatedStub;
         await next();
       });
       app.use((new AuthenticationMiddleware(Ravel, false, false)).middleware());
-      app.use(async function() {
+      app.use(async function () {
         finalStub();
       });
 
@@ -227,7 +227,7 @@ describe('util/authenticate_request', function() {
       .get('/entity')
       .set('x-auth-token', 'oauth-token')
       .set('x-auth-client', 'test-ios')
-      .expect(function() {
+      .expect(function () {
         expect(isAuthenticatedStub).to.not.have.been.called;
         expect(finalStub).to.not.have.been.called;
       })
@@ -238,19 +238,19 @@ describe('util/authenticate_request', function() {
       const isAuthenticatedStub = sinon.stub();
       const finalStub = sinon.stub();
 
-      sinon.stub(credentialToProfile, 'credentialToProfile', function(token, client) {
+      sinon.stub(credentialToProfile, 'credentialToProfile', function (token, client) {
         expect(token).to.equal('oauth-token');
         expect(client).to.equal('test-ios');
         return Promise.reject(new Error());
       });
 
       app.use(restMiddleware);
-      app.use(async function(ctx, next) {
+      app.use(async function (ctx, next) {
         ctx.isAuthenticated = isAuthenticatedStub;
         await next();
       });
       app.use((new AuthenticationMiddleware(Ravel, false, false)).middleware());
-      app.use(function() {
+      app.use(function () {
         finalStub();
       });
 
@@ -258,7 +258,7 @@ describe('util/authenticate_request', function() {
       .get('/entity')
       .set('x-auth-token', 'oauth-token')
       .set('x-auth-client', 'test-ios')
-      .expect(function() {
+      .expect(function () {
         expect(isAuthenticatedStub).to.not.have.been.called;
         expect(finalStub).to.not.have.been.called;
       })
@@ -269,15 +269,16 @@ describe('util/authenticate_request', function() {
       const isAuthenticatedStub = sinon.stub();
       const finalStub = sinon.stub();
 
-      const profile = {}, user = {};
-      sinon.stub(credentialToProfile, 'credentialToProfile', function(token, client) {
+      const profile = {};
+      const user = {};
+      sinon.stub(credentialToProfile, 'credentialToProfile', function (token, client) {
         expect(token).to.equal('oauth-token');
         expect(client).to.equal('test-ios');
         return Promise.resolve(profile);
       });
       @authconfig
       class AuthConfig extends Module {
-        deserializeOrCreateUser(accessToken, refreshToken, prof) { // eslint-disable-line no-unused-vars
+        deserializeOrCreateUser (accessToken, refreshToken, prof) { // eslint-disable-line no-unused-vars
           return Promise.resolve(user);
         }
       }
@@ -290,12 +291,12 @@ describe('util/authenticate_request', function() {
       Ravel.emit('post module init');
 
       app.use(restMiddleware);
-      app.use(async function(ctx,  next) {
+      app.use(async function (ctx, next) {
         ctx.isAuthenticated = isAuthenticatedStub;
         await next();
       });
       app.use((new AuthenticationMiddleware(Ravel, false, true)).middleware());
-      app.use(async function(ctx) {
+      app.use(async function (ctx) {
         expect(ctx).to.have.property('user').that.equals(user);
         finalStub();
       });
@@ -304,7 +305,7 @@ describe('util/authenticate_request', function() {
       .get('/entity')
       .set('x-auth-token', 'oauth-token')
       .set('x-auth-client', 'test-ios')
-      .expect(function() {
+      .expect(function () {
         expect(isAuthenticatedStub).to.not.have.been.called;
         expect(finalStub).to.have.been.called;
       })
@@ -315,15 +316,16 @@ describe('util/authenticate_request', function() {
       const isAuthenticatedStub = sinon.stub();
       const finalStub = sinon.stub();
 
-      const profile = {}, user = {};
-      sinon.stub(credentialToProfile, 'credentialToProfile', function(token, client) {
+      const profile = {};
+      const user = {};
+      sinon.stub(credentialToProfile, 'credentialToProfile', function (token, client) {
         expect(token).to.equal('oauth-token');
         expect(client).to.equal('test-ios');
         return Promise.resolve(profile);
       });
       @authconfig
       class AuthConfig extends Module {
-        deserializeOrCreateUser(accessToken, refreshToken, prof) { // eslint-disable-line no-unused-vars
+        deserializeOrCreateUser (accessToken, refreshToken, prof) { // eslint-disable-line no-unused-vars
           return Promise.reject(new Ravel.ApplicationError.NotFound('User does not exist'));
         }
       }
@@ -336,12 +338,12 @@ describe('util/authenticate_request', function() {
       Ravel.emit('post module init');
 
       app.use(restMiddleware);
-      app.use(async function(ctx, next) {
+      app.use(async function (ctx, next) {
         ctx.isAuthenticated = isAuthenticatedStub;
         await next();
       });
       app.use((new AuthenticationMiddleware(Ravel, false, true)).middleware());
-      app.use(async function(ctx) {
+      app.use(async function (ctx) {
         // this assertion would fail if this middleware ever ran. But it shouldn't run.
         expect(ctx).to.have.property('user').that.equals(user);
         finalStub();
@@ -351,7 +353,7 @@ describe('util/authenticate_request', function() {
       .get('/entity')
       .set('x-auth-token', 'oauth-token')
       .set('x-auth-client', 'test-ios')
-      .expect(function() {
+      .expect(function () {
         expect(isAuthenticatedStub).to.not.have.been.called;
         expect(finalStub).to.not.have.been.called;
       })
@@ -363,7 +365,7 @@ describe('util/authenticate_request', function() {
       const error = new Error('something went wrong');
 
       app.use(restMiddleware);
-      app.use(async function(ctx, next) {
+      app.use(async function (ctx, next) {
         ctx.isAuthenticated = isAuthenticatedStub;
         try {
           await next();
@@ -375,12 +377,12 @@ describe('util/authenticate_request', function() {
         }
       });
       app.use((new AuthenticationMiddleware(Ravel, false, false)).middleware());
-      app.use(async function() {
+      app.use(async function () {
         throw error;
       });
       request(app.callback())
       .get('/entity')
-      .expect(async function() {
+      .expect(async function () {
         expect(isAuthenticatedStub).to.have.been.called;
       })
       .expect(500, 'something went wrong', done);

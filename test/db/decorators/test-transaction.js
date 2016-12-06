@@ -13,9 +13,9 @@ const Routes = Ravel.Routes;
 
 let app, transaction, coreSymbols;
 
-describe('Ravel', function() {
+describe('Ravel', () => {
   beforeEach((done) => {
-    //enable mockery
+    // enable mockery
     mockery.enable({
       useCleanCache: true,
       warnOnReplace: false,
@@ -33,16 +33,16 @@ describe('Ravel', function() {
     app = undefined;
     transaction = undefined;
     coreSymbols = undefined;
-    mockery.deregisterAll();mockery.disable();
+    mockery.deregisterAll();
+    mockery.disable();
     done();
   });
 
-  describe('@transaction()', function() {
-
+  describe('@transaction()', () => {
     it('should throw an ApplicationError.IllegalValue if a non-string type is passed to @transaction', (done) => {
-      const test = function() {
+      const test = () => {
         @transaction([])
-        class Stub {} //eslint-disable-line no-unused-vars
+        class Stub {} // eslint-disable-line no-unused-vars
       };
       expect(test).to.throw(ApplicationError.IllegalValue);
       done();
@@ -51,7 +51,7 @@ describe('Ravel', function() {
     it('should indicate that all connections should be opened when used with no arguments', (done) => {
       class Stub1 {
         @transaction
-        get() {}
+        get () {}
       }
       expect(Metadata.getMethodMetaValue(Stub1.prototype, 'get', '@transaction', 'providers')).to.be.an.array;
       expect(Metadata.getMethodMetaValue(Stub1.prototype, 'get', '@transaction', 'providers')).to.deep.equal([]);
@@ -61,7 +61,7 @@ describe('Ravel', function() {
     it('should indicate that all connections should be opened when used without an argument', (done) => {
       class Stub1 {
         @transaction()
-        get() {}
+        get () {}
       }
       expect(Metadata.getMethodMetaValue(Stub1.prototype, 'get', '@transaction', 'providers')).to.be.an.array;
       expect(Metadata.getMethodMetaValue(Stub1.prototype, 'get', '@transaction', 'providers')).to.deep.equal([]);
@@ -71,7 +71,7 @@ describe('Ravel', function() {
     it('should indicate which connections should be opened when used with arguments', (done) => {
       class Stub1 {
         @transaction('mysql', 'redis')
-        get() {}
+        get () {}
       }
       expect(Metadata.getMethodMetaValue(Stub1.prototype, 'get', '@transaction', 'providers')).to.be.an.array;
       expect(Metadata.getMethodMetaValue(Stub1.prototype, 'get', '@transaction', 'providers')).to.deep.equal(['mysql', 'redis']);
@@ -81,7 +81,7 @@ describe('Ravel', function() {
     it('should be available at the class-level as well, indicating that all connections should be opened when used with no arguments', (done) => {
       @transaction
       class Stub1 {
-        get() {}
+        get () {}
       }
       expect(Metadata.getClassMetaValue(Stub1.prototype, '@transaction', 'providers')).to.be.an.array;
       expect(Metadata.getClassMetaValue(Stub1.prototype, '@transaction', 'providers')).to.deep.equal([]);
@@ -91,7 +91,7 @@ describe('Ravel', function() {
     it('should be available at the class-level as well, indicating that all connections should be opened when used without an argument', (done) => {
       @transaction()
       class Stub1 {
-        get() {}
+        get () {}
       }
       expect(Metadata.getClassMetaValue(Stub1.prototype, '@transaction', 'providers')).to.be.an.array;
       expect(Metadata.getClassMetaValue(Stub1.prototype, '@transaction', 'providers')).to.deep.equal([]);
@@ -101,7 +101,7 @@ describe('Ravel', function() {
     it('should be available at the class-level as well, indicating which connections should be opened when used with arguments', (done) => {
       @transaction('mysql', 'redis')
       class Stub1 {
-        get() {}
+        get () {}
       }
       expect(Metadata.getClassMetaValue(Stub1.prototype, '@transaction', 'providers')).to.be.an.array;
       expect(Metadata.getClassMetaValue(Stub1.prototype, '@transaction', 'providers')).to.deep.equal(['mysql', 'redis']);
@@ -110,22 +110,22 @@ describe('Ravel', function() {
 
     it('should provide open connections to Route handlers (method-level)', (done) => {
       class Stub extends Routes {
-        constructor() {
+        constructor () {
           super('/app/path');
         }
 
         @Routes.mapping(Routes.GET, '')
         @transaction('mysql', 'redis')
-        handler() {}
+        handler () {}
       }
       mockery.registerMock(upath.join(app.cwd, 'stub'), Stub);
-      const transactionMiddleware = async function(ctx, next){ await next(); };
+      const transactionMiddleware = async function (ctx, next) { await next(); };
       app.db = {
         middleware: sinon.stub().returns(transactionMiddleware)
       };
       app.routes('stub');
       const router = require('koa-router')();
-      sinon.stub(router, 'get', function() {
+      sinon.stub(router, 'get', function () {
         expect(app.db.middleware).to.have.been.calledWith('mysql', 'redis');
         expect(arguments[0]).to.equal('/app/path');
         expect(Array.from(arguments).indexOf(transactionMiddleware)).to.be.greaterThan(0);
@@ -137,22 +137,22 @@ describe('Ravel', function() {
     it('should provide open connections to Route handlers (mixed class-level and method-level)', (done) => {
       @transaction('rethinkdb')
       class Stub2 extends Routes {
-        constructor() {
+        constructor () {
           super('/app/another/path');
         }
 
         @Routes.mapping(Routes.GET, '')
         @transaction('mysql', 'redis')
-        handler() {}
+        handler () {}
       }
       mockery.registerMock(upath.join(app.cwd, 'stub2'), Stub2);
-      const transactionMiddleware = async function(ctx, next){ await next(); };
+      const transactionMiddleware = async function (ctx, next) { await next(); };
       app.db = {
         middleware: sinon.stub().returns(transactionMiddleware)
       };
       app.routes('stub2');
       const router = require('koa-router')();
-      sinon.stub(router, 'get', function() {
+      sinon.stub(router, 'get', function () {
         expect(app.db.middleware).to.have.been.calledWith('rethinkdb', 'mysql', 'redis');
         expect(arguments[0]).to.equal('/app/another/path');
         expect(Array.from(arguments).indexOf(transactionMiddleware)).to.be.greaterThan(0);

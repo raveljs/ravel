@@ -10,9 +10,9 @@ chai.use(require('sinon-chai'));
 
 let Ravel, Module, fs, stub, coreSymbols;
 
-describe('Ravel', function() {
+describe('Ravel', () => {
   beforeEach((done) => {
-    //enable mockery
+    // enable mockery
     mockery.enable({
       useCleanCache: true,
       warnOnReplace: false,
@@ -21,14 +21,14 @@ describe('Ravel', function() {
 
     fs = require('fs');
     mockery.registerMock('fs', fs);
-    mockery.registerMock('fs-readdir-recursive', function(basePath) {  //eslint-disable-line no-unused-vars
+    mockery.registerMock('fs-readdir-recursive', function (basePath) {  // eslint-disable-line no-unused-vars
       return ['test1.js', 'test2.js', '.eslintrc', 'package/test3.js'];
     });
     Ravel = new (require('../../lib/ravel'))();
     coreSymbols = require('../../lib/core/symbols');
     Module = require('../../lib/ravel').Module;
     Ravel.log.setLevel(Ravel.log.NONE);
-    Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
+    Ravel.kvstore = {}; // mock Ravel.kvstore, since we're not actually starting Ravel.
     done();
   });
 
@@ -44,12 +44,11 @@ describe('Ravel', function() {
     done();
   });
 
-
-  describe('#modules()', function() {
+  describe('#modules()', () => {
     it('should allow clients to recursively register module files for instantiation in Ravel.start, ignoring non-js files', (done) => {
-      stub = sinon.stub(fs, 'lstatSync', function() {
+      stub = sinon.stub(fs, 'lstatSync', function () {
         return {
-          isDirectory: function(){return true;}
+          isDirectory: function () { return true; }
         };
       });
 
@@ -68,12 +67,12 @@ describe('Ravel', function() {
     });
 
     it('should throw an ApplicationError.IllegalValue when supplied with a base path which is not a directory', (done) => {
-      stub = sinon.stub(fs, 'lstatSync', function() {
+      stub = sinon.stub(fs, 'lstatSync', function () {
         return {
-          isDirectory: function(){return false;}
+          isDirectory: function () { return false; }
         };
       });
-      const test = function() {
+      const test = () => {
         Ravel.modules('./blah/blah');
       };
       expect(test).to.throw(Ravel.ApplicationError.IllegalValue);
@@ -81,9 +80,9 @@ describe('Ravel', function() {
     });
 
     it('should support absolute base paths', (done) => {
-      stub = sinon.stub(fs, 'lstatSync', function() {
+      stub = sinon.stub(fs, 'lstatSync', function () {
         return {
-          isDirectory: function(){return true;}
+          isDirectory: function () { return true; }
         };
       });
 

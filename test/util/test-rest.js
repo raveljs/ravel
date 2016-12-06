@@ -10,9 +10,9 @@ const httpCodes = require('../../lib/util/http_codes');
 
 let Ravel, rest, app;
 
-describe('util/rest', function() {
+describe('util/rest', () => {
   beforeEach((done) => {
-    //enable mockery
+    // enable mockery
     mockery.enable({
       useCleanCache: true,
       warnOnReplace: false,
@@ -22,7 +22,7 @@ describe('util/rest', function() {
     app = new Koa();
     Ravel = new (require('../../lib/ravel'))();
     Ravel.log.setLevel('NONE');
-    Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
+    Ravel.kvstore = {}; // mock Ravel.kvstore, since we're not actually starting Ravel.
 
     rest = new (require('../../lib/util/rest'))(Ravel);
     done();
@@ -32,14 +32,15 @@ describe('util/rest', function() {
     app = undefined;
     Ravel = undefined;
     rest = undefined;
-    mockery.deregisterAll();mockery.disable();
+    mockery.deregisterAll();
+    mockery.disable();
     done();
   });
 
-  describe('#respond()', function() {
+  describe('#respond()', () => {
     it('should produce a response with HTTP 204 NO CONTENT if no body is supplied', function (done) {
       app.use(rest.respond());
-      app.use(async function(ctx) {
+      app.use(async function (ctx) {
         ctx.status = 200;
       });
       request(app.callback())
@@ -50,7 +51,7 @@ describe('util/rest', function() {
     it('should produce a response with HTTP 200 OK containing a string body if a json payload is supplied', function (done) {
       const result = {};
       app.use(rest.respond());
-      app.use(async function(ctx) {
+      app.use(async function (ctx) {
         ctx.body = result;
       });
       request(app.callback())
@@ -61,10 +62,10 @@ describe('util/rest', function() {
 
     it('should produce a response with HTTP 201 CREATED and an appropriate location header if a json body containing a property \'id\' is supplied along with an okCode of CREATED', (done) => {
       const result = {
-        id:1
+        id: 1
       };
       app.use(rest.respond());
-      app.use(async function(ctx) {
+      app.use(async function (ctx) {
         ctx.body = result;
       });
 
@@ -78,7 +79,7 @@ describe('util/rest', function() {
 
     it('should allow the user to override the default success status code', function (done) {
       app.use(rest.respond());
-      app.use(async function(ctx) {
+      app.use(async function (ctx) {
         ctx.respondOptions = {
           okCode: 201
         };
@@ -99,7 +100,7 @@ describe('util/rest', function() {
       };
 
       app.use(rest.respond());
-      app.use(async function(ctx) {
+      app.use(async function (ctx) {
         ctx.body = result;
         ctx.respondOptions = options;
       });
@@ -113,11 +114,11 @@ describe('util/rest', function() {
     });
   });
 
-  describe('#errorHandler()', function() {
+  describe('#errorHandler()', () => {
     it('should respond with HTTP 404 NOT FOUND when ApplicationError.NotFound is passed as err', (done) => {
       const message = 'a message';
       app.use(rest.errorHandler());
-      app.use(async function() {
+      app.use(async () => {
         throw new Ravel.ApplicationError.NotFound(message);
       });
       request(app.callback())
@@ -128,7 +129,7 @@ describe('util/rest', function() {
     it('should respond with HTTP 403 Forbidden when ApplicationError.Access is passed as err', (done) => {
       const message = 'a message';
       app.use(rest.errorHandler());
-      app.use(async function() {
+      app.use(async () => {
         throw new Ravel.ApplicationError.Access(message);
       });
       request(app.callback())
@@ -139,7 +140,7 @@ describe('util/rest', function() {
     it('should respond with HTTP 405 METHOD NOT ALLOWED when ApplicationError.NotAllowed is passed as err', (done) => {
       const message = 'a message';
       app.use(rest.errorHandler());
-      app.use(async function() {
+      app.use(async () => {
         throw new Ravel.ApplicationError.NotAllowed(message);
       });
       request(app.callback())
@@ -150,7 +151,7 @@ describe('util/rest', function() {
     it('should respond with HTTP 501 NOT IMPLEMENTED when ApplicationError.NotImplemented is passed as err', (done) => {
       const message = 'a message';
       app.use(rest.errorHandler());
-      app.use(async function() {
+      app.use(async () => {
         throw new Ravel.ApplicationError.NotImplemented(message);
       });
       request(app.callback())
@@ -161,7 +162,7 @@ describe('util/rest', function() {
     it('should respond with HTTP 409 CONFLICT when ApplicationError.DuplicateEntry is passed as err', (done) => {
       const message = 'a message';
       app.use(rest.errorHandler());
-      app.use(async function() {
+      app.use(async () => {
         throw new Ravel.ApplicationError.DuplicateEntry(message);
       });
       request(app.callback())
@@ -172,7 +173,7 @@ describe('util/rest', function() {
     it('should respond with HTTP 416 REQUESTED_RANGE_NOT_SATISFIABLE when ApplicationError.RangeOutOfBounds is passed as err', (done) => {
       const message = 'a message';
       app.use(rest.errorHandler());
-      app.use(async function() {
+      app.use(async () => {
         throw new Ravel.ApplicationError.RangeOutOfBounds(message);
       });
       request(app.callback())
@@ -183,7 +184,7 @@ describe('util/rest', function() {
     it('should respond with HTTP 400 BAD REQUEST when ApplicationError.IllegalValue is passed as err', (done) => {
       const message = 'a message';
       app.use(rest.errorHandler());
-      app.use(async function() {
+      app.use(async () => {
         throw new Ravel.ApplicationError.IllegalValue(message);
       });
       request(app.callback())
@@ -194,7 +195,7 @@ describe('util/rest', function() {
     it('should respond with HTTP 500 INTERNAL SERVER ERROR when an unknown Error type is passed as err', (done) => {
       const err = new Error('a message');
       app.use(rest.errorHandler());
-      app.use(async function() {
+      app.use(async () => {
         throw err;
       });
       request(app.callback())

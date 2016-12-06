@@ -1,8 +1,8 @@
 'use strict';
 
 const gulp = require('gulp');
-const plugins = require( 'gulp-load-plugins' )();
-// const isparta = require('isparta');
+const plugins = require('gulp-load-plugins')();
+// const isparta = require('isparta')
 const del = require('del');
 const exec = require('child_process').exec;
 const pkginfo = require('./package.json');
@@ -30,14 +30,14 @@ if (process.execArgv.indexOf('--harmony_async_await') < 0) {
   babelConfig.plugins = ['transform-decorators-legacy'];
 }
 
-gulp.task('lint', function() {
+gulp.task('lint', function () {
   return gulp.src(['./lib/**/*.js', './test/**/*.js', 'gulpfile.js'])
              .pipe(plugins.eslint())
              .pipe(plugins.eslint.format())
              .pipe(plugins.eslint.failAfterError());
 });
 
-gulp.task('docs', function(done) {
+gulp.task('docs', function (done) {
   exec(`mr-doc -n "Ravel ${pkginfo.version} API Reference" -s lib --theme ravel`, function (err, stdout, stderr) {
     console.log(stdout);
     console.log(stderr);
@@ -45,13 +45,13 @@ gulp.task('docs', function(done) {
   });
 });
 
-gulp.task('clean', function() {
+gulp.task('clean', function () {
   return del([
     'reports', 'docs', 'test-dist'
   ]);
 });
 
-gulp.task('cover-lib', ['transpile-lib'], function() {
+gulp.task('cover-lib', ['transpile-lib'], function () {
   return gulp.src(['./test-dist/lib/**/*.js'])
              .pipe(plugins.istanbul({
               //  instrumenter: isparta.Instrumenter,
@@ -60,12 +60,12 @@ gulp.task('cover-lib', ['transpile-lib'], function() {
              .pipe(plugins.istanbul.hookRequire());
 });
 
-gulp.task('copy-lib', ['clean', 'lint'], function() {
+gulp.task('copy-lib', ['clean', 'lint'], function () {
   return gulp.src('lib/**/*.js')
       .pipe(gulp.dest('test-dist/lib'));
 });
 
-gulp.task('transpile-lib', ['clean', 'lint'], function() {
+gulp.task('transpile-lib', ['clean', 'lint'], function () {
   return gulp.src('lib/**/*.js')
       .pipe(plugins.sourcemaps.init())
       .pipe(plugins.babel(babelConfig))
@@ -73,7 +73,7 @@ gulp.task('transpile-lib', ['clean', 'lint'], function() {
       .pipe(gulp.dest('test-dist/lib'));
 });
 
-gulp.task('transpile-tests', ['clean', 'lint'], function() {
+gulp.task('transpile-tests', ['clean', 'lint'], function () {
   return gulp.src('test/**/*.js')
       .pipe(plugins.sourcemaps.init())
       .pipe(plugins.babel(babelConfig))
@@ -81,17 +81,17 @@ gulp.task('transpile-tests', ['clean', 'lint'], function() {
       .pipe(gulp.dest('test-dist/test'));
 });
 
-//necessary to locate issues in code, due to https://github.com/gotwarlost/istanbul/issues/274
+// necessary to locate issues in code, due to https://github.com/gotwarlost/istanbul/issues/274
 gulp.task('test-no-cov', ['copy-lib', 'transpile-tests'], function () {
   const env = plugins.env.set({
-    LOG_LEVEL : 'critical'
+    LOG_LEVEL: 'critical'
   });
   return gulp.src(TESTS)
     .pipe(env)
     .pipe(plugins.mocha({
       reporter: 'spec',
-      quiet:false,
-      colors:true,
+      quiet: false,
+      colors: true,
       timeout: 10000
     }))
     .pipe(env.reset);
@@ -99,32 +99,32 @@ gulp.task('test-no-cov', ['copy-lib', 'transpile-tests'], function () {
 
 gulp.task('test', ['cover-lib', 'transpile-tests'], function () {
   const env = plugins.env.set({
-    LOG_LEVEL : 'critical'
+    LOG_LEVEL: 'critical'
   });
   return gulp.src(TESTS)
     .pipe(env)
     .pipe(plugins.mocha({
       reporter: 'spec',
-      quiet:false,
-      colors:true,
+      quiet: false,
+      colors: true,
       timeout: 10000
     }))
     // Creating the reports after tests ran
     .pipe(plugins.istanbul.writeReports({
       dir: './reports',
-      reporters: [ 'lcov', 'json', 'text', 'text-summary', 'html']
+      reporters: ['lcov', 'json', 'text', 'text-summary', 'html']
     }))
     // Enforce a coverage of at least 100%
-    //.pipe(plugins.istanbul.enforceThresholds({ thresholds: { global: 100 } }))
+    // .pipe(plugins.istanbul.enforceThresholds({ thresholds: { global: 100 } }))
     .pipe(env.reset);
 });
 
-gulp.task('watch', ['lint', 'docs'], function() {
+gulp.task('watch', ['lint', 'docs'], function () {
   gulp.watch(['README.md', './lib/**/*.js'], ['lint', 'docs']);
   gulp.watch(['gulpfile.js', './test/**/*.js'], ['lint']);
 });
 
-gulp.task('show-coverage', function() {
+gulp.task('show-coverage', function () {
   return gulp.src('./reports/index.html')
              .pipe(plugins.open());
 });

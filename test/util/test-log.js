@@ -9,24 +9,24 @@ const mockery = require('mockery');
 
 let Ravel, intel, intelLogger, coreSymbols;
 
-describe('Ravel.Log', function() {
+describe('Ravel.Log', () => {
   beforeEach((done) => {
-    //enable mockery
+    // enable mockery
     mockery.enable({
       useCleanCache: true,
       warnOnReplace: false,
       warnOnUnregistered: false
     });
-    //we have to completely mock intel because its
-    //methods are read-only, so sinon can't touch them :(
+    // we have to completely mock intel because its
+    // methods are read-only, so sinon can't touch them :(
     intelLogger = {
-      trace: function() {},
-      verbose: function() {},
-      debug: function() {},
-      info: function() {},
-      warn: function() {},
-      error: function() {},
-      critical: function() {}
+      trace: () => {},
+      verbose: () => {},
+      debug: () => {},
+      info: () => {},
+      warn: () => {},
+      error: () => {},
+      critical: () => {}
     };
     intel = {
       TRACE: 'TRACE',
@@ -38,20 +38,20 @@ describe('Ravel.Log', function() {
       CRITICAL: 'CRITICAL',
       NONE: 'NONE',
       ALL: 'ALL',
-      getLogger: function() {
+      getLogger: () => {
         return intelLogger;
       },
-      setLevel: function() {
+      setLevel: () => {
 
       },
-      basicConfig: function() {},
-      trace: function() {},
-      verbose: function() {},
-      debug: function() {},
-      info: function() {},
-      warn: function() {},
-      error: function() {},
-      critical: function() {}
+      basicConfig: () => {},
+      trace: () => {},
+      verbose: () => {},
+      debug: () => {},
+      info: () => {},
+      warn: () => {},
+      error: () => {},
+      critical: () => {}
     };
     mockery.registerMock('intel', intel);
     Ravel = new (require('../../lib/ravel'))();
@@ -62,11 +62,12 @@ describe('Ravel.Log', function() {
   afterEach((done) => {
     Ravel = undefined;
     coreSymbols = undefined;
-    mockery.deregisterAll();mockery.disable();
+    mockery.deregisterAll();
+    mockery.disable();
     done();
   });
 
-  describe('#setLevel()', function() {
+  describe('#setLevel()', () => {
     it('should allow clients to set the logging level', (done) => {
       const stub = sinon.stub(intel, 'setLevel');
       Ravel.log.setLevel(Ravel.log.TRACE);
@@ -88,7 +89,7 @@ describe('Ravel.Log', function() {
     });
   });
 
-  describe('#trace()', function() {
+  describe('#trace()', () => {
     it('should allow logging at the trace level', (done) => {
       const stub = sinon.stub(intelLogger, 'trace');
       const message = 'a message';
@@ -99,7 +100,7 @@ describe('Ravel.Log', function() {
     });
   });
 
-  describe('#verbose()', function() {
+  describe('#verbose()', () => {
     it('should allow logging at the verbose level', (done) => {
       const stub = sinon.stub(intelLogger, 'verbose');
       const message = 'a message';
@@ -110,7 +111,7 @@ describe('Ravel.Log', function() {
     });
   });
 
-  describe('#debug()', function() {
+  describe('#debug()', () => {
     it('should allow logging at the debug level', (done) => {
       const stub = sinon.stub(intelLogger, 'debug');
       const message = 'a message';
@@ -121,7 +122,7 @@ describe('Ravel.Log', function() {
     });
   });
 
-  describe('#info()', function() {
+  describe('#info()', () => {
     it('should allow logging at the info level', (done) => {
       const stub = sinon.stub(intelLogger, 'info');
       const message = 'a message';
@@ -132,7 +133,7 @@ describe('Ravel.Log', function() {
     });
   });
 
-  describe('#warn()', function() {
+  describe('#warn()', () => {
     it('should allow logging at the warn level', (done) => {
       const stub = sinon.stub(intelLogger, 'warn');
       const message = 'a message';
@@ -143,7 +144,7 @@ describe('Ravel.Log', function() {
     });
   });
 
-  describe('#error()', function() {
+  describe('#error()', () => {
     it('should allow logging at the error level', (done) => {
       const stub = sinon.stub(intelLogger, 'error');
       const message = 'a message';
@@ -154,7 +155,7 @@ describe('Ravel.Log', function() {
     });
   });
 
-  describe('#critical()', function() {
+  describe('#critical()', () => {
     it('should allow logging at the critical level', (done) => {
       const stub = sinon.stub(intelLogger, 'critical');
       const message = 'a message';
@@ -165,7 +166,7 @@ describe('Ravel.Log', function() {
     });
   });
 
-  describe('#getLogger()', function() {
+  describe('#getLogger()', () => {
     it('should return a named logger with identical logging methods to the root logger', (done) => {
       const logger = Ravel.log.getLogger('name');
       const message = 'a message';
@@ -208,7 +209,7 @@ describe('Ravel.Log', function() {
     });
   });
 
-  describe('on(\'start\')', function() {
+  describe('on(\'start\')', () => {
     it('should set the default log level on \'start\' if none was specified via Ravel.set(\'log level\')', (done) => {
       const stub = sinon.stub(intel, 'setLevel');
       Ravel.emit('pre init');

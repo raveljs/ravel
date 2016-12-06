@@ -12,16 +12,16 @@ const upath = require('upath');
 
 const AuthenticationProvider = (require('../../lib/ravel')).AuthenticationProvider;
 class GoogleOAuth2 extends AuthenticationProvider {
-  get name() {
+  get name () {
     return 'google-oauth2';
   }
 }
 
 let Ravel, ravelApp, authconfig, passportMock, coreSymbols;
 
-describe('auth/passport_init', function() {
+describe('auth/passport_init', () => {
   beforeEach((done) => {
-    //enable mockery
+    // enable mockery
     mockery.enable({
       useCleanCache: true,
       warnOnReplace: false,
@@ -30,18 +30,18 @@ describe('auth/passport_init', function() {
 
     // koa-passport still uses generators!
     passportMock = {
-      initialize: function() {
+      initialize: () => {
         return function*(next) {
           yield next;
         };
       },
-      session: function() {
+      session: () => {
         return function*(next) {
           yield next;
         };
       },
-      serializeUser: function() {},
-      deserializeUser: function() {}
+      serializeUser: () => {},
+      deserializeUser: () => {}
     };
 
     mockery.registerMock('koa-passport', passportMock);
@@ -51,7 +51,7 @@ describe('auth/passport_init', function() {
     authconfig = Ravel.Module.authconfig;
     coreSymbols = require('../../lib/core/symbols');
     ravelApp.log.setLevel(ravelApp.log.NONE);
-    ravelApp.kvstore = {}; //mock ravelApp.kvstore, since we're not actually starting ravelApp.
+    ravelApp.kvstore = {}; // mock ravelApp.kvstore, since we're not actually starting ravelApp.
     done();
   });
 
@@ -80,16 +80,16 @@ describe('auth/passport_init', function() {
   });
 
   it('should initialize passport and sessions for koa', (done) => {
-    //mock auth config
+    // mock auth config
     @authconfig
     class AuthConfig extends Ravel.Module {
-      deserializeUser() {
+      deserializeUser () {
         return Promise.resolve({});
       }
-      deserializeOrCreateUser() {
+      deserializeOrCreateUser () {
         return Promise.resolve({});
       }
-      verify() {
+      verify () {
         return Promise.resolve({});
       }
     }
@@ -125,7 +125,7 @@ describe('auth/passport_init', function() {
     require('../../lib/auth/passport_init')(ravelApp, {});
 
     const app = new Koa();
-    function test() {
+    function test () {
       ravelApp.emit('post config koa', app);
       ravelApp.emit('post module init');
     }
@@ -134,16 +134,16 @@ describe('auth/passport_init', function() {
   });
 
   it('should use serializeUser to serialize users to a session cookie', (done) => {
-    //mock auth config
+    // mock auth config
     @authconfig
     class AuthConfig extends Ravel.Module {
-      serializeUser(user) {
+      serializeUser (user) {
         return Promise.resolve(user.id);
       }
-      deserializeUser() {
+      deserializeUser () {
         return Promise.resolve({});
       }
-      deserializeOrCreateUser() {
+      deserializeOrCreateUser () {
         return Promise.resolve({});
       }
     }
@@ -156,8 +156,8 @@ describe('auth/passport_init', function() {
     require('../../lib/auth/passport_init')(ravelApp);
     const app = new Koa();
 
-    sinon.stub(passportMock, 'serializeUser', function(serializerFn) {
-      serializerFn({id:9876}, function(err, result) {
+    sinon.stub(passportMock, 'serializeUser', function (serializerFn) {
+      serializerFn({id: 9876}, function (e, result) {
         expect(result).to.equal(9876);
         done();
       });
@@ -173,17 +173,17 @@ describe('auth/passport_init', function() {
       id: 9876
     };
 
-    //mock auth config
+    // mock auth config
     @authconfig
     class AuthConfig extends Ravel.Module {
-      serializeUser(user) {
+      serializeUser (user) {
         return Promise.resolve(user.id);
       }
-      deserializeUser(userId) {
+      deserializeUser (userId) {
         expect(userId).to.equal(profile.id);
         return Promise.resolve(profile);
       }
-      deserializeOrCreateUser() {
+      deserializeOrCreateUser () {
         return Promise.resolve({});
       }
     }
@@ -196,8 +196,8 @@ describe('auth/passport_init', function() {
     require('../../lib/auth/passport_init')(ravelApp);
     const app = new Koa();
 
-    sinon.stub(passportMock, 'deserializeUser', function(deserializerFn) {
-      deserializerFn(9876, function(err, result) {
+    sinon.stub(passportMock, 'deserializeUser', function (deserializerFn) {
+      deserializerFn(9876, function (e, result) {
         expect(result).to.equal(profile);
         done();
       });
@@ -213,19 +213,19 @@ describe('auth/passport_init', function() {
       id: 9876
     };
 
-    //mock auth config
+    // mock auth config
     @authconfig
     class AuthConfig extends Ravel.Module {
-      serializeUser() {
+      serializeUser () {
         return Promise.reject(new Error());
       }
-      deserializeUser() {
+      deserializeUser () {
         return Promise.resolve(profile);
       }
-      deserializeOrCreateUser() {
+      deserializeOrCreateUser () {
         return Promise.resolve({});
       }
-      verifyCredential() {
+      verifyCredential () {
         return Promise.resolve({});
       }
     }
@@ -238,8 +238,8 @@ describe('auth/passport_init', function() {
     require('../../lib/auth/passport_init')(ravelApp);
     const app = new Koa();
 
-    sinon.stub(passportMock, 'serializeUser', function(serializerFn) {
-      serializerFn(9876, function(err, result) {
+    sinon.stub(passportMock, 'serializeUser', function (serializerFn) {
+      serializerFn(9876, function (err, result) {
         expect(result).to.be.not.ok;
         expect(err).to.be.instanceof(Error);
         done();
@@ -256,20 +256,20 @@ describe('auth/passport_init', function() {
       id: 9876
     };
 
-    //mock auth config
+    // mock auth config
     @authconfig
     class AuthConfig extends Ravel.Module {
-      serializeUser(user) {
+      serializeUser (user) {
         return Promise.resolve(user.id);
       }
-      deserializeUser(userId) {
+      deserializeUser (userId) {
         expect(userId).to.equal(profile.id);
         return Promise.reject(new Error());
       }
-      deserializeOrCreateUser() {
+      deserializeOrCreateUser () {
         return Promise.resolve({});
       }
-      verifyCredential() {
+      verifyCredential () {
         return Promise.resolve({});
       }
     }
@@ -282,8 +282,8 @@ describe('auth/passport_init', function() {
     require('../../lib/auth/passport_init')(ravelApp);
     const app = new Koa();
 
-    sinon.stub(passportMock, 'deserializeUser', function(deserializerFn) {
-      deserializerFn(9876, function(err, result) {
+    sinon.stub(passportMock, 'deserializeUser', function (deserializerFn) {
+      deserializerFn(9876, function (err, result) {
         expect(result).to.be.not.ok;
         expect(err).to.be.instanceof(Error);
         done();
@@ -301,10 +301,10 @@ describe('auth/passport_init', function() {
       name: 'Sean McIntyre'
     };
 
-    //mock auth config
+    // mock auth config
     @authconfig
     class AuthConfig extends Ravel.Module {
-      verify() {
+      verify () {
         return Promise.resolve(databaseProfile);
       }
     }
@@ -312,8 +312,8 @@ describe('auth/passport_init', function() {
     ravelApp.module('./authconfig', 'authconfig');
 
     const provider = new GoogleOAuth2(ravelApp);
-    sinon.stub(provider, 'init', function(expressApp, passport, verify) {
-      verify('testAccessToken', 'testRefreshToken', {name: 'Sean McIntyre'}, function(err, result) {
+    sinon.stub(provider, 'init', function (expressApp, passport, verify) {
+      verify('testAccessToken', 'testRefreshToken', {name: 'Sean McIntyre'}, function (e, result) {
         expect(result).to.deep.equal(databaseProfile);
         done();
       });
@@ -328,10 +328,10 @@ describe('auth/passport_init', function() {
   });
 
   it('should callback with an error if the verify function prevents auth provider initialization', (done) => {
-    //mock auth config
+    // mock auth config
     @authconfig
     class AuthConfig extends Ravel.Module {
-      verify() {
+      verify () {
         return Promise.reject(new Error());
       }
     }
@@ -339,8 +339,8 @@ describe('auth/passport_init', function() {
     ravelApp.module('./authconfig', 'authconfig');
 
     const provider = new GoogleOAuth2(ravelApp);
-    sinon.stub(provider, 'init', function(router, passport, verify) {
-      verify('testAccessToken', 'testRefreshToken', {name: 'Sean McIntyre'}, function(err, result) {
+    sinon.stub(provider, 'init', function (router, passport, verify) {
+      verify('testAccessToken', 'testRefreshToken', {name: 'Sean McIntyre'}, function (err, result) {
         expect(result).to.be.not.ok;
         expect(err).to.be.instanceof(Error);
         done();

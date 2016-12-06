@@ -10,23 +10,23 @@ const sinon = require('sinon');
 
 let Ravel, tokenAuth, profile, testProvider, coreSymbols;
 
-describe('auth/authenticate_token', function() {
+describe('auth/authenticate_token', () => {
   beforeEach((done) => {
-    //enable mockery
+    // enable mockery
     mockery.enable({
       useCleanCache: true,
       warnOnReplace: false,
       warnOnUnregistered: false
     });
-    //mock Ravel.kvstore, since we're not actually starting Ravel.
+    // mock Ravel.kvstore, since we're not actually starting Ravel.
     const redisMock = {
-      createClient: function() {
-        const redisClientStub = new (require('events').EventEmitter)(); //eslint-disable-line no-extra-parens
-        redisClientStub.auth = function(){};
-        redisClientStub.get = function(){};
-        redisClientStub.setex = function(){};
+      createClient: () => {
+        const redisClientStub = new (require('events').EventEmitter)(); // eslint-disable-line no-extra-parens
+        redisClientStub.auth = function () {};
+        redisClientStub.get = function () {};
+        redisClientStub.setex = function () {};
         return redisClientStub;
-      },
+      }
     };
     mockery.registerMock('redis', redisMock);
 
@@ -41,25 +41,25 @@ describe('auth/authenticate_token', function() {
 
     tokenAuth = new (require('../../lib/auth/authenticate_token'))(Ravel);
 
-    //mock up an authentication provider for our tests
+    // mock up an authentication provider for our tests
     profile = {};
 
     const AuthenticationProvider = require('../../lib/ravel').AuthenticationProvider;
 
     class TestProvider extends AuthenticationProvider {
-      get name() {
+      get name () {
         return 'test';
       }
 
-      init() {
+      init () {
 
       }
 
-      handlesClient(client) {
+      handlesClient (client) {
         return client === 'test-web';
       }
 
-      credentialToProfile(credential, client) { //eslint-disable-line no-unused-vars
+      credentialToProfile (credential, client) { // eslint-disable-line no-unused-vars
         return Promise.resolve({profile: profile, expiry: 2000});
       }
     }
@@ -76,9 +76,9 @@ describe('auth/authenticate_token', function() {
     done();
   });
 
-  describe('#credentialToProfile()', function() {
+  describe('#credentialToProfile()', () => {
     it('should use the appropriate authentication provider to validate and turn a client token into a profile', (done) => {
-      sinon.stub(Ravel.kvstore, 'get', function(key, callback) {
+      sinon.stub(Ravel.kvstore, 'get', function (key, callback) {
         callback(null, undefined);
       });
       sinon.stub(Ravel.kvstore, 'setex');
@@ -92,27 +92,27 @@ describe('auth/authenticate_token', function() {
     });
 
     it('should cache profiles in redis using an expiry time which matches the token expiry time', (done) => {
-      sinon.stub(Ravel.kvstore, 'get', function(key, callback) {
+      sinon.stub(Ravel.kvstore, 'get', function (key, callback) {
         callback(null, undefined);
       });
       const spy = sinon.stub(Ravel.kvstore, 'setex');
       const promise = tokenAuth.credentialToProfile('oauth-token', 'test-web');
       expect(promise).to.eventually.deep.equal(profile);
-      promise.then(function() {
-        expect(spy).to.have.been.calledWith(testProvider.name+'-test-web-profile-oauth-token', 2000, JSON.stringify(profile));
+      promise.then(() => {
+        expect(spy).to.have.been.calledWith(testProvider.name + '-test-web-profile-oauth-token', 2000, JSON.stringify(profile));
         done();
       });
     });
 
     it('should satisfy profile translates from redis when possible', (done) => {
-      sinon.stub(Ravel.kvstore, 'get', function(key, callback) {
+      sinon.stub(Ravel.kvstore, 'get', function (key, callback) {
         callback(null, JSON.stringify(profile));
       });
       const setexSpy = sinon.stub(Ravel.kvstore, 'setex');
       const translateSpy = sinon.spy(testProvider, 'credentialToProfile');
       const promise = tokenAuth.credentialToProfile('oauth-token', 'test-web');
       expect(promise).to.eventually.deep.equal(profile);
-      promise.then(function() {
+      promise.then(() => {
         expect(setexSpy).to.not.have.been.called;
         expect(translateSpy).to.not.have.been.called;
         done();
@@ -120,16 +120,16 @@ describe('auth/authenticate_token', function() {
     });
 
     it('should callback with an error if anything goes wrong while translating the token into a profile, such an encountering an invalid token', (done) => {
-      sinon.stub(Ravel.kvstore, 'get', function(key, callback) {
+      sinon.stub(Ravel.kvstore, 'get', function (key, callback) {
         callback(null, undefined);
       });
       const spy = sinon.stub(Ravel.kvstore, 'setex');
-      sinon.stub(testProvider, 'credentialToProfile', function(token, client) { //eslint-disable-line no-unused-vars
+      sinon.stub(testProvider, 'credentialToProfile', function (token, client) { // eslint-disable-line no-unused-vars
         return Promise.reject(new Error());
       });
       const promise = tokenAuth.credentialToProfile('oauth-token', 'test-web');
       expect(promise).to.eventually.be.rejectedWith(Error);
-      promise.catch(function() {
+      promise.catch(() => {
         expect(spy).to.not.have.been.called;
         done();
       });

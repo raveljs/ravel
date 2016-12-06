@@ -5,7 +5,7 @@ const expect = chai.expect;
 
 let Ravel, httpCodes;
 
-describe('util/application_error', function() {
+describe('util/application_error', () => {
   beforeEach((done) => {
     Ravel = new (require('../../lib/ravel'))();
     Ravel.log.setLevel('NONE');
@@ -18,8 +18,7 @@ describe('util/application_error', function() {
     done();
   });
 
-  describe('Ravel.ApplicationError', function() {
-
+  describe('Ravel.ApplicationError', () => {
     it('should provide .General', (done) => {
       expect(Ravel.ApplicationError).to.have.a.property('General')
         .that.is.a('function');
@@ -32,11 +31,11 @@ describe('util/application_error', function() {
 
     it('constructor should reject codes which are greater than valid HTTP error codes', (done) => {
       class TestError extends Ravel.ApplicationError.General {
-        constructor(msg) {
+        constructor (msg) {
           super(msg, 600);
         }
       }
-      expect(function() {
+      expect(() => {
         return new TestError('test');
       }).to.throw();
       done();
@@ -44,11 +43,11 @@ describe('util/application_error', function() {
 
     it('constructor should reject codes which are less than valid HTTP error codes', (done) => {
       class TestError extends Ravel.ApplicationError.General {
-        constructor(msg) {
+        constructor (msg) {
           super(msg, 50);
         }
       }
-      expect(function() {
+      expect(() => {
         return new TestError('test');
       }).to.throw();
       done();
@@ -56,11 +55,11 @@ describe('util/application_error', function() {
 
     it('constructor should reject codes which are not numbers', (done) => {
       class TestError extends Ravel.ApplicationError.General {
-        constructor(msg) {
+        constructor (msg) {
           super(msg, '600');
         }
       }
-      expect(function() {
+      expect(() => {
         return new TestError('test');
       }).to.throw();
       done();
@@ -145,6 +144,5 @@ describe('util/application_error', function() {
       expect(err).to.have.a.property('code').that.equals(httpCodes.REQUESTED_RANGE_NOT_SATISFIABLE);
       done();
     });
-
   });
 });

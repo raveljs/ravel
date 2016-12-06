@@ -6,8 +6,7 @@ const ApplicationError = require('../../lib/util/application_error');
 
 let Metadata;
 
-describe('util/meta', function() {
-
+describe('util/meta', () => {
   beforeEach((done) => {
     Metadata = require('../../lib/util/meta');
     done();
@@ -18,7 +17,7 @@ describe('util/meta', function() {
     done();
   });
 
-  describe('#getMeta', function() {
+  describe('#getMeta', () => {
     it('should support retrieving metadata from a class', (done) => {
       class Test {}
       expect(Metadata.getMeta(Test.prototype)).to.deep.equal({
@@ -30,7 +29,7 @@ describe('util/meta', function() {
 
     it('should throw an exception if the target class isn\'t a prototype', (done) => {
       class Test {}
-      function test() {
+      function test () {
         return Metadata.getMeta(Test);
       }
       expect(test).to.throw(ApplicationError.IllegalValue);
@@ -38,74 +37,74 @@ describe('util/meta', function() {
     });
   });
 
-  describe('#getClassMeta', function() {
+  describe('#getClassMeta', () => {
     it('should support the retrieval of class-level metadata within a category', (done) => {
-      class Test{}
+      class Test {}
       expect(Metadata.getClassMeta(Test.prototype, 'category')).to.be.undefined;
       done();
     });
     it('should throw an exception if the target class isn\'t a prototype', (done) => {
       class Test {}
-      expect(function() {
+      expect(() => {
         return Metadata.getClassMeta(Test, 'category');
       }).to.throw;
       done();
     });
   });
 
-  describe('#getClassMetaValue', function() {
+  describe('#getClassMetaValue', () => {
     it('should support the retrieval of a value from a category of class-level metadata', (done) => {
-      class Test{}
+      class Test {}
       expect(Metadata.getClassMetaValue(Test.prototype, 'category', 'key')).to.be.undefined;
       done();
     });
     it('should throw an exception if the target class isn\'t a prototype', (done) => {
       class Test {}
-      expect(function() {
+      expect(() => {
         return Metadata.getClassMetaValue(Test, 'category', 'key');
       }).to.throw;
       done();
     });
   });
 
-  describe('#getMethodMeta', function() {
+  describe('#getMethodMeta', () => {
     it('should support the retrieval of method-level metadata within a category', (done) => {
-      class Test{}
+      class Test {}
       expect(Metadata.getMethodMeta(Test.prototype, 'methodName', 'category')).to.be.undefined;
       done();
     });
     it('should throw an exception if the target class isn\'t a prototype', (done) => {
       class Test {}
-      expect(function() {
+      expect(() => {
         return Metadata.getMethodMeta(Test, 'methodName', 'category');
       }).to.throw;
       done();
     });
   });
 
-  describe('#getMethodMetaValue', function() {
+  describe('#getMethodMetaValue', () => {
     it('should support the retrieval of a value from a category of method-level metadata', (done) => {
-      class Test{}
+      class Test {}
       expect(Metadata.getMethodMetaValue(Test.prototype, 'methodName', 'category', 'key')).to.be.undefined;
       done();
     });
     it('should throw an exception if the target class isn\'t a prototype', (done) => {
       class Test {}
-      expect(function() {
+      expect(() => {
         return Metadata.getMethodMetaValue(Test, 'methodName', 'category', 'key');
       }).to.throw;
       done();
     });
   });
 
-  describe('#putClassMeta', function() {
+  describe('#putClassMeta', () => {
     it('should support storing metdata at the class-level', (done) => {
-      class Test{}
+      class Test {}
       Metadata.putClassMeta(Test.prototype, '@inject', 'mykey', 'myvalue');
       expect(Metadata.getMeta(Test.prototype)).to.deep.equal({
         class: {
           '@inject': {
-            'mykey':  'myvalue'
+            'mykey': 'myvalue'
           }
         },
         method: {}
@@ -125,23 +124,23 @@ describe('util/meta', function() {
 
     it('should throw an exception if the target class isn\'t a prototype', (done) => {
       class Test {}
-      expect(function() {
+      expect(() => {
         return Metadata.putClassMeta(Test, '@inject', 'mykey', 'myvalue');
       }).to.throw;
       done();
     });
   });
 
-  describe('#putMethodMeta', function() {
+  describe('#putMethodMeta', () => {
     it('should support storing metdata at the method-level', (done) => {
-      class Test{}
+      class Test {}
       Metadata.putMethodMeta(Test.prototype, 'methodName', '@before', 'mykey', 'myvalue');
       expect(Metadata.getMeta(Test.prototype)).to.deep.equal({
         class: {},
         method: {
           'methodName': {
             '@before': {
-              'mykey':  'myvalue'
+              'mykey': 'myvalue'
             }
           }
         }
@@ -162,8 +161,8 @@ describe('util/meta', function() {
         method: {
           'methodName': {
             '@before': {
-              'mykey':  'myvalue',
-              'anotherkey':  'anothervalue'
+              'mykey': 'myvalue',
+              'anotherkey': 'anothervalue'
             }
           }
         }
@@ -173,7 +172,7 @@ describe('util/meta', function() {
 
     it('should throw an exception if the target class isn\'t a prototype', (done) => {
       class Test {}
-      expect(function() {
+      expect(() => {
         return Metadata.putMethodMeta(Test, 'methodName', '@inject', 'mykey', 'myvalue');
       }).to.throw;
       done();

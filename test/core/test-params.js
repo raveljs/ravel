@@ -8,9 +8,9 @@ const upath = require('upath');
 
 let Ravel, conf, coreSymbols;
 
-describe('Ravel', function() {
+describe('Ravel', () => {
   beforeEach((done) => {
-    //enable mockery
+    // enable mockery
     mockery.enable({
       useCleanCache: true,
       warnOnReplace: false,
@@ -26,11 +26,12 @@ describe('Ravel', function() {
   afterEach((done) => {
     Ravel = undefined;
     coreSymbols = undefined;
-    mockery.deregisterAll();mockery.disable();
+    mockery.deregisterAll();
+    mockery.disable();
     done();
   });
 
-  describe('#set()', function() {
+  describe('#set()', () => {
     it('should allow clients to set the value of a parameter', (done) => {
       Ravel.registerParameter('test param', false);
       Ravel.set('test param', 'test value');
@@ -39,7 +40,7 @@ describe('Ravel', function() {
       done();
     });
 
-    it ('should throw a Ravel.ApplicationError.IllegalValue error when a client attempts to set an unknown parameter', (done) => {
+    it('should throw a Ravel.ApplicationError.IllegalValue error when a client attempts to set an unknown parameter', (done) => {
       try {
         Ravel.set('unknown param', 'test value');
         done(new Error('Should never reach this line.'));
@@ -50,7 +51,7 @@ describe('Ravel', function() {
     });
   });
 
-  describe('#get()', function() {
+  describe('#get()', () => {
     it('should allow clients to retrieve the value of a set optional parameter', (done) => {
       Ravel.registerParameter('test param', false);
       Ravel.set('test param', 'test value');
@@ -109,7 +110,7 @@ describe('Ravel', function() {
     });
   });
 
-  describe('.config', function() {
+  describe('.config', () => {
     it('should return the full configuration of the given `ravel instance`', (done) => {
       const defaultConfig = Ravel.config;
       Ravel.registerParameter('test param', true);
@@ -128,7 +129,7 @@ describe('Ravel', function() {
     });
   });
 
-  describe('#_loadParameters()', function() {
+  describe('#_loadParameters()', () => {
     it('should allow users to specify Ravel config parameters via a .ravelrc.json config file', (done) => {
       conf = {
         'koa view engine': 'ejs',
@@ -147,7 +148,7 @@ describe('Ravel', function() {
         'koa view engine': 'ejs',
         'redis port': 6379
       };
-      const parent = Ravel.cwd.split(upath.sep).slice(0,-1).join(upath.sep);
+      const parent = Ravel.cwd.split(upath.sep).slice(0, -1).join(upath.sep);
       // can't use extension on mock because mockery only works with exact matches
       mockery.registerMock(upath.join(parent, '.ravelrc'), conf);
       Ravel[coreSymbols.loadParameters]();
@@ -198,13 +199,13 @@ describe('Ravel', function() {
     it('should throw a Ravel.ApplicationError.IllegalValue if an unregistered paramter is specified in the config file', (done) => {
       conf = {
         'koa view engine': 'ejs',
-        'redis port': 6379,
+        'redis port': 6379
       };
       conf[Math.random().toString()] = false;
       mockery.registerMock(upath.join(Ravel.cwd, '.ravelrc'), conf);
 
       Ravel.set('redis port', 6380);
-      expect(function() {
+      expect(() => {
         Ravel[coreSymbols.loadParameters]();
       }).to.throw(Ravel.ApplicationError.IllegalValue);
       done();
@@ -215,7 +216,7 @@ describe('Ravel', function() {
         'redis host': '0.0.0.0',
         'redis port': 6379,
         'redis max retries': 10,
-        'port':  8080,
+        'port': 8080,
         'app route': '/',
         'login route': '/login',
         'keygrip keys': ['123abc'],

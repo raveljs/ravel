@@ -10,9 +10,9 @@ const sinon = require('sinon');
 
 let Ravel, DatabaseProvider, provider;
 
-describe('db/database_provider', function() {
+describe('db/database_provider', () => {
   beforeEach((done) => {
-    //enable mockery
+    // enable mockery
     mockery.enable({
       useCleanCache: true,
       warnOnReplace: false,
@@ -22,7 +22,7 @@ describe('db/database_provider', function() {
     Ravel = new (require('../../lib/ravel'))();
     DatabaseProvider = require('../../lib/ravel').DatabaseProvider;
     Ravel.log.setLevel('NONE');
-    Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
+    Ravel.kvstore = {}; // mock Ravel.kvstore, since we're not actually starting Ravel.
     provider = new DatabaseProvider(Ravel, 'name');
     done();
   });
@@ -31,11 +31,12 @@ describe('db/database_provider', function() {
     DatabaseProvider = undefined;
     Ravel = undefined;
     provider = undefined;
-    mockery.deregisterAll();mockery.disable();
+    mockery.deregisterAll();
+    mockery.disable();
     done();
   });
 
-  describe('constructor', function() {
+  describe('constructor', () => {
     it('should allow clients to implement a database provider which has a name and several methods', (done) => {
       provider = new DatabaseProvider(Ravel, 'mysql');
       expect(provider.name).to.equal('mysql');
@@ -58,21 +59,21 @@ describe('db/database_provider', function() {
     });
   });
 
-  describe('#getTransactionConnection()', function() {
+  describe('#getTransactionConnection()', () => {
     it('should throw Ravel.ApplicationError.NotImplemented, since this is a template', (done) => {
       expect(provider.getTransactionConnection()).to.eventually.be.rejectedWith(Ravel.ApplicationError.NotImplemented);
       done();
     });
   });
 
-  describe('#exitTransaction()', function() {
+  describe('#exitTransaction()', () => {
     it('should throw Ravel.ApplicationError.NotImplemented, since this is a template', (done) => {
       expect(provider.exitTransaction()).to.eventually.be.rejectedWith(Ravel.ApplicationError.NotImplemented);
       done();
     });
   });
 
-  describe('pre listen', function() {
+  describe('pre listen', () => {
     it('should call prelisten() on Ravel.emit(\'pre listen\')', (done) => {
       const prelistenHook = sinon.spy(provider, 'prelisten');
       Ravel.emit('pre listen');
@@ -88,7 +89,7 @@ describe('db/database_provider', function() {
     });
 
     it('should emit errors if prelisten() throws something', (done) => {
-      const prelistenHook = sinon.stub(provider, 'prelisten', function() {
+      const prelistenHook = sinon.stub(provider, 'prelisten', () => {
         throw new Error();
       });
       Ravel.once('error', () => {
@@ -99,7 +100,7 @@ describe('db/database_provider', function() {
     });
   });
 
-  describe('end', function() {
+  describe('end', () => {
     it('should call end() on Ravel.emit(\'end\')', (done) => {
       const endHook = sinon.spy(provider, 'end');
       Ravel.emit('end');

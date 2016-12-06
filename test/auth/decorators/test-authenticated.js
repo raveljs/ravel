@@ -9,7 +9,7 @@ const Metadata = require('../../../lib/util/meta');
 
 let authenticated;
 
-describe('Routes', function() {
+describe('Routes', () => {
   beforeEach((done) => {
     authenticated = require('../../../lib/ravel').Routes.authenticated;
     done();
@@ -20,7 +20,7 @@ describe('Routes', function() {
     done();
   });
 
-  describe('@authenticated()', function() {
+  describe('@authenticated()', () => {
     it('should decorate a class indicating that auth middleware should precede every endpoint defined within', (done) => {
       @authenticated
       class Stub1 {
@@ -57,7 +57,7 @@ describe('Routes', function() {
     it('should decorate a method indicating that auth middleware should precede it', (done) => {
       class Stub1 {
         @authenticated
-        handler() {}
+        handler () {}
       }
       expect(Metadata.getMethodMetaValue(Stub1.prototype, 'handler', '@authenticated', 'config')).to.be.an.object;
       expect(Metadata.getMethodMetaValue(Stub1.prototype, 'handler', '@authenticated', 'config')).to.deep.equal({});
@@ -67,7 +67,7 @@ describe('Routes', function() {
     it('should decorate a method indicating that auth middleware that should precede it (no args)', (done) => {
       class Stub1 {
         @authenticated()
-        handler() {}
+        handler () {}
       }
       expect(Metadata.getMethodMetaValue(Stub1.prototype, 'handler', '@authenticated', 'config')).to.be.an.object;
       expect(Metadata.getMethodMetaValue(Stub1.prototype, 'handler', '@authenticated', 'config')).to.deep.equal({});
@@ -80,7 +80,7 @@ describe('Routes', function() {
           redirect: true,
           register: false
         })
-        handler() {}
+        handler () {}
       }
       expect(Metadata.getMethodMetaValue(Stub1.prototype, 'handler', '@authenticated', 'config')).to.be.an.object;
       expect(Metadata.getMethodMetaValue(Stub1.prototype, 'handler', '@authenticated', 'config')).to.deep.equal({
@@ -90,12 +90,12 @@ describe('Routes', function() {
       done();
     });
 
-    describe('auth middleware insertion', function() {
-      const authenticationMiddleware = async function(ctx, next){ await next(); };
+    describe('auth middleware insertion', () => {
+      const authenticationMiddleware = async function (ctx, next) { await next(); };
       let Ravel, Routes, coreSymbols;
 
       beforeEach((done) => {
-        //enable mockery
+        // enable mockery
         mockery.enable({
           useCleanCache: true,
           warnOnReplace: false,
@@ -112,7 +112,8 @@ describe('Routes', function() {
       });
 
       afterEach((done) => {
-        mockery.deregisterAll();mockery.disable();
+        mockery.deregisterAll();
+        mockery.disable();
         authenticated = undefined;
         Ravel = undefined;
         Routes = undefined;
@@ -122,20 +123,20 @@ describe('Routes', function() {
 
       it('should decorate route handlers with authentication-enforcing middleware', (done) => {
         class Stub extends Routes {
-          constructor() {
+          constructor () {
             super('/app/path');
           }
 
           @Routes.mapping(Routes.GET, '')
           @Routes.authenticated
-          handler() {}
+          handler () {}
         }
         const app = new Ravel();
         app.log.setLevel('NONE');
         mockery.registerMock(upath.join(app.cwd, 'stub'), Stub);
         app.routes('stub');
         const router = require('koa-router')();
-        sinon.stub(router, 'get', function() {
+        sinon.stub(router, 'get', function () {
           expect(arguments[0]).to.equal('/app/path');
           expect(arguments[1]).to.be.a.function;
           expect(arguments[1]).to.equal(authenticationMiddleware);
@@ -147,19 +148,19 @@ describe('Routes', function() {
       it('should decorate all route handlers with authentication-enforcing middleware when used at the class-level', (done) => {
         @Routes.authenticated
         class Stub extends Routes {
-          constructor() {
+          constructor () {
             super('/app/path');
           }
 
           @Routes.mapping(Routes.GET, '')
-          handler() {}
+          handler () {}
         }
         const app = new Ravel();
         app.log.setLevel('NONE');
         mockery.registerMock(upath.join(app.cwd, 'stub'), Stub);
         app.routes('stub');
         const router = require('koa-router')();
-        sinon.stub(router, 'get', function() {
+        sinon.stub(router, 'get', function () {
           expect(arguments[0]).to.equal('/app/path');
           expect(arguments[1]).to.be.a.function;
           expect(arguments[1]).to.equal(authenticationMiddleware);
@@ -167,7 +168,6 @@ describe('Routes', function() {
         });
         app[coreSymbols.routesInit](router);
       });
-
     });
   });
 });

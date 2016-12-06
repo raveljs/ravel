@@ -11,9 +11,9 @@ const request = require('supertest');
 
 let Ravel, DatabaseProvider, app, database, mysqlProvider, postgresProvider;
 
-describe('db/database', function() {
+describe('db/database', () => {
   beforeEach((done) => {
-    //enable mockery
+    // enable mockery
     mockery.enable({
       useCleanCache: true,
       warnOnReplace: false,
@@ -24,9 +24,9 @@ describe('db/database', function() {
     Ravel = new (require('../../lib/ravel'))();
     DatabaseProvider = require('../../lib/ravel').DatabaseProvider;
     Ravel.log.setLevel('NONE');
-    Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
+    Ravel.kvstore = {}; // mock Ravel.kvstore, since we're not actually starting Ravel.
 
-    //load database module
+    // load database module
     database = require('../../lib/db/database')(Ravel);
 
     done();
@@ -38,14 +38,15 @@ describe('db/database', function() {
     DatabaseProvider = undefined;
     mysqlProvider = undefined;
     postgresProvider = undefined;
-    mockery.deregisterAll();mockery.disable();
+    mockery.deregisterAll();
+    mockery.disable();
     done();
   });
 
-  describe('#middleware()', function() {
+  describe('#middleware()', () => {
     it('should populate context.transaction with an empty dictionary of database connection objects when no database providers are registered.', (done) => {
       app.use(database.middleware());
-      app.use(async function(ctx){
+      app.use(async function (ctx) {
         expect(ctx).to.have.a.property('transaction').that.deep.equals({});
       });
 
@@ -55,29 +56,30 @@ describe('db/database', function() {
     });
 
     it('should populate req.transaction with a dictionary of open database connections when providers are registered', (done) => {
-      //mock a couple of providers for us to use
+      // mock a couple of providers for us to use
       mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
       postgresProvider = new DatabaseProvider(Ravel, 'postgres');
-      //reload database so it picks up database providers
+      // reload database so it picks up database providers
       database = require('../../lib/db/database')(Ravel);
 
-      //mock stuff
-      const mysqlConnection = Object.create(null), postgresConnection = Object.create(null);
-      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function() {
+      // mock stuff
+      const mysqlConnection = Object.create(null);
+      const postgresConnection = Object.create(null);
+      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function () {
         return Promise.resolve(mysqlConnection);
       });
-      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function() {
+      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function () {
         return Promise.resolve(postgresConnection);
       });
-      sinon.stub(mysqlProvider, 'exitTransaction', function() {
+      sinon.stub(mysqlProvider, 'exitTransaction', function () {
         return Promise.resolve();
       });
-      sinon.stub(postgresProvider, 'exitTransaction', function() {
+      sinon.stub(postgresProvider, 'exitTransaction', function () {
         return Promise.resolve();
       });
 
       app.use(database.middleware());
-      app.use(async function(ctx){
+      app.use(async function (ctx) {
         expect(mysqlGetTransactionSpy).to.have.been.called;
         expect(postgresGetTransactionSpy).to.have.been.called;
         expect(ctx).to.have.a.property('transaction').that.deep.equals({
@@ -92,29 +94,30 @@ describe('db/database', function() {
     });
 
     it('should populate req.transaction with a dictionary of only the correct open database connections when providers are requested by name', (done) => {
-      //mock a couple of providers for us to use
+      // mock a couple of providers for us to use
       mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
       postgresProvider = new DatabaseProvider(Ravel, 'postgres');
-      //reload database so it picks up database providers
+      // reload database so it picks up database providers
       database = require('../../lib/db/database')(Ravel);
 
-      //mock stuff
-      const mysqlConnection = Object.create(null), postgresConnection = Object.create(null);
-      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function() {
+      // mock stuff
+      const mysqlConnection = Object.create(null);
+      const postgresConnection = Object.create(null);
+      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function () {
         return Promise.resolve(mysqlConnection);
       });
-      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function() {
+      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function () {
         return Promise.resolve(postgresConnection);
       });
-      sinon.stub(mysqlProvider, 'exitTransaction', function() {
+      sinon.stub(mysqlProvider, 'exitTransaction', function () {
         return Promise.resolve();
       });
-      sinon.stub(postgresProvider, 'exitTransaction', function() {
+      sinon.stub(postgresProvider, 'exitTransaction', function () {
         return Promise.resolve();
       });
 
       app.use(database.middleware('postgres'));
-      app.use(async function(ctx){
+      app.use(async function (ctx) {
         expect(mysqlGetTransactionSpy).to.not.have.been.called;
         expect(postgresGetTransactionSpy).to.have.been.called;
         expect(ctx).to.have.a.property('transaction').that.deep.equals({
@@ -128,28 +131,28 @@ describe('db/database', function() {
     });
 
     it('should throw an Error if any of the registered database providers fails to provide a connection', (done) => {
-      //mock a couple of providers for us to use
+      // mock a couple of providers for us to use
       mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
       postgresProvider = new DatabaseProvider(Ravel, 'postgres');
-      //reload database so it picks up database providers
+      // reload database so it picks up database providers
       database = require('../../lib/db/database')(Ravel);
 
       const mysqlConnection = Object.create(null);
-      sinon.stub(mysqlProvider, 'getTransactionConnection', function() {
+      sinon.stub(mysqlProvider, 'getTransactionConnection', function () {
         return Promise.resolve(mysqlConnection);
       });
-      sinon.stub(postgresProvider, 'getTransactionConnection', function() {
+      sinon.stub(postgresProvider, 'getTransactionConnection', function () {
         return Promise.reject(new Error());
       });
-      sinon.stub(mysqlProvider, 'exitTransaction', function() {
+      sinon.stub(mysqlProvider, 'exitTransaction', function () {
         return Promise.resolve();
       });
-      sinon.stub(postgresProvider, 'exitTransaction', function() {
+      sinon.stub(postgresProvider, 'exitTransaction', function () {
         return Promise.resolve();
       });
 
       const randomMessage = Math.random().toString();
-      app.use(async function(ctx, next) {
+      app.use(async function (ctx, next) {
         try {
           await next();
         } catch (err) {
@@ -163,28 +166,29 @@ describe('db/database', function() {
     });
 
     it('should end all open transactions (close/commit connections) when the middleware chain wraps up', (done) => {
-      //mock a couple of providers for us to use
+      // mock a couple of providers for us to use
       mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
       postgresProvider = new DatabaseProvider(Ravel, 'postgres');
-      //reload database so it picks up database providers
+      // reload database so it picks up database providers
       database = require('../../lib/db/database')(Ravel);
 
-      const mysqlConnection = Object.create(null), postgresConnection = Object.create(null);
-      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function() {
+      const mysqlConnection = Object.create(null);
+      const postgresConnection = Object.create(null);
+      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function () {
         return Promise.resolve(mysqlConnection);
       });
-      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function() {
+      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function () {
         return Promise.resolve(postgresConnection);
       });
-      const mysqlExitTransactionSpy = sinon.stub(mysqlProvider, 'exitTransaction', function() {
+      const mysqlExitTransactionSpy = sinon.stub(mysqlProvider, 'exitTransaction', function () {
         return Promise.resolve(null);
       });
-      const postgresExitTransactionSpy = sinon.stub(postgresProvider, 'exitTransaction', function() {
+      const postgresExitTransactionSpy = sinon.stub(postgresProvider, 'exitTransaction', function () {
         return Promise.resolve(null);
       });
 
       app.use(database.middleware());
-      app.use(async function(ctx){
+      app.use(async function (ctx) {
         expect(mysqlGetTransactionSpy).to.have.been.called;
         expect(postgresGetTransactionSpy).to.have.been.called;
         expect(ctx).to.have.a.property('transaction').that.deep.equals({
@@ -195,7 +199,7 @@ describe('db/database', function() {
 
       request(app.callback())
       .get('/')
-      .expect(function() {
+      .expect(() => {
         expect(mysqlExitTransactionSpy).to.have.been.calledWith(mysqlConnection, true);
         expect(postgresExitTransactionSpy).to.have.been.calledWith(postgresConnection, true);
       })
@@ -203,27 +207,28 @@ describe('db/database', function() {
     });
 
     it('should end all open transactions (close/rollback connections) when an exception is thrown in the middleware chain', (done) => {
-      //mock a couple of providers for us to use
+      // mock a couple of providers for us to use
       mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
       postgresProvider = new DatabaseProvider(Ravel, 'postgres');
-      //reload database so it picks up database providers
+      // reload database so it picks up database providers
       database = require('../../lib/db/database')(Ravel);
 
-      const mysqlConnection = Object.create(null), postgresConnection = Object.create(null);
-      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function() {
+      const mysqlConnection = Object.create(null);
+      const postgresConnection = Object.create(null);
+      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function () {
         return Promise.resolve(mysqlConnection);
       });
-      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function() {
+      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function () {
         return Promise.resolve(postgresConnection);
       });
-      const mysqlExitTransactionSpy = sinon.stub(mysqlProvider, 'exitTransaction', function() {
+      const mysqlExitTransactionSpy = sinon.stub(mysqlProvider, 'exitTransaction', function () {
         return Promise.resolve(null);
       });
-      const postgresExitTransactionSpy = sinon.stub(postgresProvider, 'exitTransaction', function() {
+      const postgresExitTransactionSpy = sinon.stub(postgresProvider, 'exitTransaction', function () {
         return Promise.resolve(null);
       });
 
-      app.use(async function(ctx,next) {
+      app.use(async function (ctx, next) {
         try {
           await next();
         } catch (err) {
@@ -231,7 +236,7 @@ describe('db/database', function() {
         }
       });
       app.use(database.middleware());
-      app.use(async function(ctx){
+      app.use(async function (ctx) {
         expect(mysqlGetTransactionSpy).to.have.been.called;
         expect(postgresGetTransactionSpy).to.have.been.called;
         expect(ctx).to.have.a.property('transaction').that.deep.equals({
@@ -243,7 +248,7 @@ describe('db/database', function() {
 
       request(app.callback())
       .get('/')
-      .expect(function() {
+      .expect(() => {
         expect(mysqlExitTransactionSpy).to.have.been.calledWith(mysqlConnection, false);
         expect(postgresExitTransactionSpy).to.have.been.calledWith(postgresConnection, false);
       })
@@ -251,27 +256,28 @@ describe('db/database', function() {
     });
 
     it('should respond with HTTP 500 INTERNAL SERVER ERROR when any open transactions fail to close/commit when res.end() is called', (done) => {
-      //mock a couple of providers for us to use
+      // mock a couple of providers for us to use
       mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
       postgresProvider = new DatabaseProvider(Ravel, 'postgres');
-      //reload database so it picks up database providers
+      // reload database so it picks up database providers
       database = require('../../lib/db/database')(Ravel);
 
-      const mysqlConnection = Object.create(null), postgresConnection = Object.create(null);
-      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function() {
+      const mysqlConnection = Object.create(null);
+      const postgresConnection = Object.create(null);
+      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function () {
         return Promise.resolve(mysqlConnection);
       });
-      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function() {
+      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function () {
         return Promise.resolve(postgresConnection);
       });
-      const mysqlExitTransactionSpy = sinon.stub(mysqlProvider, 'exitTransaction', function() {
+      const mysqlExitTransactionSpy = sinon.stub(mysqlProvider, 'exitTransaction', function () {
         return Promise.reject(new Error());
       });
-      const postgresExitTransactionSpy = sinon.stub(postgresProvider, 'exitTransaction', function() {
+      const postgresExitTransactionSpy = sinon.stub(postgresProvider, 'exitTransaction', function () {
         return Promise.resolve();
       });
 
-      app.use(async function(ctx, next) {
+      app.use(async function (ctx, next) {
         try {
           await next();
         } catch (err) {
@@ -279,7 +285,7 @@ describe('db/database', function() {
         }
       });
       app.use(database.middleware());
-      app.use(async function(ctx){
+      app.use(async function (ctx) {
         expect(mysqlGetTransactionSpy).to.have.been.called;
         expect(postgresGetTransactionSpy).to.have.been.called;
         expect(ctx).to.have.a.property('transaction').that.deep.equals({
@@ -292,7 +298,7 @@ describe('db/database', function() {
 
       request(app.callback())
       .get('/')
-      .expect(function() {
+      .expect(() => {
         expect(mysqlExitTransactionSpy).to.have.been.calledWith(mysqlConnection, false);
         expect(postgresExitTransactionSpy).to.have.been.calledWith(postgresConnection, false);
       })
@@ -300,30 +306,30 @@ describe('db/database', function() {
     });
   });
 
-  describe('#scoped()', function() {
+  describe('#scoped()', () => {
     it('should populate scoped context with a dictionary of open database connections when providers are registered', (done) => {
-      //mock a couple of providers for us to use
+      // mock a couple of providers for us to use
       mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
       postgresProvider = new DatabaseProvider(Ravel, 'postgres');
-      //reload database so it picks up database providers
+      // reload database so it picks up database providers
       database = require('../../lib/db/database')(Ravel);
 
-
-      const mysqlConnection = Object.create(null), postgresConnection = Object.create(null);
-      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function() {
+      const mysqlConnection = Object.create(null);
+      const postgresConnection = Object.create(null);
+      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function () {
         return Promise.resolve(mysqlConnection);
       });
-      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function() {
+      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function () {
         return Promise.resolve(postgresConnection);
       });
-      sinon.stub(mysqlProvider, 'exitTransaction', function() {
+      sinon.stub(mysqlProvider, 'exitTransaction', function () {
         return Promise.resolve();
       });
-      sinon.stub(postgresProvider, 'exitTransaction', function() {
+      sinon.stub(postgresProvider, 'exitTransaction', function () {
         return Promise.resolve();
       });
 
-      database.scoped(async function(ctx) {
+      database.scoped(async function (ctx) {
         expect(mysqlGetTransactionSpy).to.have.been.called;
         expect(postgresGetTransactionSpy).to.have.been.called;
         expect(ctx).to.have.a.property('transaction').that.deep.equals({
@@ -335,27 +341,28 @@ describe('db/database', function() {
     });
 
     it('should populate scoped context with a dictionary of the correct open database connections when providers are requested by name', (done) => {
-      //mock a couple of providers for us to use
+      // mock a couple of providers for us to use
       mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
       postgresProvider = new DatabaseProvider(Ravel, 'postgres');
-      //reload database so it picks up database providers
+      // reload database so it picks up database providers
       database = require('../../lib/db/database')(Ravel);
 
-      const mysqlConnection = Object.create(null), postgresConnection = Object.create(null);
-      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function() {
+      const mysqlConnection = Object.create(null);
+      const postgresConnection = Object.create(null);
+      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function () {
         return Promise.resolve(mysqlConnection);
       });
-      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function() {
+      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function () {
         return Promise.resolve(postgresConnection);
       });
-      sinon.stub(mysqlProvider, 'exitTransaction', function() {
+      sinon.stub(mysqlProvider, 'exitTransaction', function () {
         return Promise.resolve();
       });
-      sinon.stub(postgresProvider, 'exitTransaction', function() {
+      sinon.stub(postgresProvider, 'exitTransaction', function () {
         return Promise.resolve();
       });
 
-      database.scoped('postgres', async function(ctx) {
+      database.scoped('postgres', async function (ctx) {
         expect(mysqlGetTransactionSpy).to.not.have.been.called;
         expect(postgresGetTransactionSpy).to.have.been.called;
         expect(ctx).to.have.a.property('transaction').that.deep.equals({
@@ -366,27 +373,27 @@ describe('db/database', function() {
     });
 
     it('should throw an exception if any of the registered database providers fails to provide a connection', (done) => {
-      //mock a couple of providers for us to use
+      // mock a couple of providers for us to use
       mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
       postgresProvider = new DatabaseProvider(Ravel, 'postgres');
-      //reload database so it picks up database providers
+      // reload database so it picks up database providers
       database = require('../../lib/db/database')(Ravel);
 
       const postgresConnection = Object.create(null);
-      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function() {
+      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function () {
         return Promise.reject(new Error());
       });
-      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function() {
+      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function () {
         return Promise.resolve(postgresConnection);
       });
-      sinon.stub(mysqlProvider, 'exitTransaction', function() {
+      sinon.stub(mysqlProvider, 'exitTransaction', function () {
         return Promise.resolve();
       });
-      sinon.stub(postgresProvider, 'exitTransaction', function() {
+      sinon.stub(postgresProvider, 'exitTransaction', function () {
         return Promise.resolve();
       });
 
-      const promise = database.scoped(async function() {
+      const promise = database.scoped(async () => {
       });
       expect(promise).to.eventually.be.rejectedWith(Error);
       expect(mysqlGetTransactionSpy).to.have.been.called;
@@ -395,34 +402,35 @@ describe('db/database', function() {
     });
 
     it('should end all open transactions (close/commit connections) when inGen is finished executing', (done) => {
-      //mock a couple of providers for us to use
+      // mock a couple of providers for us to use
       mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
       postgresProvider = new DatabaseProvider(Ravel, 'postgres');
-      //reload database so it picks up database providers
+      // reload database so it picks up database providers
       database = require('../../lib/db/database')(Ravel);
 
-      const mysqlConnection = Object.create(null), postgresConnection = Object.create(null);
-      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function() {
+      const mysqlConnection = Object.create(null);
+      const postgresConnection = Object.create(null);
+      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function () {
         return Promise.resolve(mysqlConnection);
       });
-      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function() {
+      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function () {
         return Promise.resolve(postgresConnection);
       });
-      const mysqlExitTransactionSpy = sinon.stub(mysqlProvider, 'exitTransaction', function() {
+      const mysqlExitTransactionSpy = sinon.stub(mysqlProvider, 'exitTransaction', function () {
         return Promise.resolve();
       });
-      const postgresExitTransactionSpy = sinon.stub(postgresProvider, 'exitTransaction', function() {
+      const postgresExitTransactionSpy = sinon.stub(postgresProvider, 'exitTransaction', function () {
         return Promise.resolve();
       });
 
-      database.scoped(async function(ctx) {
+      database.scoped(async function (ctx) {
         expect(mysqlGetTransactionSpy).to.have.been.called;
         expect(postgresGetTransactionSpy).to.have.been.called;
         expect(ctx).to.have.a.property('transaction').that.deep.equals({
           mysql: mysqlConnection,
           postgres: postgresConnection
         });
-      }).then(function() {
+      }).then(() => {
         expect(mysqlExitTransactionSpy).to.have.been.called;
         expect(postgresExitTransactionSpy).to.have.been.called;
         done();
@@ -430,27 +438,28 @@ describe('db/database', function() {
     });
 
     it('should end all open transactions (close/rollback connections) when inGen throws an exception', (done) => {
-      //mock a couple of providers for us to use
+      // mock a couple of providers for us to use
       mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
       postgresProvider = new DatabaseProvider(Ravel, 'postgres');
-      //reload database so it picks up database providers
+      // reload database so it picks up database providers
       database = require('../../lib/db/database')(Ravel);
 
-      const mysqlConnection = Object.create(null), postgresConnection = Object.create(null);
-      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function() {
+      const mysqlConnection = Object.create(null);
+      const postgresConnection = Object.create(null);
+      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function () {
         return Promise.resolve(mysqlConnection);
       });
-      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function() {
+      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function () {
         return Promise.resolve(postgresConnection);
       });
-      const mysqlExitTransactionSpy = sinon.stub(mysqlProvider, 'exitTransaction', function() {
+      const mysqlExitTransactionSpy = sinon.stub(mysqlProvider, 'exitTransaction', function () {
         return Promise.resolve();
       });
-      const postgresExitTransactionSpy = sinon.stub(postgresProvider, 'exitTransaction', function() {
+      const postgresExitTransactionSpy = sinon.stub(postgresProvider, 'exitTransaction', function () {
         return Promise.resolve();
       });
 
-      database.scoped(async function(ctx) {
+      database.scoped(async function (ctx) {
         expect(mysqlGetTransactionSpy).to.have.been.called;
         expect(postgresGetTransactionSpy).to.have.been.called;
         expect(ctx).to.have.a.property('transaction').that.deep.equals({
@@ -459,10 +468,10 @@ describe('db/database', function() {
         });
         throw new Error();
       })
-      .then(function() {
+      .then(() => {
         throw new Error('Promise should have rejected!');
       })
-      .catch(function() {
+      .catch(() => {
         expect(mysqlExitTransactionSpy).to.have.been.called;
         expect(postgresExitTransactionSpy).to.have.been.called;
         done();
@@ -470,27 +479,28 @@ describe('db/database', function() {
     });
 
     it('should reject its returned promise when any connection fails to exit cleanly', (done) => {
-      //mock a couple of providers for us to use
+      // mock a couple of providers for us to use
       mysqlProvider = new DatabaseProvider(Ravel, 'mysql');
       postgresProvider = new DatabaseProvider(Ravel, 'postgres');
-      //reload database so it picks up database providers
+      // reload database so it picks up database providers
       database = require('../../lib/db/database')(Ravel);
 
-      const mysqlConnection = Object.create(null), postgresConnection = Object.create(null);
-      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function() {
+      const mysqlConnection = Object.create(null);
+      const postgresConnection = Object.create(null);
+      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function () {
         return Promise.resolve(mysqlConnection);
       });
-      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function() {
+      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function () {
         return Promise.resolve(postgresConnection);
       });
-      const mysqlExitTransactionSpy = sinon.stub(mysqlProvider, 'exitTransaction', function() {
+      const mysqlExitTransactionSpy = sinon.stub(mysqlProvider, 'exitTransaction', function () {
         return Promise.resolve();
       });
-      const postgresExitTransactionSpy = sinon.stub(postgresProvider, 'exitTransaction', function() {
+      const postgresExitTransactionSpy = sinon.stub(postgresProvider, 'exitTransaction', function () {
         return Promise.reject(null);
       });
 
-      database.scoped(async function(ctx) {
+      database.scoped(async function (ctx) {
         expect(mysqlGetTransactionSpy).to.have.been.called;
         expect(postgresGetTransactionSpy).to.have.been.called;
         expect(ctx).to.have.a.property('transaction').that.deep.equals({
@@ -498,10 +508,10 @@ describe('db/database', function() {
           postgres: postgresConnection
         });
       })
-      .then(function() {
+      .then(() => {
         throw new Error('Promise should have rejected!');
       })
-      .catch(function() {
+      .catch(() => {
         expect(mysqlExitTransactionSpy).to.have.been.called;
         expect(postgresExitTransactionSpy).to.have.been.called;
         done();

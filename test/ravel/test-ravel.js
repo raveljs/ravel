@@ -8,18 +8,17 @@ const mockery = require('mockery');
 const upath = require('upath');
 const redis = require('redis-mock');
 const request = require('supertest');
-// const sinon = require('sinon');
-// chai.use(require('sinon-chai'));
+// const sinon = require('sinon')
+// chai.use(require('sinon-chai'))
 
 let app, agent;
 
-const u = [{id:1, name:'Joe'}, {id:2, name:'Jane'}];
+const u = [{id: 1, name: 'Joe'}, {id: 2, name: 'Jane'}];
 
-
-describe('Ravel end-to-end test', function() {
+describe('Ravel end-to-end test', () => {
   before((done) => {
     process.removeAllListeners('unhandledRejection');
-    //enable mockery
+    // enable mockery
     mockery.enable({
       useCleanCache: true,
       warnOnReplace: false,
@@ -35,8 +34,8 @@ describe('Ravel end-to-end test', function() {
     done();
   });
 
-  describe('#init()', function() {
-    describe('uncaught ES6 Promise errors logging', function() {
+  describe('#init()', () => {
+    describe('uncaught ES6 Promise errors logging', () => {
       it('should log unhandled erors within Promises', (done) => {
         mockery.registerMock('redis', redis);
         const Ravel = require('../../lib/ravel');
@@ -47,12 +46,12 @@ describe('Ravel end-to-end test', function() {
         app.set('keygrip keys', ['mysecret']);
         app.set('port', '9080');
         app.init();
-        for (let i=0;i<5;i++) {
-          Promise.resolve('promised value').then(function() {
+        for (let i = 0; i < 5; i++) {
+          Promise.resolve('promised value').then(() => {
             throw new Error('error');
           });
-          Promise.resolve('promised value').then(function() {
-            throw undefined;
+          Promise.resolve('promised value').then(() => {
+            throw undefined; // eslint-disable-line no-throw-literal
           });
         }
         // TODO actually test that logging occurred
@@ -60,27 +59,22 @@ describe('Ravel end-to-end test', function() {
       });
     });
 
-    describe('basic application server consisting of a module and a resource', function() {
+    describe('basic application server consisting of a module and a resource', () => {
       before((done) => {
-
         const Ravel = require('../../lib/ravel');
         const httpCodes = require('../../lib/util/http_codes');
         const ApplicationError = require('../../lib/util/application_error');
         const inject = Ravel.inject;
 
-        //stub Module (business logic container)
+        // stub Module (business logic container)
         class Users extends Ravel.Module {
-          constructor() {
-            super();
-          }
-
-          getAllUsers() {
+          getAllUsers () {
             return Promise.resolve(u);
           }
 
-          getUser(userId) {
+          getUser (userId) {
             if (userId < u.length) {
-              return Promise.resolve(u[userId-1]);
+              return Promise.resolve(u[userId - 1]);
             } else {
               return Promise.reject(new this.ApplicationError.NotFound('User id=' + userId + ' does not exist!'));
             }
@@ -92,20 +86,20 @@ describe('Ravel end-to-end test', function() {
         const pre = Ravel.Resource.before;
         @inject('users')
         class UsersResource extends Ravel.Resource {
-          constructor(users) {
+          constructor (users) {
             super('/api/user');
             this.users = users;
-            this.someMiddleware = async function(ctx, next) {await next();};
+            this.someMiddleware = async function (ctx, next) { await next(); };
           }
 
           @pre('someMiddleware')
-          async getAll(ctx) {
+          async getAll (ctx) {
             const list = await this.users.getAllUsers();
             ctx.body = list;
           }
 
           @pre('someMiddleware')
-          get(ctx) {
+          get (ctx) {
             // return promise and don't catch possible error so that Ravel can catch it
             return this.users.getUser(ctx.params.id)
             .then((result) => {
@@ -114,28 +108,28 @@ describe('Ravel end-to-end test', function() {
           }
 
           @pre('someMiddleware')
-          async post() {
+          async post () {
             throw new this.ApplicationError.DuplicateEntry();
           }
         }
 
-        //stub Routes (miscellaneous routes, such as templated HTML content)
+        // stub Routes (miscellaneous routes, such as templated HTML content)
         const mapping = Ravel.Routes.mapping;
 
         @mapping(Ravel.Routes.DELETE, '/app', Ravel.httpCodes.NOT_IMPLEMENTED)
         class TestRoutes extends Ravel.Routes {
-          constructor() {
+          constructor () {
             super('/');
           }
 
           @mapping(Ravel.Routes.GET, '/app')
-          async appHandler(ctx) {
+          async appHandler (ctx) {
             ctx.body = '<!DOCTYPE html><html></html>';
             ctx.status = 200;
           }
 
           @mapping(Ravel.Routes.GET, '/login')
-          loginHandler(ctx) {
+          loginHandler (ctx) {
             return Promise.resolve().then(() => {
               ctx.body = '<!DOCTYPE html><html><head><title>login</title></head></html>';
               ctx.status = 200;

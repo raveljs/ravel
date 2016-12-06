@@ -10,9 +10,9 @@ chai.use(require('sinon-chai'));
 
 let Ravel, Module, inject, coreSymbols;
 
-describe('Ravel', function() {
+describe('Ravel', () => {
   beforeEach((done) => {
-    //enable mockery
+    // enable mockery
     mockery.enable({
       useCleanCache: true,
       warnOnReplace: false,
@@ -24,7 +24,7 @@ describe('Ravel', function() {
     Ravel = new (require('../../lib/ravel'))();
     coreSymbols = require('../../lib/core/symbols');
     Ravel.log.setLevel(Ravel.log.NONE);
-    Ravel.kvstore = {}; //mock Ravel.kvstore, since we're not actually starting Ravel.
+    Ravel.kvstore = {}; // mock Ravel.kvstore, since we're not actually starting Ravel.
     done();
   });
 
@@ -38,11 +38,9 @@ describe('Ravel', function() {
     done();
   });
 
-  describe('#module()', function() {
+  describe('#module()', () => {
     it('should allow clients to register module files for instantiation in Ravel.start', (done) => {
-      mockery.registerMock(upath.join(Ravel.cwd, './modules/test'), class extends Module {
-        constructor() {super();}
-      });
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/test'), class extends Module {});
       Ravel.module('./modules/test', 'test');
       expect(Ravel[coreSymbols.moduleFactories]).to.have.property('test');
       expect(Ravel[coreSymbols.moduleFactories].test).to.be.a('function');
@@ -50,9 +48,7 @@ describe('Ravel', function() {
     });
 
     it('should allow clients to register module files with an extension and still derive the correct name', (done) => {
-      mockery.registerMock(upath.join(Ravel.cwd, './modules/test.js'), class extends Module {
-        constructor() {super();}
-      });
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/test.js'), class extends Module {});
       Ravel.module('./modules/test.js', 'test');
       expect(Ravel[coreSymbols.moduleFactories]).to.have.property('test');
       expect(Ravel[coreSymbols.moduleFactories].test).to.be.a('function');
@@ -60,10 +56,8 @@ describe('Ravel', function() {
     });
 
     it('should throw a Ravel.ApplicationError.IllegalValue error when clients attempt to register a module without a name', (done) => {
-      mockery.registerMock(upath.join(Ravel.cwd, './modules/test'), class extends Module {
-        constructor() {super();}
-      });
-      const shouldThrow = function() {
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/test'), class extends Module {});
+      const shouldThrow = () => {
         Ravel.module('./modules/test');
       };
       expect(shouldThrow).to.throw(Ravel.ApplicationError.IllegalValue);
@@ -71,13 +65,9 @@ describe('Ravel', function() {
     });
 
     it('should throw a Ravel.ApplicationError.DuplicateEntry error when clients attempt to register multiple modules with the same name', (done) => {
-      mockery.registerMock(upath.join(Ravel.cwd, './modules/test'), class extends Module {
-        constructor() {super();}
-      });
-      mockery.registerMock(upath.join(Ravel.cwd, './more_modules/test'), class extends Module {
-        constructor() {super();}
-      });
-      const shouldThrow = function() {
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/test'), class extends Module {});
+      mockery.registerMock(upath.join(Ravel.cwd, './more_modules/test'), class extends Module {});
+      const shouldThrow = () => {
         Ravel.module('./modules/test', 'test');
         Ravel.module('./more_modules/test', 'test');
       };
@@ -90,13 +80,13 @@ describe('Ravel', function() {
       Ravel.db = {
         scoped: scopedStub
       };
-      const gen = async function() {};
+      const gen = async () => {};
 
       const another = {};
       mockery.registerMock('another', another);
       @inject('another')
       class Stub extends Module {
-        constructor(a) {
+        constructor (a) {
           super();
           expect(a).to.equal(another);
           expect(this.log).to.be.ok;
@@ -117,7 +107,7 @@ describe('Ravel', function() {
           expect(scopedStub).to.have.been.calledWith('mysql', 'rethinkdb', gen);
         }
 
-        method() {}
+        method () {}
       }
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
       Ravel.module('./test', 'test');
@@ -127,12 +117,11 @@ describe('Ravel', function() {
 
     it('should produce module factories which support dependency injection of client modules', (done) => {
       class Stub1 extends Module {
-        constructor() {super();}
-        method(){}
+        method () {}
       }
       @inject('test')
       class Stub2 extends Module {
-        constructor(test) {
+        constructor (test) {
           super();
           expect(test).to.be.an('object');
           expect(test.method).to.be.a.function;
@@ -149,13 +138,13 @@ describe('Ravel', function() {
     it('should not allow client modules to depend on themselves', (done) => {
       @inject('test')
       class Stub extends Module {
-        constructor(test) { //eslint-disable-line no-unused-vars
+        constructor (test) { // eslint-disable-line no-unused-vars
           super();
         }
       }
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test'), Stub);
       Ravel.module('./modules/test', 'test');
-      const test = function() {
+      const test = () => {
         Ravel[coreSymbols.moduleInit]();
       };
       expect(test).to.throw(Ravel.ApplicationError.General);
@@ -165,19 +154,19 @@ describe('Ravel', function() {
     it('should instantiate modules in dependency order', (done) => {
       const instantiatedModules = {};
       class Stub1 extends Module {
-        constructor() {
+        constructor () {
           super();
           instantiatedModules.test = true;
           expect(instantiatedModules).to.not.have.property('test2');
           expect(instantiatedModules).to.not.have.property('test3');
           expect(instantiatedModules).to.not.have.property('test4');
         }
-        one() {}
+        one () {}
       }
 
       @inject('test', 'test4')
       class Stub2 extends Module {
-        constructor(test, test4) {  //eslint-disable-line no-unused-vars
+        constructor (test, test4) {  // eslint-disable-line no-unused-vars
           super();
 
           instantiatedModules.test2 = true;
@@ -189,12 +178,12 @@ describe('Ravel', function() {
           expect(test).to.have.a.property('log').that.is.an.object;
           expect(test4).to.have.a.property('log').that.is.an.object;
         }
-        two() {}
+        two () {}
       }
 
       @inject('test2')
       class Stub3 extends Module {
-        constructor(test2) {  //eslint-disable-line no-unused-vars
+        constructor (test2) {  // eslint-disable-line no-unused-vars
           super();
 
           instantiatedModules.test3 = true;
@@ -202,12 +191,12 @@ describe('Ravel', function() {
           expect(test2).to.have.a.property('two').that.is.a.function;
           expect(test2).to.have.a.property('log').that.is.an.object;
         }
-        three() {}
+        three () {}
       }
 
       @inject('test')
       class Stub4 extends Module {
-        constructor(test) { //eslint-disable-line no-unused-vars
+        constructor (test) { // eslint-disable-line no-unused-vars
           super();
 
           instantiatedModules.test4 = true;
@@ -216,7 +205,7 @@ describe('Ravel', function() {
           expect(test).to.have.a.property('one').that.is.a.function;
           expect(test).to.have.a.property('log').that.is.an.object;
         }
-        four() {}
+        four () {}
       }
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test'), Stub1);
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test2'), Stub2);
@@ -233,13 +222,13 @@ describe('Ravel', function() {
     it('should detect basic cyclical dependencies between client modules', (done) => {
       @inject('test2')
       class Stub1 extends Module {
-        constructor(test2) { //eslint-disable-line no-unused-vars
+        constructor (test2) { // eslint-disable-line no-unused-vars
           super();
         }
       }
       @inject('test')
       class Stub2 extends Module {
-        constructor(test) {  //eslint-disable-line no-unused-vars
+        constructor (test) {  // eslint-disable-line no-unused-vars
           super();
         }
       }
@@ -247,7 +236,7 @@ describe('Ravel', function() {
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test2'), Stub2);
       Ravel.module('./modules/test', 'test');
       Ravel.module('./modules/test2', 'test2');
-      const test = function() {
+      const test = () => {
         Ravel[coreSymbols.moduleInit]();
       };
       expect(test).to.throw(Ravel.ApplicationError.General);
@@ -255,26 +244,22 @@ describe('Ravel', function() {
     });
 
     it('should detect complex cyclical dependencies between client modules', (done) => {
-      class Stub1 extends Module {
-        constructor() {
-          super();
-        }
-      }
-      @inject('test','test4')
+      class Stub1 extends Module {}
+      @inject('test', 'test4')
       class Stub2 extends Module {
-        constructor(test, test4) {  //eslint-disable-line no-unused-vars
+        constructor (test, test4) {  // eslint-disable-line no-unused-vars
           super();
         }
       }
       @inject('test2')
       class Stub3 extends Module {
-        constructor(test2) {  //eslint-disable-line no-unused-vars
+        constructor (test2) {  // eslint-disable-line no-unused-vars
           super();
         }
       }
       @inject('test3')
       class Stub4 extends Module {
-        constructor(test3) {  //eslint-disable-line no-unused-vars
+        constructor (test3) {  // eslint-disable-line no-unused-vars
           super();
         }
       }
@@ -286,7 +271,7 @@ describe('Ravel', function() {
       Ravel.module('./modules/test2', 'test2');
       Ravel.module('./modules/test3', 'test3');
       Ravel.module('./modules/test4', 'test4');
-      const test = function() {
+      const test = () => {
         Ravel[coreSymbols.moduleInit]();
       };
       expect(test).to.throw(Ravel.ApplicationError.General);
@@ -295,18 +280,18 @@ describe('Ravel', function() {
 
     it('should produce a module factory which facilitates dependency injection of npm modules', (done) => {
       const stubMoment = {
-        method: function() {}
+        method: () => {}
       };
       @inject('moment')
       class StubClientModule extends Module {
-        constructor(moment) {
+        constructor (moment) {
           super();
           expect(moment).to.be.ok;
           expect(moment).to.be.an('object');
           expect(moment).to.equal(stubMoment);
           done();
         }
-        method() {}
+        method () {}
       }
       mockery.registerMock(upath.join(Ravel.cwd, './test'), StubClientModule);
       mockery.registerMock('moment', stubMoment);
@@ -316,18 +301,18 @@ describe('Ravel', function() {
 
     it('should support array notation for specifying module dependencies which use invalid js constiable names', (done) => {
       const stubBadName = {
-        method: function() {}
+        method: () => {}
       };
       @inject('bad.name')
       class StubClientModule extends Module {
-        constructor(badName) {
+        constructor (badName) {
           super();
           expect(badName).to.be.ok;
           expect(badName).to.be.an('object');
           expect(badName).to.equal(stubBadName);
           done();
         }
-        method() {}
+        method () {}
       }
       mockery.registerMock(upath.join(Ravel.cwd, './test'), StubClientModule);
       mockery.registerMock('bad.name', stubBadName);
@@ -338,14 +323,14 @@ describe('Ravel', function() {
     it('should throw an ApplicationError.NotFound when a module factory which utilizes an unknown module/npm dependency is instantiated', (done) => {
       @inject('unknownModule')
       class Stub extends Module {
-        constructor(unknownModule) {
+        constructor (unknownModule) {
           super();
           expect(unknownModule).to.be.an('object');
         }
       }
       mockery.registerMock(upath.join(Ravel.cwd, './test'), Stub);
       Ravel.module('./test', 'test');
-      const shouldThrow = function() {
+      const shouldThrow = () => {
         Ravel[coreSymbols.moduleFactories].test();
       };
       expect(shouldThrow).to.throw(Ravel.ApplicationError.NotFound);
@@ -354,8 +339,7 @@ describe('Ravel', function() {
 
     it('should allow clients to register modules which are plain classes without a static dependency injection member', (done) => {
       const Stub = class extends Module {
-        constructor() {super();}
-        method(){}
+        method () {}
       };
       mockery.registerMock(upath.join(Ravel.cwd, './test'), Stub);
       Ravel.module('./test', 'test');
@@ -366,7 +350,7 @@ describe('Ravel', function() {
 
     it('should throw an ApplicationError.IllegalValue when a client attempts to register a module which is not a subclass of Module', (done) => {
       mockery.registerMock(upath.join(Ravel.cwd, './test'), class {});
-      const shouldThrow = function() {
+      const shouldThrow = () => {
         Ravel.module('./test', 'test');
       };
       expect(shouldThrow).to.throw(Ravel.ApplicationError.IllegalValue);
@@ -380,7 +364,7 @@ describe('Ravel', function() {
       mockery.registerMock('underscore', underscoreStub);
       @inject('underscore', 'moment')
       class Stub1 extends Module {
-        constructor(underscore, moment) {
+        constructor (underscore, moment) {
           super();
           expect(underscore).to.be.ok;
           expect(underscore).to.be.an('object');
@@ -392,7 +376,7 @@ describe('Ravel', function() {
       }
       @inject('moment', 'underscore')
       class Stub2 extends Module {
-        constructor(moment, underscore) {
+        constructor (moment, underscore) {
           super();
           expect(underscore).to.be.ok;
           expect(underscore).to.be.an('object');
@@ -412,13 +396,13 @@ describe('Ravel', function() {
 
     it('should inject the same instance of a module into all modules which reference it', (done) => {
       class Stub1 extends Module {
-        method() {}
+        method () {}
       }
       let stub2Test;
 
       @inject('test')
       class Stub2 extends Module {
-        constructor(test) {
+        constructor (test) {
           super();
           expect(test).to.be.an('object');
           expect(test.method).to.be.a.function;
@@ -428,7 +412,7 @@ describe('Ravel', function() {
 
       @inject('test')
       class Stub3 extends Module {
-        constructor(test) {
+        constructor (test) {
           super();
           expect(test).to.be.an('object');
           expect(test.method).to.be.a.function;

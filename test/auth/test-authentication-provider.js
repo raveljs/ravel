@@ -8,29 +8,29 @@ const mockery = require('mockery');
 
 let Ravel, ravelApp, provider;
 
-describe('auth/authentication_provider', function() {
+describe('auth/authentication_provider', () => {
   beforeEach((done) => {
-    //enable mockery
+    // enable mockery
     mockery.enable({
       useCleanCache: true,
       warnOnReplace: false,
       warnOnUnregistered: false
     });
 
-    //mock ravelApp.kvstore, since we're not actually starting ravelApp.
+    // mock ravelApp.kvstore, since we're not actually starting ravelApp.
     const redisMock = {
-      createClient: function() {
-        const redisClientStub = new (require('events').EventEmitter)(); //eslint-disable-line no-extra-parens
-        redisClientStub.auth = function(){};
+      createClient: () => {
+        const redisClientStub = new (require('events').EventEmitter)(); // eslint-disable-line no-extra-parens
+        redisClientStub.auth = function () {};
         return redisClientStub;
-      },
+      }
     };
     mockery.registerMock('redis', redisMock);
     Ravel = require('../../lib/ravel');
     ravelApp = new Ravel();
     ravelApp.log.setLevel('NONE');
     class TestProvider extends Ravel.AuthenticationProvider {
-      get name() {
+      get name () {
         return 'test';
       }
     }
@@ -46,10 +46,10 @@ describe('auth/authentication_provider', function() {
     done();
   });
 
-  describe('constructor', function() {
+  describe('constructor', () => {
     it('should allow clients to implement an authentication provider which has a name and several methods', (done) => {
       class GoogleOAuth2 extends Ravel.AuthenticationProvider {
-        get name() {
+        get name () {
           return 'google-oauth2';
         }
       }
@@ -66,45 +66,45 @@ describe('auth/authentication_provider', function() {
     });
 
     it('should require clients to supply a name for the provider', (done) => {
-      expect(function() {
-        new Ravel.AuthenticationProvider(ravelApp); //eslint-disable-line no-new
+      expect(() => {
+        new Ravel.AuthenticationProvider(ravelApp); // eslint-disable-line no-new
       }).to.throw(ravelApp.ApplicationError.NotImplemented);
       done();
     });
   });
 
-  describe('#init()', function() {
+  describe('#init()', () => {
     it('should throw ravelApp.ApplicationError.NotImplemented, since this is a template', (done) => {
       try {
         provider.init();
         done(new Error('It should be impossible to call init() on the template authoriation provider.'));
-      } catch(err) {
+      } catch (err) {
         expect(err).to.be.instanceof(ravelApp.ApplicationError.NotImplemented);
         done();
       }
     });
   });
 
-  describe('#handlesClient()', function() {
+  describe('#handlesClient()', () => {
     it('should throw ravelApp.ApplicationError.NotImplemented, since this is a template', (done) => {
       try {
         provider.handlesClient();
         done(new Error('It should be impossible to call handlesClient() on the template authoriation provider.'));
-      } catch(err) {
+      } catch (err) {
         expect(err).to.be.instanceof(ravelApp.ApplicationError.NotImplemented);
         done();
       }
     });
   });
 
-  describe('#credentialToProfile()', function() {
+  describe('#credentialToProfile()', () => {
     it('should throw ravelApp.ApplicationError.NotImplemented, since this is a template', (done) => {
       expect(provider.credentialToProfile()).to.eventually.be.rejectedWith(ravelApp.ApplicationError.NotImplemented);
       done();
     });
   });
 
-  describe('ravelApp.authorizationProviders', function() {
+  describe('ravelApp.authorizationProviders', () => {
     it('should return an empty Array if no AuthorizationProviders are registered', (done) => {
       ravelApp = new Ravel();
       ravelApp.log.setLevel('NONE');
@@ -116,7 +116,7 @@ describe('auth/authentication_provider', function() {
 
     it('should return an Array of registered AuthorizationProviders', (done) => {
       class GoogleOAuth2 extends Ravel.AuthenticationProvider {
-        get name() {
+        get name () {
           return 'google-oauth2';
         }
       }
@@ -129,8 +129,8 @@ describe('auth/authentication_provider', function() {
     });
 
     it('should require clients to supply a name for the provider', (done) => {
-      expect(function() {
-        new Ravel.AuthenticationProvider(ravelApp); //eslint-disable-line no-new
+      expect(() => {
+        new Ravel.AuthenticationProvider(ravelApp); // eslint-disable-line no-new
       }).to.throw(ravelApp.ApplicationError.NotImplemented);
       done();
     });

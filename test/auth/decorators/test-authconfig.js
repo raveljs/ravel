@@ -8,7 +8,7 @@ const Metadata = require('../../../lib/util/meta');
 
 let authconfig;
 
-describe('Ravel', function() {
+describe('Ravel', () => {
   beforeEach((done) => {
     authconfig = require('../../../lib/ravel').Module.authconfig;
     done();
@@ -19,12 +19,12 @@ describe('Ravel', function() {
     done();
   });
 
-  describe('@authconfig()', function() {
+  describe('@authconfig()', () => {
     it('should decorate a class with a hidden property indicating it is an authconfig module', (done) => {
       @authconfig
       class Stub {}
       const instance = new Stub();
-      expect(Metadata.getClassMetaValue(Object.getPrototypeOf(instance),'@authconfig', 'enabled', false)).to.be.ok;
+      expect(Metadata.getClassMetaValue(Object.getPrototypeOf(instance), '@authconfig', 'enabled', false)).to.be.ok;
       done();
     });
 
@@ -46,7 +46,7 @@ describe('Ravel', function() {
     it('should retain an existing implementation of serializeUser()', (done) => {
       @authconfig
       class Stub {
-        serializeUser(user) {
+        serializeUser (user) {
           return Promise.resolve(user.id);
         }
       }
@@ -55,7 +55,7 @@ describe('Ravel', function() {
       expect(instance).to.have.a.property('deserializeUser').that.is.a.function;
       expect(instance).to.have.a.property('deserializeOrCreateUser').that.is.a.function;
       expect(instance).to.have.a.property('verify').that.is.a.function;
-      expect(instance.serializeUser({id:12})).to.eventually.equal(12);
+      expect(instance.serializeUser({id: 12})).to.eventually.equal(12);
       expect(instance.deserializeUser()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
       expect(instance.deserializeOrCreateUser()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
       expect(instance.verify()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
@@ -65,7 +65,7 @@ describe('Ravel', function() {
     it('should retain an existing implementation of deserializeUser()', (done) => {
       @authconfig
       class Stub {
-        deserializeUser() {
+        deserializeUser () {
           return Promise.resolve({});
         }
       }
@@ -84,7 +84,7 @@ describe('Ravel', function() {
     it('should retain an existing implementation of deserializeOrCreateUser()', (done) => {
       @authconfig
       class Stub {
-        deserializeOrCreateUser() {
+        deserializeOrCreateUser () {
           return Promise.resolve({});
         }
       }
@@ -103,7 +103,7 @@ describe('Ravel', function() {
     it('should retain an existing implementation of verify()', (done) => {
       @authconfig
       class Stub {
-        verify() {
+        verify () {
           return Promise.resolve({});
         }
       }
