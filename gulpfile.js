@@ -22,12 +22,25 @@ const TESTS = [
 const babelConfig = {
   'retainLines': true
 };
+let MOCHA_OPTS = {
+  reporter: 'spec',
+  quiet: false,
+  colors: true,
+  timeout: 10000
+};
+
 if (process.execArgv.indexOf('--harmony_async_await') < 0) {
   console.log('Transpiling async/await...');
   babelConfig.plugins = ['transform-decorators-legacy', 'transform-async-to-generator'];
 } else {
   console.log('Using native async/await...');
   babelConfig.plugins = ['transform-decorators-legacy'];
+}
+
+if (process.execArgv.indexOf('--inspect') >= 0) {
+  console.log('Using unlimited test timeouts...');
+  delete MOCHA_OPTS.timeout;
+  MOCHA_OPTS.enableTimeouts = false;
 }
 
 gulp.task('lint', function () {
@@ -88,12 +101,7 @@ gulp.task('test-no-cov', ['copy-lib', 'transpile-tests'], function () {
   });
   return gulp.src(TESTS)
     .pipe(env)
-    .pipe(plugins.mocha({
-      reporter: 'spec',
-      quiet: false,
-      colors: true,
-      timeout: 10000
-    }))
+    .pipe(plugins.mocha(MOCHA_OPTS))
     .pipe(env.reset);
 });
 
@@ -103,12 +111,7 @@ gulp.task('test', ['cover-lib', 'transpile-tests'], function () {
   });
   return gulp.src(TESTS)
     .pipe(env)
-    .pipe(plugins.mocha({
-      reporter: 'spec',
-      quiet: false,
-      colors: true,
-      timeout: 10000
-    }))
+    .pipe(plugins.mocha(MOCHA_OPTS))
     // Creating the reports after tests ran
     .pipe(plugins.istanbul.writeReports({
       dir: './reports',

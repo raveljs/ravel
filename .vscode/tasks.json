@@ -24,8 +24,8 @@
             "args": ["run", "test-no-cov"]
         },
         {
-            "taskName": "debug-remote",
-            "args": ["run", "debug-remote"]
+            "taskName": "debug",
+            "args": ["run", "debug"]
         }
     ]
 }

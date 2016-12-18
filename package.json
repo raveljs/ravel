@@ -36,8 +36,7 @@
     "test":"node $(which gulp) --require source-map-support/register test",
     "test-no-cov":"node --harmony_async_await $(which gulp) --require source-map-support/register test-no-cov",
     "show-coverage":"gulp show-coverage",
-    "debug":"node --harmony_async_await debug $(which gulp) --require source-map-support/register test-no-cov",
-    "debug-remote":"node --harmony_async_await --debug-brk=5858 $(which gulp) --require source-map-support/register test-no-cov"
+    "debug":"node --harmony_async_await --nolazy --debug-brk --inspect $(which gulp) --require source-map-support/register test-no-cov"
   },
   "dependencies": {
     "fs-readdir-recursive":"1.0.0",

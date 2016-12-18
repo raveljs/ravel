@@ -5,15 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Attach to node debug-remote",
-            "type": "node",
-            "request": "attach",
-            "port": 5858,
-            "sourceMaps": true,
-            "preLaunchTask": "debug-remote",
-            "restart": true,
-            "stopOnEntry": true,
-            "internalConsoleOptions": "openOnSessionStart"
+          "name": "Debug test suite",
+          "type": "node2",
+          "request": "launch",
+          "stopOnEntry": true,
+          "port": 9229,
+          "program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
+          "runtimeArgs": ["--harmony_async_await", "--nolazy", "--debug-brk", "--inspect"],
+          "args": ["--require", "source-map-support/register", "test-no-cov"],
+          "smartStep": true
         }
     ]
 }
