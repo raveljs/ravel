@@ -6,6 +6,7 @@
     "configurations": [
         {
           "name": "Debug test suite",
+          "cwd": "${workspaceRoot}",
           "type": "node2",
           "request": "launch",
           "stopOnEntry": true,
@@ -14,6 +15,10 @@
           "runtimeArgs": ["--harmony_async_await", "--nolazy", "--debug-brk", "--inspect"],
           "args": ["--require", "source-map-support/register", "test-no-cov"],
           "smartStep": true
+          // ,"skipFiles": [
+          //   "node_modules/**/*.js"
+          // ]
         }
     ]
+
 }
