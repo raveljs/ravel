@@ -7,3 +7,6 @@
 gulpfile.js
 /lib/.eslintrc.json
 /test-dist
+.vimrc
+/.vscode
+.jsconfig.json

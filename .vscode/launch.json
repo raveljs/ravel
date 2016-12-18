@@ -5,19 +5,40 @@
     "version": "0.2.0",
     "configurations": [
         {
-          "name": "Debug test suite",
+          // sourcemaps isn't working with this yet...
+          "name": "Debug test suite (new debugging protocol)",
           "cwd": "${workspaceRoot}",
           "type": "node2",
           "request": "launch",
           "stopOnEntry": true,
           "port": 9229,
           "program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
-          "runtimeArgs": ["--harmony_async_await", "--nolazy", "--debug-brk", "--inspect"],
-          "args": ["--require", "source-map-support/register", "test-no-cov"],
+          "runtimeArgs": ["--inspect", "--harmony_async_await", "--nolazy"],
+          "args": ["test-no-cov"],
           "smartStep": true
+          // ,"sourceMaps": true,
+          // "sourceMapPathOverrides": {
+          //   "${workspaceRoot}/test-dist/*": "${workspaceRoot}/test"
+          // }
           // ,"skipFiles": [
           //   "node_modules/**/*.js"
           // ]
+        },
+        {
+          "name": "Debug test suite (old debugging protocol)",
+          "cwd": "${workspaceRoot}",
+          "type": "node",
+          "request": "launch",
+          "stopOnEntry": true,
+          "port": 5858,
+          "program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
+          "runtimeArgs": ["--debug", "--harmony_async_await", "--nolazy"],
+          "args": ["test-no-cov"],
+          "smartStep": true,
+          "sourceMaps": true
+          ,"skipFiles": [
+            "node_modules/**/*.js"
+          ]
         }
     ]
 
