@@ -663,8 +663,10 @@ class PersonResource extends Resource {
   @before('bodyParser') // use bodyParser middleware before handler
   async getAll(ctx) {
     // ctx is a koa context object.
-    // await on Promises and use ctx to create a body/status code for response
-    // throw a Ravel.Error to automatically set an error status code
+    // await on Promises, and set ctx.body to create a body for response
+    // "OK" status code will be automatically chosen unless configured
+    // via ctx.respondOptions = { okCode: 201 };
+    // Extend and throw a Ravel.Error to send an error status code
   }
 
   // will map to GET /person/:id
