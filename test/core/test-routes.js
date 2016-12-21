@@ -180,6 +180,39 @@ describe('Ravel', () => {
       .expect(200, {id: 3}, done);
     });
 
+    it('should facilitate the creation of GET routes via @mapping with different status codes', (done) => {
+      const middleware1 = async function (ctx, next) { await next(); };
+      const middleware2 = async function (ctx, next) { await next(); };
+
+      class Stub extends Routes {
+        constructor () {
+          super('/api');
+          this.middleware1 = middleware1;
+          this.middleware2 = middleware2;
+        }
+
+        @mapping(Routes.GET, '/test')
+        @before('middleware1', 'middleware2')
+        async pathHandler (ctx) {
+          ctx.status = 201;
+          ctx.body = {id: 3};
+        }
+      }
+      const router = new (require('koa-router'))();
+      const app = new Koa();
+
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
+      Ravel.routes('test');
+      Ravel[coreSymbols.routesInit](router);
+
+      app.use(router.routes());
+      app.use(router.allowedMethods());
+
+      request(app.callback())
+      .get('/api/test')
+      .expect(201, {id: 3}, done);
+    });
+
     it('should facilitate the creation of POST routes via @mapping', (done) => {
       const middleware1 = async function (ctx, next) { await next(); };
       const middleware2 = async function (ctx, next) { await next(); };
