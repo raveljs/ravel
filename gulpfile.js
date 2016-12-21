@@ -37,7 +37,7 @@ if (process.execArgv.indexOf('--harmony_async_await') < 0) {
   babelConfig.plugins = ['transform-decorators-legacy'];
 }
 
-if (process.execArgv.indexOf('--inspect') >= 0) {
+if (process.execArgv.indexOf('--inspect') >= 0 || process.execArgv.indexOf('--debug') >= 0) {
   console.log('Using unlimited test timeouts...');
   delete MOCHA_OPTS.timeout;
   MOCHA_OPTS.enableTimeouts = false;

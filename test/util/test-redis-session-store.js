@@ -60,7 +60,7 @@ describe('util/rest', () => {
 
       it('should return a Promise which rejects if redis calls back with an error', () => {
         const session = {'username': 'smcintyre'};
-        const getError = new Error();
+        const getError = new Error('getError');
         sinon.stub(Ravel.kvstore, 'get', function (key, cb) { cb(getError); });
         Ravel.kvstore.set('koa:sess:1234', JSON.stringify(session));
         return expect(store.get('koa:sess:1234')).to.be.rejectedWith(getError);

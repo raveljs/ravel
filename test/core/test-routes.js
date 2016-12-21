@@ -194,7 +194,9 @@ describe('Ravel', () => {
         @mapping(Routes.GET, '/test')
         @before('middleware1', 'middleware2')
         async pathHandler (ctx) {
-          ctx.status = 201;
+          ctx.respondOptions = {
+            okCode: 201
+          };
           ctx.body = {id: 3};
         }
       }
