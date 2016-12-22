@@ -194,9 +194,7 @@ describe('Ravel', () => {
         @mapping(Routes.GET, '/test')
         @before('middleware1', 'middleware2')
         async pathHandler (ctx) {
-          ctx.respondOptions = {
-            okCode: 201
-          };
+          ctx.status = 201;
           ctx.body = {id: 3};
         }
       }
@@ -230,7 +228,6 @@ describe('Ravel', () => {
         @mapping(Routes.POST, '/test')
         @before('middleware1', 'middleware2')
         async pathHandler (ctx) {
-          ctx.status = 200;
           ctx.body = body;
         }
       }

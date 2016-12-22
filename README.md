@@ -664,8 +664,7 @@ class PersonResource extends Resource {
   async getAll(ctx) {
     // ctx is a koa context object.
     // await on Promises, and set ctx.body to create a body for response
-    // "OK" status code will be automatically chosen unless configured
-    // via ctx.respondOptions = { okCode: 201 };
+    // "OK" status code will be chosen automatically unless configured via ctx.status
     // Extend and throw a Ravel.Error to send an error status code
   }
 
