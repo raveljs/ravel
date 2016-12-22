@@ -103,6 +103,31 @@ describe('util/rest', () => {
       .expect(201, result, done);
     });
 
+    it('should allow the second status should override first', (done) => {
+      const result = {
+        id: 1
+      };
+      app.use(rest.respond());
+      app.use(async (ctx) => {
+        ctx.body = result;
+        ctx.status = 201;
+        ctx.status = 200;
+      });
+      request(app.callback())
+      .get('/')
+      .expect(200, result, done);
+    });
+
+    it('should use error codes in ctx.response.status if present (likely set by another library)', (done) => {
+      app.use(rest.respond());
+      app.use(async (ctx) => {
+        ctx.response.status = 501;
+      });
+      request(app.callback())
+      .get('/')
+      .expect(501, 'Not Implemented', done);
+    });
+
     it('should produce a response with HTTP 206 PARTIAL CONTENT if it is supplied as an okCode along with options.start, options.end and options.count', (done) => {
       const result = [];
 
