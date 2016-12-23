@@ -250,7 +250,7 @@ app.start();
 
 ### Decorator Transpilation
 
-Since async functions are not yet available in Node, you will need to use a transpiler to convert them into ES2016-compliant code. We have chosen [Babel](https://babeljs.io/) as our recommended transpiler.
+Since decorators are not yet available in Node, you will need to use a transpiler to convert them into ES2016-compliant code. We have chosen [Babel](https://babeljs.io/) as our recommended transpiler.
 
 ```bash
 $ npm install gulp-sourcemaps@1.6.0 babel-core@6.18.2 babel-plugin-transform-decorators-legacy@1.3.4 gulp-babel@6.1.2
@@ -277,6 +277,9 @@ Check out the [starter project](https://github.com/raveljs/ravel-github-mariadb-
 ### Running the Application
 
 ```bash
+# Node v7
+$ node --harmony_async_await dist/app.js
+# Node v6
 $ node dist/app.js
 ```
 
