@@ -41,7 +41,7 @@ describe('util/rest', () => {
     it('should produce a response with HTTP 204 NO CONTENT if no body is supplied', function (done) {
       app.use(rest.respond());
       app.use(async function (ctx) {
-        ctx.status = 200;
+        ctx.body = undefined;
       });
       request(app.callback())
       .get('/')
@@ -87,6 +87,45 @@ describe('util/rest', () => {
       request(app.callback())
       .get('/')
       .expect(201, 'Created', done);
+    });
+
+    it('should allow ctx.status to be used as an alias for respondOptions.okCode', (done) => {
+      const result = {
+        id: 1
+      };
+      app.use(rest.respond());
+      app.use(async (ctx) => {
+        ctx.body = result;
+        ctx.status = 201;
+      });
+      request(app.callback())
+      .get('/')
+      .expect(201, result, done);
+    });
+
+    it('should allow the second status should override first', (done) => {
+      const result = {
+        id: 1
+      };
+      app.use(rest.respond());
+      app.use(async (ctx) => {
+        ctx.body = result;
+        ctx.status = 201;
+        ctx.status = 200;
+      });
+      request(app.callback())
+      .get('/')
+      .expect(200, result, done);
+    });
+
+    it('should use error codes in ctx.response.status if present (likely set by another library)', (done) => {
+      app.use(rest.respond());
+      app.use(async (ctx) => {
+        ctx.response.status = 501;
+      });
+      request(app.callback())
+      .get('/')
+      .expect(501, 'Not Implemented', done);
     });
 
     it('should produce a response with HTTP 206 PARTIAL CONTENT if it is supplied as an okCode along with options.start, options.end and options.count', (done) => {
@@ -201,6 +240,21 @@ describe('util/rest', () => {
       request(app.callback())
       .get('/')
       .expect(500, err.stack, done); // error message should not be exposed
+    });
+  });
+
+  describe('#errorHandler() and #respond()', () => {
+    it('should override ctx.status with the error status code when an Error is thrown', (done) => {
+      const message = 'a message';
+      app.use(rest.errorHandler());
+      app.use(rest.respond());
+      app.use(async (ctx) => {
+        ctx.status = 200;
+        throw new Ravel.ApplicationError.IllegalValue(message);
+      });
+      request(app.callback())
+      .get('/')
+      .expect(400, message, done);
     });
   });
 });
