@@ -88,7 +88,7 @@
     "gulp-mocha": "3.0.1",
     "gulp-open": "2.0.0",
 
-    "gulp-sourcemaps": "1.9.1",
+    "gulp-sourcemaps": "1.9.3",
     "source-map-support": "0.4.6",
     "gulp-babel":"6.1.2",
     "babel-core":"6.18.2",
