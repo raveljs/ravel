@@ -10,3 +10,4 @@ gulpfile.js
 .vimrc
 /.vscode
 .jsconfig.json
+/lib

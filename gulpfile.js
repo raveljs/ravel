@@ -78,6 +78,12 @@ gulp.task('copy-lib', ['clean', 'lint'], function () {
       .pipe(gulp.dest('test-dist/lib'));
 });
 
+gulp.task('dist', ['clean'], function () {
+  return gulp.src('lib/**/*.js')
+      .pipe(plugins.babel(babelConfig))
+      .pipe(gulp.dest('dist'));
+});
+
 gulp.task('transpile-lib', ['clean', 'lint'], function () {
   return gulp.src('lib/**/*.js')
       .pipe(plugins.sourcemaps.init())
