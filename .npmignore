@@ -9,5 +9,5 @@ gulpfile.js
 /test-dist
 .vimrc
 /.vscode
-.jsconfig.json
+jsconfig.json
 /lib
