@@ -58,6 +58,26 @@ describe('Ravel', () => {
       Ravel[coreSymbols.moduleInit]();
     });
 
+    it('should function on modules exporting plain node classes as well', (done) => {
+      const Stub1 = class {
+        method () {}
+      };
+
+      @inject('test')
+      class Stub2 {
+        constructor (test) {
+          expect(test).to.be.an('object');
+          expect(test).to.have.a.property('method').that.is.a.function;
+          done();
+        }
+      }
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub1);
+      mockery.registerMock(upath.join(Ravel.cwd, 'test2'), Stub2);
+      Ravel.module('test', 'test');
+      Ravel.module('test2', 'test2');
+      Ravel[coreSymbols.moduleInit]();
+    });
+
     it('should facilitate dependency injection of npm modules into client modules', (done) => {
       const stubMoment = {
         method: () => {}
@@ -66,6 +86,26 @@ describe('Ravel', () => {
       class Stub extends Module {
         constructor (moment) {
           super();
+          expect(moment).to.be.ok;
+          expect(moment).to.be.an('object');
+          expect(moment).to.equal(stubMoment);
+          done();
+        }
+        method () {}
+      }
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
+      mockery.registerMock('moment', stubMoment);
+      Ravel.module('test', 'test');
+      Ravel[coreSymbols.injector].inject({}, Stub);
+    });
+
+    it('should facilitate dependency injection of npm modules into plain client modules', (done) => {
+      const stubMoment = {
+        method: () => {}
+      };
+      @inject('moment')
+      class Stub {
+        constructor (moment) {
           expect(moment).to.be.ok;
           expect(moment).to.be.an('object');
           expect(moment).to.equal(stubMoment);
