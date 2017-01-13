@@ -135,6 +135,25 @@ describe('Ravel', () => {
       Ravel[coreSymbols.moduleInit]();
     });
 
+    it('should produce module factories which support dependency injection of plain client modules', (done) => {
+      class Stub1 {
+        method () {}
+      }
+      @inject('test')
+      class Stub2 {
+        constructor (test) {
+          expect(test).to.be.an('object');
+          expect(test.method).to.be.a.function;
+          done();
+        }
+      }
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/test'), Stub1);
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/test2'), Stub2);
+      Ravel.module('./modules/test', 'test');
+      Ravel.module('./modules/test2', 'test2');
+      Ravel[coreSymbols.moduleInit]();
+    });
+
     it('should not allow client modules to depend on themselves', (done) => {
       @inject('test')
       class Stub extends Module {
@@ -153,9 +172,8 @@ describe('Ravel', () => {
 
     it('should instantiate modules in dependency order', (done) => {
       const instantiatedModules = {};
-      class Stub1 extends Module {
+      class Stub1 {
         constructor () {
-          super();
           instantiatedModules.test = true;
           expect(instantiatedModules).to.not.have.property('test2');
           expect(instantiatedModules).to.not.have.property('test3');
@@ -175,17 +193,14 @@ describe('Ravel', () => {
           expect(instantiatedModules).to.have.property('test4');
           expect(test).to.have.a.property('one').that.is.a.function;
           expect(test4).to.have.a.property('four').that.is.a.function;
-          expect(test).to.have.a.property('log').that.is.an.object;
           expect(test4).to.have.a.property('log').that.is.an.object;
         }
         two () {}
       }
 
       @inject('test2')
-      class Stub3 extends Module {
+      class Stub3 {
         constructor (test2) {  // eslint-disable-line no-unused-vars
-          super();
-
           instantiatedModules.test3 = true;
           expect(instantiatedModules).to.have.property('test2');
           expect(test2).to.have.a.property('two').that.is.a.function;
@@ -203,7 +218,6 @@ describe('Ravel', () => {
           expect(instantiatedModules).to.not.have.property('test2');
           expect(instantiatedModules).to.have.property('test');
           expect(test).to.have.a.property('one').that.is.a.function;
-          expect(test).to.have.a.property('log').that.is.an.object;
         }
         four () {}
       }
@@ -337,7 +351,7 @@ describe('Ravel', () => {
       done();
     });
 
-    it('should allow clients to register modules which are plain classes without a static dependency injection member', (done) => {
+    it('should allow clients to register modules which are classes without a static dependency injection member', (done) => {
       const Stub = class extends Module {
         method () {}
       };
@@ -345,15 +359,6 @@ describe('Ravel', () => {
       Ravel.module('./test', 'test');
       Ravel[coreSymbols.moduleInit]();
       expect(Ravel[coreSymbols.modules].test.method).to.be.a.function;
-      done();
-    });
-
-    it('should throw an ApplicationError.IllegalValue when a client attempts to register a module which is not a subclass of Module', (done) => {
-      mockery.registerMock(upath.join(Ravel.cwd, './test'), class {});
-      const shouldThrow = () => {
-        Ravel.module('./test', 'test');
-      };
-      expect(shouldThrow).to.throw(Ravel.ApplicationError.IllegalValue);
       done();
     });
 

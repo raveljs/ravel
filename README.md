@@ -445,13 +445,15 @@ const Ravel = require('ravel');
 const inject = Ravel.inject; // Ravel's dependency injection decorator
 const Module = Ravel.Module; // base class for Ravel Modules
 
-@inject('path', 'fs', 'custom-module') // inject a custom ravel Module beside npm dependencies!
+// inject a custom ravel Module (or your plain classes) beside npm dependencies!
+@inject('path', 'fs', 'custom-module', 'plain-class')
 class MyModule extends Module {
-  constructor(path, fs, custom) { // @inject'd modules are available here as parameters
+  constructor(path, fs, custom, plain) { // @inject'd modules are available here as parameters
     super();
     this.path = path;
     this.fs = fs;
     this.custom = custom;
+    this.plain = plain;
   }
 
   // implement any methods you like :)
@@ -510,6 +512,8 @@ app.modules('./modules'); // this would register modules with the same names as 
 ```
 
 `Module`s are singletons which are instantiated in *dependency-order* (i.e. if `A` depends on `B`, `B` is guaranteed to be constructed first). Cyclical dependencies are detected automatically and result in an `Error`.
+
+`app.module`, `app.modules` and `@inject` also work on files exporting plain classes which do not extend `Ravel.Module`. This makes it easier to create and/or use simple, plain classes which do not need access to the full Ravel framework (i.e. `this.log`, `this.ApplicationError`, etc.).
 
 To further simplify working with imports in Ravel, you can `@inject` core `node` modules and `npm` dependencies (installed in your local `node_modules` or globally) alongside your own `Module`s:
 

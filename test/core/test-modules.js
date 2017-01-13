@@ -53,7 +53,7 @@ describe('Ravel', () => {
       });
 
       mockery.registerMock(upath.join(Ravel.cwd, './modules/test1.js'), class extends Module {});
-      mockery.registerMock(upath.join(Ravel.cwd, './modules/test2.js'), class extends Module {});
+      mockery.registerMock(upath.join(Ravel.cwd, './modules/test2.js'), class {});
       mockery.registerMock(upath.join(Ravel.cwd, './modules/package/test3.js'), class extends Module {});
       Ravel.modules('./modules');
       expect(Ravel[coreSymbols.moduleFactories]).to.have.property('test1');
