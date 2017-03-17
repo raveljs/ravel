@@ -1,9 +1,25 @@
 toc:
+  - name: User Guide
+    file: README.md
   - name: Core Application Components
   - Ravel
   - Module
   - Routes
   - Resource
+  - name: Dependency Injection
+  - inject
+  - name: Routing with Decorators
+  - mapping
+  - before
+  - name: Databases and Transaction-Per-Request
+  - transaction
+  - DatabaseProvider
+  - name: Authentication
+  - authenticated
+  - authconfig
+  - AuthenticationProvider
+  - name: Logging
+  - Logger
   - name: Built-in Error Types
     description: |
       Built-in error types associated with standard HTTP status codes
