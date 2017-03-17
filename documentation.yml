@@ -1,0 +1,19 @@
+toc:
+  - name: Core Application Components
+  - Ravel
+  - Module
+  - Routes
+  - Resource
+  - name: Built-in Error Types
+    description: |
+      Built-in error types associated with standard HTTP status codes
+  - RavelError
+  - AccessError
+  - AuthenticationError
+  - DuplicateEntryError
+  - IllegalValueError
+  - NotAllowedError
+  - NotFoundError
+  - NotImplementedError
+  - RangeOutOfBoundsError
+  - name: Other Stuff
