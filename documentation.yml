@@ -1,4 +1,7 @@
 toc:
+  - name: Ravel API Documentation
+    description: |
+      Ravel is a tiny, sometimes-opinionated foundation for creating organized, maintainable, and scalable web applications in [node.js](https://github.com/joyent/node) with [ES2016/2017](http://kangax.github.io/compat-table/esnext/).
   - name: Core Application Components
   - Ravel
   - Module

@@ -55,7 +55,10 @@ gulp.task('docs', function (done) {
     console.log(stderr);
     if (err) { done(err); } else {
       gulp.src(['docs/index.html'])
-      .pipe(plugins.replace(/<span class="hljs-comment">\/\/\s+&amp;#64;(.*?)<\/span>/g, '@$1'))
+      // fake decorator support
+      .pipe(plugins.replace(/<span class="hljs-comment">\/\/\s+&amp;#64;(.*?)<\/span>/g, (match, group1) => {
+        return `@${group1.replace(/'(.+?)'/g, '<span class="hljs-string">\'$1\'</span>')}`;
+      }))
       .pipe(gulp.dest('docs/'))
       .on('end', done);
     }
