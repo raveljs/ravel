@@ -1,6 +1,4 @@
 toc:
-  - name: User Guide
-    file: README.md
   - name: Core Application Components
   - Ravel
   - Module
@@ -8,7 +6,7 @@ toc:
   - Resource
   - name: Dependency Injection
   - inject
-  - name: Routing with Decorators
+  - name: Routing and Middleware
   - mapping
   - before
   - name: Databases and Transaction-Per-Request

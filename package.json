@@ -63,11 +63,10 @@
     "chai":"3.5.0",
     "chai-as-promised":"6.0.0",
     "chai-things":"0.2.0",
+    "documentation": "4.0.0-beta.18",
     "mocha": "3.1.2",
     "mocha-lcov-reporter":"1.2.0",
     "mockery":"2.0.0",
-    "mr-doc":"git://github.com/raveljs/mr-doc#e7fed5b3b71dc22271db92d5da31dfef5e2befe4",
-    "mr-doc-theme-ravel":"0.0.6",
     "node-mocks-http":"1.5.4",
     "redis-mock":"0.16.0",
     "sinon":"1.17.6",
@@ -89,6 +88,8 @@
     "gulp-load-plugins": "1.4.0",
     "gulp-mocha": "3.0.1",
     "gulp-open": "2.0.0",
+    "gulp-replace": "0.5.4",
+
 
     "gulp-sourcemaps": "1.9.3",
     "source-map-support": "0.4.6",
