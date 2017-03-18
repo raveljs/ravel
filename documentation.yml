@@ -1,5 +1,4 @@
-name: Ravel API
-version: 0.18.3
+name: Ravel API 0.18.3
 toc:
   - name: Core Application Components
   - Ravel
@@ -13,6 +12,7 @@ toc:
   - before
   - name: Databases and Transaction-Per-Request
   - transaction
+  - TransactionFactory
   - DatabaseProvider
   - name: Authentication
   - authenticated
@@ -22,7 +22,7 @@ toc:
   - Logger
   - name: Built-in Error Types
     description: |
-      Built-in error types associated with standard HTTP status codes
+      Built-in error types are automatically translated into standard HTTP response status codes when thrown.
   - RavelError
   - AccessError
   - AuthenticationError
