@@ -825,12 +825,12 @@ class DatabaseInitializer extends Module {
   }
 
   /**
-   * @return {Promise}
+   * @returns {Promise}
    */
   createTables (mysqlConnection) { /* ... */ }
 
   /**
-   * @return {Promise}
+   * @returns {Promise}
    */
   insertRows (mysqlConnection) { /* ... */ }
 }
