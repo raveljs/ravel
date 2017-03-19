@@ -104,7 +104,7 @@ const inject = Ravel.inject;
  * HTTP error code 404.
  */
 class MissingCityError extends Error {
-  constructor(name) {
+  constructor (name) {
     super(`City ${name} does not exist.`, Ravel.httpCodes.NOT_FOUND);
   }
 }
@@ -114,17 +114,17 @@ class MissingCityError extends Error {
  */
 @inject('moment')
 class Cities extends Module {
-  constructor(moment) {
+  constructor (moment) {
     super();
     this.moment = moment;
     this.db = ['Toronto', 'New York', 'Chicago']; // our fake 'database'
   }
 
-  getAllCities() {
+  getAllCities () {
     return Promise.resolve(c);
   }
 
-  getCity(name) {
+  getCity (name) {
     return new Promise((resolve, reject) => {
       const index = this.db.indexOf(name);
       if (index) {
@@ -158,7 +158,7 @@ const mapping = Routes.mapping; // decorator to associate a handler method with 
 
 @inject('middleware1') // middleware from NPM, or your own modules, etc.
 class ExampleRoutes extends Routes {
-  constructor(middleware1) {
+  constructor (middleware1) {
     super('/'); // base path for all routes in this class. Will be prepended to the @mapping.
     this.middleware1 = middleware1;
     // you can also build middleware right here!
@@ -170,7 +170,7 @@ class ExampleRoutes extends Routes {
   // bind this method to an endpoint and verb with @mapping. This one will become GET /app
   @mapping(Routes.GET, 'app')
   @before('middleware1','middleware2') // use @before to place middleware before appHandler
-  async appHandler(ctx) {
+  async appHandler (ctx) {
     // ctx is just a koa context! Have a look at the koa docs to see what methods and properties are available.
     ctx.body = '<!DOCTYPE html><html><body>Hello World!</body></html>';
     ctx.status = 200;
@@ -199,7 +199,7 @@ const before = Resource.before; // decorator to add middleware to an endpoint wi
 // using @before at the class level decorates all endpoint methods with middleware
 @inject('cities')
 class CitiesResource extends Resource {
-  constructor(cities) {
+  constructor (cities) {
     super('/cities'); //base path
     this.cities = cities;
 
@@ -210,12 +210,12 @@ class CitiesResource extends Resource {
   }
 
   // no need to use @mapping here. Routes methods are automatically mapped using their names.
-  async getAll(ctx) { // just like in Routes, ctx is a koa context.
+  async getAll (ctx) { // just like in Routes, ctx is a koa context.
     ctx.body = await this.cities.getAllCities();
   }
 
   @before('anotherMiddleware') // using @before at the method level decorates this method with middleware
-  async get(ctx) { // get routes automatically receive an endpoint of /cities/:id (in this case).
+  async get (ctx) { // get routes automatically receive an endpoint of /cities/:id (in this case).
     ctx.body = await this.cities.getCity(ctx.params.id);
   }
 
@@ -426,7 +426,7 @@ const Ravel = require('ravel');
  * Thrown when a user tries to POST something unexpected to /upload
  */
 class UploadError extends Ravel.Error {
-  constructor(msg) {
+  constructor (msg) {
     super(msg, Ravel.httpCodes.BAD_REQUEST);
   }
 }
@@ -448,7 +448,7 @@ const Module = Ravel.Module; // base class for Ravel Modules
 // inject a custom ravel Module (or your plain classes) beside npm dependencies!
 @inject('path', 'fs', 'custom-module', 'plain-class')
 class MyModule extends Module {
-  constructor(path, fs, custom, plain) { // @inject'd modules are available here as parameters
+  constructor (path, fs, custom, plain) { // @inject'd modules are available here as parameters
     super();
     this.path = path;
     this.fs = fs;
@@ -457,11 +457,11 @@ class MyModule extends Module {
   }
 
   // implement any methods you like :)
-  aMethod() {
+  aMethod () {
     // ...
   }
 
-  async anAsyncMethod() {
+  async anAsyncMethod () {
     // ...
   }
 }
@@ -487,7 +487,7 @@ const Module = Ravel.Module;
 
 @inject('another-module') // inject another Module from your project without require()!
 class MyModule extends Module {
-  constructor(another) { // @inject'd modules are available here as parameters
+  constructor (another) { // @inject'd modules are available here as parameters
     super();
     this.another = another;
   }
@@ -524,7 +524,7 @@ const Module = Ravel.Module;
 
 @inject('another-module', 'path', 'moment') // anything that can be require()d can be @injected
 class MyModule extends Module {
-  constructor(another, path, moment) {
+  constructor (another, path, moment) {
     super();
     // ...
   }
@@ -572,7 +572,7 @@ const prelisten = Module.prelisten;
 class MyInitModule extends Module {
   // ...
   @prelisten
-  initDBTables() {
+  initDBTables () {
     // ...
   }
 }
@@ -609,7 +609,7 @@ class MyRoutes extends Routes {
   // The constructor for a `Routes` class must call `super()` with the base
   // path for all routes within that class. Koa path parameters such as
   // :something are supported.
-  constructor(convert, bodyParser, fs, custom) {
+  constructor (convert, bodyParser, fs, custom) {
     super('/'); // base path for all routes in this class
     this.bodyParser = convert(bodyParser()); // make bodyParser middleware available, and async-await compatible
     this.fs = fs;
@@ -619,7 +619,7 @@ class MyRoutes extends Routes {
   // will map to GET /app
   @mapping(Routes.GET, 'app'); // Koa path parameters such as :something are supported
   @before('bodyParser') // use bodyParser middleware before handler. Matches this.bodyParser created in the constructor.
-  async appHandler(ctx) {
+  async appHandler (ctx) {
     ctx.status = 200;
     ctx.body = '<!doctype html><html></html>';
     // ctx is a koa context object.
@@ -668,7 +668,7 @@ class PersonResource extends Resource {
 
   // will map to GET /person
   @before('bodyParser') // use bodyParser middleware before handler
-  async getAll(ctx) {
+  async getAll (ctx) {
     // ctx is a koa context object.
     // await on Promises, and set ctx.body to create a body for response
     // "OK" status code will be chosen automatically unless configured via ctx.status
@@ -676,27 +676,27 @@ class PersonResource extends Resource {
   }
 
   // will map to GET /person/:id
-  async get(ctx) {
+  async get (ctx) {
     // can use ctx.params.id in here automatically
   }
 
   // will map to POST /person
-  async post(ctx) {}
+  async post (ctx) {}
 
   // will map to PUT /person
-  async putAll(ctx) {}
+  async putAll (ctx) {}
 
   // will map to PUT /person/:id
-  async put(ctx) {}
+  async put (ctx) {}
 
   // will map to DELETE /person
-  async deleteAll(ctx) {}
+  async deleteAll (ctx) {}
 
   // will map to DELETE /person/:id
-  async delete(ctx) {}
+  async delete (ctx) {}
 }
 
-module.exports = PersonResource
+module.exports = PersonResource;
 ```
 
 #### Registering Resources
@@ -771,13 +771,13 @@ const Resource = require('ravel').Resource;
 const transaction = Resource.transaction;
 
 class PersonResource extends Resource {
-  constructor(bodyParser, fs, custom) {
+  constructor (bodyParser, fs, custom) {
     super('/person');
   }
 
   // maps to GET /person/:id
   @transaction('mysql') // this is the name exposed by ravel-mysql-provider
-  async get(ctx) {
+  async get (ctx) {
     // TIP: Don't write complex logic here. Pass ctx.transaction into
     // a Module function which returns a Promise! This example is
     // just for demonstration purposes.
@@ -806,7 +806,7 @@ const prelisten = Module.prelisten;
 class DatabaseInitializer extends Module {
 
   @prelisten // trigger db init on application startup
-  doDbInit(ctx) {
+  doDbInit (ctx) {
     const self = this;
     // specify one or more providers to open connections to, or none
     // to open connections to all known DatabaseProviders.
@@ -827,12 +827,12 @@ class DatabaseInitializer extends Module {
   /**
    * @return {Promise}
    */
-  createTables(mysqlConnection) { /* ... */ }
+  createTables (mysqlConnection) { /* ... */ }
 
   /**
    * @return {Promise}
    */
-  insertRows(mysqlConnection) { /* ... */ }
+  insertRows (mysqlConnection) { /* ... */ }
 }
 
 module.exports = DatabaseInitializer;
@@ -882,18 +882,18 @@ const authconfig = Module.authconfig;
 @authconfig
 @inject('user-profiles')
 class AuthConfig extends Module {
-  constructor(userProfiles) {
+  constructor (userProfiles) {
     this.userProfiles = userProfiles;
   }
-  serializeUser(profile) {
+  serializeUser (profile) {
     // serialize profile to session using the id field
     return Promise.resolve(profile.id);
   }
-  deserializeUser(id) {
+  deserializeUser (id) {
     // retrieve profile from database using id from session
     return this.userProfiles.getProfile(id); // a Promise
   }
-  verify(providerName, ...args) {
+  verify (providerName, ...args) {
     // this method is roughly equivalent to the Passport verify callback, but
     // supports multiple simultaneous AuthenticationProviders.
     // providerName is the name of the provider which needs credentials verified
@@ -929,7 +929,7 @@ const authenticated = Routes.authenticated;
 
 @authenticated // protect all endpoints in this Routes class
 class MyRoutes extends Routes {
-  constructor() {
+  constructor () {
     super('/');
   }
 
