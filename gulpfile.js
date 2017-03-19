@@ -50,7 +50,7 @@ gulp.task('lint', function () {
 });
 
 gulp.task('docs', function (done) {
-  exec(`node ./node_modules/documentation/bin/documentation.js build lib/ravel.js -f html -o docs-dist -c documentation.yml`, (err, stdout, stderr) => {
+  exec(`node ./node_modules/documentation/bin/documentation.js build lib/ravel.js -f html -o docs-dist -c documentation.yml --theme ./documentation_theme`, (err, stdout, stderr) => {
     console.log(stdout);
     console.log(stderr);
     if (err) { done(err); } else {
@@ -136,7 +136,7 @@ gulp.task('test', ['cover-lib', 'transpile-tests'], function () {
 });
 
 gulp.task('watch', ['lint', 'docs'], function () {
-  gulp.watch(['README.md', './lib/**/*.js', './docs/**/*.md', 'documentation.yml'], ['lint', 'docs']);
+  gulp.watch(['README.md', './lib/**/*.js', './docs/**/*.md', 'documentation.yml', './documentation_theme/**'], ['lint', 'docs']);
   gulp.watch(['gulpfile.js', './test/**/*.js'], ['lint']);
 });
 
