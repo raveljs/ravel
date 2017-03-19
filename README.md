@@ -935,7 +935,7 @@ class MyRoutes extends Routes {
 
   @authenticated({redirect: true}) // protect one endpoint specifically
   @mapping(Routes.GET, 'app')
-  async handler(ctx) {
+  async handler (ctx) {
     // will redirect to app.get('login route') if not signed in
   }
 }

@@ -136,7 +136,7 @@ gulp.task('test', ['cover-lib', 'transpile-tests'], function () {
 });
 
 gulp.task('watch', ['lint', 'docs'], function () {
-  gulp.watch(['README.md', './lib/**/*.js'], ['lint', 'docs']);
+  gulp.watch(['README.md', './lib/**/*.js', 'documentation.yml'], ['lint', 'docs']);
   gulp.watch(['gulpfile.js', './test/**/*.js'], ['lint']);
 });
 
