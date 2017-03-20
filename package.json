@@ -64,6 +64,7 @@
     "chai-as-promised":"6.0.0",
     "chai-things":"0.2.0",
     "documentation": "4.0.0-beta.18",
+    "yamljs":  "0.2.8",
     "mocha": "3.1.2",
     "mocha-lcov-reporter":"1.2.0",
     "mockery":"2.0.0",

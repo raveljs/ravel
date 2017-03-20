@@ -9,10 +9,11 @@ var fs = require('fs'),
   GithubSlugger = require('github-slugger'),
   createFormatters = require('documentation').util.createFormatters,
   createLinkerStack = require('documentation').util.createLinkerStack,
-  hljs = require('highlight.js');
+  hljs = require('highlight.js'),
+  yaml = require('yamljs');
 
 module.exports = function (comments, options, callback) {
-
+  const conf = yaml.parse(fs.readFileSync('./documentation.yml', 'utf-8'));
   var linkerStack = createLinkerStack(options)
     .namespaceResolver(comments, function (namespace) {
       var slugger = new GithubSlugger();
@@ -76,7 +77,7 @@ module.exports = function (comments, options, callback) {
   sharedImports.imports.renderSection = _.template(fs.readFileSync(path.join(__dirname, 'section._'), 'utf8'), sharedImports);
   sharedImports.imports.renderNote = _.template(fs.readFileSync(path.join(__dirname, 'note._'), 'utf8'), sharedImports);
 
-  var pageTemplate = _.template(fs.readFileSync(path.join(__dirname, 'index._'), 'utf8'),  sharedImports);
+  var pageTemplate = _.template(fs.readFileSync(path.join(__dirname, 'index._'), 'utf8'), sharedImports);
 
   // push assets into the pipeline as well.
   vfs.src([__dirname + '/assets/**', __dirname + '/*.png'], { base: __dirname })
@@ -85,7 +86,7 @@ module.exports = function (comments, options, callback) {
         path: 'index.html',
         contents: new Buffer(pageTemplate({
           docs: comments,
-          options: options
+          options: Object.assign({}, options, conf)
         }), 'utf8')
       })));
     }));
