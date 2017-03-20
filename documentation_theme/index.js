@@ -79,7 +79,7 @@ module.exports = function (comments, options, callback) {
   var pageTemplate = _.template(fs.readFileSync(path.join(__dirname, 'index._'), 'utf8'),  sharedImports);
 
   // push assets into the pipeline as well.
-  vfs.src([__dirname + '/assets/**'], { base: __dirname })
+  vfs.src([__dirname + '/assets/**', __dirname + '/*.png'], { base: __dirname })
     .pipe(concat(function (files) {
       callback(null, files.concat(new File({
         path: 'index.html',
