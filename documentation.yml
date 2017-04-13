@@ -1,0 +1,57 @@
+name: Ravel API
+version: 0.18.3
+versions:
+  - 0.18.3
+  - 0.18.2
+  - 0.18.1
+  - 0.18.0
+  - 0.17.9
+  - 0.17.8
+  - 0.17.7
+  - 0.17.5
+  - 0.17.4
+  - 0.17.3
+  - 0.17.2
+  - 0.17.18
+  - 0.17.17
+  - 0.17.13
+  - 0.17.12
+  - 0.17.11
+  - 0.17.10
+  - 0.17.1
+  - 0.17.0
+  - 0.16.0
+toc:
+  - name: Core Application Components
+  - Ravel
+  - Module
+  - Routes
+  - Resource
+  - name: Dependency Injection
+  - inject
+  - name: Routing and Middleware
+  - mapping
+  - before
+  - name: Databases and Transaction-Per-Request
+  - transaction
+  - TransactionFactory
+  - DatabaseProvider
+  - name: Authentication
+  - authenticated
+  - authconfig
+  - AuthenticationProvider
+  - name: Logging
+  - Logger
+  - name: Built-in Error Types
+    description: |
+      Built-in error types are automatically translated into standard HTTP response status codes when thrown.
+  - RavelError
+  - AccessError
+  - AuthenticationError
+  - DuplicateEntryError
+  - IllegalValueError
+  - NotAllowedError
+  - NotFoundError
+  - NotImplementedError
+  - RangeOutOfBoundsError
+  - name: Other Stuff

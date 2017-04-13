@@ -5,7 +5,6 @@ const plugins = require('gulp-load-plugins')();
 // const isparta = require('isparta')
 const del = require('del');
 const exec = require('child_process').exec;
-const pkginfo = require('./package.json');
 
 const TESTS = [
   'test-dist/test/core/decorators/test-*.js',
@@ -51,10 +50,18 @@ gulp.task('lint', function () {
 });
 
 gulp.task('docs', function (done) {
-  exec(`mr-doc -n "Ravel ${pkginfo.version} API Reference" -s lib --theme ravel`, function (err, stdout, stderr) {
+  exec(`node ./node_modules/documentation/bin/documentation.js build lib/ravel.js -f html -o docs-dist -c documentation.yml --theme ./documentation_theme`, (err, stdout, stderr) => {
     console.log(stdout);
     console.log(stderr);
-    done(err);
+    if (err) { done(err); } else {
+      gulp.src(['docs-dist/index.html'])
+      // fake decorator support
+      .pipe(plugins.replace(/<span class="hljs-comment">\/\/\s+&amp;#64;(.*?)<\/span>/g, (match, group1) => {
+        return `@${group1.replace(/'(.+?)'/g, '<span class="hljs-string">\'$1\'</span>')}`;
+      }))
+      .pipe(gulp.dest('docs-dist/'))
+      .on('end', done);
+    }
   });
 });
 
@@ -129,7 +136,7 @@ gulp.task('test', ['cover-lib', 'transpile-tests'], function () {
 });
 
 gulp.task('watch', ['lint', 'docs'], function () {
-  gulp.watch(['README.md', './lib/**/*.js'], ['lint', 'docs']);
+  gulp.watch(['README.md', './lib/**/*.js', './docs/**/*.md', 'documentation.yml', './documentation_theme/**'], ['lint', 'docs']);
   gulp.watch(['gulpfile.js', './test/**/*.js'], ['lint']);
 });
 
