@@ -497,7 +497,7 @@ describe('db/database', () => {
         return Promise.resolve();
       });
       const postgresExitTransactionSpy = sinon.stub(postgresProvider, 'exitTransaction', function () {
-        return Promise.reject(null);
+        return Promise.reject(null); // eslint-disable-line prefer-promise-reject-errors
       });
 
       database.scoped(async function (ctx) {

@@ -31,12 +31,12 @@ describe('auth/passport_init', () => {
     // koa-passport still uses generators!
     passportMock = {
       initialize: () => {
-        return function*(next) {
+        return function * (next) {
           yield next;
         };
       },
       session: () => {
-        return function*(next) {
+        return function * (next) {
           yield next;
         };
       },
