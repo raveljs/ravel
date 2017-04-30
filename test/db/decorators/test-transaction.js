@@ -125,7 +125,7 @@ describe('Ravel', () => {
       };
       app.routes('stub');
       const router = require('koa-router')();
-      sinon.stub(router, 'get', function () {
+      sinon.stub(router, 'get').callsFake(function () {
         expect(app.db.middleware).to.have.been.calledWith('mysql', 'redis');
         expect(arguments[0]).to.equal('/app/path');
         expect(Array.from(arguments).indexOf(transactionMiddleware)).to.be.greaterThan(0);
@@ -152,7 +152,7 @@ describe('Ravel', () => {
       };
       app.routes('stub2');
       const router = require('koa-router')();
-      sinon.stub(router, 'get', function () {
+      sinon.stub(router, 'get').callsFake(function () {
         expect(app.db.middleware).to.have.been.calledWith('rethinkdb', 'mysql', 'redis');
         expect(arguments[0]).to.equal('/app/another/path');
         expect(Array.from(arguments).indexOf(transactionMiddleware)).to.be.greaterThan(0);

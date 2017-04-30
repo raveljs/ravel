@@ -46,7 +46,7 @@ describe('Ravel', () => {
 
   describe('#modules()', () => {
     it('should allow clients to recursively register module files for instantiation in Ravel.start, ignoring non-js files', (done) => {
-      stub = sinon.stub(fs, 'lstatSync', function () {
+      stub = sinon.stub(fs, 'lstatSync').callsFake(function () {
         return {
           isDirectory: function () { return true; }
         };
@@ -67,7 +67,7 @@ describe('Ravel', () => {
     });
 
     it('should throw an ApplicationError.IllegalValue when supplied with a base path which is not a directory', (done) => {
-      stub = sinon.stub(fs, 'lstatSync', function () {
+      stub = sinon.stub(fs, 'lstatSync').callsFake(function () {
         return {
           isDirectory: function () { return false; }
         };
@@ -80,7 +80,7 @@ describe('Ravel', () => {
     });
 
     it('should support absolute base paths', (done) => {
-      stub = sinon.stub(fs, 'lstatSync', function () {
+      stub = sinon.stub(fs, 'lstatSync').callsFake(function () {
         return {
           isDirectory: function () { return true; }
         };

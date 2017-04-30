@@ -147,7 +147,7 @@ describe('util/authenticate_request', function () {
 
       const profile = {id: 1};
       const user = {name: 'smcintyre'};
-      sinon.stub(credentialToProfile, 'credentialToProfile', function (token, client) {
+      sinon.stub(credentialToProfile, 'credentialToProfile').callsFake(function (token, client) {
         expect(token).to.equal('oauth-token');
         expect(client).to.equal('test-ios');
         return Promise.resolve(profile);
@@ -193,7 +193,7 @@ describe('util/authenticate_request', function () {
       const finalStub = sinon.stub();
 
       const profile = {};
-      sinon.stub(credentialToProfile, 'credentialToProfile', function (token, client) {
+      sinon.stub(credentialToProfile, 'credentialToProfile').callsFake(function (token, client) {
         expect(token).to.equal('oauth-token');
         expect(client).to.equal('test-ios');
         return Promise.resolve(profile);
@@ -238,7 +238,7 @@ describe('util/authenticate_request', function () {
       const isAuthenticatedStub = sinon.stub();
       const finalStub = sinon.stub();
 
-      sinon.stub(credentialToProfile, 'credentialToProfile', function (token, client) {
+      sinon.stub(credentialToProfile, 'credentialToProfile').callsFake(function (token, client) {
         expect(token).to.equal('oauth-token');
         expect(client).to.equal('test-ios');
         return Promise.reject(new Error());
@@ -271,7 +271,7 @@ describe('util/authenticate_request', function () {
 
       const profile = {};
       const user = {};
-      sinon.stub(credentialToProfile, 'credentialToProfile', function (token, client) {
+      sinon.stub(credentialToProfile, 'credentialToProfile').callsFake(function (token, client) {
         expect(token).to.equal('oauth-token');
         expect(client).to.equal('test-ios');
         return Promise.resolve(profile);
@@ -318,7 +318,7 @@ describe('util/authenticate_request', function () {
 
       const profile = {};
       const user = {};
-      sinon.stub(credentialToProfile, 'credentialToProfile', function (token, client) {
+      sinon.stub(credentialToProfile, 'credentialToProfile').callsFake(function (token, client) {
         expect(token).to.equal('oauth-token');
         expect(client).to.equal('test-ios');
         return Promise.resolve(profile);
