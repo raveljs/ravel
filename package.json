@@ -82,6 +82,9 @@
     "eslint-plugin-jsdoc": "3.0.2",
     "supertest":"3.0.0",
 
+    "passport-local": "1.0.0",
+    "koa-better-body":  "3.0.2",
+
     "codeclimate-test-reporter": "0.4.1",
     "del": "2.2.2",
     "gulp": "3.9.1",
