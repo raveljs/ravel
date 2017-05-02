@@ -1,9 +1,11 @@
 'use strict';
 
 const chai = require('chai');
+const expect = chai.expect;
+const sinon = require('sinon');
 chai.use(require('chai-as-promised'));
-// const expect = chai.expect;
 chai.use(require('chai-things'));
+chai.use(require('sinon-chai'));
 const mockery = require('mockery');
 const upath = require('upath');
 const request = require('supertest');
@@ -65,11 +67,10 @@ describe('Authentication Integration Test', () => {
           koaRouter.post('/auth/local', koaConvert(bodyParser()), function (ctx, next) {
             ctx.req.body = ctx.request.fields;
             ctx.request.body = ctx.req.body;
-            return passport.authenticate('local', function (user, info) {
-              if (user === false) {
-                ctx.status = 401;
-                // TODO should log info via ravel.
-                ctx.message = JSON.stringify(info);
+            return passport.authenticate('local', function (err, user, info, status) {
+              if (err || !user) {
+                ctx.status = err.status || 401;
+                ctx.message = err.message;
               } else {
                 ctx.body = user;
                 ctx.status = 200;
@@ -81,7 +82,7 @@ describe('Authentication Integration Test', () => {
           // verify session route
           koaRouter.get('/auth/local', function (ctx) {
             if (ctx.isAuthenticated()) {
-              ctx.body = ctx.req.user;
+              ctx.body = ctx.state.user;
               ctx.status = 200;
             } else {
               ctx.status = 401;
@@ -114,14 +115,14 @@ describe('Authentication Integration Test', () => {
           if (userId === profile.id) {
             return Promise.resolve(profile);
           } else {
-            return Promise.reject(new this.ApplicationError.Authentication());
+            return Promise.reject(new this.ApplicationError.Authentication('User session cannot be found.'));
           }
         }
         verify (provider, username, password) {
           if (username === profile.name && password === profile.password) {
             return Promise.resolve(profile);
           } else {
-            return Promise.reject(new this.ApplicationError.Authentication());
+            return Promise.reject(new this.ApplicationError.Authentication('Username or password is incorrect'));
           }
         }
       }
@@ -140,6 +141,13 @@ describe('Authentication Integration Test', () => {
         @mapping(Ravel.Routes.GET, '/app')
         async appHandler (ctx) {
           ctx.body = '<!DOCTYPE html><html></html>';
+          ctx.status = 200;
+        }
+
+        @authenticated
+        @mapping(Ravel.Routes.GET, '/deprecated')
+        async deprecatedHandler (ctx) {
+          ctx.body = ctx.passport.user;
           ctx.status = 200;
         }
       }
@@ -202,6 +210,27 @@ describe('Authentication Integration Test', () => {
         agent.get('/app')
         .expect(200, '<!DOCTYPE html><html></html>')
         .end(done);
+      });
+    });
+
+    it('should log a deprecation message for use of ctx.passport', (done) => {
+      const spy = sinon.spy(ravelApp.log, 'warn');
+      agent
+      .post('/auth/local')
+      .type('application/json')
+      .send({ username: profile.name, password: profile.password })
+      .end((err) => {
+        if (err) done(err);
+        agent.get('/deprecated')
+        .expect(200)
+        .end((err) => {
+          try {
+            expect(spy).to.have.been.calledWith('ctx.passport is deprecated. Please use ctx.state instead.');
+            done(err);
+          } catch (err2) {
+            done(err2);
+          }
+        });
       });
     });
   });
