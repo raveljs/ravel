@@ -162,8 +162,10 @@ describe('Ravel', () => {
         'koa view engine': 'ejs',
         'redis port': 6379
       };
+      let root = Ravel.cwd.split(upath.sep).slice(0, 1).join(upath.sep);
+      root = root.length > 0 ? root : upath.sep;
       // can't use extension on mock because mockery only works with exact matches
-      mockery.registerMock('/.ravelrc', conf);
+      mockery.registerMock(upath.join(root, '.ravelrc'), conf);
       Ravel[coreSymbols.loadParameters]();
       expect(Ravel.get('koa view engine')).to.equal(conf['koa view engine']);
       expect(Ravel.get('redis port')).to.equal(conf['redis port']);
