@@ -4,6 +4,7 @@
 .editorconfig
 .eslintrc.json
 .travis.yml
+.appveyor.yml
 gulpfile.js
 /lib/.eslintrc.json
 /test-dist
