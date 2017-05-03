@@ -3,7 +3,7 @@ node_modules
 npm-debug.log
 .vagrant
 init_test.sql
-docs/*
+docs-dist/*
 reports/*
 test-dist/*
 .vimrc
