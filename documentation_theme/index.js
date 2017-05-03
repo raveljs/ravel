@@ -8,29 +8,31 @@ var fs = require('fs'),
   concat = require('concat-stream'),
   GithubSlugger = require('github-slugger'),
   createFormatters = require('documentation').util.createFormatters,
-  createLinkerStack = require('documentation').util.createLinkerStack,
-  hljs = require('highlight.js'),
-  yaml = require('yamljs');
+  LinkerStack = require('documentation').util.LinkerStack,
+  hljs = require('highlight.js');
 
-module.exports = function (comments, options, callback) {
-  const conf = yaml.parse(fs.readFileSync('./documentation.yml', 'utf-8'));
-  var linkerStack = createLinkerStack(options)
-    .namespaceResolver(comments, function (namespace) {
-      var slugger = new GithubSlugger();
-      return '#' + slugger.slug(namespace);
-    });
+module.exports = function(
+  comments /*: Array<Comment> */,
+  config /*: DocumentationConfig */
+) {
+  var linkerStack = new LinkerStack(
+    config
+  ).namespaceResolver(comments, function(namespace) {
+    var slugger = new GithubSlugger();
+    return '#' + slugger.slug(namespace);
+  });
 
   var formatters = createFormatters(linkerStack.link);
 
-  hljs.configure(options.hljs || {});
+  hljs.configure(config.hljs || {});
 
   var sharedImports = {
     imports: {
-      slug: function (str) {
+      slug(str) {
         var slugger = new GithubSlugger();
         return slugger.slug(str);
       },
-      shortSignature: function (section) {
+      shortSignature(section) {
         var prefix = '';
         if (section.kind === 'class') {
           prefix = 'new ';
@@ -39,7 +41,7 @@ module.exports = function (comments, options, callback) {
         }
         return prefix + section.name + formatters.parameters(section, true);
       },
-      signature: function (section) {
+      signature(section) {
         var returns = '';
         var prefix = '';
         if (section.kind === 'class') {
@@ -47,14 +49,18 @@ module.exports = function (comments, options, callback) {
         } else if (section.kind !== 'function') {
           return section.name;
         }
-        if (section.returns) {
-          returns = ': ' +
-            formatters.type(section.returns[0].type);
+        if (section.returns.length) {
+          returns = ': ' + formatters.type(section.returns[0].type);
         }
         return prefix + section.name + formatters.parameters(section) + returns;
       },
-      md: function (ast, inline) {
-        if (inline && ast && ast.children.length && ast.children[0].type === 'paragraph') {
+      md(ast, inline) {
+        if (
+          inline &&
+          ast &&
+          ast.children.length &&
+          ast.children[0].type === 'paragraph'
+        ) {
           ast = {
             type: 'root',
             children: ast.children[0].children.concat(ast.children.slice(1))
@@ -64,8 +70,8 @@ module.exports = function (comments, options, callback) {
       },
       formatType: formatters.type,
       autolink: formatters.autolink,
-      highlight: function (example) {
-        if (options.hljs && options.hljs.highlightAuto) {
+      highlight(example) {
+        if (config.hljs && config.hljs.highlightAuto) {
           return hljs.highlightAuto(example).value;
         }
         return hljs.highlight('js', example).value;
@@ -73,21 +79,43 @@ module.exports = function (comments, options, callback) {
     }
   };
 
-  sharedImports.imports.renderSectionList =  _.template(fs.readFileSync(path.join(__dirname, 'section_list._'), 'utf8'), sharedImports);
-  sharedImports.imports.renderSection = _.template(fs.readFileSync(path.join(__dirname, 'section._'), 'utf8'), sharedImports);
-  sharedImports.imports.renderNote = _.template(fs.readFileSync(path.join(__dirname, 'note._'), 'utf8'), sharedImports);
+  sharedImports.imports.renderSectionList = _.template(
+    fs.readFileSync(path.join(__dirname, 'section_list._'), 'utf8'),
+    sharedImports
+  );
+  sharedImports.imports.renderSection = _.template(
+    fs.readFileSync(path.join(__dirname, 'section._'), 'utf8'),
+    sharedImports
+  );
+  sharedImports.imports.renderNote = _.template(
+    fs.readFileSync(path.join(__dirname, 'note._'), 'utf8'),
+    sharedImports
+  );
 
-  var pageTemplate = _.template(fs.readFileSync(path.join(__dirname, 'index._'), 'utf8'), sharedImports);
+  var pageTemplate = _.template(
+    fs.readFileSync(path.join(__dirname, 'index._'), 'utf8'),
+    sharedImports
+  );
 
   // push assets into the pipeline as well.
-  vfs.src([__dirname + '/assets/**', __dirname + '/*.png'], { base: __dirname })
-    .pipe(concat(function (files) {
-      callback(null, files.concat(new File({
-        path: 'index.html',
-        contents: new Buffer(pageTemplate({
-          docs: comments,
-          options: Object.assign({}, options, conf)
-        }), 'utf8')
-      })));
-    }));
+  return new Promise(resolve => {
+    vfs.src([__dirname + '/assets/**'], { base: __dirname }).pipe(
+      concat(function(files) {
+        resolve(
+          files.concat(
+            new File({
+              path: 'index.html',
+              contents: new Buffer(
+                pageTemplate({
+                  docs: comments,
+                  config: config
+                }),
+                'utf8'
+              )
+            })
+          )
+        );
+      })
+    );
+  });
 };
