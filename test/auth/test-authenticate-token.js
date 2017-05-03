@@ -78,7 +78,7 @@ describe('auth/authenticate_token', () => {
 
   describe('#credentialToProfile()', () => {
     it('should use the appropriate authentication provider to validate and turn a client token into a profile', (done) => {
-      sinon.stub(Ravel.kvstore, 'get', function (key, callback) {
+      sinon.stub(Ravel.kvstore, 'get').callsFake(function (key, callback) {
         callback(null, undefined);
       });
       sinon.stub(Ravel.kvstore, 'setex');
@@ -92,7 +92,7 @@ describe('auth/authenticate_token', () => {
     });
 
     it('should cache profiles in redis using an expiry time which matches the token expiry time', (done) => {
-      sinon.stub(Ravel.kvstore, 'get', function (key, callback) {
+      sinon.stub(Ravel.kvstore, 'get').callsFake(function (key, callback) {
         callback(null, undefined);
       });
       const spy = sinon.stub(Ravel.kvstore, 'setex');
@@ -105,7 +105,7 @@ describe('auth/authenticate_token', () => {
     });
 
     it('should satisfy profile translates from redis when possible', (done) => {
-      sinon.stub(Ravel.kvstore, 'get', function (key, callback) {
+      sinon.stub(Ravel.kvstore, 'get').callsFake(function (key, callback) {
         callback(null, JSON.stringify(profile));
       });
       const setexSpy = sinon.stub(Ravel.kvstore, 'setex');
@@ -120,11 +120,11 @@ describe('auth/authenticate_token', () => {
     });
 
     it('should callback with an error if anything goes wrong while translating the token into a profile, such an encountering an invalid token', (done) => {
-      sinon.stub(Ravel.kvstore, 'get', function (key, callback) {
+      sinon.stub(Ravel.kvstore, 'get').callsFake(function (key, callback) {
         callback(null, undefined);
       });
       const spy = sinon.stub(Ravel.kvstore, 'setex');
-      sinon.stub(testProvider, 'credentialToProfile', function (token, client) { // eslint-disable-line no-unused-vars
+      sinon.stub(testProvider, 'credentialToProfile').callsFake(function (token, client) { // eslint-disable-line no-unused-vars
         return Promise.reject(new Error());
       });
       const promise = tokenAuth.credentialToProfile('oauth-token', 'test-web');

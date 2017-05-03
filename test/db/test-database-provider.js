@@ -89,7 +89,7 @@ describe('db/database_provider', () => {
     });
 
     it('should emit errors if prelisten() throws something', (done) => {
-      const prelistenHook = sinon.stub(provider, 'prelisten', () => {
+      const prelistenHook = sinon.stub(provider, 'prelisten').callsFake(function () {
         throw new Error();
       });
       Ravel.once('error', () => {

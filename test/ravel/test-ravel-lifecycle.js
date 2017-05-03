@@ -29,7 +29,7 @@ describe('Ravel lifeycle test', () => {
     mockery.registerMock('redis', redis);
     // add in auth, since redis-mock doesn't have it
     const oldCreateClient = redis.createClient;
-    sinon.stub(redis, 'createClient', () => {
+    sinon.stub(redis, 'createClient').callsFake(() => {
       const client = oldCreateClient.apply(redis, arguments);
       client.auth = () => {};
       return client;
@@ -212,7 +212,7 @@ describe('Ravel lifeycle test', () => {
     it('should start the underlying HTTP server when called after init()', (done) => {
       app.init();
       expect(postinitHandlerCalled).to.equal(1);
-      const listenSpy = sinon.stub(app.server, 'listen', function (port, callback) {
+      const listenSpy = sinon.stub(app.server, 'listen').callsFake(function (port, callback) {
         callback();
       });
       app.listen().then(() => {
@@ -244,7 +244,7 @@ describe('Ravel lifeycle test', () => {
 
     it('should stop the underlying HTTP server if the server is listening', (done) => {
       app.init();
-      sinon.stub(app.server, 'close', function (callback) {
+      sinon.stub(app.server, 'close').callsFake(function (callback) {
         callback();
       });
       app.listen()

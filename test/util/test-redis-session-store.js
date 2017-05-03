@@ -61,7 +61,7 @@ describe('util/rest', () => {
       it('should return a Promise which rejects if redis calls back with an error', () => {
         const session = {'username': 'smcintyre'};
         const getError = new Error('getError');
-        sinon.stub(Ravel.kvstore, 'get', function (key, cb) { cb(getError); });
+        sinon.stub(Ravel.kvstore, 'get').callsFake(function (key, cb) { cb(getError); });
         Ravel.kvstore.set('koa:sess:1234', JSON.stringify(session));
         return expect(store.get('koa:sess:1234')).to.be.rejectedWith(getError);
       });
@@ -79,7 +79,7 @@ describe('util/rest', () => {
       it('should return a Promise which resolves after storing the user\'s session with a ttl', () => {
         const session = {'username': 'smcintyre'};
         // setex from redis-mock sets a timeout, which stops test from exiting cleanly. Just stub it as set.
-        const setexSpy = sinon.stub(Ravel.kvstore, 'setex', function (key, ttl, value, cb) {
+        const setexSpy = sinon.stub(Ravel.kvstore, 'setex').callsFake(function (key, ttl, value, cb) {
           Ravel.kvstore.set(key, value, cb);
         });
         return Promise.all([
@@ -94,14 +94,14 @@ describe('util/rest', () => {
       it('should return a Promise which rejects if redis calls back with an error', () => {
         const session = {'username': 'smcintyre'};
         const setError = new Error();
-        sinon.stub(Ravel.kvstore, 'set', function (key, value, cb) { cb(setError); });
+        sinon.stub(Ravel.kvstore, 'set').callsFake(function (key, value, cb) { cb(setError); });
         return expect(store.set('koa:sess:1234', session)).to.be.rejectedWith(setError);
       });
 
       it('should return a Promise which rejects if redis calls back with an error (ttl version)', () => {
         const session = {'username': 'smcintyre'};
         const setexError = new Error();
-        sinon.stub(Ravel.kvstore, 'setex', function (key, value, ttl, cb) { cb(setexError); });
+        sinon.stub(Ravel.kvstore, 'setex').callsFake(function (key, value, ttl, cb) { cb(setexError); });
         return expect(store.set('koa:sess:1234', session, 1000 * 1000)).to.be.rejectedWith(setexError);
       });
     });
@@ -119,7 +119,7 @@ describe('util/rest', () => {
 
       it('should return a Promise which rejects if redis calls back with an error (ttl version)', () => {
         const delError = new Error();
-        sinon.stub(Ravel.kvstore, 'del', function (key, cb) { cb(delError); });
+        sinon.stub(Ravel.kvstore, 'del').callsFake(function (key, cb) { cb(delError); });
         return expect(store.destroy('koa:sess:1234')).to.be.rejectedWith(delError);
       });
     });

@@ -31,12 +31,12 @@ describe('auth/passport_init', () => {
     // koa-passport still uses generators!
     passportMock = {
       initialize: () => {
-        return function*(next) {
+        return function * (next) {
           yield next;
         };
       },
       session: () => {
-        return function*(next) {
+        return function * (next) {
           yield next;
         };
       },
@@ -156,7 +156,7 @@ describe('auth/passport_init', () => {
     require('../../lib/auth/passport_init')(ravelApp);
     const app = new Koa();
 
-    sinon.stub(passportMock, 'serializeUser', function (serializerFn) {
+    sinon.stub(passportMock, 'serializeUser').callsFake(function (serializerFn) {
       serializerFn({id: 9876}, function (e, result) {
         expect(result).to.equal(9876);
         done();
@@ -196,7 +196,7 @@ describe('auth/passport_init', () => {
     require('../../lib/auth/passport_init')(ravelApp);
     const app = new Koa();
 
-    sinon.stub(passportMock, 'deserializeUser', function (deserializerFn) {
+    sinon.stub(passportMock, 'deserializeUser').callsFake(function (deserializerFn) {
       deserializerFn(9876, function (e, result) {
         expect(result).to.equal(profile);
         done();
@@ -238,7 +238,7 @@ describe('auth/passport_init', () => {
     require('../../lib/auth/passport_init')(ravelApp);
     const app = new Koa();
 
-    sinon.stub(passportMock, 'serializeUser', function (serializerFn) {
+    sinon.stub(passportMock, 'serializeUser').callsFake(function (serializerFn) {
       serializerFn(9876, function (err, result) {
         expect(result).to.be.not.ok;
         expect(err).to.be.instanceof(Error);
@@ -282,7 +282,7 @@ describe('auth/passport_init', () => {
     require('../../lib/auth/passport_init')(ravelApp);
     const app = new Koa();
 
-    sinon.stub(passportMock, 'deserializeUser', function (deserializerFn) {
+    sinon.stub(passportMock, 'deserializeUser').callsFake(function (deserializerFn) {
       deserializerFn(9876, function (err, result) {
         expect(result).to.be.not.ok;
         expect(err).to.be.instanceof(Error);
@@ -312,7 +312,7 @@ describe('auth/passport_init', () => {
     ravelApp.module('./authconfig', 'authconfig');
 
     const provider = new GoogleOAuth2(ravelApp);
-    sinon.stub(provider, 'init', function (expressApp, passport, verify) {
+    sinon.stub(provider, 'init').callsFake(function (expressApp, passport, verify) {
       verify('testAccessToken', 'testRefreshToken', {name: 'Sean McIntyre'}, function (e, result) {
         expect(result).to.deep.equal(databaseProfile);
         done();
@@ -339,7 +339,7 @@ describe('auth/passport_init', () => {
     ravelApp.module('./authconfig', 'authconfig');
 
     const provider = new GoogleOAuth2(ravelApp);
-    sinon.stub(provider, 'init', function (router, passport, verify) {
+    sinon.stub(provider, 'init').callsFake(function (router, passport, verify) {
       verify('testAccessToken', 'testRefreshToken', {name: 'Sean McIntyre'}, function (err, result) {
         expect(result).to.be.not.ok;
         expect(err).to.be.instanceof(Error);

@@ -115,7 +115,13 @@ gulp.task('test-no-cov', ['copy-lib', 'transpile-tests'], function () {
   return gulp.src(TESTS)
     .pipe(env)
     .pipe(plugins.mocha(MOCHA_OPTS))
-    .pipe(env.reset);
+    .pipe(env.reset)
+    .once('error', function () {
+      process.exit(1);
+    })
+    .once('end', function () {
+      process.exit();
+    });
 });
 
 gulp.task('test', ['cover-lib', 'transpile-tests'], function () {
@@ -132,7 +138,13 @@ gulp.task('test', ['cover-lib', 'transpile-tests'], function () {
     }))
     // Enforce a coverage of at least 100%
     // .pipe(plugins.istanbul.enforceThresholds({ thresholds: { global: 100 } }))
-    .pipe(env.reset);
+    .pipe(env.reset)
+    .once('error', function () {
+      process.exit(1);
+    })
+    .once('end', function () {
+      process.exit();
+    });
 });
 
 gulp.task('watch', ['lint', 'docs'], function () {

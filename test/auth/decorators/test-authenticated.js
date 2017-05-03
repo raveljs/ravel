@@ -136,7 +136,7 @@ describe('Routes', () => {
         mockery.registerMock(upath.join(app.cwd, 'stub'), Stub);
         app.routes('stub');
         const router = require('koa-router')();
-        sinon.stub(router, 'get', function () {
+        sinon.stub(router, 'get').callsFake(function () {
           expect(arguments[0]).to.equal('/app/path');
           expect(arguments[1]).to.be.a.function;
           expect(arguments[1]).to.equal(authenticationMiddleware);
@@ -160,7 +160,7 @@ describe('Routes', () => {
         mockery.registerMock(upath.join(app.cwd, 'stub'), Stub);
         app.routes('stub');
         const router = require('koa-router')();
-        sinon.stub(router, 'get', function () {
+        sinon.stub(router, 'get').callsFake(function () {
           expect(arguments[0]).to.equal('/app/path');
           expect(arguments[1]).to.be.a.function;
           expect(arguments[1]).to.equal(authenticationMiddleware);

@@ -65,16 +65,16 @@ describe('db/database', () => {
       // mock stuff
       const mysqlConnection = Object.create(null);
       const postgresConnection = Object.create(null);
-      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function () {
+      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection').callsFake(function () {
         return Promise.resolve(mysqlConnection);
       });
-      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function () {
+      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection').callsFake(function () {
         return Promise.resolve(postgresConnection);
       });
-      sinon.stub(mysqlProvider, 'exitTransaction', function () {
+      sinon.stub(mysqlProvider, 'exitTransaction').callsFake(function () {
         return Promise.resolve();
       });
-      sinon.stub(postgresProvider, 'exitTransaction', function () {
+      sinon.stub(postgresProvider, 'exitTransaction').callsFake(function () {
         return Promise.resolve();
       });
 
@@ -103,16 +103,16 @@ describe('db/database', () => {
       // mock stuff
       const mysqlConnection = Object.create(null);
       const postgresConnection = Object.create(null);
-      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function () {
+      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection').callsFake(function () {
         return Promise.resolve(mysqlConnection);
       });
-      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function () {
+      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection').callsFake(function () {
         return Promise.resolve(postgresConnection);
       });
-      sinon.stub(mysqlProvider, 'exitTransaction', function () {
+      sinon.stub(mysqlProvider, 'exitTransaction').callsFake(function () {
         return Promise.resolve();
       });
-      sinon.stub(postgresProvider, 'exitTransaction', function () {
+      sinon.stub(postgresProvider, 'exitTransaction').callsFake(function () {
         return Promise.resolve();
       });
 
@@ -138,16 +138,16 @@ describe('db/database', () => {
       database = require('../../lib/db/database')(Ravel);
 
       const mysqlConnection = Object.create(null);
-      sinon.stub(mysqlProvider, 'getTransactionConnection', function () {
+      sinon.stub(mysqlProvider, 'getTransactionConnection').callsFake(function () {
         return Promise.resolve(mysqlConnection);
       });
-      sinon.stub(postgresProvider, 'getTransactionConnection', function () {
+      sinon.stub(postgresProvider, 'getTransactionConnection').callsFake(function () {
         return Promise.reject(new Error());
       });
-      sinon.stub(mysqlProvider, 'exitTransaction', function () {
+      sinon.stub(mysqlProvider, 'exitTransaction').callsFake(function () {
         return Promise.resolve();
       });
-      sinon.stub(postgresProvider, 'exitTransaction', function () {
+      sinon.stub(postgresProvider, 'exitTransaction').callsFake(function () {
         return Promise.resolve();
       });
 
@@ -174,16 +174,16 @@ describe('db/database', () => {
 
       const mysqlConnection = Object.create(null);
       const postgresConnection = Object.create(null);
-      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function () {
+      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection').callsFake(function () {
         return Promise.resolve(mysqlConnection);
       });
-      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function () {
+      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection').callsFake(function () {
         return Promise.resolve(postgresConnection);
       });
-      const mysqlExitTransactionSpy = sinon.stub(mysqlProvider, 'exitTransaction', function () {
+      const mysqlExitTransactionSpy = sinon.stub(mysqlProvider, 'exitTransaction').callsFake(function () {
         return Promise.resolve(null);
       });
-      const postgresExitTransactionSpy = sinon.stub(postgresProvider, 'exitTransaction', function () {
+      const postgresExitTransactionSpy = sinon.stub(postgresProvider, 'exitTransaction').callsFake(function () {
         return Promise.resolve(null);
       });
 
@@ -215,16 +215,16 @@ describe('db/database', () => {
 
       const mysqlConnection = Object.create(null);
       const postgresConnection = Object.create(null);
-      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function () {
+      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection').callsFake(function () {
         return Promise.resolve(mysqlConnection);
       });
-      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function () {
+      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection').callsFake(function () {
         return Promise.resolve(postgresConnection);
       });
-      const mysqlExitTransactionSpy = sinon.stub(mysqlProvider, 'exitTransaction', function () {
+      const mysqlExitTransactionSpy = sinon.stub(mysqlProvider, 'exitTransaction').callsFake(function () {
         return Promise.resolve(null);
       });
-      const postgresExitTransactionSpy = sinon.stub(postgresProvider, 'exitTransaction', function () {
+      const postgresExitTransactionSpy = sinon.stub(postgresProvider, 'exitTransaction').callsFake(function () {
         return Promise.resolve(null);
       });
 
@@ -264,16 +264,16 @@ describe('db/database', () => {
 
       const mysqlConnection = Object.create(null);
       const postgresConnection = Object.create(null);
-      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function () {
+      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection').callsFake(function () {
         return Promise.resolve(mysqlConnection);
       });
-      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function () {
+      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection').callsFake(function () {
         return Promise.resolve(postgresConnection);
       });
-      const mysqlExitTransactionSpy = sinon.stub(mysqlProvider, 'exitTransaction', function () {
+      const mysqlExitTransactionSpy = sinon.stub(mysqlProvider, 'exitTransaction').callsFake(function () {
         return Promise.reject(new Error());
       });
-      const postgresExitTransactionSpy = sinon.stub(postgresProvider, 'exitTransaction', function () {
+      const postgresExitTransactionSpy = sinon.stub(postgresProvider, 'exitTransaction').callsFake(function () {
         return Promise.resolve();
       });
 
@@ -316,16 +316,16 @@ describe('db/database', () => {
 
       const mysqlConnection = Object.create(null);
       const postgresConnection = Object.create(null);
-      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function () {
+      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection').callsFake(function () {
         return Promise.resolve(mysqlConnection);
       });
-      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function () {
+      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection').callsFake(function () {
         return Promise.resolve(postgresConnection);
       });
-      sinon.stub(mysqlProvider, 'exitTransaction', function () {
+      sinon.stub(mysqlProvider, 'exitTransaction').callsFake(function () {
         return Promise.resolve();
       });
-      sinon.stub(postgresProvider, 'exitTransaction', function () {
+      sinon.stub(postgresProvider, 'exitTransaction').callsFake(function () {
         return Promise.resolve();
       });
 
@@ -349,16 +349,16 @@ describe('db/database', () => {
 
       const mysqlConnection = Object.create(null);
       const postgresConnection = Object.create(null);
-      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function () {
+      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection').callsFake(function () {
         return Promise.resolve(mysqlConnection);
       });
-      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function () {
+      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection').callsFake(function () {
         return Promise.resolve(postgresConnection);
       });
-      sinon.stub(mysqlProvider, 'exitTransaction', function () {
+      sinon.stub(mysqlProvider, 'exitTransaction').callsFake(function () {
         return Promise.resolve();
       });
-      sinon.stub(postgresProvider, 'exitTransaction', function () {
+      sinon.stub(postgresProvider, 'exitTransaction').callsFake(function () {
         return Promise.resolve();
       });
 
@@ -380,16 +380,16 @@ describe('db/database', () => {
       database = require('../../lib/db/database')(Ravel);
 
       const postgresConnection = Object.create(null);
-      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function () {
+      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection').callsFake(function () {
         return Promise.reject(new Error());
       });
-      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function () {
+      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection').callsFake(function () {
         return Promise.resolve(postgresConnection);
       });
-      sinon.stub(mysqlProvider, 'exitTransaction', function () {
+      sinon.stub(mysqlProvider, 'exitTransaction').callsFake(function () {
         return Promise.resolve();
       });
-      sinon.stub(postgresProvider, 'exitTransaction', function () {
+      sinon.stub(postgresProvider, 'exitTransaction').callsFake(function () {
         return Promise.resolve();
       });
 
@@ -410,16 +410,16 @@ describe('db/database', () => {
 
       const mysqlConnection = Object.create(null);
       const postgresConnection = Object.create(null);
-      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function () {
+      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection').callsFake(function () {
         return Promise.resolve(mysqlConnection);
       });
-      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function () {
+      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection').callsFake(function () {
         return Promise.resolve(postgresConnection);
       });
-      const mysqlExitTransactionSpy = sinon.stub(mysqlProvider, 'exitTransaction', function () {
+      const mysqlExitTransactionSpy = sinon.stub(mysqlProvider, 'exitTransaction').callsFake(function () {
         return Promise.resolve();
       });
-      const postgresExitTransactionSpy = sinon.stub(postgresProvider, 'exitTransaction', function () {
+      const postgresExitTransactionSpy = sinon.stub(postgresProvider, 'exitTransaction').callsFake(function () {
         return Promise.resolve();
       });
 
@@ -446,16 +446,16 @@ describe('db/database', () => {
 
       const mysqlConnection = Object.create(null);
       const postgresConnection = Object.create(null);
-      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function () {
+      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection').callsFake(function () {
         return Promise.resolve(mysqlConnection);
       });
-      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function () {
+      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection').callsFake(function () {
         return Promise.resolve(postgresConnection);
       });
-      const mysqlExitTransactionSpy = sinon.stub(mysqlProvider, 'exitTransaction', function () {
+      const mysqlExitTransactionSpy = sinon.stub(mysqlProvider, 'exitTransaction').callsFake(function () {
         return Promise.resolve();
       });
-      const postgresExitTransactionSpy = sinon.stub(postgresProvider, 'exitTransaction', function () {
+      const postgresExitTransactionSpy = sinon.stub(postgresProvider, 'exitTransaction').callsFake(function () {
         return Promise.resolve();
       });
 
@@ -487,17 +487,17 @@ describe('db/database', () => {
 
       const mysqlConnection = Object.create(null);
       const postgresConnection = Object.create(null);
-      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection', function () {
+      const mysqlGetTransactionSpy = sinon.stub(mysqlProvider, 'getTransactionConnection').callsFake(function () {
         return Promise.resolve(mysqlConnection);
       });
-      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection', function () {
+      const postgresGetTransactionSpy = sinon.stub(postgresProvider, 'getTransactionConnection').callsFake(function () {
         return Promise.resolve(postgresConnection);
       });
-      const mysqlExitTransactionSpy = sinon.stub(mysqlProvider, 'exitTransaction', function () {
+      const mysqlExitTransactionSpy = sinon.stub(mysqlProvider, 'exitTransaction').callsFake(function () {
         return Promise.resolve();
       });
-      const postgresExitTransactionSpy = sinon.stub(postgresProvider, 'exitTransaction', function () {
-        return Promise.reject(null);
+      const postgresExitTransactionSpy = sinon.stub(postgresProvider, 'exitTransaction').callsFake(function () {
+        return Promise.reject(null); // eslint-disable-line prefer-promise-reject-errors
       });
 
       database.scoped(async function (ctx) {
