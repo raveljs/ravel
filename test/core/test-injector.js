@@ -119,6 +119,26 @@ describe('Ravel', () => {
       Ravel[coreSymbols.injector].inject({}, Stub);
     });
 
+    it('should throw an error when attempting to inject an npm dependency with an error in it', (done) => {
+      mockery.registerSubstitute('badModule', '../../../resources/syntax-error.js');
+      @inject('badModule')
+      class Stub extends Module {
+        constructor (badModule) {
+          super();
+          expect(badModule).to.be.an('object');
+        }
+      }
+      mockery.registerMock(upath.join(Ravel.cwd, 'test'), Stub);
+      Ravel.module('test', 'test');
+      try {
+        Ravel[coreSymbols.injector].inject({}, Stub);
+        done(new Error('It should be impossible to inject a bad module or NPM dependency'));
+      } catch (err) {
+        expect(err).to.be.instanceof(Ravel.ApplicationError.General);
+        done();
+      }
+    });
+
     it('should throw an ApplicationError.NotFound when attempting to inject an unknown module/npm dependency', (done) => {
       @inject('unknownModule')
       class Stub extends Module {
