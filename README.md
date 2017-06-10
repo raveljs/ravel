@@ -62,7 +62,7 @@ Ravel is layered on top of awesome technologies, including:
 
 ## Installation
 
-> As Ravel uses several ES2015/2016 features, you will need to use a 7.x+ distribution of node with the --harmony_async_await flag.
+> As Ravel uses async/await and several other ES2015/2016 features, you will need to use a 7.6.x+ distribution of node
 
 ```bash
 $ npm install ravel
@@ -277,9 +277,6 @@ Check out the [starter project](https://github.com/raveljs/ravel-github-mariadb-
 ### Running the Application
 
 ```bash
-# Node v7
-$ node --harmony_async_await dist/app.js
-# Node v6
 $ node dist/app.js
 ```
 
