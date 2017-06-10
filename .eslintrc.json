@@ -6,5 +6,9 @@
   },
   "parser": "babel-eslint",
   "extends": "semistandard",
-  "globals": {}
+  "globals": {},
+  "rules": {
+    "no-var": "error",
+    "prefer-const": "error"
+  }
 }
