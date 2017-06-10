@@ -230,5 +230,11 @@ describe('Ravel', () => {
       expect(Ravel.config).to.deep.equal(oldParams);
       done();
     });
+
+    it('should throw a SyntaxError if a .ravelrc file is found but is malformed', (done) => {
+      mockery.registerSubstitute(upath.join(Ravel.cwd, '.ravelrc'), '../../../resources/bad-ravelrc.json');
+      expect(() => { Ravel[coreSymbols.loadParameters](); }).to.throw(SyntaxError);
+      done();
+    });
   });
 });
