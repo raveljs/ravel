@@ -30,7 +30,7 @@ const TESTS = [
 const babelConfig = {
   'retainLines': true
 };
-let MOCHA_OPTS = {
+const MOCHA_OPTS = {
   reporter: 'spec',
   quiet: false,
   colors: true,
