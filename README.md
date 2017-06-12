@@ -601,14 +601,14 @@ const mapping = Routes.mapping; // Ravel decorator for mapping a method to an en
 const before = Routes.before;   // Ravel decorator for conneting middleware to an endpoint
 
 // you can inject your own Modules and npm dependencies into Routes
-@inject('koa-convert', 'koa-better-body', 'fs', 'custom-module')
+@inject('koa-bodyparser', 'fs', 'custom-module')
 class MyRoutes extends Routes {
   // The constructor for a `Routes` class must call `super()` with the base
   // path for all routes within that class. Koa path parameters such as
   // :something are supported.
-  constructor (convert, bodyParser, fs, custom) {
+  constructor (bodyParser, fs, custom) {
     super('/'); // base path for all routes in this class
-    this.bodyParser = convert(bodyParser()); // make bodyParser middleware available, and async-await compatible
+    this.bodyParser = bodyParser(); // make bodyParser middleware available
     this.fs = fs;
     this.custom = custom;
   }
@@ -654,11 +654,11 @@ const Resource = require('ravel').Resource;
 const before = Routes.before;
 
 // you can inject your own Modules and npm dependencies into Resources
-@inject('koa-convert', 'koa-better-body', 'fs', 'custom-module')
+@inject('koa-bodyparser', 'fs', 'custom-module')
 class PersonResource extends Resource {
   constructor(convert, bodyParser, fs, custom) {
     super('/person'); // base path for all routes in this class
-    this.bodyParser = convert(bodyParser()); // make bodyParser middleware available
+    this.bodyParser = bodyParser(); // make bodyParser middleware available
     this.fs = fs;
     this.custom = custom;
   }

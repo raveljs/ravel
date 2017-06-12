@@ -51,8 +51,7 @@ describe('Authentication Integration Test', () => {
   describe('Simulated Local Auth Provider', () => {
     beforeEach((done) => {
       const LocalStrategy = require('passport-local').Strategy;
-      const bodyParser = require('koa-better-body');
-      const koaConvert = require('koa-convert');
+      const bodyParser = require('koa-bodyparser');
 
       // test provider wrapping LocalStrategy
       class LocalProvider extends Ravel.AuthenticationProvider {
@@ -64,13 +63,11 @@ describe('Authentication Integration Test', () => {
           passport.use(new LocalStrategy(verify));
 
           // login route. Expects credentials in JSON.
-          koaRouter.post('/auth/local', koaConvert(bodyParser()), function (ctx, next) {
-            ctx.req.body = ctx.request.fields;
-            ctx.request.body = ctx.req.body;
+          koaRouter.post('/auth/local', bodyParser(), function (ctx, next) {
             return passport.authenticate('local', function (err, user, info, status) {
               if (err || !user) {
-                ctx.status = err.status || 401;
-                ctx.message = err.message;
+                ctx.status = err && err.status ? err.status : 401;
+                ctx.message = err && err.message ? err.message : '';
               } else {
                 ctx.body = user;
                 ctx.status = 200;
