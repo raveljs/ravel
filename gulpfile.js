@@ -1,5 +1,14 @@
 'use strict';
 
+// koa-bodyparser doesn't transpile its dist :(
+if (process.version < 'v7.6.0') {
+  require('babel-register')({
+    ignore: false,
+    only: /koa-bodyparser/,
+    plugins: ['transform-decorators-legacy', 'transform-async-to-generator']
+  });
+}
+
 const gulp = require('gulp');
 const plugins = require('gulp-load-plugins')();
 // const isparta = require('isparta')
