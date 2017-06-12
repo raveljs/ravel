@@ -1,5 +1,14 @@
 'use strict';
 
+// koa-bodyparser doesn't transpile its dist :(
+if (process.version < 'v7.6.0') {
+  require('babel-register')({
+    ignore: false,
+    only: /koa-bodyparser/,
+    plugins: ['transform-decorators-legacy', 'transform-async-to-generator']
+  });
+}
+
 const gulp = require('gulp');
 const plugins = require('gulp-load-plugins')();
 // const isparta = require('isparta')
@@ -28,7 +37,7 @@ const MOCHA_OPTS = {
   timeout: 10000
 };
 
-if (process.execArgv.indexOf('--harmony_async_await') < 0) {
+if (process.version < 'v7.6.0' || process.execArgv.indexOf('test')) {
   console.log('Transpiling async/await...');
   babelConfig.plugins = ['transform-decorators-legacy', 'transform-async-to-generator'];
 } else {
