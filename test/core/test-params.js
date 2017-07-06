@@ -129,6 +129,30 @@ describe('Ravel', () => {
     });
   });
 
+  describe('#_validateParameters()', () => {
+    it('should throw a Ravel.ApplicationError.NotFound error when there are any unset required parameters', (done) => {
+      try {
+        Ravel.registerParameter('test param', true);
+        Ravel[coreSymbols.parametersLoaded] = true;
+        Ravel[coreSymbols.validateParameters]();
+        done(new Error('Should never reach this line.'));
+      } catch (err) {
+        expect(err).to.be.instanceof(Ravel.ApplicationError.NotFound);
+        done();
+      }
+    });
+
+    it('should re-throw unrelated errors', (done) => {
+      try {
+        Ravel[coreSymbols.validateParameters]();
+        done(new Error('Should never reach this line.'));
+      } catch (err) {
+        expect(err).to.be.instanceof(Ravel.ApplicationError.General);
+        done();
+      }
+    });
+  });
+
   describe('#_loadParameters()', () => {
     it('should allow users to specify Ravel config parameters via a .ravelrc.json config file', (done) => {
       conf = {
