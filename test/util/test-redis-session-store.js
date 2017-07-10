@@ -55,7 +55,7 @@ describe('util/rest', () => {
       });
 
       it('should return a Promise which rejects if the specified session id does not exist', () => {
-        return expect(store.get('koa:sess:1234')).to.reject;
+        return expect(store.get('koa:sess:1234')).to.be.rejected;
       });
 
       it('should return a Promise which rejects if redis calls back with an error', () => {
@@ -113,7 +113,7 @@ describe('util/rest', () => {
           expect(store.set('koa:sess:1234', session)).to.be.fulfilled,
           expect(store.get('koa:sess:1234')).to.eventually.deep.equal(session),
           expect(store.destroy('koa:sess:1234')).to.be.fulfilled,
-          expect(store.get('koa:sess:1234')).to.eventually.equal(null)
+          expect(store.get('koa:sess:1234')).to.be.rejected
         ]);
       });
 

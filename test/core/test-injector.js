@@ -46,8 +46,8 @@ describe('Ravel', () => {
         constructor (test) {
           super();
           expect(test).to.be.an('object');
-          expect(test).to.have.a.property('method').that.is.a.function;
-          expect(test).to.have.a.property('log').that.is.an.object;
+          expect(test).to.have.a.property('method').that.is.a('function');
+          expect(test).to.have.a.property('log').that.is.an('object');
           done();
         }
       }
@@ -67,7 +67,7 @@ describe('Ravel', () => {
       class Stub2 {
         constructor (test) {
           expect(test).to.be.an('object');
-          expect(test).to.have.a.property('method').that.is.a.function;
+          expect(test).to.have.a.property('method').that.is.a('function');
           done();
         }
       }
@@ -194,8 +194,8 @@ describe('Ravel', () => {
           expect(bad).to.equal(stubBadName);
           expect(myModule).to.be.ok;
           expect(myModule).to.be.an('object');
-          expect(myModule).to.have.a.property('log').that.is.an.object;
-          expect(myModule).to.have.a.property('method').that.is.a.function;
+          expect(myModule).to.have.a.property('log').that.is.an('object');
+          expect(myModule).to.have.a.property('method').that.is.a('function');
           done();
         }
         method () {}

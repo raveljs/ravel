@@ -32,10 +32,10 @@ describe('Ravel', () => {
       @authconfig
       class Stub {}
       const instance = new Stub();
-      expect(instance).to.have.a.property('serializeUser').that.is.a.function;
-      expect(instance).to.have.a.property('deserializeUser').that.is.a.function;
-      expect(instance).to.have.a.property('deserializeOrCreateUser').that.is.a.function;
-      expect(instance).to.have.a.property('verify').that.is.a.function;
+      expect(instance).to.have.a.property('serializeUser').that.is.a('function');
+      expect(instance).to.have.a.property('deserializeUser').that.is.a('function');
+      expect(instance).to.have.a.property('deserializeOrCreateUser').that.is.a('function');
+      expect(instance).to.have.a.property('verify').that.is.a('function');
       expect(instance.serializeUser()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
       expect(instance.deserializeUser()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
       expect(instance.deserializeOrCreateUser()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
@@ -51,10 +51,10 @@ describe('Ravel', () => {
         }
       }
       const instance = new Stub();
-      expect(instance).to.have.a.property('serializeUser').that.is.a.function;
-      expect(instance).to.have.a.property('deserializeUser').that.is.a.function;
-      expect(instance).to.have.a.property('deserializeOrCreateUser').that.is.a.function;
-      expect(instance).to.have.a.property('verify').that.is.a.function;
+      expect(instance).to.have.a.property('serializeUser').that.is.a('function');
+      expect(instance).to.have.a.property('deserializeUser').that.is.a('function');
+      expect(instance).to.have.a.property('deserializeOrCreateUser').that.is.a('function');
+      expect(instance).to.have.a.property('verify').that.is.a('function');
       expect(instance.serializeUser({id: 12})).to.eventually.equal(12);
       expect(instance.deserializeUser()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
       expect(instance.deserializeOrCreateUser()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
@@ -70,10 +70,10 @@ describe('Ravel', () => {
         }
       }
       const instance = new Stub();
-      expect(instance).to.have.a.property('serializeUser').that.is.a.function;
-      expect(instance).to.have.a.property('deserializeUser').that.is.a.function;
-      expect(instance).to.have.a.property('deserializeOrCreateUser').that.is.a.function;
-      expect(instance).to.have.a.property('verify').that.is.a.function;
+      expect(instance).to.have.a.property('serializeUser').that.is.a('function');
+      expect(instance).to.have.a.property('deserializeUser').that.is.a('function');
+      expect(instance).to.have.a.property('deserializeOrCreateUser').that.is.a('function');
+      expect(instance).to.have.a.property('verify').that.is.a('function');
       expect(instance.serializeUser()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
       expect(instance.deserializeUser()).to.eventually.deep.equal({});
       expect(instance.deserializeOrCreateUser()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
@@ -89,10 +89,10 @@ describe('Ravel', () => {
         }
       }
       const instance = new Stub();
-      expect(instance).to.have.a.property('serializeUser').that.is.a.function;
-      expect(instance).to.have.a.property('deserializeUser').that.is.a.function;
-      expect(instance).to.have.a.property('deserializeOrCreateUser').that.is.a.function;
-      expect(instance).to.have.a.property('verify').that.is.a.function;
+      expect(instance).to.have.a.property('serializeUser').that.is.a('function');
+      expect(instance).to.have.a.property('deserializeUser').that.is.a('function');
+      expect(instance).to.have.a.property('deserializeOrCreateUser').that.is.a('function');
+      expect(instance).to.have.a.property('verify').that.is.a('function');
       expect(instance.serializeUser()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
       expect(instance.deserializeUser()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
       expect(instance.deserializeOrCreateUser()).to.eventually.deep.equal({});
@@ -108,10 +108,10 @@ describe('Ravel', () => {
         }
       }
       const instance = new Stub();
-      expect(instance).to.have.a.property('serializeUser').that.is.a.function;
-      expect(instance).to.have.a.property('deserializeUser').that.is.a.function;
-      expect(instance).to.have.a.property('deserializeOrCreateUser').that.is.a.function;
-      expect(instance).to.have.a.property('verify').that.is.a.function;
+      expect(instance).to.have.a.property('serializeUser').that.is.a('function');
+      expect(instance).to.have.a.property('deserializeUser').that.is.a('function');
+      expect(instance).to.have.a.property('deserializeOrCreateUser').that.is.a('function');
+      expect(instance).to.have.a.property('verify').that.is.a('function');
       expect(instance.serializeUser()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
       expect(instance.deserializeUser()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);
       expect(instance.deserializeOrCreateUser()).to.eventually.be.rejectedWith(ApplicationError.NotImplemented);

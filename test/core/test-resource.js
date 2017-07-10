@@ -102,8 +102,8 @@ describe('Ravel', () => {
           expect(this.log).to.have.property('critical').that.is.a('function');
           expect(this.ApplicationError).to.equal(Ravel.ApplicationError);
           expect(this.kvstore).to.equal(Ravel.kvstore);
-          expect(this.params).to.be.an.object;
-          expect(this.params).to.have.a.property('get').that.is.a.function;
+          expect(this.params).to.be.an('object');
+          expect(this.params).to.have.a.property('get').that.is.a('function');
         }
       }
 

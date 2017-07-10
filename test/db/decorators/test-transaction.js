@@ -53,7 +53,7 @@ describe('Ravel', () => {
         @transaction
         get () {}
       }
-      expect(Metadata.getMethodMetaValue(Stub1.prototype, 'get', '@transaction', 'providers')).to.be.an.array;
+      expect(Metadata.getMethodMetaValue(Stub1.prototype, 'get', '@transaction', 'providers')).to.be.an('array');
       expect(Metadata.getMethodMetaValue(Stub1.prototype, 'get', '@transaction', 'providers')).to.deep.equal([]);
       done();
     });
@@ -63,7 +63,7 @@ describe('Ravel', () => {
         @transaction()
         get () {}
       }
-      expect(Metadata.getMethodMetaValue(Stub1.prototype, 'get', '@transaction', 'providers')).to.be.an.array;
+      expect(Metadata.getMethodMetaValue(Stub1.prototype, 'get', '@transaction', 'providers')).to.be.an('array');
       expect(Metadata.getMethodMetaValue(Stub1.prototype, 'get', '@transaction', 'providers')).to.deep.equal([]);
       done();
     });
@@ -73,7 +73,7 @@ describe('Ravel', () => {
         @transaction('mysql', 'redis')
         get () {}
       }
-      expect(Metadata.getMethodMetaValue(Stub1.prototype, 'get', '@transaction', 'providers')).to.be.an.array;
+      expect(Metadata.getMethodMetaValue(Stub1.prototype, 'get', '@transaction', 'providers')).to.be.an('array');
       expect(Metadata.getMethodMetaValue(Stub1.prototype, 'get', '@transaction', 'providers')).to.deep.equal(['mysql', 'redis']);
       done();
     });
@@ -83,7 +83,7 @@ describe('Ravel', () => {
       class Stub1 {
         get () {}
       }
-      expect(Metadata.getClassMetaValue(Stub1.prototype, '@transaction', 'providers')).to.be.an.array;
+      expect(Metadata.getClassMetaValue(Stub1.prototype, '@transaction', 'providers')).to.be.an('array');
       expect(Metadata.getClassMetaValue(Stub1.prototype, '@transaction', 'providers')).to.deep.equal([]);
       done();
     });
@@ -93,7 +93,7 @@ describe('Ravel', () => {
       class Stub1 {
         get () {}
       }
-      expect(Metadata.getClassMetaValue(Stub1.prototype, '@transaction', 'providers')).to.be.an.array;
+      expect(Metadata.getClassMetaValue(Stub1.prototype, '@transaction', 'providers')).to.be.an('array');
       expect(Metadata.getClassMetaValue(Stub1.prototype, '@transaction', 'providers')).to.deep.equal([]);
       done();
     });
@@ -103,7 +103,7 @@ describe('Ravel', () => {
       class Stub1 {
         get () {}
       }
-      expect(Metadata.getClassMetaValue(Stub1.prototype, '@transaction', 'providers')).to.be.an.array;
+      expect(Metadata.getClassMetaValue(Stub1.prototype, '@transaction', 'providers')).to.be.an('array');
       expect(Metadata.getClassMetaValue(Stub1.prototype, '@transaction', 'providers')).to.deep.equal(['mysql', 'redis']);
       done();
     });

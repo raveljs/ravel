@@ -100,9 +100,9 @@ describe('Ravel', () => {
           expect(this.log).to.have.property('critical').that.is.a('function');
           expect(this.ApplicationError).to.equal(Ravel.ApplicationError);
           expect(this.kvstore).to.equal(Ravel.kvstore);
-          expect(this.params).to.be.an.object;
-          expect(this.params).to.have.a.property('get').that.is.a.function;
-          expect(this.db).to.have.a.property('scoped').that.is.an.function;
+          expect(this.params).to.be.an('object');
+          expect(this.params).to.have.a.property('get').that.is.a('function');
+          expect(this.db).to.have.a.property('scoped').that.is.a('function');
           this.db.scoped('mysql', 'rethinkdb', gen);
           expect(scopedStub).to.have.been.calledWith('mysql', 'rethinkdb', gen);
         }
@@ -124,7 +124,7 @@ describe('Ravel', () => {
         constructor (test) {
           super();
           expect(test).to.be.an('object');
-          expect(test.method).to.be.a.function;
+          expect(test.method).to.be.a('function');
           done();
         }
       }
@@ -143,7 +143,7 @@ describe('Ravel', () => {
       class Stub2 {
         constructor (test) {
           expect(test).to.be.an('object');
-          expect(test.method).to.be.a.function;
+          expect(test.method).to.be.a('function');
           done();
         }
       }
@@ -191,9 +191,9 @@ describe('Ravel', () => {
           expect(instantiatedModules).to.have.property('test');
           expect(instantiatedModules).to.not.have.property('test3');
           expect(instantiatedModules).to.have.property('test4');
-          expect(test).to.have.a.property('one').that.is.a.function;
-          expect(test4).to.have.a.property('four').that.is.a.function;
-          expect(test4).to.have.a.property('log').that.is.an.object;
+          expect(test).to.have.a.property('one').that.is.a('function');
+          expect(test4).to.have.a.property('four').that.is.a('function');
+          expect(test4).to.have.a.property('log').that.is.an('object');
         }
         two () {}
       }
@@ -203,8 +203,8 @@ describe('Ravel', () => {
         constructor (test2) { // eslint-disable-line no-unused-vars
           instantiatedModules.test3 = true;
           expect(instantiatedModules).to.have.property('test2');
-          expect(test2).to.have.a.property('two').that.is.a.function;
-          expect(test2).to.have.a.property('log').that.is.an.object;
+          expect(test2).to.have.a.property('two').that.is.a('function');
+          expect(test2).to.have.a.property('log').that.is.an('object');
         }
         three () {}
       }
@@ -217,7 +217,7 @@ describe('Ravel', () => {
           instantiatedModules.test4 = true;
           expect(instantiatedModules).to.not.have.property('test2');
           expect(instantiatedModules).to.have.property('test');
-          expect(test).to.have.a.property('one').that.is.a.function;
+          expect(test).to.have.a.property('one').that.is.a('function');
         }
         four () {}
       }
@@ -358,7 +358,7 @@ describe('Ravel', () => {
       mockery.registerMock(upath.join(Ravel.cwd, './test'), Stub);
       Ravel.module('./test', 'test');
       Ravel[coreSymbols.moduleInit]();
-      expect(Ravel[coreSymbols.modules].test.method).to.be.a.function;
+      expect(Ravel[coreSymbols.modules].test.method).to.be.a('function');
       done();
     });
 
@@ -410,7 +410,7 @@ describe('Ravel', () => {
         constructor (test) {
           super();
           expect(test).to.be.an('object');
-          expect(test.method).to.be.a.function;
+          expect(test.method).to.be.a('function');
           stub2Test = test;
         }
       }
@@ -420,7 +420,7 @@ describe('Ravel', () => {
         constructor (test) {
           super();
           expect(test).to.be.an('object');
-          expect(test.method).to.be.a.function;
+          expect(test.method).to.be.a('function');
           expect(test).to.equal(stub2Test);
           done();
         }

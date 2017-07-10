@@ -23,7 +23,7 @@ describe('Ravel', () => {
       @before('test1', 'test2')
       class Stub1 {
       }
-      expect(Metadata.getClassMetaValue(Stub1.prototype, '@before', 'middleware')).to.be.an.array;
+      expect(Metadata.getClassMetaValue(Stub1.prototype, '@before', 'middleware')).to.be.an('array');
       expect(Metadata.getClassMetaValue(Stub1.prototype, '@before', 'middleware')).to.deep.equal(['test1', 'test2']);
       done();
     });
@@ -53,7 +53,7 @@ describe('Ravel', () => {
 
         }
       }
-      expect(Metadata.getMethodMetaValue(Stub1.prototype, 'get', '@before', 'middleware')).to.be.an.array;
+      expect(Metadata.getMethodMetaValue(Stub1.prototype, 'get', '@before', 'middleware')).to.be.an('array');
       expect(Metadata.getMethodMetaValue(Stub1.prototype, 'get', '@before', 'middleware')).to.deep.equal(['test1', 'test2']);
       done();
     });

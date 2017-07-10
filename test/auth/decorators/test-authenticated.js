@@ -25,7 +25,7 @@ describe('Routes', () => {
       @authenticated
       class Stub1 {
       }
-      expect(Metadata.getClassMetaValue(Stub1.prototype, '@authenticated', 'config')).to.be.an.object;
+      expect(Metadata.getClassMetaValue(Stub1.prototype, '@authenticated', 'config')).to.be.an('object');
       expect(Metadata.getClassMetaValue(Stub1.prototype, '@authenticated', 'config')).to.deep.equal({});
       done();
     });
@@ -34,7 +34,7 @@ describe('Routes', () => {
       @authenticated()
       class Stub1 {
       }
-      expect(Metadata.getClassMetaValue(Stub1.prototype, '@authenticated', 'config')).to.be.an.object;
+      expect(Metadata.getClassMetaValue(Stub1.prototype, '@authenticated', 'config')).to.be.an('object');
       expect(Metadata.getClassMetaValue(Stub1.prototype, '@authenticated', 'config')).to.deep.equal({});
       done();
     });
@@ -46,7 +46,7 @@ describe('Routes', () => {
       })
       class Stub1 {
       }
-      expect(Metadata.getClassMetaValue(Stub1.prototype, '@authenticated', 'config')).to.be.an.object;
+      expect(Metadata.getClassMetaValue(Stub1.prototype, '@authenticated', 'config')).to.be.an('object');
       expect(Metadata.getClassMetaValue(Stub1.prototype, '@authenticated', 'config')).to.deep.equal({
         redirect: true,
         register: false
@@ -59,7 +59,7 @@ describe('Routes', () => {
         @authenticated
         handler () {}
       }
-      expect(Metadata.getMethodMetaValue(Stub1.prototype, 'handler', '@authenticated', 'config')).to.be.an.object;
+      expect(Metadata.getMethodMetaValue(Stub1.prototype, 'handler', '@authenticated', 'config')).to.be.an('object');
       expect(Metadata.getMethodMetaValue(Stub1.prototype, 'handler', '@authenticated', 'config')).to.deep.equal({});
       done();
     });
@@ -69,7 +69,7 @@ describe('Routes', () => {
         @authenticated()
         handler () {}
       }
-      expect(Metadata.getMethodMetaValue(Stub1.prototype, 'handler', '@authenticated', 'config')).to.be.an.object;
+      expect(Metadata.getMethodMetaValue(Stub1.prototype, 'handler', '@authenticated', 'config')).to.be.an('object');
       expect(Metadata.getMethodMetaValue(Stub1.prototype, 'handler', '@authenticated', 'config')).to.deep.equal({});
       done();
     });
@@ -82,7 +82,7 @@ describe('Routes', () => {
         })
         handler () {}
       }
-      expect(Metadata.getMethodMetaValue(Stub1.prototype, 'handler', '@authenticated', 'config')).to.be.an.object;
+      expect(Metadata.getMethodMetaValue(Stub1.prototype, 'handler', '@authenticated', 'config')).to.be.an('object');
       expect(Metadata.getMethodMetaValue(Stub1.prototype, 'handler', '@authenticated', 'config')).to.deep.equal({
         redirect: true,
         register: false
@@ -138,7 +138,7 @@ describe('Routes', () => {
         const router = require('koa-router')();
         sinon.stub(router, 'get').callsFake(function () {
           expect(arguments[0]).to.equal('/app/path');
-          expect(arguments[1]).to.be.a.function;
+          expect(arguments[1]).to.be.a('function');
           expect(arguments[1]).to.equal(authenticationMiddleware);
           done();
         });
@@ -162,7 +162,7 @@ describe('Routes', () => {
         const router = require('koa-router')();
         sinon.stub(router, 'get').callsFake(function () {
           expect(arguments[0]).to.equal('/app/path');
-          expect(arguments[1]).to.be.a.function;
+          expect(arguments[1]).to.be.a('function');
           expect(arguments[1]).to.equal(authenticationMiddleware);
           done();
         });
