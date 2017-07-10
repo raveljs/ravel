@@ -44,8 +44,8 @@ describe('util/rest', () => {
         ctx.body = undefined;
       });
       request(app.callback())
-      .get('/')
-      .expect(204, '', done);
+        .get('/')
+        .expect(204, '', done);
     });
 
     it('should produce a response with HTTP 200 OK containing a string body if a json payload is supplied', function (done) {
@@ -55,9 +55,9 @@ describe('util/rest', () => {
         ctx.body = result;
       });
       request(app.callback())
-      .get('/')
-      .expect('Content-Type', 'application/json; charset=utf-8')
-      .expect(200, result, done);
+        .get('/')
+        .expect('Content-Type', 'application/json; charset=utf-8')
+        .expect(200, result, done);
     });
 
     it('should produce a response with HTTP 201 CREATED and an appropriate location header if a json body containing a property \'id\' is supplied along with an okCode of CREATED', (done) => {
@@ -70,11 +70,11 @@ describe('util/rest', () => {
       });
 
       request(app.callback())
-      .post('/entity')
-      .set('origin', 'http://localhost:8080/')
-      .expect('Content-Type', 'application/json; charset=utf-8')
-      .expect('Location', 'http://localhost:8080/entity/1')
-      .expect(201, result, done);
+        .post('/entity')
+        .set('origin', 'http://localhost:8080/')
+        .expect('Content-Type', 'application/json; charset=utf-8')
+        .expect('Location', 'http://localhost:8080/entity/1')
+        .expect(201, result, done);
     });
 
     it('should allow the user to override the default success status code', function (done) {
@@ -85,8 +85,8 @@ describe('util/rest', () => {
         };
       });
       request(app.callback())
-      .get('/')
-      .expect(201, 'Created', done);
+        .get('/')
+        .expect(201, 'Created', done);
     });
 
     it('should allow ctx.status to be used as an alias for respondOptions.okCode', (done) => {
@@ -99,8 +99,8 @@ describe('util/rest', () => {
         ctx.status = 201;
       });
       request(app.callback())
-      .get('/')
-      .expect(201, result, done);
+        .get('/')
+        .expect(201, result, done);
     });
 
     it('should allow the second status should override first', (done) => {
@@ -114,8 +114,8 @@ describe('util/rest', () => {
         ctx.status = 200;
       });
       request(app.callback())
-      .get('/')
-      .expect(200, result, done);
+        .get('/')
+        .expect(200, result, done);
     });
 
     it('should use error codes in ctx.response.status if present (likely set by another library)', (done) => {
@@ -124,8 +124,8 @@ describe('util/rest', () => {
         ctx.response.status = 501;
       });
       request(app.callback())
-      .get('/')
-      .expect(501, 'Not Implemented', done);
+        .get('/')
+        .expect(501, 'Not Implemented', done);
     });
 
     it('should produce a response with HTTP 206 PARTIAL CONTENT if it is supplied as an okCode along with options.start, options.end and options.count', (done) => {
@@ -145,11 +145,11 @@ describe('util/rest', () => {
       });
 
       request(app.callback())
-      .get('/')
-      .set('origin', 'http://localhost:8080/')
-      .expect('Content-Type', 'application/json; charset=utf-8')
-      .expect('Content-Range', `items ${options.start}-${options.end}/${options.count}`)
-      .expect(206, result, done);
+        .get('/')
+        .set('origin', 'http://localhost:8080/')
+        .expect('Content-Type', 'application/json; charset=utf-8')
+        .expect('Content-Range', `items ${options.start}-${options.end}/${options.count}`)
+        .expect(206, result, done);
     });
   });
 
@@ -161,8 +161,8 @@ describe('util/rest', () => {
         throw new Ravel.ApplicationError.NotFound(message);
       });
       request(app.callback())
-      .get('/')
-      .expect(404, message, done);
+        .get('/')
+        .expect(404, message, done);
     });
 
     it('should respond with HTTP 403 Forbidden when ApplicationError.Access is passed as err', (done) => {
@@ -172,8 +172,8 @@ describe('util/rest', () => {
         throw new Ravel.ApplicationError.Access(message);
       });
       request(app.callback())
-      .get('/')
-      .expect(403, message, done);
+        .get('/')
+        .expect(403, message, done);
     });
 
     it('should respond with HTTP 405 METHOD NOT ALLOWED when ApplicationError.NotAllowed is passed as err', (done) => {
@@ -183,8 +183,8 @@ describe('util/rest', () => {
         throw new Ravel.ApplicationError.NotAllowed(message);
       });
       request(app.callback())
-      .get('/')
-      .expect(405, message, done);
+        .get('/')
+        .expect(405, message, done);
     });
 
     it('should respond with HTTP 501 NOT IMPLEMENTED when ApplicationError.NotImplemented is passed as err', (done) => {
@@ -194,8 +194,8 @@ describe('util/rest', () => {
         throw new Ravel.ApplicationError.NotImplemented(message);
       });
       request(app.callback())
-      .get('/')
-      .expect(501, message, done);
+        .get('/')
+        .expect(501, message, done);
     });
 
     it('should respond with HTTP 409 CONFLICT when ApplicationError.DuplicateEntry is passed as err', (done) => {
@@ -205,8 +205,8 @@ describe('util/rest', () => {
         throw new Ravel.ApplicationError.DuplicateEntry(message);
       });
       request(app.callback())
-      .get('/')
-      .expect(409, message, done);
+        .get('/')
+        .expect(409, message, done);
     });
 
     it('should respond with HTTP 416 REQUESTED_RANGE_NOT_SATISFIABLE when ApplicationError.RangeOutOfBounds is passed as err', (done) => {
@@ -216,8 +216,8 @@ describe('util/rest', () => {
         throw new Ravel.ApplicationError.RangeOutOfBounds(message);
       });
       request(app.callback())
-      .get('/')
-      .expect(416, message, done);
+        .get('/')
+        .expect(416, message, done);
     });
 
     it('should respond with HTTP 400 BAD REQUEST when ApplicationError.IllegalValue is passed as err', (done) => {
@@ -227,8 +227,8 @@ describe('util/rest', () => {
         throw new Ravel.ApplicationError.IllegalValue(message);
       });
       request(app.callback())
-      .get('/')
-      .expect(400, message, done);
+        .get('/')
+        .expect(400, message, done);
     });
 
     it('should respond with HTTP 500 INTERNAL SERVER ERROR when an unknown Error type is passed as err', (done) => {
@@ -238,8 +238,8 @@ describe('util/rest', () => {
         throw err;
       });
       request(app.callback())
-      .get('/')
-      .expect(500, err.stack, done); // error message should not be exposed
+        .get('/')
+        .expect(500, err.stack, done); // error message should not be exposed
     });
   });
 
@@ -253,8 +253,8 @@ describe('util/rest', () => {
         throw new Ravel.ApplicationError.IllegalValue(message);
       });
       request(app.callback())
-      .get('/')
-      .expect(400, message, done);
+        .get('/')
+        .expect(400, message, done);
     });
   });
 });

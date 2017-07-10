@@ -95,12 +95,12 @@ describe('util/authenticate_request', function () {
       });
 
       request(app.callback())
-      .get('/entity')
-      .expect(function () {
-        expect(isAuthenticatedStub).to.have.been.called;
-        expect(finalStub).to.have.been.called;
-      })
-      .end(done);
+        .get('/entity')
+        .expect(function () {
+          expect(isAuthenticatedStub).to.have.been.called;
+          expect(finalStub).to.have.been.called;
+        })
+        .end(done);
     });
 
     it('should use passport\'s req.isAuthenticated() to check users by default, sending HTTP 401 UNAUTHORIZED if users are unauthenticated', (done) => {
@@ -114,11 +114,11 @@ describe('util/authenticate_request', function () {
       app.use((new AuthenticationMiddleware(Ravel, false, false)).middleware());
 
       request(app.callback())
-      .get('/entity')
-      .expect(function () {
-        expect(isAuthenticatedStub).to.have.been.called;
-      })
-      .expect(401, done);
+        .get('/entity')
+        .expect(function () {
+          expect(isAuthenticatedStub).to.have.been.called;
+        })
+        .expect(401, done);
     });
 
     it('should use passport\'s req.isAuthenticated() to check users by default, redirecting to the login page if users are unauthenticated and redirects are enabled', (done) => {
@@ -133,12 +133,12 @@ describe('util/authenticate_request', function () {
       app.use((new AuthenticationMiddleware(Ravel, true, false)).middleware());
 
       request(app.callback())
-      .get('/entity')
-      .expect(function () {
-        expect(isAuthenticatedStub).to.have.been.called;
-      })
-      .expect('Location', /\/login/)
-      .expect(302, done);
+        .get('/entity')
+        .expect(function () {
+          expect(isAuthenticatedStub).to.have.been.called;
+        })
+        .expect('Location', /\/login/)
+        .expect(302, done);
     });
 
     it('should use x-auth-token and x-auth-client headers to authenticate mobile clients', (done) => {
@@ -178,14 +178,14 @@ describe('util/authenticate_request', function () {
       });
 
       request(app.callback())
-      .get('/entity')
-      .set('x-auth-token', 'oauth-token')
-      .set('x-auth-client', 'test-ios')
-      .expect(function () {
-        expect(isAuthenticatedStub).to.not.have.been.called;
-        expect(finalStub).to.have.been.called;
-      })
-      .end(done);
+        .get('/entity')
+        .set('x-auth-token', 'oauth-token')
+        .set('x-auth-client', 'test-ios')
+        .expect(function () {
+          expect(isAuthenticatedStub).to.not.have.been.called;
+          expect(finalStub).to.have.been.called;
+        })
+        .end(done);
     });
 
     it('should use x-auth-token and x-auth-client headers to authenticate mobile clients, failing with HTTP 401 UNAUTHORIZED if the user does not exist and registration is disabled', (done) => {
@@ -224,14 +224,14 @@ describe('util/authenticate_request', function () {
       });
 
       request(app.callback())
-      .get('/entity')
-      .set('x-auth-token', 'oauth-token')
-      .set('x-auth-client', 'test-ios')
-      .expect(function () {
-        expect(isAuthenticatedStub).to.not.have.been.called;
-        expect(finalStub).to.not.have.been.called;
-      })
-      .expect(401, done);
+        .get('/entity')
+        .set('x-auth-token', 'oauth-token')
+        .set('x-auth-client', 'test-ios')
+        .expect(function () {
+          expect(isAuthenticatedStub).to.not.have.been.called;
+          expect(finalStub).to.not.have.been.called;
+        })
+        .expect(401, done);
     });
 
     it('use x-auth-token and x-auth-client headers to authenticate mobile clients, failing with HTTP 401 UNAUTHORIZED if the token cannot be validated or translated into a profile', (done) => {
@@ -255,14 +255,14 @@ describe('util/authenticate_request', function () {
       });
 
       request(app.callback())
-      .get('/entity')
-      .set('x-auth-token', 'oauth-token')
-      .set('x-auth-client', 'test-ios')
-      .expect(function () {
-        expect(isAuthenticatedStub).to.not.have.been.called;
-        expect(finalStub).to.not.have.been.called;
-      })
-      .expect(401, done);
+        .get('/entity')
+        .set('x-auth-token', 'oauth-token')
+        .set('x-auth-client', 'test-ios')
+        .expect(function () {
+          expect(isAuthenticatedStub).to.not.have.been.called;
+          expect(finalStub).to.not.have.been.called;
+        })
+        .expect(401, done);
     });
 
     it('use x-auth-token and x-auth-client headers to authenticate mobile clients, registering users if that functionality is enabled and they don\'t already exist', (done) => {
@@ -302,14 +302,14 @@ describe('util/authenticate_request', function () {
       });
 
       request(app.callback())
-      .get('/entity')
-      .set('x-auth-token', 'oauth-token')
-      .set('x-auth-client', 'test-ios')
-      .expect(function () {
-        expect(isAuthenticatedStub).to.not.have.been.called;
-        expect(finalStub).to.have.been.called;
-      })
-      .end(done);
+        .get('/entity')
+        .set('x-auth-token', 'oauth-token')
+        .set('x-auth-client', 'test-ios')
+        .expect(function () {
+          expect(isAuthenticatedStub).to.not.have.been.called;
+          expect(finalStub).to.have.been.called;
+        })
+        .end(done);
     });
 
     it('use x-auth-token and x-auth-client headers to authenticate mobile clients, responding with HTTP 401 UNAUTHORIZED if user registration is enabled and registration fails', (done) => {
@@ -350,14 +350,14 @@ describe('util/authenticate_request', function () {
       });
 
       request(app.callback())
-      .get('/entity')
-      .set('x-auth-token', 'oauth-token')
-      .set('x-auth-client', 'test-ios')
-      .expect(function () {
-        expect(isAuthenticatedStub).to.not.have.been.called;
-        expect(finalStub).to.not.have.been.called;
-      })
-      .expect(401, done);
+        .get('/entity')
+        .set('x-auth-token', 'oauth-token')
+        .set('x-auth-client', 'test-ios')
+        .expect(function () {
+          expect(isAuthenticatedStub).to.not.have.been.called;
+          expect(finalStub).to.not.have.been.called;
+        })
+        .expect(401, done);
     });
 
     it('should rethrow errors which are not related to auth', (done) => {
@@ -381,11 +381,11 @@ describe('util/authenticate_request', function () {
         throw error;
       });
       request(app.callback())
-      .get('/entity')
-      .expect(async function () {
-        expect(isAuthenticatedStub).to.have.been.called;
-      })
-      .expect(500, 'something went wrong', done);
+        .get('/entity')
+        .expect(async function () {
+          expect(isAuthenticatedStub).to.have.been.called;
+        })
+        .expect(500, 'something went wrong', done);
     });
   });
 });

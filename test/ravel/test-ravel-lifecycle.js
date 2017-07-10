@@ -248,23 +248,23 @@ describe('Ravel lifeycle test', () => {
         callback();
       });
       app.listen()
-      .then(() => {
-        return app.close();
-      })
-      .then(() => {
-        expect(postinitHandlerCalled).to.equal(1);
-        expect(prelistenHandlerCalled).to.equal(1);
-        expect(postlistenHandlerCalled).to.equal(1);
-        expect(endHandlerCalled).to.equal(1);
-        expect(koaconfigHandlerCalled).to.equal(1);
-        expect(koaconfigAppReference).to.be.an('object');
-        app.server.close.restore(); // undo stub
-        app.server.close(done); // actually close server so test suite exits cleanly
-      }).catch((err) => {
-        app.server.close.restore(); // undo stub
-        app.server.close(); // actually close server so test suite exits cleanly
-        done(err || new Error());
-      });
+        .then(() => {
+          return app.close();
+        })
+        .then(() => {
+          expect(postinitHandlerCalled).to.equal(1);
+          expect(prelistenHandlerCalled).to.equal(1);
+          expect(postlistenHandlerCalled).to.equal(1);
+          expect(endHandlerCalled).to.equal(1);
+          expect(koaconfigHandlerCalled).to.equal(1);
+          expect(koaconfigAppReference).to.be.an('object');
+          app.server.close.restore(); // undo stub
+          app.server.close(done); // actually close server so test suite exits cleanly
+        }).catch((err) => {
+          app.server.close.restore(); // undo stub
+          app.server.close(); // actually close server so test suite exits cleanly
+          done(err || new Error());
+        });
     });
   });
 });

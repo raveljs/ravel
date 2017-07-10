@@ -102,9 +102,9 @@ describe('Ravel end-to-end test', () => {
           get (ctx) {
             // return promise and don't catch possible error so that Ravel can catch it
             return this.users.getUser(ctx.params.id)
-            .then((result) => {
-              ctx.body = result;
-            });
+              .then((result) => {
+                ctx.body = result;
+              });
           }
 
           @pre('someMiddleware')
@@ -167,51 +167,51 @@ describe('Ravel end-to-end test', () => {
 
       it('should respond with the list of registered users', (done) => {
         agent
-        .get('/api/user')
-        .expect(200, JSON.stringify(u))
-        .end(done);
+          .get('/api/user')
+          .expect(200, JSON.stringify(u))
+          .end(done);
       });
 
       it('should respond with a single existing user', (done) => {
         agent
-        .get('/api/user/1')
-        .expect(200, JSON.stringify(u[0]))
-        .end(done);
+          .get('/api/user/1')
+          .expect(200, JSON.stringify(u[0]))
+          .end(done);
       });
 
       it('should respond with HTTP 404 NOT FOUND for non-existent users', (done) => {
         agent
-        .get('/api/user/3')
-        .expect(404)
-        .end(done);
+          .get('/api/user/3')
+          .expect(404)
+          .end(done);
       });
 
       it('should respond with CONFLICT 409 for POST users', (done) => {
         agent
-        .post('/api/user')
-        .expect(409)
-        .end(done);
+          .post('/api/user')
+          .expect(409)
+          .end(done);
       });
 
       it('should respond with html on the route GET /app', (done) => {
         agent
-        .get('/app')
-        .expect(200, '<!DOCTYPE html><html></html>')
-        .end(done);
+          .get('/app')
+          .expect(200, '<!DOCTYPE html><html></html>')
+          .end(done);
       });
 
       it('should respond with NOT_IMPLEMENTED 501 on the route DELETE /app', (done) => {
         agent
-        .delete('/app')
-        .expect(501)
-        .end(done);
+          .delete('/app')
+          .expect(501)
+          .end(done);
       });
 
       it('should respond with html on the route /login', (done) => {
         agent
-        .get('/login')
-        .expect(200, '<!DOCTYPE html><html><head><title>login</title></head></html>')
-        .end(done);
+          .get('/login')
+          .expect(200, '<!DOCTYPE html><html><head><title>login</title></head></html>')
+          .end(done);
       });
     });
   });

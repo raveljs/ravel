@@ -165,70 +165,70 @@ describe('Authentication Integration Test', () => {
 
     it('should support local auth on login route', (done) => {
       agent
-      .post('/auth/local')
-      .type('application/json')
-      .send({ username: profile.name, password: profile.password })
-      .expect(200)
-      .end(done);
+        .post('/auth/local')
+        .type('application/json')
+        .send({ username: profile.name, password: profile.password })
+        .expect(200)
+        .end(done);
     });
 
     it('should reject incorrect passwords on login route', (done) => {
       agent
-      .post('/auth/local')
-      .type('application/json')
-      .send({ username: profile.name, password: 'wrongpassword' })
-      .expect(401)
-      .end(done);
+        .post('/auth/local')
+        .type('application/json')
+        .send({ username: profile.name, password: 'wrongpassword' })
+        .expect(401)
+        .end(done);
     });
 
     it('should reject unknown users on login route', (done) => {
       agent
-      .post('/auth/local')
-      .type('application/json')
-      .send({ username: 'wrongname', password: 'wrongpassword' })
-      .expect(401)
-      .end(done);
+        .post('/auth/local')
+        .type('application/json')
+        .send({ username: 'wrongname', password: 'wrongpassword' })
+        .expect(401)
+        .end(done);
     });
 
     it('should reject users on an @authenticated route', (done) => {
       agent
-      .get('/app')
-      .expect(401)
-      .end(done);
+        .get('/app')
+        .expect(401)
+        .end(done);
     });
 
     it('should allow access to authenticated users on @authenticated routes', (done) => {
       agent
-      .post('/auth/local')
-      .type('application/json')
-      .send({ username: profile.name, password: profile.password })
-      .end((err) => {
-        if (err) done(err);
-        agent.get('/app')
-        .expect(200, '<!DOCTYPE html><html></html>')
-        .end(done);
-      });
+        .post('/auth/local')
+        .type('application/json')
+        .send({ username: profile.name, password: profile.password })
+        .end((err) => {
+          if (err) done(err);
+          agent.get('/app')
+            .expect(200, '<!DOCTYPE html><html></html>')
+            .end(done);
+        });
     });
 
     it('should log a deprecation message for use of ctx.passport', (done) => {
       const spy = sinon.spy(ravelApp.log, 'warn');
       agent
-      .post('/auth/local')
-      .type('application/json')
-      .send({ username: profile.name, password: profile.password })
-      .end((err) => {
-        if (err) done(err);
-        agent.get('/deprecated')
-        .expect(200)
+        .post('/auth/local')
+        .type('application/json')
+        .send({ username: profile.name, password: profile.password })
         .end((err) => {
-          try {
-            expect(spy).to.have.been.calledWith('ctx.passport is deprecated. Please use ctx.state instead.');
-            done(err);
-          } catch (err2) {
-            done(err2);
-          }
+          if (err) done(err);
+          agent.get('/deprecated')
+            .expect(200)
+            .end((err) => {
+              try {
+                expect(spy).to.have.been.calledWith('ctx.passport is deprecated. Please use ctx.state instead.');
+                done(err);
+              } catch (err2) {
+                done(err2);
+              }
+            });
         });
-      });
     });
   });
 });

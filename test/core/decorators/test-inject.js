@@ -23,7 +23,7 @@ describe('Ravel', () => {
       @inject('test1', 'test2')
       class Stub1 {
       }
-      expect(Metadata.getClassMetaValue(Stub1.prototype, '@inject', 'dependencies')).to.be.an.array;
+      expect(Metadata.getClassMetaValue(Stub1.prototype, '@inject', 'dependencies')).to.be.an('array');
       expect(Metadata.getClassMetaValue(Stub1.prototype, '@inject', 'dependencies')).to.deep.equal(['test1', 'test2']);
       done();
     });
@@ -33,7 +33,7 @@ describe('Ravel', () => {
       @inject('test3')
       class Stub1 {
       }
-      expect(Metadata.getClassMetaValue(Stub1.prototype, '@inject', 'dependencies')).to.be.an.array;
+      expect(Metadata.getClassMetaValue(Stub1.prototype, '@inject', 'dependencies')).to.be.an('array');
       expect(Metadata.getClassMetaValue(Stub1.prototype, '@inject', 'dependencies')).to.deep.equal(['test1', 'test2', 'test3']);
       done();
     });

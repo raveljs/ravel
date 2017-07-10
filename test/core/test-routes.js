@@ -127,8 +127,8 @@ describe('Ravel', () => {
           expect(this.log).to.have.property('critical').that.is.a('function');
           expect(this.ApplicationError).to.equal(Ravel.ApplicationError);
           expect(this.kvstore).to.equal(Ravel.kvstore);
-          expect(this.params).to.be.an.object;
-          expect(this.params).to.have.a.property('get').that.is.a.function;
+          expect(this.params).to.be.an('object');
+          expect(this.params).to.have.a.property('get').that.is.a('function');
           done();
         }
       }
@@ -176,8 +176,8 @@ describe('Ravel', () => {
       app.use(router.allowedMethods());
 
       request(app.callback())
-      .get('/api/test')
-      .expect(200, {id: 3}, done);
+        .get('/api/test')
+        .expect(200, {id: 3}, done);
     });
 
     it('should facilitate the creation of GET routes via @mapping with different status codes', (done) => {
@@ -209,8 +209,8 @@ describe('Ravel', () => {
       app.use(router.allowedMethods());
 
       request(app.callback())
-      .get('/api/test')
-      .expect(201, {id: 3}, done);
+        .get('/api/test')
+        .expect(201, {id: 3}, done);
     });
 
     it('should facilitate the creation of POST routes via @mapping', (done) => {
@@ -242,8 +242,8 @@ describe('Ravel', () => {
       app.use(router.allowedMethods());
 
       request(app.callback())
-      .post('/api/test')
-      .expect(201, body, done);
+        .post('/api/test')
+        .expect(201, body, done);
     });
 
     it('should facilitate the creation of PUT routes via @mapping', (done) => {
@@ -274,8 +274,8 @@ describe('Ravel', () => {
       app.use(router.allowedMethods());
 
       request(app.callback())
-      .put('/api/test')
-      .expect(200, {id: 1}, done);
+        .put('/api/test')
+        .expect(200, {id: 1}, done);
     });
 
     it('should facilitate the creation of DELETE routes via @mapping', (done) => {
@@ -306,8 +306,8 @@ describe('Ravel', () => {
       app.use(router.allowedMethods());
 
       request(app.callback())
-      .delete('/api/test')
-      .expect(200, {id: 1}, done);
+        .delete('/api/test')
+        .expect(200, {id: 1}, done);
     });
 
     it('should support the use of @before at the method and class levels', (done) => {
@@ -339,8 +339,8 @@ describe('Ravel', () => {
       app.use(router.allowedMethods());
 
       request(app.callback())
-      .get('/api/test/3')
-      .expect(200, {id: 3, name: 'sean'}, done);
+        .get('/api/test/3')
+        .expect(200, {id: 3, name: 'sean'}, done);
     });
 
     it('should support the use of @mapping without @before', (done) => {
@@ -371,8 +371,8 @@ describe('Ravel', () => {
       app.use(router.allowedMethods());
 
       request(app.callback())
-      .get('/api/test')
-      .expect(200, {}, done);
+        .get('/api/test')
+        .expect(200, {}, done);
     });
 
     it('should support the use of @mapping at the class level as well, to denote unsupported routes', (done) => {
@@ -430,7 +430,7 @@ describe('Ravel', () => {
     app.use(router.allowedMethods());
 
     request(app.callback())
-    .get('/api/test')
-    .expect(200, {id: 3}, done);
+      .get('/api/test')
+      .expect(200, {id: 3}, done);
   });
 });
