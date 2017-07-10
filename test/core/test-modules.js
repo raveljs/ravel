@@ -21,7 +21,7 @@ describe('Ravel', () => {
 
     fs = require('fs');
     mockery.registerMock('fs', fs);
-    mockery.registerMock('fs-readdir-recursive', function (basePath) {  // eslint-disable-line no-unused-vars
+    mockery.registerMock('fs-readdir-recursive', function (basePath) { // eslint-disable-line no-unused-vars
       return ['test1.js', 'test2.js', '.eslintrc', 'package/test3.js'];
     });
     Ravel = new (require('../../lib/ravel'))();

@@ -51,8 +51,8 @@ describe('db/database', () => {
       });
 
       request(app.callback())
-      .get('/')
-      .end(done);
+        .get('/')
+        .end(done);
     });
 
     it('should populate req.transaction with a dictionary of open database connections when providers are registered', (done) => {
@@ -89,8 +89,8 @@ describe('db/database', () => {
       });
 
       request(app.callback())
-      .get('/')
-      .end(done);
+        .get('/')
+        .end(done);
     });
 
     it('should populate req.transaction with a dictionary of only the correct open database connections when providers are requested by name', (done) => {
@@ -126,8 +126,8 @@ describe('db/database', () => {
       });
 
       request(app.callback())
-      .get('/')
-      .end(done);
+        .get('/')
+        .end(done);
     });
 
     it('should throw an Error if any of the registered database providers fails to provide a connection', (done) => {
@@ -198,12 +198,12 @@ describe('db/database', () => {
       });
 
       request(app.callback())
-      .get('/')
-      .expect(() => {
-        expect(mysqlExitTransactionSpy).to.have.been.calledWith(mysqlConnection, true);
-        expect(postgresExitTransactionSpy).to.have.been.calledWith(postgresConnection, true);
-      })
-      .end(done);
+        .get('/')
+        .expect(() => {
+          expect(mysqlExitTransactionSpy).to.have.been.calledWith(mysqlConnection, true);
+          expect(postgresExitTransactionSpy).to.have.been.calledWith(postgresConnection, true);
+        })
+        .end(done);
     });
 
     it('should end all open transactions (close/rollback connections) when an exception is thrown in the middleware chain', (done) => {
@@ -247,12 +247,12 @@ describe('db/database', () => {
       });
 
       request(app.callback())
-      .get('/')
-      .expect(() => {
-        expect(mysqlExitTransactionSpy).to.have.been.calledWith(mysqlConnection, false);
-        expect(postgresExitTransactionSpy).to.have.been.calledWith(postgresConnection, false);
-      })
-      .expect(300, done);
+        .get('/')
+        .expect(() => {
+          expect(mysqlExitTransactionSpy).to.have.been.calledWith(mysqlConnection, false);
+          expect(postgresExitTransactionSpy).to.have.been.calledWith(postgresConnection, false);
+        })
+        .expect(300, done);
     });
 
     it('should respond with HTTP 500 INTERNAL SERVER ERROR when any open transactions fail to close/commit when res.end() is called', (done) => {
@@ -297,12 +297,12 @@ describe('db/database', () => {
       });
 
       request(app.callback())
-      .get('/')
-      .expect(() => {
-        expect(mysqlExitTransactionSpy).to.have.been.calledWith(mysqlConnection, false);
-        expect(postgresExitTransactionSpy).to.have.been.calledWith(postgresConnection, false);
-      })
-      .expect(500, done);
+        .get('/')
+        .expect(() => {
+          expect(mysqlExitTransactionSpy).to.have.been.calledWith(mysqlConnection, false);
+          expect(postgresExitTransactionSpy).to.have.been.calledWith(postgresConnection, false);
+        })
+        .expect(500, done);
     });
   });
 
@@ -468,14 +468,14 @@ describe('db/database', () => {
         });
         throw new Error();
       })
-      .then(() => {
-        throw new Error('Promise should have rejected!');
-      })
-      .catch(() => {
-        expect(mysqlExitTransactionSpy).to.have.been.called;
-        expect(postgresExitTransactionSpy).to.have.been.called;
-        done();
-      });
+        .then(() => {
+          throw new Error('Promise should have rejected!');
+        })
+        .catch(() => {
+          expect(mysqlExitTransactionSpy).to.have.been.called;
+          expect(postgresExitTransactionSpy).to.have.been.called;
+          done();
+        });
     });
 
     it('should reject its returned promise when any connection fails to exit cleanly', (done) => {
@@ -508,14 +508,14 @@ describe('db/database', () => {
           postgres: postgresConnection
         });
       })
-      .then(() => {
-        throw new Error('Promise should have rejected!');
-      })
-      .catch(() => {
-        expect(mysqlExitTransactionSpy).to.have.been.called;
-        expect(postgresExitTransactionSpy).to.have.been.called;
-        done();
-      });
+        .then(() => {
+          throw new Error('Promise should have rejected!');
+        })
+        .catch(() => {
+          expect(mysqlExitTransactionSpy).to.have.been.called;
+          expect(postgresExitTransactionSpy).to.have.been.called;
+          done();
+        });
     });
   });
 });

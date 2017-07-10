@@ -184,7 +184,7 @@ describe('Ravel', () => {
 
       @inject('test', 'test4')
       class Stub2 extends Module {
-        constructor (test, test4) {  // eslint-disable-line no-unused-vars
+        constructor (test, test4) { // eslint-disable-line no-unused-vars
           super();
 
           instantiatedModules.test2 = true;
@@ -200,7 +200,7 @@ describe('Ravel', () => {
 
       @inject('test2')
       class Stub3 {
-        constructor (test2) {  // eslint-disable-line no-unused-vars
+        constructor (test2) { // eslint-disable-line no-unused-vars
           instantiatedModules.test3 = true;
           expect(instantiatedModules).to.have.property('test2');
           expect(test2).to.have.a.property('two').that.is.a.function;
@@ -242,7 +242,7 @@ describe('Ravel', () => {
       }
       @inject('test')
       class Stub2 extends Module {
-        constructor (test) {  // eslint-disable-line no-unused-vars
+        constructor (test) { // eslint-disable-line no-unused-vars
           super();
         }
       }
@@ -261,19 +261,19 @@ describe('Ravel', () => {
       class Stub1 extends Module {}
       @inject('test', 'test4')
       class Stub2 extends Module {
-        constructor (test, test4) {  // eslint-disable-line no-unused-vars
+        constructor (test, test4) { // eslint-disable-line no-unused-vars
           super();
         }
       }
       @inject('test2')
       class Stub3 extends Module {
-        constructor (test2) {  // eslint-disable-line no-unused-vars
+        constructor (test2) { // eslint-disable-line no-unused-vars
           super();
         }
       }
       @inject('test3')
       class Stub4 extends Module {
-        constructor (test3) {  // eslint-disable-line no-unused-vars
+        constructor (test3) { // eslint-disable-line no-unused-vars
           super();
         }
       }

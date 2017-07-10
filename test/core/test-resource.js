@@ -179,8 +179,8 @@ describe('Ravel', () => {
       app.use(router.allowedMethods());
 
       request(app.callback())
-      .get('/api/test')
-      .expect(200, body, done);
+        .get('/api/test')
+        .expect(200, body, done);
     });
 
     it('should facilitate the creation of GET routes via $Resource.get', (done) => {
@@ -211,8 +211,8 @@ describe('Ravel', () => {
       app.use(router.allowedMethods());
 
       request(app.callback())
-      .get('/api/test/3')
-      .expect(200, {id: 3}, done);
+        .get('/api/test/3')
+        .expect(200, {id: 3}, done);
     });
 
     it('should facilitate the creation of POST routes via $Resource.post', (done) => {
@@ -243,8 +243,8 @@ describe('Ravel', () => {
       app.use(router.allowedMethods());
 
       request(app.callback())
-      .post('/api/test')
-      .expect(201, body, done);
+        .post('/api/test')
+        .expect(201, body, done);
     });
 
     it('should facilitate the creation of PUT routes via $Resource.put', (done) => {
@@ -274,8 +274,8 @@ describe('Ravel', () => {
       app.use(router.allowedMethods());
 
       request(app.callback())
-      .put('/api/test/3')
-      .expect(200, {id: 3}, done);
+        .put('/api/test/3')
+        .expect(200, {id: 3}, done);
     });
 
     it('should facilitate the creation of PUT routes via $Resource.putAll', (done) => {
@@ -305,8 +305,8 @@ describe('Ravel', () => {
       app.use(router.allowedMethods());
 
       request(app.callback())
-      .put('/api/test')
-      .expect(200, {id: 1}, done);
+        .put('/api/test')
+        .expect(200, {id: 1}, done);
     });
 
     it('should facilitate the creation of DELETE routes via $Resource.deleteAll', (done) => {
@@ -337,8 +337,8 @@ describe('Ravel', () => {
       app.use(router.allowedMethods());
 
       request(app.callback())
-      .delete('/api/test')
-      .expect(200, body, done);
+        .delete('/api/test')
+        .expect(200, body, done);
     });
 
     it('should facilitate the creation of DELETE routes via $Resource.delete', (done) => {
@@ -368,8 +368,8 @@ describe('Ravel', () => {
       app.use(router.allowedMethods());
 
       request(app.callback())
-      .delete('/api/test/3')
-      .expect(200, {id: 3}, done);
+        .delete('/api/test/3')
+        .expect(200, {id: 3}, done);
     });
 
     it('should support the use of @before at the class level', (done) => {
@@ -399,8 +399,8 @@ describe('Ravel', () => {
       app.use(router.allowedMethods());
 
       request(app.callback())
-      .get('/api/test/3')
-      .expect(200, {id: 3, name: 'sean'}, done);
+        .get('/api/test/3')
+        .expect(200, {id: 3, name: 'sean'}, done);
     });
 
     it('should support the use of @before on some, but not all, endpoints', (done) => {
@@ -488,8 +488,8 @@ describe('Ravel', () => {
       app.use(router.allowedMethods());
 
       request(app.callback())
-      .get('/api/test')
-      .expect(204, done);
+        .get('/api/test')
+        .expect(204, done);
     });
   });
 });

@@ -53,9 +53,9 @@ if (process.execArgv.indexOf('--inspect') >= 0 || process.execArgv.indexOf('--de
 
 gulp.task('lint', function () {
   return gulp.src(['./lib/**/*.js', './test/**/*.js', 'gulpfile.js'])
-             .pipe(plugins.eslint())
-             .pipe(plugins.eslint.format())
-             .pipe(plugins.eslint.failAfterError());
+    .pipe(plugins.eslint())
+    .pipe(plugins.eslint.format())
+    .pipe(plugins.eslint.failAfterError());
 });
 
 gulp.task('docs', function (done) {
@@ -65,11 +65,11 @@ gulp.task('docs', function (done) {
     if (err) { done(err); } else {
       gulp.src(['docs-dist/index.html'])
       // fake decorator support
-      .pipe(plugins.replace(/<span class="hljs-comment">\/\/\s+&amp;#64;(.*?)<\/span>/g, (match, group1) => {
-        return `@${group1.replace(/'(.+?)'/g, '<span class="hljs-string">\'$1\'</span>')}`;
-      }))
-      .pipe(gulp.dest('docs-dist/'))
-      .on('end', done);
+        .pipe(plugins.replace(/<span class="hljs-comment">\/\/\s+&amp;#64;(.*?)<\/span>/g, (match, group1) => {
+          return `@${group1.replace(/'(.+?)'/g, '<span class="hljs-string">\'$1\'</span>')}`;
+        }))
+        .pipe(gulp.dest('docs-dist/'))
+        .on('end', done);
     }
   });
 });
@@ -82,38 +82,38 @@ gulp.task('clean', function () {
 
 gulp.task('cover-lib', ['transpile-lib'], function () {
   return gulp.src(['./test-dist/lib/**/*.js'])
-             .pipe(plugins.istanbul({
-              //  instrumenter: isparta.Instrumenter,
-               includeUntested: true
-             }))
-             .pipe(plugins.istanbul.hookRequire());
+    .pipe(plugins.istanbul({
+      //  instrumenter: isparta.Instrumenter,
+      includeUntested: true
+    }))
+    .pipe(plugins.istanbul.hookRequire());
 });
 
 gulp.task('copy-lib', ['clean', 'lint'], function () {
   return gulp.src('lib/**/*.js')
-      .pipe(gulp.dest('test-dist/lib'));
+    .pipe(gulp.dest('test-dist/lib'));
 });
 
 gulp.task('dist', ['clean'], function () {
   return gulp.src('lib/**/*.js')
-      .pipe(plugins.babel(babelConfig))
-      .pipe(gulp.dest('dist'));
+    .pipe(plugins.babel(babelConfig))
+    .pipe(gulp.dest('dist'));
 });
 
 gulp.task('transpile-lib', ['clean', 'lint'], function () {
   return gulp.src('lib/**/*.js')
-      .pipe(plugins.sourcemaps.init())
-      .pipe(plugins.babel(babelConfig))
-      .pipe(plugins.sourcemaps.write('.'))
-      .pipe(gulp.dest('test-dist/lib'));
+    .pipe(plugins.sourcemaps.init())
+    .pipe(plugins.babel(babelConfig))
+    .pipe(plugins.sourcemaps.write('.'))
+    .pipe(gulp.dest('test-dist/lib'));
 });
 
 gulp.task('transpile-tests', ['clean', 'lint'], function () {
   return gulp.src('test/**/*.js')
-      .pipe(plugins.sourcemaps.init())
-      .pipe(plugins.babel(babelConfig))
-      .pipe(plugins.sourcemaps.write('.'))
-      .pipe(gulp.dest('test-dist/test'));
+    .pipe(plugins.sourcemaps.init())
+    .pipe(plugins.babel(babelConfig))
+    .pipe(plugins.sourcemaps.write('.'))
+    .pipe(gulp.dest('test-dist/test'));
 });
 
 // necessary to locate issues in code, due to https://github.com/gotwarlost/istanbul/issues/274
@@ -163,7 +163,7 @@ gulp.task('watch', ['lint', 'docs'], function () {
 
 gulp.task('show-coverage', function () {
   return gulp.src('./reports/index.html')
-             .pipe(plugins.open());
+    .pipe(plugins.open());
 });
 
 gulp.task('default', ['watch']);
