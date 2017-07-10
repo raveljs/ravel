@@ -4,7 +4,7 @@
 if (process.version < 'v7.6.0') {
   require('babel-register')({
     ignore: false,
-    only: /koa-bodyparser/,
+    only: /koa-bodyparser|koa-static|koa-send/,
     plugins: ['transform-decorators-legacy', 'transform-async-to-generator']
   });
 }
