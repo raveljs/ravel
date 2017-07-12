@@ -391,7 +391,7 @@ app.set('redis host', '0.0.0.0');
 app.set('redis port', 6379);
 app.set('redis password', undefined);
 app.set('redis max retries', 10); // connection retries
-app.set('port', true, 8080); // port the app will run on
+app.set('port', 8080); // port the app will run on
 app.set('app route', '/'); // if you have a UI, this is where it should be served
 app.set('login route', '/login'); // if users aren't logged in and you redirect them, this is where they'll be sent
 app.set('koa public directory', undefined); // if you want to statically serve a directory
