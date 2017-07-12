@@ -9,3 +9,4 @@ test-dist/*
 .vimrc
 *.swp
 dist/*
+package-lock.json
