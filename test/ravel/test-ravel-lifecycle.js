@@ -152,7 +152,7 @@ describe('Ravel lifeycle test', () => {
   });
 
   describe('#init()', () => {
-    it('should initialize an koa server with appropriate middleware and parameters', (done) => {
+    it('should initialize a koa server with appropriate middleware and parameters', (done) => {
       app.set('koa public directory', 'public');
       app.set('koa view engine', 'ejs');
       app.set('koa view directory', 'views');
@@ -168,7 +168,7 @@ describe('Ravel lifeycle test', () => {
 
       const session = async function (ctx, next) { await next(); };
       const sessionSpy = sinon.stub().returns(session);
-      mockery.registerMock('koa-generic-session', sessionSpy);
+      mockery.registerMock('koa-session', sessionSpy);
 
       const staticMiddleware = async function (ctx, next) { await next(); };
       const staticSpy = sinon.stub().returns(staticMiddleware);

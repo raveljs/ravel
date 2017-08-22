@@ -246,6 +246,8 @@ describe('Ravel', () => {
         'app route': '/',
         'login route': '/login',
         'keygrip keys': ['123abc'],
+        'session key': 'koa.sid',
+        'session max age': null,
         'log level': 'DEBUG'
       };
       Ravel.set('keygrip keys', ['123abc']);
