@@ -117,18 +117,18 @@ class Cities extends Module {
   constructor (moment) {
     super();
     this.moment = moment;
-    this.db = ['Toronto', 'New York', 'Chicago']; // our fake 'database'
+    this.cities = ['Toronto', 'New York', 'Chicago']; // our fake 'database'
   }
 
   getAllCities () {
-    return Promise.resolve(c);
+    return Promise.resolve(this.cities);
   }
 
   getCity (name) {
     return new Promise((resolve, reject) => {
-      const index = this.db.indexOf(name);
+      const index = this.cities.indexOf(name);
       if (index) {
-        resolve(this.db[index]);
+        resolve(this.cities[index]);
       } else {
         this.log.warn(`User requested unknown city ${name}`);
         // Ravel will automatically respond with the appropriate HTTP status code!
