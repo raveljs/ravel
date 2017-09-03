@@ -127,7 +127,7 @@ class Cities extends Module {
   getCity (name) {
     return new Promise((resolve, reject) => {
       const index = this.cities.indexOf(name);
-      if (index) {
+      if (index !== -1) {
         resolve(this.cities[index]);
       } else {
         this.log.warn(`User requested unknown city ${name}`);
