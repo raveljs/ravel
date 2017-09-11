@@ -119,7 +119,8 @@ gulp.task('transpile-tests', ['clean', 'lint'], function () {
 // necessary to locate issues in code, due to https://github.com/gotwarlost/istanbul/issues/274
 gulp.task('test-no-cov', ['copy-lib', 'transpile-tests'], function () {
   const env = plugins.env.set({
-    LOG_LEVEL: 'critical'
+    LOG_LEVEL: 'critical',
+    NODE_ENV: 'testing'
   });
   return gulp.src(TESTS)
     .pipe(env)
@@ -135,7 +136,8 @@ gulp.task('test-no-cov', ['copy-lib', 'transpile-tests'], function () {
 
 gulp.task('test', ['cover-lib', 'transpile-tests'], function () {
   const env = plugins.env.set({
-    LOG_LEVEL: 'critical'
+    LOG_LEVEL: 'critical',
+    NODE_ENV: 'testing'
   });
   return gulp.src(TESTS)
     .pipe(env)

@@ -31,13 +31,13 @@ describe('auth/passport_init', () => {
     // koa-passport still uses generators!
     passportMock = {
       initialize: () => {
-        return function * (next) {
-          yield next;
+        return async function (ctx, next) {
+          await next();
         };
       },
       session: () => {
-        return function * (next) {
-          yield next;
+        return async function (ctx, next) {
+          await next();
         };
       },
       serializeUser: () => {},
@@ -51,7 +51,7 @@ describe('auth/passport_init', () => {
     authconfig = Ravel.Module.authconfig;
     coreSymbols = require('../../lib/core/symbols');
     ravelApp.log.setLevel(ravelApp.log.NONE);
-    ravelApp.kvstore = {}; // mock ravelApp.kvstore, since we're not actually starting ravelApp.
+    ravelApp.kvstore = require('redis-mock'); // mock ravelApp.kvstore, since we're not actually starting ravelApp.
     done();
   });
 

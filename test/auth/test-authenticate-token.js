@@ -36,6 +36,7 @@ describe('auth/authenticate_token', () => {
     Ravel.set('redis port', 0);
     Ravel.set('redis host', 'localhost');
     Ravel.set('redis password', 'password');
+    Ravel.set('redis keepalive interval', 1000);
     Ravel[coreSymbols.parametersLoaded] = true;
     Ravel.kvstore = require('../../lib/util/kvstore')(Ravel);
 

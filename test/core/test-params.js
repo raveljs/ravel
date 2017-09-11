@@ -242,6 +242,7 @@ describe('Ravel', () => {
         'redis host': '0.0.0.0',
         'redis port': 6379,
         'redis max retries': 10,
+        'redis keepalive interval': 1000,
         'port': 8080,
         'app route': '/',
         'login route': '/login',
