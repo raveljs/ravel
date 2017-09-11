@@ -130,8 +130,8 @@ class Cities extends Module {
       if (index !== -1) {
         resolve(this.cities[index]);
       } else {
-        this.log.warn(`User requested unknown city ${name}`);
         // Ravel will automatically respond with the appropriate HTTP status code!
+        this.log.warn(`User requested unknown city ${name}`);
         reject(new MissingCityError(name));
       }
     });
