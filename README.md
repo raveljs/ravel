@@ -28,6 +28,7 @@ Ravel is a tiny, sometimes-opinionated foundation for creating organized, mainta
   - [Ravel.Module](#ravelmodule)
   - [Ravel.Routes](#ravelroutes)
   - [Ravel.Resource](#ravelresource)
+  - [Response Caching](#response-caching)
   - [Database Providers](#database-providers)
   - [Transaction-per-request](#transaction-per-request)
   - [Scoped Transactions](#scoped-transactions)
@@ -709,6 +710,53 @@ Much like `Module`s, `Resource`s can be added to your Ravel application via `app
 const app = new Ravel();
 // directory scanning!
 app.resources('./resources');
+```
+
+### Response Caching
+
+Ravel supports transparent response caching via the `@cache` decorator, which can be applied at both the class and method-level of `Resource`s and `Routes`. Method-level applications of `@cache` override class-level ones.
+
+*Method-level example*
+```js
+const Routes = require('ravel').Routes;
+const mapping = Routes.mapping;
+const cache = Routes.cache;
+
+class MyRoutes extends Routes {
+  constructor () {
+    super('/');
+  }
+
+  @cache // method-level version only applies to this route
+  @mapping(Routes.GET, '/projects/:id')
+  async handler (ctx) {
+    // The response will automatically be cached when this handler is run
+    // for the first time, and then will be served instead of running the
+    // handler for as long as the cached response is available.
+  }
+}
+```
+
+*Class-level example, with options*
+```js
+const Resource = require('ravel').Resource;
+const cache = Resource.cache;
+
+// class-level version applies to all routes in class, overriding any
+// method-level instances of the decorator.
+@cache({expire:60, maxLength: 100}) // expire is measured in seconds. maxLength in bytes.
+class MyResource extends Resource {
+  constructor (bodyParser) {
+    super('/');
+    this.bodyParser = bodyParser();
+  }
+
+  async get(ctx) {
+    // The response will automatically be cached when this handler is run
+    // for the first time, and then will be served instead of running the
+    // handler for as long as the cached response is available (60 seconds).
+  }
+}
 ```
 
 ### Database Providers
