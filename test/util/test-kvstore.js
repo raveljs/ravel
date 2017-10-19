@@ -63,6 +63,19 @@ describe('Ravel', () => {
         done();
       });
 
+      it('should return an error when the maximum number of retries is exceeded without a reason', (done) => {
+        const retryStrategy = require('../../lib/util/kvstore').retryStrategy(Ravel);
+        expect(retryStrategy).to.be.a('function');
+        Ravel.set('redis max retries', 10);
+        Ravel[coreSymbols.parametersLoaded] = true;
+        const options = {
+          error: undefined,
+          attempt: Ravel.get('redis max retries') + 1
+        };
+        expect(retryStrategy(options)).to.be.an.instanceof(Ravel.ApplicationError.General);
+        done();
+      });
+
       it('should return the time to the next reconnect if the number of retries does not exceed the maximum', (done) => {
         const retryStrategy = require('../../lib/util/kvstore').retryStrategy(Ravel);
         expect(retryStrategy).to.be.a('function');
@@ -70,6 +83,19 @@ describe('Ravel', () => {
         Ravel[coreSymbols.parametersLoaded] = true;
         const options = {
           error: {code: 'something'},
+          attempt: 1
+        };
+        expect(retryStrategy(options)).to.equal(100);
+        done();
+      });
+
+      it('should return the time to the next reconnect if the number of retries does not exceed the maximum, and there was no reason for the error', (done) => {
+        const retryStrategy = require('../../lib/util/kvstore').retryStrategy(Ravel);
+        expect(retryStrategy).to.be.a('function');
+        Ravel.set('redis max retries', 10);
+        Ravel[coreSymbols.parametersLoaded] = true;
+        const options = {
+          error: undefined,
           attempt: 1
         };
         expect(retryStrategy(options)).to.equal(100);
