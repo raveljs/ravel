@@ -5,7 +5,7 @@ const expect = chai.expect;
 chai.use(require('chai-things'));
 const mockery = require('mockery');
 
-let Ravel, redisClientStub, redisMock, coreSymbols;
+let Ravel, coreSymbols;
 
 describe('Ravel', () => {
   beforeEach((done) => {
@@ -15,20 +15,13 @@ describe('Ravel', () => {
       warnOnReplace: false,
       warnOnUnregistered: false
     });
-    redisMock = {
-      createClient: () => {
-        redisClientStub = new (require('events').EventEmitter)(); // eslint-disable-line no-extra-parens
-        redisClientStub.auth = function () {};
-        redisClientStub.end = function () {};
-        return redisClientStub;
-      }
-    };
-    mockery.registerMock('redis', redisMock);
+    mockery.registerMock('redis', require('redis-mock'));
     Ravel = new (require('../../lib/ravel'))();
     coreSymbols = require('../../lib/core/symbols');
     Ravel.log.setLevel(Ravel.log.NONE);
     Ravel.set('redis port', 0);
     Ravel.set('redis host', 'localhost');
+    Ravel.set('redis keepalive interval', 1000);
 
     done();
   });
@@ -100,6 +93,69 @@ describe('Ravel', () => {
         };
         expect(retryStrategy(options)).to.equal(100);
         done();
+      });
+    });
+
+    describe('kvstore', () => {
+      let kvstore, clone;
+      beforeEach(() => {
+        Ravel[coreSymbols.parametersLoaded] = true;
+        kvstore = require('../../lib/util/kvstore')(Ravel, true);
+      });
+
+      it('should prevent use of quit()', () => {
+        expect(() => {
+          kvstore.quit(() => {});
+        }).to.throw(Ravel.ApplicationError.General);
+      });
+
+      it('should prevent use of qsubscribeuit()', () => {
+        expect(() => {
+          kvstore.subscribe('chan');
+        }).to.throw(Ravel.ApplicationError.General);
+      });
+
+      it('should prevent use of psubscribe()', () => {
+        expect(() => {
+          kvstore.psubscribe('chan');
+        }).to.throw(Ravel.ApplicationError.General);
+      });
+
+      it('should prevent use of unsubscribe()', () => {
+        expect(() => {
+          kvstore.unsubscribe('chan');
+        }).to.throw(Ravel.ApplicationError.General);
+      });
+
+      it('should prevent use of punsubscribe()', () => {
+        expect(() => {
+          kvstore.punsubscribe('chan');
+        }).to.throw(Ravel.ApplicationError.General);
+      });
+
+      describe('#clone()', () => {
+        beforeEach(() => {
+          clone = kvstore.clone();
+        });
+        it('should support the use of quit()', () => {
+          expect(clone.quit).to.not.throw(Ravel.ApplicationError.General);
+        });
+
+        it('should support the use of qsubscribeuit()', () => {
+          expect(clone.subscribe).to.not.throw(Ravel.ApplicationError.General);
+        });
+
+        it('should support the use of psubscribe()', () => {
+          expect(clone.psubscribe).to.not.throw(Ravel.ApplicationError.General);
+        });
+
+        it('should support the use of unsubscribe()', () => {
+          expect(clone.unsubscribe).to.not.throw(Ravel.ApplicationError.General);
+        });
+
+        it('should support the use of punsubscribe()', () => {
+          expect(clone.punsubscribe).to.not.throw(Ravel.ApplicationError.General);
+        });
       });
     });
   });
