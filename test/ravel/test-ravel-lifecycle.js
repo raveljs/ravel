@@ -10,8 +10,10 @@ const sinon = require('sinon');
 
 let app;
 let postinitHandlerCalled = 0;
+let anotherPostinitHandlerCalled = 0;
 let prelistenHandlerCalled = 0;
 let postlistenHandlerCalled = 0;
+let intervalCalled = 0;
 let endHandlerCalled = 0;
 let koaconfigHandlerCalled = 0;
 let koaconfigAppReference;
@@ -40,9 +42,11 @@ describe('Ravel lifeycle test', () => {
     const postinit = Ravel.Module.postinit;
     const prelisten = Ravel.Module.prelisten;
     const postlisten = Ravel.Module.postlisten;
+    const interval = Ravel.Module.interval;
     const preclose = Ravel.Module.preclose;
     const koaconfig = Ravel.Module.koaconfig;
     postinitHandlerCalled = 0;
+    anotherPostinitHandlerCalled = 0;
     prelistenHandlerCalled = 0;
     postlistenHandlerCalled = 0;
     koaconfigHandlerCalled = 0;
@@ -69,6 +73,11 @@ describe('Ravel lifeycle test', () => {
         postinitHandlerCalled += 1;
       }
 
+      @postinit
+      doAnotherPostInit () {
+        anotherPostinitHandlerCalled += 1;
+      }
+
       @prelisten
       doPreListen () {
         prelistenHandlerCalled += 1;
@@ -77,6 +86,11 @@ describe('Ravel lifeycle test', () => {
       @postlisten
       doPostListen () {
         postlistenHandlerCalled += 1;
+      }
+
+      @interval(1000)
+      doInterval () {
+        intervalCalled += 1;
       }
 
       @preclose
@@ -200,6 +214,8 @@ describe('Ravel lifeycle test', () => {
       expect(useSpy).to.have.been.calledWith(favicon);
       expect(app.initialized).to.be.ok;
       expect(postinitHandlerCalled).to.equal(1);
+      expect(anotherPostinitHandlerCalled).to.equal(1);
+      expect(intervalCalled).to.equal(0);
       done();
     });
   });
@@ -211,7 +227,9 @@ describe('Ravel lifeycle test', () => {
 
     it('should start the underlying HTTP server when called after init()', (done) => {
       app.init();
+      expect(anotherPostinitHandlerCalled).to.equal(1);
       expect(postinitHandlerCalled).to.equal(1);
+      expect(intervalCalled).to.equal(0);
       const listenSpy = sinon.stub(app.server, 'listen').callsFake(function (port, callback) {
         callback();
       });
@@ -221,7 +239,15 @@ describe('Ravel lifeycle test', () => {
         expect(postlistenHandlerCalled).to.equal(1);
         expect(app.listening).to.be.ok;
         done();
-      });
+      }).then(() => {
+        return new Promise((resolve) => setTimeout(resolve, 1000));
+      }).then(() => {
+        expect(intervalCalled).to.be.at.least(1);
+      }).then(() => {
+        return new Promise((resolve) => setTimeout(resolve, 1000));
+      }).then(() => {
+        expect(intervalCalled).to.be.at.least(2);
+      }).then(done).catch(done);
     });
   });
 
@@ -253,6 +279,7 @@ describe('Ravel lifeycle test', () => {
         })
         .then(() => {
           expect(postinitHandlerCalled).to.equal(1);
+          expect(anotherPostinitHandlerCalled).to.equal(1);
           expect(prelistenHandlerCalled).to.equal(1);
           expect(postlistenHandlerCalled).to.equal(1);
           expect(endHandlerCalled).to.equal(1);
