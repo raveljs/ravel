@@ -238,7 +238,6 @@ describe('Ravel lifeycle test', () => {
         expect(prelistenHandlerCalled).to.equal(1);
         expect(postlistenHandlerCalled).to.equal(1);
         expect(app.listening).to.be.ok;
-        done();
       }).then(() => {
         return new Promise((resolve) => setTimeout(resolve, 1000));
       }).then(() => {
