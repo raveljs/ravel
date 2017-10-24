@@ -562,7 +562,7 @@ app.modules('./modules');
 #### Lifecycle Decorators
 > [<small>View API docs &#128366;</small>](http://raveljs.github.io/docs/latest/core/decorators/lifecycle.js.html)
 
-`Module`s are also a great place to define logic which should run at particular points during the Ravel lifecycle. Decorating a `Module` method appropriately results in that method firing exactly once at the specified time:
+`Module`s are also a great place to define logic which should run at particular points during the Ravel lifecycle. Decorating a `Module` method with a lifecycle decorator appropriately results in that method firing exactly once at the specified time (with the exception of `@interval`, of course):
 
 ```js
 const Ravel = require('ravel');
@@ -579,12 +579,13 @@ class MyInitModule extends Module {
 module.exports = MyInitModule;
 ```
 
-There are currently five lifecycle decorators:
+There are currently six lifecycle decorators:
 
 - `@postinit` fires at the end of `Ravel.init()`
 - `@prelisten` fires at the beginning of `Ravel.listen()`
 - `@postlisten` fires at the end of `Ravel.listen()`
 - `@preclose` fires at the beginning of `Ravel.close()`
+- `@interval(1000)` fires at the end of `Ravel.listen()` and then repeatedly at the specified interval until `Ravel.close()`
 - `@koaconfig` fires during `Ravel.init()`, after Ravel is finished configuring the underlying `koa` app object with global middleware. Methods decorated with `@koaconfig` receive a reference to the underlying `koa` app object for customization. This decorator is meant for exceptional circumstances, since (unnecessarily) global middleware constitutes a hot path and can lead to inefficiency.
 
 ### Ravel.Routes
