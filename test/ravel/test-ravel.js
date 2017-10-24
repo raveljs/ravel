@@ -36,7 +36,7 @@ describe('Ravel end-to-end test', () => {
 
   describe('#init()', () => {
     describe('uncaught ES6 Promise errors logging', () => {
-      it('should log unhandled erors within Promises', (done) => {
+      it('should log unhandled erors within Promises', async () => {
         mockery.registerMock('redis', redis);
         const Ravel = require('../../lib/ravel');
         app = new Ravel();
@@ -45,7 +45,7 @@ describe('Ravel end-to-end test', () => {
         app.set('redis port', 5432);
         app.set('keygrip keys', ['mysecret']);
         app.set('port', '9080');
-        app.init();
+        await app.init();
         for (let i = 0; i < 5; i++) {
           Promise.resolve('promised value').then(() => {
             throw new Error('error');
@@ -55,12 +55,11 @@ describe('Ravel end-to-end test', () => {
           });
         }
         // TODO actually test that logging occurred
-        done();
       });
     });
 
     describe('basic application server consisting of a module and a resource', () => {
-      before((done) => {
+      before(async () => {
         const Ravel = require('../../lib/ravel');
         const httpCodes = require('../../lib/util/http_codes');
         const ApplicationError = require('../../lib/util/application_error');
@@ -154,10 +153,9 @@ describe('Ravel end-to-end test', () => {
         app.resource('usersResource');
         mockery.registerMock(upath.join(app.cwd, 'routes'), TestRoutes);
         app.routes('routes');
-        app.init();
+        await app.init();
 
         agent = request.agent(app.server);
-        done();
       });
 
       after((done) => {

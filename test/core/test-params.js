@@ -237,7 +237,7 @@ describe('Ravel', () => {
       done();
     });
 
-    it('should load defaults if no configuration files are present', (done) => {
+    it('should load defaults if no configuration files are present', async () => {
       const oldParams = {
         'redis host': '0.0.0.0',
         'redis port': 6379,
@@ -252,10 +252,9 @@ describe('Ravel', () => {
         'log level': 'DEBUG'
       };
       Ravel.set('keygrip keys', ['123abc']);
-      Ravel.init();
+      await Ravel.init();
       // now load params from non-existent ravelrc file
       expect(Ravel.config).to.deep.equal(oldParams);
-      done();
     });
 
     it('should throw a SyntaxError if a .ravelrc file is found but is malformed', (done) => {

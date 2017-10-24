@@ -50,7 +50,7 @@ describe('Ravel end-to-end test', () => {
   });
 
   describe('basic application server consisting of a resource', () => {
-    before((done) => {
+    before(async () => {
       const Ravel = require('../../lib/ravel');
 
       // stub Resource (REST interface)
@@ -139,11 +139,10 @@ describe('Ravel end-to-end test', () => {
       app.resource('resources');
       mockery.registerMock(upath.join(app.cwd, 'routes'), TestRoutes);
       app.routes('routes');
-      app.init();
+      await app.init();
       app.kvstore.flushall();
 
       agent = request.agent(app.server);
-      done();
     });
 
     after((done) => {
