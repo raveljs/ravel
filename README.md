@@ -294,7 +294,7 @@ A Ravel application is a root application file (such as `app.js`), coupled with 
 const Ravel = require('ravel');
 const app = new Ravel();
 
-(async function () {
+(async () => {
   // you'll register managed parameters, and connect Modules, Resources and Routes here
   await app.init();
   // you'll set managed parameters here
@@ -324,7 +324,7 @@ app.registerParameter('my required parameter', true);
 // register a required parameter with a default value
 app.registerParameter('my third parameter', true, 'some value');
 
-(async function () {
+(async () => {
   await app.init();
   await app.listen();
 })();
@@ -345,7 +345,7 @@ const app = new Ravel();
 // register a new optional parameter
 app.registerParameter('my optional parameter');
 
-(async function () {
+(async () => {
   await app.init();
 
   // set a value
@@ -370,7 +370,7 @@ const app = new Ravel();
 // register a new parameter
 app.registerParameter('my required parameter', true, 'default value');
 
-(async function () {
+(async () => {
   await app.init();
 
   // set a value
@@ -778,7 +778,7 @@ const app = new require('ravel')();
 const MySQLProvider = require('ravel-mysql-provider');
 new MySQLProvider(app, 'mysql');
 // ... other providers and parameters
-(async function () {
+(async () => {
   await app.init();
 })();
 // ... the rest of your Ravel app
@@ -906,7 +906,7 @@ const app = new require('ravel')();
 const GitHubProvider = require('ravel-github-oauth2-provider');
 new GitHubProvider(app);
 // ... other providers and parameters
-(async function () {
+(async () => {
   await app.init();
 });
 // ... the rest of your Ravel app
