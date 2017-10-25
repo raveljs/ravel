@@ -55,13 +55,5 @@ toc:
   - name: Built-in Error Types
     description: |
       Built-in error types are automatically translated into standard HTTP response status codes when thrown.
-  - RavelError
-  - AccessError
-  - AuthenticationError
-  - DuplicateEntryError
-  - IllegalValueError
-  - NotAllowedError
-  - NotFoundError
-  - NotImplementedError
-  - RangeOutOfBoundsError
+  - ApplicationError
   - name: Other Stuff
