@@ -333,7 +333,7 @@ describe('Ravel end-to-end test', () => {
     });
 
     it('should gracefully handle caching errors coming from redis', (done) => {
-      setStub = sinon.stub(app.kvstore, 'set', function (key, value, cb) {
+      setStub = sinon.stub(app.kvstore, 'set').callsFake(function (key, value, cb) {
         return cb(new Error(), null);
       });
       agent
