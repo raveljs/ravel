@@ -29,6 +29,7 @@ const streamBody = sinon.stub().callsFake(function () {
 });
 const symbolBody = sinon.stub().returns(Symbol('message'));
 const cacheErrorBody = sinon.stub().returns('cache error');
+const middlewareErrorBody = sinon.stub().throws(new Error());
 
 describe('Ravel end-to-end test', () => {
   before((done) => {
@@ -118,6 +119,11 @@ describe('Ravel end-to-end test', () => {
         @mapping(Ravel.Routes.GET, '/cacheerror')
         getCacheErrorBody (ctx) {
           ctx.body = cacheErrorBody();
+        }
+
+        @mapping(Ravel.Routes.GET, '/middlewareerror')
+        getMiddlewareErrorBody (ctx) {
+          ctx.body = middlewareErrorBody();
         }
 
         @mapping(Ravel.Routes.POST, '/')
@@ -328,6 +334,25 @@ describe('Ravel end-to-end test', () => {
             .expect(204)
             .expect(function () {
               expect(streamBody).to.have.been.calledTwice;
+            })
+            .end(done);
+        });
+    });
+
+    it('should not cache when the decorated handler throws an exception', (done) => {
+      agent
+        .get('/api/routes/middlewareerror')
+        .expect(500)
+        .expect(function () {
+          expect(middlewareErrorBody).to.have.been.calledOnce;
+        })
+        .end((err) => {
+          if (err) return done(err);
+          agent
+            .get('/api/routes/middlewareerror')
+            .expect(500)
+            .expect(function () {
+              expect(middlewareErrorBody).to.have.been.calledTwice;
             })
             .end(done);
         });
