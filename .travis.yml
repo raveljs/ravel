@@ -16,4 +16,4 @@ before_install:
   - $CXX --version
   - npm install
 after_script:
-  - codeclimate-test-reporter < reports/lcov.info
+  - codeclimate-test-reporter < coverage/lcov.info

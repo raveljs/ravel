@@ -11,3 +11,4 @@ test-dist/*
 *.swp
 dist/*
 package-lock.json
+.nyc_output
