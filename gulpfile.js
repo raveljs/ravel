@@ -1,15 +1,5 @@
 'use strict';
 
-// koa-bodyparser doesn't transpile its dist :(
-if (process.version < 'v7.6.0') {
-  console.log('Transpiling decorators and async/await in node_modules');
-  require('babel-register')({
-    ignore: false,
-    only: /koa-bodyparser|koa-static|koa-send|koa-session/,
-    plugins: ['transform-decorators-legacy', 'transform-async-to-generator']
-  });
-}
-
 const gulp = require('gulp');
 const plugins = require('gulp-load-plugins')();
 const del = require('del');
@@ -68,7 +58,7 @@ gulp.task('watch', ['lint', 'docs'], function () {
 });
 
 gulp.task('show-coverage', function () {
-  return gulp.src('./reports/index.html')
+  return gulp.src('./coverage/lcov-report/index.html')
     .pipe(plugins.open());
 });
 
