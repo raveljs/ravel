@@ -739,6 +739,7 @@ class MyRoutes extends Routes {
     // The response will automatically be cached when this handler is run
     // for the first time, and then will be served instead of running the
     // handler for as long as the cached response is available.
+    // If this handler throws an exception, then that response will not be cached.
   }
 }
 ```
