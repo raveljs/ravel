@@ -36,7 +36,7 @@
     "clean": "gulp clean",
     "docs": "gulp docs",
     "watch": "gulp watch",
-    "test": "cross-env NODE_ENV=test nyc mocha --recursive --timeout=10000 ./test",
+    "test": "cross-env NODE_ENV=test nyc mocha --recursive --exit --timeout=10000 ./test",
     "test-windows": "npm test",
     "show-coverage": "gulp show-coverage",
     "dist": "gulp dist",
