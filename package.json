@@ -38,6 +38,7 @@
     "watch": "gulp watch",
     "test": "cross-env NODE_ENV=test nyc mocha --recursive --exit --timeout=10000 ./test",
     "test-windows": "npm test",
+    "debug": "cross-env NODE_ENV=test mocha --no-timeouts --require babel-register --inspect-brk --recursive --exit ./test ",
     "show-coverage": "gulp show-coverage",
     "dist": "gulp dist",
     "prepare": "gulp dist"
