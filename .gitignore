@@ -5,6 +5,7 @@ npm-debug.log
 init_test.sql
 docs-dist/*
 reports/*
+coverage/*
 test-dist/*
 .vimrc
 *.swp
