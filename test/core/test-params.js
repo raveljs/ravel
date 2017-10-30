@@ -5,6 +5,7 @@ const expect = chai.expect;
 chai.use(require('chai-things'));
 const mockery = require('mockery');
 const upath = require('upath');
+const sinon = require('sinon');
 
 let Ravel, conf, coreSymbols;
 
@@ -258,8 +259,14 @@ describe('Ravel', () => {
     });
 
     it('should throw a SyntaxError if a .ravelrc file is found but is malformed', (done) => {
-      mockery.registerSubstitute(upath.join(Ravel.cwd, '.ravelrc'), '../../../resources/bad-ravelrc.json');
+      const m = require('module');
+      const origLoad = m._load;
+      const stub = sinon.stub(m, '_load').callsFake((...args) => {
+        if (args[0] === upath.join(Ravel.cwd, '.ravelrc')) throw new SyntaxError();
+        return origLoad.apply(m, args);
+      });
       expect(() => { Ravel[coreSymbols.loadParameters](); }).to.throw(SyntaxError);
+      stub.restore();
       done();
     });
   });
