@@ -5,6 +5,7 @@ const expect = chai.expect;
 chai.use(require('chai-things'));
 const mockery = require('mockery');
 const upath = require('upath');
+const sinon = require('sinon');
 
 let Ravel, conf, coreSymbols;
 
@@ -237,7 +238,7 @@ describe('Ravel', () => {
       done();
     });
 
-    it('should load defaults if no configuration files are present', (done) => {
+    it('should load defaults if no configuration files are present', async () => {
       const oldParams = {
         'redis host': '0.0.0.0',
         'redis port': 6379,
@@ -252,15 +253,20 @@ describe('Ravel', () => {
         'log level': 'DEBUG'
       };
       Ravel.set('keygrip keys', ['123abc']);
-      Ravel.init();
+      await Ravel.init();
       // now load params from non-existent ravelrc file
       expect(Ravel.config).to.deep.equal(oldParams);
-      done();
     });
 
     it('should throw a SyntaxError if a .ravelrc file is found but is malformed', (done) => {
-      mockery.registerSubstitute(upath.join(Ravel.cwd, '.ravelrc'), '../../../resources/bad-ravelrc.json');
+      const m = require('module');
+      const origLoad = m._load;
+      const stub = sinon.stub(m, '_load').callsFake((...args) => {
+        if (args[0] === upath.join(Ravel.cwd, '.ravelrc')) throw new SyntaxError();
+        return origLoad.apply(m, args);
+      });
       expect(() => { Ravel[coreSymbols.loadParameters](); }).to.throw(SyntaxError);
+      stub.restore();
       done();
     });
   });

@@ -166,7 +166,7 @@ describe('Ravel lifeycle test', () => {
   });
 
   describe('#init()', () => {
-    it('should initialize a koa server with appropriate middleware and parameters', (done) => {
+    it('should initialize a koa server with appropriate middleware and parameters', async () => {
       app.set('koa public directory', 'public');
       app.set('koa view engine', 'ejs');
       app.set('koa view directory', 'views');
@@ -200,7 +200,7 @@ describe('Ravel lifeycle test', () => {
       const gzipSpy = sinon.stub().returns(gzip);
       mockery.registerMock('koa-compress', gzipSpy);
 
-      app.init();
+      await app.init();
 
       expect(sessionSpy).to.have.been.called;
       expect(useSpy).to.have.been.calledWith(session);
@@ -216,7 +216,6 @@ describe('Ravel lifeycle test', () => {
       expect(postinitHandlerCalled).to.equal(1);
       expect(anotherPostinitHandlerCalled).to.equal(1);
       expect(intervalCalled).to.equal(0);
-      done();
     });
   });
 
@@ -225,39 +224,33 @@ describe('Ravel lifeycle test', () => {
       return expect(app.listen()).to.eventually.be.rejectedWith(app.ApplicationError.NotAllowed);
     });
 
-    it('should start the underlying HTTP server when called after init()', (done) => {
-      app.init();
+    it('should start the underlying HTTP server when called after init()', async () => {
+      await app.init();
       expect(anotherPostinitHandlerCalled).to.equal(1);
       expect(postinitHandlerCalled).to.equal(1);
       expect(intervalCalled).to.equal(0);
       const listenSpy = sinon.stub(app.server, 'listen').callsFake(function (port, callback) {
         callback();
       });
-      app.listen().then(() => {
-        expect(listenSpy).to.have.been.calledWith(app.get('port'));
-        expect(prelistenHandlerCalled).to.equal(1);
-        expect(postlistenHandlerCalled).to.equal(1);
-        expect(app.listening).to.be.ok;
-      }).then(() => {
-        return new Promise((resolve) => setTimeout(resolve, 1000));
-      }).then(() => {
-        expect(intervalCalled).to.be.at.least(1);
-      }).then(() => {
-        return new Promise((resolve) => setTimeout(resolve, 1000));
-      }).then(() => {
-        expect(intervalCalled).to.be.at.least(2);
-      }).then(done).catch(done);
+      await app.listen();
+      expect(listenSpy).to.have.been.calledWith(app.get('port'));
+      expect(prelistenHandlerCalled).to.equal(1);
+      expect(postlistenHandlerCalled).to.equal(1);
+      expect(app.listening).to.be.ok;
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      expect(intervalCalled).to.be.at.least(1);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      expect(intervalCalled).to.be.at.least(2);
     });
   });
 
   describe('#start()', () => {
-    it('should be a wrapper for Ravel.init() and Ravel.listen()', (done) => {
+    it('should be a wrapper for Ravel.init() and Ravel.listen()', async () => {
       const initSpy = sinon.stub(app, 'init');
       const listenSpy = sinon.stub(app, 'listen');
-      app.start();
+      await app.start();
       expect(initSpy).to.have.been.called;
       expect(listenSpy).to.have.been.called;
-      done();
     });
   });
 
@@ -268,29 +261,31 @@ describe('Ravel lifeycle test', () => {
     });
 
     it('should stop the underlying HTTP server if the server is listening', (done) => {
-      app.init();
-      sinon.stub(app.server, 'close').callsFake(function (callback) {
-        callback();
-      });
-      app.listen()
-        .then(() => {
-          return app.close();
-        })
-        .then(() => {
-          expect(postinitHandlerCalled).to.equal(1);
-          expect(anotherPostinitHandlerCalled).to.equal(1);
-          expect(prelistenHandlerCalled).to.equal(1);
-          expect(postlistenHandlerCalled).to.equal(1);
-          expect(endHandlerCalled).to.equal(1);
-          expect(koaconfigHandlerCalled).to.equal(1);
-          expect(koaconfigAppReference).to.be.an('object');
-          app.server.close.restore(); // undo stub
-          app.server.close(done); // actually close server so test suite exits cleanly
-        }).catch((err) => {
-          app.server.close.restore(); // undo stub
-          app.server.close(); // actually close server so test suite exits cleanly
-          done(err || new Error());
+      app.init().then(() => {
+        sinon.stub(app.server, 'close').callsFake(function (callback) {
+          callback();
         });
+      }).then(() => {
+        return app.listen()
+          .then(() => {
+            return app.close();
+          })
+          .then(() => {
+            expect(postinitHandlerCalled).to.equal(1);
+            expect(anotherPostinitHandlerCalled).to.equal(1);
+            expect(prelistenHandlerCalled).to.equal(1);
+            expect(postlistenHandlerCalled).to.equal(1);
+            expect(endHandlerCalled).to.equal(1);
+            expect(koaconfigHandlerCalled).to.equal(1);
+            expect(koaconfigAppReference).to.be.an('object');
+            app.server.close.restore(); // undo stub
+            app.server.close(done); // actually close server so test suite exits cleanly
+          }).catch((err) => {
+            app.server.close.restore(); // undo stub
+            app.server.close(); // actually close server so test suite exits cleanly
+            done(err || new Error());
+          });
+      });
     });
   });
 });

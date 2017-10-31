@@ -294,13 +294,12 @@ A Ravel application is a root application file (such as `app.js`), coupled with 
 const Ravel = require('ravel');
 const app = new Ravel();
 
-// you'll register managed parameters, and connect Modules, Resources and Routes here
-
-app.init();
-
-// you'll set managed parameters here
-
-app.listen();
+(async () => {
+  // you'll register managed parameters, and connect Modules, Resources and Routes here
+  await app.init();
+  // you'll set managed parameters here
+  await app.listen();
+})();
 ```
 
 ### Managed Configuration System
@@ -325,8 +324,10 @@ app.registerParameter('my required parameter', true);
 // register a required parameter with a default value
 app.registerParameter('my third parameter', true, 'some value');
 
-app.init();
-app.listen();
+(async () => {
+  await app.init();
+  await app.listen();
+})();
 ```
 
 Many Ravel plugin libraries will automatically create parameters which you will have to supply values for. These parameters will be documented in their `README.md`.
@@ -344,14 +345,16 @@ const app = new Ravel();
 // register a new optional parameter
 app.registerParameter('my optional parameter');
 
-app.init();
+(async () => {
+  await app.init();
 
-// set a value
-app.set('my optional parameter', 'some value');
-// this won't work:
-app.set('an unknown parameter', 'some value');
+  // set a value
+  app.set('my optional parameter', 'some value');
+  // this won't work:
+  app.set('an unknown parameter', 'some value');
 
-app.listen();
+  await app.listen();
+})();
 ```
 
 #### app.get
@@ -367,16 +370,18 @@ const app = new Ravel();
 // register a new parameter
 app.registerParameter('my required parameter', true, 'default value');
 
-app.init();
+(async () => {
+  await app.init();
 
-// set a value
-app.set('my required parameter', 'some value');
-// get a value
-app.get('my required parameter') === 'some value';
-// this won't work:
-// app.get('an unknown parameter');
+  // set a value
+  app.set('my required parameter', 'some value');
+  // get a value
+  app.get('my required parameter') === 'some value';
+  // this won't work:
+  // app.get('an unknown parameter');
 
-app.listen();
+  await app.listen();
+})();
 ```
 
 #### Core parameters
@@ -774,7 +779,9 @@ const app = new require('ravel')();
 const MySQLProvider = require('ravel-mysql-provider');
 new MySQLProvider(app, 'mysql');
 // ... other providers and parameters
-app.init();
+(async () => {
+  await app.init();
+})();
 // ... the rest of your Ravel app
 ```
 
@@ -900,7 +907,9 @@ const app = new require('ravel')();
 const GitHubProvider = require('ravel-github-oauth2-provider');
 new GitHubProvider(app);
 // ... other providers and parameters
-app.init();
+(async () => {
+  await app.init();
+});
 // ... the rest of your Ravel app
 ```
 

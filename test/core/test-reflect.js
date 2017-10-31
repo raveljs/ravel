@@ -115,7 +115,7 @@ describe('Ravel', () => {
       done();
     });
 
-    it('should allow clients to retrieve metadata from Resources', (done) => {
+    it('should allow clients to retrieve metadata from Resources', async () => {
       const middleware1 = async function (ctx, next) { await next(); };
       const middleware2 = async function (ctx, next) { await next(); };
       const Resource = Ravel.Resource;
@@ -148,7 +148,7 @@ describe('Ravel', () => {
       app.set('koa public directory', 'public');
       app.set('keygrip keys', ['mysecret']);
       app.resource('./stub');
-      app.init();
+      await app.init();
 
       const meta = app.reflect('./stub').metadata;
 
@@ -180,7 +180,6 @@ describe('Ravel', () => {
           }
         }
       });
-      done();
     });
 
     it('should throw an ApplicationError.NotFound if the specified path is not a known Ravel component', (done) => {

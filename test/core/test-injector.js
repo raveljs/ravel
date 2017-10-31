@@ -5,6 +5,7 @@ const expect = chai.expect;
 chai.use(require('chai-things'));
 const mockery = require('mockery');
 const upath = require('upath');
+const sinon = require('sinon');
 
 let Ravel, Module, coreSymbols, inject;
 
@@ -120,7 +121,13 @@ describe('Ravel', () => {
     });
 
     it('should throw an error when attempting to inject an npm dependency with an error in it', (done) => {
-      mockery.registerSubstitute('badModule', '../../../resources/syntax-error.js');
+      // mock module loader to fake a syntax error
+      const m = require('module');
+      const origLoad = m._load;
+      const stub = sinon.stub(m, '_load').callsFake((...args) => {
+        if (args[0] === 'badModule') throw new SyntaxError();
+        return origLoad.apply(m, args);
+      });
       @inject('badModule')
       class Stub extends Module {
         constructor (badModule) {
@@ -136,6 +143,8 @@ describe('Ravel', () => {
       } catch (err) {
         expect(err).to.be.instanceof(Ravel.ApplicationError.General);
         done();
+      } finally {
+        stub.restore();
       }
     });
 

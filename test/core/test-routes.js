@@ -375,7 +375,7 @@ describe('Ravel', () => {
         .expect(200, {}, done);
     });
 
-    it('should support the use of @mapping at the class level as well, to denote unsupported routes', (done) => {
+    it('should support the use of @mapping at the class level as well, to denote unsupported routes', async () => {
       @mapping(Routes.GET, '/path') // should respond with NOT_IMPLEMENTED
       @mapping(Routes.POST, '/another', 404) // should respond with 404
       class Stub extends Routes {
@@ -392,12 +392,17 @@ describe('Ravel', () => {
       Ravel.set('koa public directory', 'public');
       Ravel.set('keygrip keys', ['mysecret']);
       Ravel.routes('stub');
-      Ravel.init();
+      await Ravel.init();
       const agent = request.agent(Ravel.server);
-      async.series([
-        function (next) { agent.get('/app/path').expect(501).end(next); },
-        function (next) { agent.post('/app/another').expect(404).end(next); }
-      ], done);
+      return new Promise((resolve, reject) => {
+        async.series([
+          function (next) { agent.get('/app/path').expect(501).end(next); },
+          function (next) { agent.post('/app/another').expect(404).end(next); }
+        ], (err) => {
+          if (err) return reject(err);
+          resolve();
+        });
+      });
     });
   });
 

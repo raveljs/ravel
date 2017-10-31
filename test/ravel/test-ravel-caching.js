@@ -51,7 +51,7 @@ describe('Ravel end-to-end test', () => {
   });
 
   describe('basic application server consisting of a resource', () => {
-    before((done) => {
+    before(async () => {
       const Ravel = require('../../lib/ravel');
 
       // stub Resource (REST interface)
@@ -145,11 +145,10 @@ describe('Ravel end-to-end test', () => {
       app.resource('resources');
       mockery.registerMock(upath.join(app.cwd, 'routes'), TestRoutes);
       app.routes('routes');
-      app.init();
+      await app.init();
       app.kvstore.flushall();
 
       agent = request.agent(app.server);
-      done();
     });
 
     after((done) => {
@@ -359,7 +358,7 @@ describe('Ravel end-to-end test', () => {
     });
 
     it('should gracefully handle caching errors coming from redis', (done) => {
-      setStub = sinon.stub(app.kvstore, 'set', function (key, value, cb) {
+      setStub = sinon.stub(app.kvstore, 'set').callsFake(function (key, value, cb) {
         return cb(new Error(), null);
       });
       agent

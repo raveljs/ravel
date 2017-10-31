@@ -49,7 +49,7 @@ describe('Authentication Integration Test', () => {
   });
 
   describe('Simulated Local Auth Provider', () => {
-    beforeEach((done) => {
+    beforeEach(async () => {
       const LocalStrategy = require('passport-local').Strategy;
       const bodyParser = require('koa-bodyparser');
 
@@ -154,9 +154,8 @@ describe('Authentication Integration Test', () => {
       ravelApp.module('authconfig', 'authconfig');
       mockery.registerMock(upath.join(ravelApp.cwd, 'routes'), TestRoutes);
       ravelApp.routes('routes');
-      ravelApp.init();
+      await ravelApp.init();
       agent = request.agent(ravelApp.server); //eslint-disable-line
-      done();
     });
 
     afterEach(() => {

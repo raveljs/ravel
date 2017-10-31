@@ -439,7 +439,7 @@ describe('Ravel', () => {
       ], done);
     });
 
-    it('should implement stub endpoints for unused HTTP verbs, all of which return a status httpCodes.NOT_IMPLEMENTED', (done) => {
+    it('should implement stub endpoints for unused HTTP verbs, all of which return a status httpCodes.NOT_IMPLEMENTED', async () => {
       mockery.registerMock('redis', require('redis-mock'));
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), class extends Resource {
         constructor () {
@@ -453,18 +453,23 @@ describe('Ravel', () => {
       Ravel.set('koa public directory', 'public');
       Ravel.set('keygrip keys', ['mysecret']);
       Ravel.resource('test');
-      Ravel.init();
+      await Ravel.init();
       const agent = request.agent(Ravel.server);
 
-      async.series([
-        function (next) { agent.get('/api/test').expect(501).end(next); },
-        function (next) { agent.get('/api/test/1').expect(501).end(next); },
-        function (next) { agent.post('/api/test').expect(501).end(next); },
-        function (next) { agent.put('/api/test').expect(501).end(next); },
-        function (next) { agent.put('/api/test/2').expect(501).end(next); },
-        function (next) { agent.delete('/api/test').expect(501).end(next); },
-        function (next) { agent.delete('/api/test/50').expect(501).end(next); }
-      ], done);
+      return new Promise((resolve, reject) => {
+        async.series([
+          function (next) { agent.get('/api/test').expect(501).end(next); },
+          function (next) { agent.get('/api/test/1').expect(501).end(next); },
+          function (next) { agent.post('/api/test').expect(501).end(next); },
+          function (next) { agent.put('/api/test').expect(501).end(next); },
+          function (next) { agent.put('/api/test/2').expect(501).end(next); },
+          function (next) { agent.delete('/api/test').expect(501).end(next); },
+          function (next) { agent.delete('/api/test/50').expect(501).end(next); }
+        ], (err) => {
+          if (err) return reject(err);
+          resolve();
+        });
+      });
     });
 
     it('should facilitate the creation of routes which are not decorated with middleware', (done) => {
