@@ -66,6 +66,7 @@ describe('Ravel end-to-end test', () => {
         const inject = Ravel.inject;
 
         // stub Module (business logic container)
+        const middleware = Ravel.Module.middleware;
         class Users extends Ravel.Module {
           getAllUsers () {
             return Promise.resolve(u);
@@ -78,6 +79,9 @@ describe('Ravel end-to-end test', () => {
               return Promise.reject(new this.ApplicationError.NotFound('User id=' + userId + ' does not exist!'));
             }
           }
+
+          @middleware('some-middleware')
+          async someMiddleware (ctx, next) { await next(); }
         }
 
         // stub Resource (REST interface)
@@ -88,16 +92,15 @@ describe('Ravel end-to-end test', () => {
           constructor (users) {
             super('/api/user');
             this.users = users;
-            this.someMiddleware = async function (ctx, next) { await next(); };
           }
 
-          @pre('someMiddleware')
+          @pre('some-middleware')
           async getAll (ctx) {
             const list = await this.users.getAllUsers();
             ctx.body = list;
           }
 
-          @pre('someMiddleware')
+          @pre('some-middleware')
           get (ctx) {
             // return promise and don't catch possible error so that Ravel can catch it
             return this.users.getUser(ctx.params.id)
@@ -106,7 +109,7 @@ describe('Ravel end-to-end test', () => {
               });
           }
 
-          @pre('someMiddleware')
+          @pre('some-middleware')
           async post () {
             throw new this.ApplicationError.DuplicateEntry();
           }
