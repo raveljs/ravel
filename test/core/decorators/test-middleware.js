@@ -3,12 +3,11 @@
 const chai = require('chai');
 const expect = chai.expect;
 const mockery = require('mockery');
-const sinon = require('sinon');
 chai.use(require('sinon-chai'));
 const upath = require('upath');
 const Metadata = require('../../../lib/util/meta');
 
-let app, middleware, coreSymbols, Module, Routes;
+let app, middleware, Ravel, Module;
 
 describe('Ravel', () => {
   describe('@cache()', () => {
@@ -20,20 +19,17 @@ describe('Ravel', () => {
         warnOnUnregistered: false
       });
 
-      const Ravel = require('../../../lib/ravel');
+      Ravel = require('../../../lib/ravel');
       Module = Ravel.Module;
-      Routes = Ravel.Routes;
       app = new Ravel();
-      app.log.setLevel('NONE');
+      app.set('log level', app.log.NONE);
       middleware = Module.middleware;
-      coreSymbols = require('../../../lib/core/symbols');
       done();
     });
 
     afterEach((done) => {
       app = undefined;
       middleware = undefined;
-      coreSymbols = undefined;
       mockery.deregisterAll();
       mockery.disable();
       done();
@@ -46,6 +42,23 @@ describe('Ravel', () => {
       }
       expect(Metadata.getClassMetaValue(Stub1.prototype, '@middleware', 'some-middleware')).to.be.a('function');
       done();
+    });
+
+    it('should throw a DuplicateEntry error when middleware is registered with the same name as a module', async () => {
+      class Stub1 extends Ravel.Module {
+        @middleware('some-middleware')
+        async someMiddleware () {}
+      }
+      app.set('keygrip keys', ['mysecret']);
+      mockery.registerMock(upath.join(app.cwd, './mymodule'), Stub1);
+      mockery.registerMock('redis', require('redis-mock'));
+      app.module('./mymodule', 'some-middleware');
+      try {
+        await app.init();
+        throw new Error('This test should fail!');
+      } catch (err) {
+        expect(err).to.be.instanceOf(app.ApplicationError.DuplicateEntry);
+      }
     });
   });
 });
