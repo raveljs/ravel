@@ -173,12 +173,15 @@ describe('Ravel', () => {
         'koa view engine': 'ejs',
         'redis port': 6379
       };
-      const parent = Ravel.cwd.split(upath.sep).slice(0, -1).join(upath.sep);
+      let parent = Ravel.cwd.split(upath.sep).slice(0, -1).join(upath.sep);
+      parent = parent.length > 0 ? parent : upath.sep;
       // can't use extension on mock because mockery only works with exact matches
-      mockery.registerMock(upath.join(parent, '.ravelrc'), conf);
+      const joined = upath.join(parent, '.ravelrc');
+      mockery.registerMock(joined, conf);
       Ravel[coreSymbols.loadParameters]();
-      expect(Ravel.get('koa view engine')).to.equal(conf['koa view engine']);
-      expect(Ravel.get('redis port')).to.equal(conf['redis port']);
+      const msg = `Failed to find .ravelrc in ${joined}`;
+      expect(Ravel.get('koa view engine'), msg).to.equal(conf['koa view engine']);
+      expect(Ravel.get('redis port'), msg).to.equal(conf['redis port']);
       done();
     });
 
@@ -190,10 +193,12 @@ describe('Ravel', () => {
       let root = Ravel.cwd.split(upath.sep).slice(0, 1).join(upath.sep);
       root = root.length > 0 ? root : upath.sep;
       // can't use extension on mock because mockery only works with exact matches
+      const joined = upath.join(root, '.ravelrc');
       mockery.registerMock(upath.join(root, '.ravelrc'), conf);
       Ravel[coreSymbols.loadParameters]();
-      expect(Ravel.get('koa view engine')).to.equal(conf['koa view engine']);
-      expect(Ravel.get('redis port')).to.equal(conf['redis port']);
+      const msg = `Failed to find .ravelrc in ${joined}`;
+      expect(Ravel.get('koa view engine'), msg).to.equal(conf['koa view engine']);
+      expect(Ravel.get('redis port'), msg).to.equal(conf['redis port']);
       done();
     });
 
