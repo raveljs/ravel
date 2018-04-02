@@ -140,10 +140,7 @@ describe('Ravel', () => {
       };
 
       // need to call init so that it creates @mapping decorators
-      mockery.registerMock('redis', require('redis-mock'));
       app.set('log level', app.log.NONE);
-      app.set('redis host', 'localhost');
-      app.set('redis port', 5432);
       app.set('port', '9080');
       app.set('koa public directory', 'public');
       app.set('keygrip keys', ['mysecret']);

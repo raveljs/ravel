@@ -51,7 +51,6 @@ describe('auth/passport_init', () => {
     authconfig = Ravel.Module.authconfig;
     coreSymbols = require('../../lib/core/symbols');
     ravelApp.log.setLevel(ravelApp.log.NONE);
-    ravelApp.kvstore = require('redis-mock'); // mock ravelApp.kvstore, since we're not actually starting ravelApp.
     done();
   });
 

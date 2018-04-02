@@ -440,15 +440,12 @@ describe('Ravel', () => {
     });
 
     it('should implement stub endpoints for unused HTTP verbs, all of which return a status httpCodes.NOT_IMPLEMENTED', async () => {
-      mockery.registerMock('redis', require('redis-mock'));
       mockery.registerMock(upath.join(Ravel.cwd, 'test'), class extends Resource {
         constructor () {
           super('/api/test');
         }
       });
       Ravel.set('log level', Ravel.log.NONE);
-      Ravel.set('redis host', 'localhost');
-      Ravel.set('redis port', 5432);
       Ravel.set('port', '9080');
       Ravel.set('koa public directory', 'public');
       Ravel.set('keygrip keys', ['mysecret']);

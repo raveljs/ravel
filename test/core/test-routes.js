@@ -383,11 +383,8 @@ describe('Ravel', () => {
           super('/app');
         }
       }
-      mockery.registerMock('redis', require('redis-mock'));
       mockery.registerMock(upath.join(Ravel.cwd, 'stub'), Stub);
       Ravel.set('log level', Ravel.log.NONE);
-      Ravel.set('redis host', 'localhost');
-      Ravel.set('redis port', 5432);
       Ravel.set('port', '9080');
       Ravel.set('koa public directory', 'public');
       Ravel.set('keygrip keys', ['mysecret']);
