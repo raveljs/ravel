@@ -5,7 +5,7 @@
 
 Ravel is a tiny, sometimes-opinionated foundation for creating organized, maintainable, and scalable web applications in [node.js](https://github.com/joyent/node) with [ES2016/2017](http://kangax.github.io/compat-table/esnext/).
 
-**Note:** The `master` branch may be in an unstable or even broken state during development. Please use [releases](https://github.com/raveljs/ravel/releases) instead of the `master` branch to view stable code.
+**Note:** The `master` branch may be in an unstable or even broken state during development. Please use [releases](https://github.com/raveljs/ravel/releases) instead of the `master` branch to explore stable code.
 
 ## Table of Contents
 
