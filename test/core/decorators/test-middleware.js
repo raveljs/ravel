@@ -51,7 +51,6 @@ describe('Ravel', () => {
       }
       app.set('keygrip keys', ['mysecret']);
       mockery.registerMock(upath.join(app.cwd, './mymodule'), Stub1);
-      mockery.registerMock('redis', require('redis-mock'));
       app.module('./mymodule', 'some-middleware');
       try {
         await app.init();

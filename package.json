@@ -57,6 +57,7 @@
     "node-fs": "0.1.7",
     "passport": "0.4.0",
     "redis": "2.8.0",
+    "redis-mock": "0.21.0",
     "upath": "1.0.4"
   },
   "devDependencies": {
@@ -70,7 +71,7 @@
     "mocha": "4.0.1",
     "mockery": "2.1.0",
     "node-mocks-http": "1.6.4",
-    "redis-mock": "0.20.0",
+    "redis-mock": "0.21.0",
     "sinon": "2.3.7",
     "sinon-chai": "2.11.0",
     "eslint": "4.2.0",

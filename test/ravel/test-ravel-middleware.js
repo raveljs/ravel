@@ -3,7 +3,6 @@
 const chai = require('chai');
 const expect = chai.expect;
 const mockery = require('mockery');
-const redis = require('redis-mock');
 const request = require('supertest');
 const upath = require('upath');
 const sinon = require('sinon');
@@ -58,11 +57,8 @@ describe('Ravel end-to-end middleware test', () => {
         }
       }
 
-      mockery.registerMock('redis', redis);
       app = new Ravel();
       app.set('log level', app.log.NONE);
-      app.set('redis host', 'localhost');
-      app.set('redis port', 5432);
       app.set('port', '9080');
       app.set('koa public directory', 'public');
       app.set('keygrip keys', ['mysecret']);
@@ -72,7 +68,6 @@ describe('Ravel end-to-end middleware test', () => {
       mockery.registerMock(upath.join(app.cwd, 'routes'), TestRoutes);
       app.routes('routes');
       await app.init();
-      app.kvstore.flushall();
 
       agent = request.agent(app.server);
     });

@@ -69,12 +69,6 @@ Ravel is layered on top of awesome technologies, including:
 $ npm install ravel
 ```
 
-Ravel also relies on [Redis](https://github.com/antirez/redis). If you don't have it installed and running, try using [docker](https://www.docker.com/) to quickly spin one up:
-
-```bash
-$ docker run -d -p 6379:6379 redis
-```
-
 ## Architecture
 
 Ravel applications consist of a few basic parts:
@@ -392,7 +386,7 @@ Ravel has several core parameters:
 app.set('keygrip keys', ['my super secret key']);
 
 // these are optional (default values are shown):
-app.set('redis host', '0.0.0.0');
+app.set('redis host', undefined); // set to point to an external redis server (required for horizontal scaling).
 app.set('redis port', 6379);
 app.set('redis password', undefined);
 app.set('redis max retries', 10); // connection retries
@@ -1002,7 +996,7 @@ class MyRoutes extends Routes {
 
 Ravel is designed for horizontal scaling, and helps you avoid common pitfalls when designing your node.js backend application. In particular:
 
- - Session storage in [Redis](https://github.com/antirez/redis) is currently mandatory, ensuring that you can safely replicate your Ravel app safely
+ - Session storage in [Redis](https://github.com/antirez/redis) is highly recommended. Without it, you cannot safely replicate your Ravel app. When deploying multiple replicas of your Ravel app, be sure to `app.set('redis host')` to point to an external, shared `redis` server.
  - The internal [koa](http://koajs.com/) application's `app.proxy` flag is set to `true`.
  - All Ravel dependencies are strictly locked (i.e. no use of `~` or `^` in `package.json`). This helps foster repeatability between members of your team, as well as between development/testing/production environments. Adherence to semver in the node ecosystem is unfortunately varied at best, so it is recommended that you follow the same practice in your app as well.
  - While it is possible to color outside the lines, Ravel provides a framework for developing **stateless** backend applications, where all stateful data is stored in external caches or databases.

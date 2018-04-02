@@ -18,7 +18,6 @@ describe('Ravel', () => {
       warnOnReplace: false,
       warnOnUnregistered: false
     });
-    mockery.registerMock('redis', require('redis-mock'));
     Ravel = new (require('../../lib/ravel'))();
     coreSymbols = require('../../lib/core/symbols');
     Ravel.log.setLevel('NONE');
@@ -246,7 +245,6 @@ describe('Ravel', () => {
 
     it('should load defaults if no configuration files are present', async () => {
       const oldParams = {
-        'redis host': '0.0.0.0',
         'redis port': 6379,
         'redis max retries': 10,
         'redis keepalive interval': 1000,

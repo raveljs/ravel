@@ -6,7 +6,6 @@ chai.use(require('chai-things'));
 chai.use(require('chai-as-promised'));
 const mockery = require('mockery');
 const upath = require('upath');
-const redis = require('redis-mock');
 const request = require('supertest');
 // const sinon = require('sinon')
 // chai.use(require('sinon-chai'))
@@ -37,12 +36,9 @@ describe('Ravel end-to-end test', () => {
   describe('#init()', () => {
     describe('uncaught ES6 Promise errors logging', () => {
       it('should log unhandled erors within Promises', async () => {
-        mockery.registerMock('redis', redis);
         const Ravel = require('../../lib/ravel');
         app = new Ravel();
         app.set('log level', app.log.NONE);
-        app.set('redis host', 'localhost');
-        app.set('redis port', 5432);
         app.set('keygrip keys', ['mysecret']);
         app.set('port', '9080');
         await app.init();
@@ -139,13 +135,10 @@ describe('Ravel end-to-end test', () => {
           }
         }
 
-        mockery.registerMock('redis', redis);
         app = new Ravel();
         expect(Ravel).to.have.a.property('httpCodes').that.deep.equals(httpCodes);
         expect(Ravel).to.have.a.property('Error').that.deep.equals(ApplicationError.General);
         app.set('log level', app.log.NONE);
-        app.set('redis host', 'localhost');
-        app.set('redis port', 5432);
         app.set('port', '9080');
         app.set('koa public directory', 'public');
         app.set('keygrip keys', ['mysecret']);
