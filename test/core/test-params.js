@@ -6,6 +6,7 @@ chai.use(require('chai-things'));
 const mockery = require('mockery');
 const upath = require('upath');
 const sinon = require('sinon');
+const os = require('os');
 
 let Ravel, conf, coreSymbols;
 
@@ -174,7 +175,8 @@ describe('Ravel', () => {
         'redis port': 6379
       };
       let parent = Ravel.cwd.split(upath.sep).slice(0, -1).join(upath.sep);
-      parent = parent.length > 0 ? parent : upath.sep;
+      const root = (os.platform() === 'win32') ? process.cwd().split(upath.sep)[0] : upath.sep;
+      parent = parent.length > 0 ? parent : root;
       // can't use extension on mock because mockery only works with exact matches
       const joined = upath.join(parent, '.ravelrc');
       mockery.registerMock(joined, conf);
@@ -190,8 +192,7 @@ describe('Ravel', () => {
         'koa view engine': 'ejs',
         'redis port': 6379
       };
-      let root = Ravel.cwd.split(upath.sep).slice(0, 1).join(upath.sep);
-      root = root.length > 0 ? root : upath.sep;
+      const root = (os.platform() === 'win32') ? process.cwd().split(upath.sep)[0] : upath.sep;
       // can't use extension on mock because mockery only works with exact matches
       const joined = upath.join(root, '.ravelrc');
       mockery.registerMock(upath.join(root, '.ravelrc'), conf);
