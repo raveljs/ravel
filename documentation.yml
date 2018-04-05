@@ -1,6 +1,7 @@
 name: Ravel API
 version: 0.24.0
 versions:
+  - 0.24.0
   - 0.23.0
   - 0.22.6
   - 0.22.5
