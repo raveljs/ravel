@@ -1,6 +1,6 @@
 {
   "name": "ravel",
-  "version": "0.24.0",
+  "version": "0.24.1",
   "author": "Sean McIntyre <s.mcintyre@xverba.ca>",
   "description": "Ravel Rapid Application Development Framework",
   "engines": {
@@ -24,6 +24,10 @@
     {
       "name": "Sean McIntyre",
       "email": "s.mcintyre@xverba.ca"
+    },
+    {
+      "name": "Michael Laccetti",
+      "email": "michael@laccetti.com"
     }
   ],
   "license": "MIT",
