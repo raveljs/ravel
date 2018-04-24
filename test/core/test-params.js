@@ -18,6 +18,8 @@ describe('Ravel', () => {
       warnOnReplace: false,
       warnOnUnregistered: false
     });
+    process.env.REDIS_HOST = 'localhost';
+    process.env.REDIS_PORT = '9999';
     Ravel = new (require('../../lib/ravel'))();
     coreSymbols = require('../../lib/core/symbols');
     Ravel.log.setLevel('NONE');
@@ -27,6 +29,8 @@ describe('Ravel', () => {
   afterEach((done) => {
     Ravel = undefined;
     coreSymbols = undefined;
+    delete process.env['REDIS_HOST'];
+    delete process.env['REDIS_PORT'];
     mockery.deregisterAll();
     mockery.disable();
     done();
@@ -211,6 +215,40 @@ describe('Ravel', () => {
       Ravel[coreSymbols.loadParameters]();
       expect(Ravel.get('koa view engine')).to.equal(conf['koa view engine']);
       expect(Ravel.get('redis port')).to.equal(conf['redis port']);
+      done();
+    });
+
+    it('should interpolate variables in the config value with the value from environment variables', (done) => {
+      conf = {
+        'redis host': '$REDIS_HOST',
+        'redis port': '$REDIS_PORT'
+      }
+      mockery.registerMock(upath.join(Ravel.cwd, '.ravelrc'), JSON.stringify(conf));
+      Ravel[coreSymbols.loadParameters]();
+      expect(Ravel.get('redis port')).to.equal('9999');
+      expect(Ravel.get('redis host')).to.equal('localhost');
+      done();
+    });
+
+    it('should interpolate variables in the config when there are multiple variables', (done) => {
+      Ravel.registerParameter('redis url', false);
+      conf = {
+        'redis url': 'redis://$REDIS_HOST:$REDIS_PORT'
+      }
+      mockery.registerMock(upath.join(Ravel.cwd, '.ravelrc'), JSON.stringify(conf));
+      Ravel[coreSymbols.loadParameters]();
+      expect(Ravel.get('redis url')).to.equal('redis://localhost:9999');
+      done();
+    });
+
+    it('should return empty string when the environment variable referenced in the config value does not exist', (done) => {
+      Ravel.registerParameter('redis url', false);
+      conf = {
+        'redis url': 'redis://$REDIS_USER:$REDIS_PASSWORD@$REDIS_HOST:$REDIS_PORT'
+      }
+      mockery.registerMock(upath.join(Ravel.cwd, '.ravelrc'), JSON.stringify(conf));
+      Ravel[coreSymbols.loadParameters]();
+      expect(Ravel.get('redis url')).to.equal('redis://:@localhost:9999');
       done();
     });
 
