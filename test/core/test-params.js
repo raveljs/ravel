@@ -241,14 +241,15 @@ describe('Ravel', () => {
       done();
     });
 
-    it('should return empty string when the environment variable referenced in the config value does not exist', (done) => {
+    it('should throw IllegalValueError when the environment variable referenced in the config value does not exist', (done) => {
       Ravel.registerParameter('redis url', false);
       conf = {
         'redis url': 'redis://$REDIS_USER:$REDIS_PASSWORD@$REDIS_HOST:$REDIS_PORT'
       }
       mockery.registerMock(upath.join(Ravel.cwd, '.ravelrc'), JSON.stringify(conf));
-      Ravel[coreSymbols.loadParameters]();
-      expect(Ravel.get('redis url')).to.equal('redis://:@localhost:9999');
+      expect(() => {
+        Ravel[coreSymbols.loadParameters]();
+      }).to.throw(Ravel.ApplicationError.IllegalValue);
       done();
     });
 
