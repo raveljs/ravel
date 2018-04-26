@@ -403,12 +403,21 @@ app.set('koa favicon path', undefined); // favicon middleware configuration
 
 #### .ravelrc.json
 
-To make it easier to supply configuration values to Ravel, a `.ravelrc.json` file can be placed beside `app.js` (or in any parent directory of `app.js`). This is the recommended method of setting parameters, with the exception of ones derived from `process.env` (which would need to be set programmatically).
+To make it easier to supply configuration values to Ravel, a `.ravelrc.json` file can be placed beside `app.js` (or in any parent directory of `app.js`). This is the recommended method of setting parameters.
 
 *.ravelrc.json*
 ```
 {
   "keygrip keys": ["my super secret key"]
+}
+```
+
+You can also use environment variables in `.ravelrc.json` file which will be interpolated using `process.env` at startup time:
+
+```
+{
+  "keygrip keys": "$MY_SUPER_SECRET_KEY",
+  "mysql connection string": "mysql:///$MYSQL_USER:$MYSQL_PASSWORD@$MYSQL_HOST:$MYSQL_PORT/$MYSQL_DB"
 }
 ```
 
