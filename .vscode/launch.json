@@ -5,40 +5,30 @@
     "version": "0.2.0",
     "configurations": [
         {
-          // sourcemaps isn't working with this yet...
-          "name": "Debug test suite (new debugging protocol)",
-          "cwd": "${workspaceRoot}",
+          "name": "Debug test suite",
           "type": "node2",
           "request": "launch",
-          "stopOnEntry": true,
-          "port": 9229,
-          "program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
-          "runtimeArgs": ["--inspect", "--nolazy"],
-          "args": ["test-no-cov"],
+          "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
+          "args": ["--no-timeouts", "--require", "babel-register", "--recursive", "--exit", "${workspaceFolder}/test"],
+          "console": "integratedTerminal",
+          "internalConsoleOptions": "neverOpen",
+          "env": {
+            "NODE_ENV": "test"
+          },
           "smartStep": true
-          // ,"sourceMaps": true,
-          // "sourceMapPathOverrides": {
-          //   "${workspaceRoot}/test-dist/*": "${workspaceRoot}/test"
-          // }
-          // ,"skipFiles": [
-          //   "node_modules/**/*.js"
-          // ]
         },
         {
-          "name": "Debug test suite (old debugging protocol)",
-          "cwd": "${workspaceRoot}",
-          "type": "node",
+          "name": "Debug current file",
+          "type": "node2",
           "request": "launch",
-          "stopOnEntry": true,
-          "port": 5858,
-          "program": "${workspaceRoot}/node_modules/gulp/bin/gulp.js",
-          "runtimeArgs": ["--debug", "--nolazy"],
-          "args": ["test-no-cov"],
-          "smartStep": true,
-          "sourceMaps": true
-          ,"skipFiles": [
-            "node_modules/**/*.js"
-          ]
+          "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
+          "args": ["--no-timeouts", "--require", "babel-register", "--exit", "${file}"],
+          "console": "integratedTerminal",
+          "internalConsoleOptions": "neverOpen",
+          "env": {
+            "NODE_ENV": "test"
+          },
+          "smartStep": true
         }
     ]
 
