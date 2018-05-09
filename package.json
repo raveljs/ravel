@@ -42,7 +42,7 @@
     "watch": "gulp watch",
     "test": "cross-env NODE_ENV=test nyc mocha --recursive --exit --timeout=10000 ./test",
     "test-windows": "npm test",
-    "debug": "cross-env NODE_ENV=test mocha --no-timeouts --require babel-register --inspect-brk --recursive --exit ./test ",
+    "debug": "cross-env NODE_ENV=test mocha --no-timeouts --require babel-register --inspect-brk --recursive --exit ./test",
     "show-coverage": "gulp show-coverage",
     "dist": "gulp dist",
     "prepare": "gulp dist"
@@ -50,6 +50,7 @@
   "dependencies": {
     "fs-readdir-recursive": "1.1.0",
     "intel": "1.2.0",
+    "keygrip": "1.0.2",
     "koa": "2.5.0",
     "koa-compress": "2.0.0",
     "koa-favicon": "2.0.0",

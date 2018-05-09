@@ -233,7 +233,7 @@ module.exports = CitiesResource;
 const app = new require('ravel')();
 
 // parameters like this can be supplied via a .ravelrc.json file
-app.set('keygrip keys', ['mysecret']);
+app.set('keygrip keys', ['mysecret', 'anothersecret']);
 
 app.modules('./modules'); //import all Modules from a directory
 app.resources('./resources');  //import all Resources from a directory
@@ -382,8 +382,8 @@ app.registerParameter('my required parameter', true, 'default value');
 Ravel has several core parameters:
 
 ```js
-// you have to set these:
-app.set('keygrip keys', ['my super secret key']);
+// set initial keygrip keys for cookie signing (recommend at least 5):
+app.set('keygrip keys', ['my super secret key', 'another super secret key']);
 
 // these are optional (default values are shown):
 app.set('redis host', undefined); // set to point to an external redis server (required for horizontal scaling).
@@ -408,7 +408,7 @@ To make it easier to supply configuration values to Ravel, a `.ravelrc.json` fil
 *.ravelrc.json*
 ```
 {
-  "keygrip keys": ["my super secret key"]
+  "keygrip keys": ["my super secret key", "another super secret key"]
 }
 ```
 
