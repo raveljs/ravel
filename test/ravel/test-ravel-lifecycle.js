@@ -168,8 +168,6 @@ describe('Ravel lifeycle test', () => {
   describe('#init()', () => {
     it('should initialize a koa server with appropriate middleware and parameters', async () => {
       app.set('koa public directory', 'public');
-      app.set('koa view engine', 'ejs');
-      app.set('koa view directory', 'views');
 
       let useSpy;
       const koaAppMock = class Moa extends require('koa') {
@@ -188,10 +186,6 @@ describe('Ravel lifeycle test', () => {
       const staticSpy = sinon.stub().returns(staticMiddleware);
       mockery.registerMock('koa-static', staticSpy);
 
-      const views = async function (ctx, next) { await next(); };
-      const viewSpy = sinon.stub().returns(views);
-      mockery.registerMock('koa-views', viewSpy);
-
       const favicon = async function (ctx, next) { await next(); };
       const faviconSpy = sinon.stub().returns(favicon);
       mockery.registerMock('koa-favicon', faviconSpy);
@@ -208,8 +202,6 @@ describe('Ravel lifeycle test', () => {
       expect(useSpy).to.have.been.calledWith(gzip);
       expect(staticSpy).to.have.been.calledWith(upath.join(app.cwd, app.get('koa public directory')));
       expect(useSpy).to.have.been.calledWith(staticMiddleware);
-      expect(viewSpy).to.have.been.calledWith(upath.join(app.cwd, app.get('koa view directory')));
-      expect(useSpy).to.have.been.calledWith(views);
       expect(faviconSpy).to.have.been.calledWith(upath.join(app.cwd, app.get('koa favicon path')));
       expect(useSpy).to.have.been.calledWith(favicon);
       expect(app.initialized).to.be.ok;

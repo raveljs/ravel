@@ -396,8 +396,6 @@ app.set('session max age', null); // session maxAge (default never expires)
 app.set('app route', '/'); // if you have a UI, this is the path users will be sent to when they are logged in
 app.set('login route', '/login'); // if users aren't logged in and you redirect them, this is where they'll be sent
 app.set('koa public directory', undefined); // if you want to statically serve a directory
-app.set('koa view directory', undefined); // for templated views (EJS, Pug, etc.)
-app.set('koa view engine', undefined); // for templated views (EJS, Pug, etc.)
 app.set('koa favicon path', undefined); // favicon middleware configuration
 ```
 

@@ -161,21 +161,18 @@ describe('Ravel', () => {
   describe('#_loadParameters()', () => {
     it('should allow users to specify Ravel config parameters via a .ravelrc.json config file', (done) => {
       conf = {
-        'koa view engine': 'ejs',
-        'redis port': 6379
+        'redis port': 1234
       };
       // can't use extension on mock because mockery only works with exact matches
       mockery.registerMock(upath.join(Ravel.cwd, '.ravelrc'), conf);
       Ravel[coreSymbols.loadParameters]();
-      expect(Ravel.get('koa view engine')).to.equal(conf['koa view engine']);
       expect(Ravel.get('redis port')).to.equal(conf['redis port']);
       done();
     });
 
     it('should should support searching for .ravelrc.json files in any parent directory of app.cwd', (done) => {
       conf = {
-        'koa view engine': 'ejs',
-        'redis port': 6379
+        'redis port': 1234
       };
       let parent = Ravel.cwd.split(upath.sep).slice(0, -1).join(upath.sep);
       const root = (os.platform() === 'win32') ? process.cwd().split(upath.sep)[0] : upath.sep;
@@ -185,15 +182,13 @@ describe('Ravel', () => {
       mockery.registerMock(joined, conf);
       Ravel[coreSymbols.loadParameters]();
       const msg = `Failed to find .ravelrc in ${joined}`;
-      expect(Ravel.get('koa view engine'), msg).to.equal(conf['koa view engine']);
       expect(Ravel.get('redis port'), msg).to.equal(conf['redis port']);
       done();
     });
 
     it('should should support searching for .ravelrc.json files in any parent directory of app.cwd, including root', (done) => {
       conf = {
-        'koa view engine': 'ejs',
-        'redis port': 6379
+        'redis port': 1234
       };
       const root = (os.platform() === 'win32') ? process.cwd().split(upath.sep)[0] : upath.sep;
       // can't use extension on mock because mockery only works with exact matches
@@ -201,19 +196,16 @@ describe('Ravel', () => {
       mockery.registerMock(upath.join(root, '.ravelrc'), conf);
       Ravel[coreSymbols.loadParameters]();
       const msg = `Failed to find .ravelrc in ${joined}`;
-      expect(Ravel.get('koa view engine'), msg).to.equal(conf['koa view engine']);
       expect(Ravel.get('redis port'), msg).to.equal(conf['redis port']);
       done();
     });
 
     it('should allow users to specify Ravel config parameters via a .ravelrc config file and parse it to JSON', (done) => {
       conf = {
-        'koa view engine': 'ejs',
-        'redis port': 6379
+        'redis port': 1234
       };
       mockery.registerMock(upath.join(Ravel.cwd, '.ravelrc'), JSON.stringify(conf));
       Ravel[coreSymbols.loadParameters]();
-      expect(Ravel.get('koa view engine')).to.equal(conf['koa view engine']);
       expect(Ravel.get('redis port')).to.equal(conf['redis port']);
       done();
     });
@@ -255,22 +247,19 @@ describe('Ravel', () => {
 
     it('should not override parameters set programmatically via Ravel.set', (done) => {
       conf = {
-        'koa view engine': 'ejs',
-        'redis port': 6379
+        'redis port': 1234
       };
       mockery.registerMock(upath.join(Ravel.cwd, '.ravelrc'), conf);
 
       Ravel.set('redis port', 6380);
       Ravel[coreSymbols.loadParameters]();
-      expect(Ravel.get('koa view engine')).to.equal(conf['koa view engine']);
       expect(Ravel.get('redis port')).to.equal(6380);
       done();
     });
 
     it('should throw a Ravel.ApplicationError.IllegalValue if an unregistered paramter is specified in the config file', (done) => {
       conf = {
-        'koa view engine': 'ejs',
-        'redis port': 6379
+        'redis port': 1234
       };
       conf[Math.random().toString()] = false;
       mockery.registerMock(upath.join(Ravel.cwd, '.ravelrc'), conf);
