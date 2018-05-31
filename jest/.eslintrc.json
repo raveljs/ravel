@@ -1,0 +1,20 @@
+{
+  "extends": "../.eslintrc.json",
+  "globals": {
+    "describe":   false,
+    "before":     false,
+    "after":      false,
+    "beforeEach": false,
+    "afterEach":  false,
+    "it":         false,
+    "require":    false,
+    "module":     false,
+    "mockery":    false
+  },
+  "env": {
+    "jest": true
+  },
+  "rules": {
+    "no-unused-expressions": "off"
+  }
+}

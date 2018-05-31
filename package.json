@@ -36,12 +36,35 @@
     "url": "https://github.com/raveljs/ravel.git"
   },
   "main": "dist/ravel.js",
+  "jest": {
+    "setupFiles": [
+      "./jest/setup.js"
+    ],
+    "moduleFileExtensions": [
+      "js"
+    ],
+    "moduleDirectories": [
+      "node_modules"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.{js}"
+    ],
+    "coverageReporters": [
+      "json",
+      "lcov",
+      "text",
+      "html"
+    ]
+  },
   "scripts": {
     "clean": "gulp clean",
     "docs": "gulp docs",
     "watch": "gulp watch",
     "test": "cross-env NODE_ENV=test nyc mocha --recursive --exit --timeout=10000 ./test",
     "test-windows": "npm test",
+    "lint": "eslint ./src",
+    "lint:test": "eslint ./test",
+    "jest": "cross-env NODE_ENV=test jest --coverage --silent",
     "debug": "cross-env NODE_ENV=test mocha --no-timeouts --require babel-register --inspect-brk --recursive --exit ./test",
     "show-coverage": "gulp show-coverage",
     "dist": "gulp dist",
@@ -72,6 +95,7 @@
     "chai-things": "0.2.0",
     "documentation": "4.0.0-rc.1",
     "yamljs": "0.3.0",
+    "jest": "22.4.3",
     "mocha": "4.0.1",
     "mockery": "2.1.0",
     "node-mocks-http": "1.6.4",

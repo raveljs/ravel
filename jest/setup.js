@@ -1,0 +1,1 @@
+global.mockery = require('mockery');
