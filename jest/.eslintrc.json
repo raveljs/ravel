@@ -9,7 +9,11 @@
     "it":         false,
     "require":    false,
     "module":     false,
-    "mockery":    false
+    "jest":       false,
+    "mockery":    false,
+    "sinon":      false,
+    "upath":      false,
+    "Ravel":      false
   },
   "env": {
     "jest": true
