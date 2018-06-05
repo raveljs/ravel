@@ -3,8 +3,9 @@ describe('Ravel', () => {
     jest.resetModules();
   });
 
-  // Testing how Ravel loads modules
+  // Testing how Ravel loads modules from a directory
   describe('scan', () => {
+    // TODO include routes and resources
     it('should attempt to load classes from files within a directory', () => {
       jest.doMock('fs-readdir-recursive', () => {
         return () => ['test1.js', 'test2.js', '.eslintrc', 'package/test3.js'];
@@ -45,6 +46,15 @@ describe('Ravel', () => {
         expect(app.module('test')).toBeDefined();
         app.module('test').method();
         expect(spy).toHaveBeenCalled();
+      });
+
+      it('should throw a Ravel.ApplicationError.IllegalValue error when clients attempt to register a module without a name', async () => {
+        const Ravel = require('../../lib/ravel');
+        @Ravel.Module
+        class Test {}
+        const app = new Ravel();
+        app.set('log level', app.log.NONE);
+        expect(() => app.load(Test)).toThrowError(app.ApplicationError.IllegalValue);
       });
     });
   });
