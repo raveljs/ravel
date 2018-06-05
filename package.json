@@ -46,8 +46,9 @@
     "moduleDirectories": [
       "node_modules"
     ],
+    "collectCoverage": true,
     "collectCoverageFrom": [
-      "src/**/*.{js}"
+      "lib/**/*.{js}"
     ],
     "coverageReporters": [
       "json",
