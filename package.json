@@ -46,6 +46,9 @@
     "moduleDirectories": [
       "node_modules"
     ],
+    "transform": {
+      "^.+\\.jsx?$": "babel-jest"
+    },
     "collectCoverage": true,
     "collectCoverageFrom": [
       "lib/**/*.{js}"
@@ -96,7 +99,7 @@
     "chai-things": "0.2.0",
     "documentation": "4.0.0-rc.1",
     "yamljs": "0.3.0",
-    "jest": "22.4.3",
+    "jest": "23.1.0",
     "mocha": "4.0.1",
     "mockery": "2.1.0",
     "node-mocks-http": "1.6.4",
