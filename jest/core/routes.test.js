@@ -7,7 +7,7 @@ describe('Ravel', () => {
     app.set('keygrip keys', ['abc']);
     app.set('log level', app.log.NONE);
   });
-  // Testing how Ravel loads modules
+  // Testing how Ravel loads routes
   describe('load', () => {
     describe('@Routes', () => {
       it('should register Routes modules for instantiation and initialization in Ravel.init', async () => {
