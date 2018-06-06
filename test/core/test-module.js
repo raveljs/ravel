@@ -313,7 +313,7 @@ describe('Ravel', () => {
       Ravel[coreSymbols.moduleInit]();
     });
 
-    it('should support array notation for specifying module dependencies which use invalid js constiable names', (done) => {
+    it('should support array notation for specifying module dependencies which use bad js function names', (done) => {
       const stubBadName = {
         method: () => {}
       };

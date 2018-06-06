@@ -64,12 +64,11 @@
     "clean": "gulp clean",
     "docs": "gulp docs",
     "watch": "gulp watch",
-    "test": "cross-env NODE_ENV=test nyc mocha --recursive --exit --timeout=10000 ./test",
+    "test": "cross-env NODE_ENV=test npm run lint && npm run lint:test && npm run jest",
     "test-windows": "npm test",
     "lint": "eslint ./src",
     "lint:test": "eslint ./test",
     "jest": "cross-env NODE_ENV=test jest --coverage --silent",
-    "debug": "cross-env NODE_ENV=test mocha --no-timeouts --require babel-register --inspect-brk --recursive --exit ./test",
     "show-coverage": "gulp show-coverage",
     "dist": "gulp dist",
     "prepare": "gulp dist"
