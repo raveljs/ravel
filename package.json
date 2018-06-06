@@ -49,7 +49,6 @@
     "transform": {
       "^.+\\.jsx?$": "babel-jest"
     },
-    "collectCoverage": true,
     "collectCoverageFrom": [
       "lib/**/*.{js}"
     ],
