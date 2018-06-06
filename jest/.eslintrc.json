@@ -10,10 +10,8 @@
     "require":    false,
     "module":     false,
     "jest":       false,
-    "mockery":    false,
-    "sinon":      false,
-    "upath":      false,
-    "Ravel":      false
+    "request":    false,
+    "upath":      false
   },
   "env": {
     "jest": true
