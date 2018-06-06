@@ -66,7 +66,7 @@
     "watch": "gulp watch",
     "test": "cross-env NODE_ENV=test npm run lint && npm run lint:test && npm run jest",
     "test-windows": "npm test",
-    "lint": "eslint ./src",
+    "lint": "eslint ./lib",
     "lint:test": "eslint ./test",
     "jest": "cross-env NODE_ENV=test jest --coverage --silent",
     "show-coverage": "gulp show-coverage",
