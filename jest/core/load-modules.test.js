@@ -8,7 +8,7 @@ describe('Ravel', () => {
     app.set('log level', app.log.NONE);
   });
   // Testing how Ravel loads modules
-  describe('scan', () => {
+  describe('load', () => {
     describe('@Module', () => {
       it('should register modules for instantiation and initialization in Ravel.init', async () => {
         const spy = jest.fn();
