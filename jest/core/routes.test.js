@@ -231,6 +231,96 @@ describe('Ravel', () => {
         expect(response.statusCode).toBe(200);
         expect(response.body).toEqual({id: 1});
       });
+
+      it('should support the use of @before at the method and class levels', async () => {
+        const middleware1 = async function (ctx, next) { ctx.body = {id: ctx.params.id}; await next(); };
+        const middleware2 = async function (ctx, next) { ctx.body.name = 'sean'; await next(); };
+
+        @Ravel.Routes('/api')
+        @Ravel.Routes.before('middleware1')
+        class Test {
+          constructor () {
+            this.middleware1 = middleware1;
+            this.middleware2 = middleware2;
+          }
+
+          @Ravel.Routes.mapping(Ravel.Routes.GET, '/test/:id')
+          @Ravel.Routes.before('middleware2')
+          async pathHandler (ctx) {
+            ctx.status = 200;
+          }
+        }
+        app.load(Test);
+        await app.init();
+
+        const response = await request(app.callback).get('/api/test/3');
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual({id: '3', name: 'sean'});
+      });
+
+      it('should support the use of @mapping without @before', async () => {
+        @Ravel.Routes('/api')
+        class Test {
+          @Ravel.Routes.mapping(Ravel.Routes.GET, '/test')
+          async pathHandler (ctx) {
+            ctx.status = 200;
+            ctx.body = {};
+          }
+
+          @Ravel.Routes.before('middleware2') // this should just be ignored, since @mapping isn't present
+          async ignoredHandler (ctx) {
+            ctx.status = 200;
+          }
+        }
+        app.load(Test);
+        await app.init();
+
+        const response = await request(app.callback).get('/api/test');
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual({});
+      });
+
+      it('should support the use of @mapping at the class level as well, to denote unsupported routes', async () => {
+        @Ravel.Routes('/api')
+        @Ravel.Routes.mapping(Ravel.Routes.GET, '/path') // should respond with NOT_IMPLEMENTED
+        @Ravel.Routes.mapping(Ravel.Routes.POST, '/another', 404) // should respond with 404
+        class Test {
+        }
+
+        app.load(Test);
+        await app.init();
+
+        let response = await request(app.callback).get('/api/path');
+        expect(response.statusCode).toBe(501);
+        response = await request(app.callback).post('/api/another');
+        expect(response.statusCode).toBe(404);
+      });
+    });
+
+    it('should support non-async handlers as well', async () => {
+      const middleware1 = async function (ctx, next) { await next(); };
+      const middleware2 = async function (ctx, next) { await next(); };
+
+      @Ravel.Routes('/api')
+      class Test {
+        constructor () {
+          this.middleware1 = middleware1;
+          this.middleware2 = middleware2;
+        }
+
+        @Ravel.Routes.mapping(Ravel.Routes.GET, '/test')
+        @Ravel.Routes.before('middleware1', 'middleware2')
+        pathHandler (ctx) {
+          ctx.status = 200;
+          ctx.body = {id: 3};
+        }
+      }
+      app.load(Test);
+      await app.init();
+
+      const response = await request(app.callback).get('/api/test');
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toEqual({id: 3});
     });
   });
 });
