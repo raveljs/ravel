@@ -17,6 +17,7 @@ describe('Ravel', () => {
     });
 
     it('should register a Module method as injectable middleware', () => {
+      @Ravel.Module('test')
       class Stub1 {
         @middleware('some-middleware')
         async someMiddleware () {}
@@ -25,7 +26,8 @@ describe('Ravel', () => {
     });
 
     it('should throw a DuplicateEntry error when middleware is registered with the same name as a module', async () => {
-      class Stub1 extends Ravel.Module {
+      @Ravel.Module('some-middleware')
+      class Stub1 {
         @middleware('some-middleware')
         async someMiddleware () {}
       }
