@@ -5,6 +5,7 @@ describe('Ravel', () => {
     beforeEach(() => {
       jest.resetModules();
       jest.restoreAllMocks();
+      jest.clearAllMocks();
       cacheSpy = jest.fn();
       cacheMiddleware = async (ctx, next) => {
         cacheSpy();

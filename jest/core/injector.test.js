@@ -3,6 +3,7 @@ describe('Ravel', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
     jest.resetModules();
+    jest.clearAllMocks();
 
     Module = require('../../lib/ravel').Module;
     Ravel = require('../../lib/ravel');
