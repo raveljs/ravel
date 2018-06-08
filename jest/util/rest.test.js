@@ -1,6 +1,5 @@
 const httpCodes = require('../../lib/util/http_codes');
 
-
 describe('util/rest', () => {
   let koaApp, ravelApp, rest;
   beforeEach(async () => {
