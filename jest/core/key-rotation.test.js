@@ -1,18 +1,10 @@
-'use strict';
-
-const chai = require('chai');
-const expect = chai.expect;
-chai.use(require('sinon-chai'));
-
 describe('Ravel KeyGrip Keys Rotation', () => {
-  before((done) => {
+  beforeEach(() => {
     process.removeAllListeners('unhandledRejection');
-    done();
   });
 
-  after((done) => {
+  afterEach(() => {
     process.removeAllListeners('unhandledRejection');
-    done();
   });
 
   describe('#rotateKeygripKey()', () => {
@@ -25,14 +17,14 @@ describe('Ravel KeyGrip Keys Rotation', () => {
       await app.init();
       const session = `${Math.random()}`;
       let sig = app.keys.sign(session);
-      expect(app.keys.verify(session, sig)).to.be.true;
-      expect(app.keys.index(session, sig)).to.equal(0);
+      expect(app.keys.verify(session, sig)).toBe(true);
+      expect(app.keys.index(session, sig)).toBe(0);
       app.rotateKeygripKey('three');
-      expect(app.keys.verify(session, sig)).to.be.true;
-      expect(app.keys.index(session, sig)).to.equal(1);
+      expect(app.keys.verify(session, sig)).toBe(true);
+      expect(app.keys.index(session, sig)).toBe(1);
       sig = app.keys.sign(session);
-      expect(app.keys.verify(session, sig)).to.be.true;
-      expect(app.keys.index(session, sig)).to.equal(0);
+      expect(app.keys.verify(session, sig)).toBe(true);
+      expect(app.keys.index(session, sig)).toBe(0);
     });
   });
 });
