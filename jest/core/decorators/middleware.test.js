@@ -31,7 +31,7 @@ describe('Ravel', () => {
         @middleware('some-middleware')
         async someMiddleware () {}
       }
-      expect((async () => {
+      await expect((async () => {
         app.load(Stub1);
         await app.init();
       })()).rejects.toThrow(app.ApplicationError.DuplicateEntry);

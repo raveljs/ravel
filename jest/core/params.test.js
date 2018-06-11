@@ -165,12 +165,12 @@ describe('Ravel', () => {
       jest.doMock(upath.join(app.cwd, '.ravelrc'), () => conf, {virtual: true});
 
       app.set('redis port', 6380);
-      expect(app.init()).rejects.toThrow(app.ApplicationError.IllegalValue);
+      await expect(app.init()).rejects.toThrow(app.ApplicationError.IllegalValue);
     });
 
     it('should throw a SyntaxError if a .ravelrc file is found but is malformed', async () => {
       jest.doMock(upath.join(app.cwd, '.ravelrc'), () => { throw new SyntaxError(); }, {virtual: true});
-      expect(app.init()).rejects.toThrow(SyntaxError);
+      await expect(app.init()).rejects.toThrow(SyntaxError);
     });
 
     describe('environment variable interpolation', () => {
@@ -211,7 +211,7 @@ describe('Ravel', () => {
           'redis url': 'redis://$REDIS_USER:$REDIS_PASSWORD@$REDIS_HOST:$REDIS_PORT'
         };
         jest.doMock(upath.join(app.cwd, '.ravelrc'), () => JSON.stringify(conf), {virtual: true});
-        expect(app.init()).rejects.toThrow(app.ApplicationError.IllegalValue);
+        await expect(app.init()).rejects.toThrow(app.ApplicationError.IllegalValue);
       });
     });
   });

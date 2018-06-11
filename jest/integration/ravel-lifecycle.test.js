@@ -167,8 +167,8 @@ describe('Ravel lifeycle test', () => {
   });
 
   describe('#listen()', () => {
-    it('should throw Ravel.ApplicationError.NotAllowed if called before init()', () => {
-      expect(app.listen()).rejects.toThrow(app.ApplicationError.NotAllowed);
+    it('should throw Ravel.ApplicationError.NotAllowed if called before init()', async () => {
+      await expect(app.listen()).rejects.toThrow(app.ApplicationError.NotAllowed);
     });
 
     it('should start the underlying HTTP server when called after init()', async () => {
@@ -204,8 +204,8 @@ describe('Ravel lifeycle test', () => {
   });
 
   describe('#close()', () => {
-    it('should be a no-op if the underlying HTTP server isn\'t listening', () => {
-      expect(app.close()).resolves;
+    it('should be a no-op if the underlying HTTP server isn\'t listening', async () => {
+      await expect(app.close()).resolves;
     });
 
     it('should stop the underlying HTTP server if the server is listening', async () => {

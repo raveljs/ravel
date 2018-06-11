@@ -106,7 +106,7 @@ describe('Ravel', () => {
         @Ravel.Module('stub1')
         class Stub1 {}
         app.load(Stub1);
-        expect(app.init()).rejects.toThrowError(app.ApplicationError.General);
+        await expect(app.init()).rejects.toThrowError(app.ApplicationError.General);
       });
 
       it('should instantiate modules in dependency order', async () => {
@@ -147,7 +147,7 @@ describe('Ravel', () => {
         expect(order).toEqual(expect.arrayContaining([1, 4, 2, 3]));
       });
 
-      it('should detect basic cyclical dependencies between client modules', () => {
+      it('should detect basic cyclical dependencies between client modules', async () => {
         @Ravel.inject('test2')
         @Ravel.Module('test')
         class Stub1 {}
@@ -155,10 +155,10 @@ describe('Ravel', () => {
         @Ravel.Module('test2')
         class Stub2 {}
         app.load(Stub1, Stub2);
-        expect(app.init()).rejects.toThrowError(app.ApplicationError.General);
+        await expect(app.init()).rejects.toThrowError(app.ApplicationError.General);
       });
 
-      it('should detect complex cyclical dependencies between client modules', () => {
+      it('should detect complex cyclical dependencies between client modules', async () => {
         @Ravel.Module('test')
         class Stub1 {}
         @Ravel.inject('test', 'test4')
@@ -171,7 +171,7 @@ describe('Ravel', () => {
         @Ravel.Module('test4')
         class Stub4 {}
         app.load(Stub1, Stub2, Stub3, Stub4);
-        expect(app.init()).rejects.toThrowError(app.ApplicationError.General);
+        await expect(app.init()).rejects.toThrowError(app.ApplicationError.General);
       });
 
       it('should load and instantiate modules which support dependency injection of npm modules', async () => {
@@ -204,12 +204,12 @@ describe('Ravel', () => {
         expect(app.module('test').badName).toEqual(someMock);
       });
 
-      it('should throw an ApplicationError.NotFound when a module attempts to inject an unknown module/npm dependency', () => {
+      it('should throw an ApplicationError.NotFound when a module attempts to inject an unknown module/npm dependency', async () => {
         @Ravel.Module('test')
         @Ravel.inject(`${Math.random()}`)
         class Stub1 {}
         app.load(Stub1);
-        expect(app.init()).rejects.toThrowError(app.ApplicationError.NotFound);
+        await expect(app.init()).rejects.toThrowError(app.ApplicationError.NotFound);
       });
 
       it('should perform dependency injection on module factories which works regardless of the order of specified dependencies', async () => {

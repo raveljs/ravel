@@ -51,9 +51,9 @@ describe('Ravel.Log', () => {
       expect(intel.setLevel).toHaveBeenCalledWith(intel.TRACE);
     });
 
-    it('should throw ApplicationError.IllegalValue when an unknown log level is specified', () => {
+    it('should throw ApplicationError.IllegalValue when an unknown log level is specified', async () => {
       app.set('log level', 'HIGHEST LOG LEVEL EVER');
-      expect(app.init()).rejects.toThrow(app.ApplicationError.IllegalValue);
+      await expect(app.init()).rejects.toThrow(app.ApplicationError.IllegalValue);
     });
   });
 

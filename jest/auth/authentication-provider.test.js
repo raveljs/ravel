@@ -51,8 +51,8 @@ describe('auth/authentication_provider', () => {
   });
 
   describe('#credentialToProfile()', () => {
-    it('should throw ravelApp.ApplicationError.NotImplemented, since this is a template', () => {
-      expect(provider.credentialToProfile()).rejects.toThrow(ravelApp.ApplicationError.NotImplemented);
+    it('should throw ravelApp.ApplicationError.NotImplemented, since this is a template', async () => {
+      await expect(provider.credentialToProfile()).rejects.toThrow(ravelApp.ApplicationError.NotImplemented);
     });
   });
 

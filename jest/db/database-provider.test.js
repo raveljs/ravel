@@ -31,13 +31,13 @@ describe('db/database_provider', () => {
 
   describe('#getTransactionConnection()', () => {
     it('should throw Ravel.ApplicationError.NotImplemented, since this is a template', async () => {
-      expect(provider.getTransactionConnection()).rejects.toThrow(app.ApplicationError.NotImplemented);
+      await expect(provider.getTransactionConnection()).rejects.toThrow(app.ApplicationError.NotImplemented);
     });
   });
 
   describe('#exitTransaction()', () => {
     it('should throw Ravel.ApplicationError.NotImplemented, since this is a template', async () => {
-      expect(provider.exitTransaction()).rejects.toThrow(app.ApplicationError.NotImplemented);
+      await expect(provider.exitTransaction()).rejects.toThrow(app.ApplicationError.NotImplemented);
     });
   });
 

@@ -214,7 +214,7 @@ describe('db/database', () => {
       }
       ravelApp.load(M);
       await ravelApp.init();
-      expect(ravelApp.module('test').method()).rejects.toThrow(Error);
+      await expect(ravelApp.module('test').method()).rejects.toThrow(Error);
     });
 
     it('should end all open transactions (close/commit connections) when inGen is finished executing', async () => {
@@ -288,7 +288,7 @@ describe('db/database', () => {
       }
       ravelApp.load(M);
       await ravelApp.init();
-      expect(ravelApp.module('test').method()).rejects.toThrow(Error);
+      await expect(ravelApp.module('test').method()).rejects.toThrow(Error);
       // wait a bit to check closers, since the method will reject the
       // second a connection-closer fails, but will still run the others afterwards.
       await new Promise((resolve) => setTimeout(resolve, 100));

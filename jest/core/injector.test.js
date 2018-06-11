@@ -62,7 +62,7 @@ describe('Ravel', () => {
       }
 
       app.load(Stub);
-      expect(app.init()).rejects.toThrow(app.ApplicationError.General);
+      await expect(app.init()).rejects.toThrow(app.ApplicationError.General);
     });
 
     it('should throw an ApplicationError.NotFound when attempting to inject an unknown module/npm dependency', async () => {
@@ -71,7 +71,7 @@ describe('Ravel', () => {
       class Stub {
       }
       app.load(Stub);
-      expect(app.init()).rejects.toThrow(app.ApplicationError.NotFound);
+      await expect(app.init()).rejects.toThrow(app.ApplicationError.NotFound);
     });
   });
 });

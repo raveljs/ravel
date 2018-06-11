@@ -15,7 +15,7 @@ describe('Ravel', () => {
       expect(Metadata.getClassMetaValue(Object.getPrototypeOf(instance), '@authconfig', 'enabled', false)).toBe(true);
     });
 
-    it('should add auth-related, stub prototype methods to a module if they are not already present', () => {
+    it('should add auth-related, stub prototype methods to a module if they are not already present', async () => {
       @authconfig
       class Stub {}
       const instance = new Stub();
@@ -23,13 +23,13 @@ describe('Ravel', () => {
       expect(typeof instance.deserializeUser).toBe('function');
       expect(typeof instance.deserializeOrCreateUser).toBe('function');
       expect(typeof instance.verify).toBe('function');
-      expect(instance.serializeUser()).rejects.toThrow(ApplicationError.NotImplemented);
-      expect(instance.deserializeUser()).rejects.toThrow(ApplicationError.NotImplemented);
-      expect(instance.deserializeOrCreateUser()).rejects.toThrow(ApplicationError.NotImplemented);
-      expect(instance.verify()).rejects.toThrow(ApplicationError.NotImplemented);
+      await expect(instance.serializeUser()).rejects.toThrow(ApplicationError.NotImplemented);
+      await expect(instance.deserializeUser()).rejects.toThrow(ApplicationError.NotImplemented);
+      await expect(instance.deserializeOrCreateUser()).rejects.toThrow(ApplicationError.NotImplemented);
+      await expect(instance.verify()).rejects.toThrow(ApplicationError.NotImplemented);
     });
 
-    it('should retain an existing implementation of serializeUser()', () => {
+    it('should retain an existing implementation of serializeUser()', async () => {
       @authconfig
       class Stub {
         serializeUser (user) {
@@ -41,13 +41,13 @@ describe('Ravel', () => {
       expect(typeof instance.deserializeUser).toBe('function');
       expect(typeof instance.deserializeOrCreateUser).toBe('function');
       expect(typeof instance.verify).toBe('function');
-      expect(instance.serializeUser({id: 12})).resolves.toBe(12);
-      expect(instance.deserializeUser()).rejects.toThrow(ApplicationError.NotImplemented);
-      expect(instance.deserializeOrCreateUser()).rejects.toThrow(ApplicationError.NotImplemented);
-      expect(instance.verify()).rejects.toThrow(ApplicationError.NotImplemented);
+      await expect(instance.serializeUser({id: 12})).resolves.toBe(12);
+      await expect(instance.deserializeUser()).rejects.toThrow(ApplicationError.NotImplemented);
+      await expect(instance.deserializeOrCreateUser()).rejects.toThrow(ApplicationError.NotImplemented);
+      await expect(instance.verify()).rejects.toThrow(ApplicationError.NotImplemented);
     });
 
-    it('should retain an existing implementation of deserializeUser()', () => {
+    it('should retain an existing implementation of deserializeUser()', async () => {
       @authconfig
       class Stub {
         deserializeUser () {
@@ -59,13 +59,13 @@ describe('Ravel', () => {
       expect(typeof instance.deserializeUser).toBe('function');
       expect(typeof instance.deserializeOrCreateUser).toBe('function');
       expect(typeof instance.verify).toBe('function');
-      expect(instance.serializeUser()).rejects.toThrow(ApplicationError.NotImplemented);
-      expect(instance.deserializeUser()).resolves.toEqual({});
-      expect(instance.deserializeOrCreateUser()).rejects.toThrow(ApplicationError.NotImplemented);
-      expect(instance.verify()).rejects.toThrow(ApplicationError.NotImplemented);
+      await expect(instance.serializeUser()).rejects.toThrow(ApplicationError.NotImplemented);
+      await expect(instance.deserializeUser()).resolves.toEqual({});
+      await expect(instance.deserializeOrCreateUser()).rejects.toThrow(ApplicationError.NotImplemented);
+      await expect(instance.verify()).rejects.toThrow(ApplicationError.NotImplemented);
     });
 
-    it('should retain an existing implementation of deserializeOrCreateUser()', () => {
+    it('should retain an existing implementation of deserializeOrCreateUser()', async () => {
       @authconfig
       class Stub {
         deserializeOrCreateUser () {
@@ -77,13 +77,13 @@ describe('Ravel', () => {
       expect(typeof instance.deserializeUser).toBe('function');
       expect(typeof instance.deserializeOrCreateUser).toBe('function');
       expect(typeof instance.verify).toBe('function');
-      expect(instance.serializeUser()).rejects.toThrow(ApplicationError.NotImplemented);
-      expect(instance.deserializeUser()).rejects.toThrow(ApplicationError.NotImplemented);
-      expect(instance.deserializeOrCreateUser()).resolves.toEqual({});
-      expect(instance.verify()).rejects.toThrow(ApplicationError.NotImplemented);
+      await expect(instance.serializeUser()).rejects.toThrow(ApplicationError.NotImplemented);
+      await expect(instance.deserializeUser()).rejects.toThrow(ApplicationError.NotImplemented);
+      await expect(instance.deserializeOrCreateUser()).resolves.toEqual({});
+      await expect(instance.verify()).rejects.toThrow(ApplicationError.NotImplemented);
     });
 
-    it('should retain an existing implementation of verify()', () => {
+    it('should retain an existing implementation of verify()', async () => {
       @authconfig
       class Stub {
         verify () {
@@ -95,10 +95,10 @@ describe('Ravel', () => {
       expect(typeof instance.deserializeUser).toBe('function');
       expect(typeof instance.deserializeOrCreateUser).toBe('function');
       expect(typeof instance.verify).toBe('function');
-      expect(instance.serializeUser()).rejects.toThrow(ApplicationError.NotImplemented);
-      expect(instance.deserializeUser()).rejects.toThrow(ApplicationError.NotImplemented);
-      expect(instance.deserializeOrCreateUser()).rejects.toThrow(ApplicationError.NotImplemented);
-      expect(instance.verify()).resolves.toEqual({});
+      await expect(instance.serializeUser()).rejects.toThrow(ApplicationError.NotImplemented);
+      await expect(instance.deserializeUser()).rejects.toThrow(ApplicationError.NotImplemented);
+      await expect(instance.deserializeOrCreateUser()).rejects.toThrow(ApplicationError.NotImplemented);
+      await expect(instance.verify()).resolves.toEqual({});
     });
   });
 });

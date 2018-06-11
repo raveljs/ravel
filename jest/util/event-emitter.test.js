@@ -81,7 +81,7 @@ describe('Ravel', () => {
       });
 
       it('should be safe to call on events which do not exist', async () => {
-        expect(emitter.emit('someevent')).resolves;
+        await expect(emitter.emit('someevent')).resolves;
       });
     });
 
