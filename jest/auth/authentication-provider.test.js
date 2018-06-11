@@ -3,8 +3,7 @@ describe('auth/authentication_provider', () => {
   beforeEach(() => {
     Ravel = require('../../lib/ravel');
     ravelApp = new Ravel();
-    ravelApp.set('log level', ravelApp.log.NONE);
-    ravelApp.set('keygrip keys', ['abc']);
+    ravelApp.log.setLevel(ravelApp.log.NONE); // because we won't init
     class TestProvider extends Ravel.AuthenticationProvider {
       get name () {
         return 'test';
@@ -14,7 +13,7 @@ describe('auth/authentication_provider', () => {
   });
 
   describe('constructor', () => {
-    it('should allow clients to implement an authentication provider which has a name and several methods', () => {
+    it('should allow clients to implement an authentication provider which has a name and several methods', async () => {
       class GoogleOAuth2 extends Ravel.AuthenticationProvider {
         get name () {
           return 'google-oauth2';
@@ -64,7 +63,7 @@ describe('auth/authentication_provider', () => {
       expect(ravelApp.authenticationProviders().length).toBe(0);
     });
 
-    it('should return an Array of registered AuthorizationProviders', () => {
+    it('should return an Array of registered AuthorizationProviders', async () => {
       class GoogleOAuth2 extends Ravel.AuthenticationProvider {
         get name () {
           return 'google-oauth2';
