@@ -64,4 +64,6 @@ toc:
     description: |
       Built-in error types are automatically translated into standard HTTP response status codes when thrown.
   - ApplicationError
+  - name: Testing Ravel Apps
+    file: docs/testing.md
   - name: Other Stuff

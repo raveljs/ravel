@@ -1,3 +1,6 @@
+const Ravel = require('../../lib/ravel');
+const Metadata = require('../../lib/util/meta');
+
 describe('Ravel', () => {
   beforeEach(() => {
     jest.resetModules();
@@ -17,15 +20,22 @@ describe('Ravel', () => {
         };
       });
       const app = new (require('../../lib/ravel'))();
-      const m1 = class {};
-      const m2 = class {};
-      const m3 = class {};
-      jest.doMock(upath.join(app.cwd, './modules/test1.js'), () => m1, {virtual: true});
-      jest.doMock(upath.join(app.cwd, './modules/test2.js'), () => m2, {virtual: true});
-      jest.doMock(upath.join(app.cwd, './modules/package/test3.js'), () => m3, {virtual: true});
+      @Ravel.Module
+      class M1 {}
+      @Ravel.Module('hello')
+      class M2 {}
+      @Ravel.Module
+      class M3 {}
+      jest.doMock(upath.join(app.cwd, './modules/test1.js'), () => M1, {virtual: true});
+      jest.doMock(upath.join(app.cwd, './modules/test2.js'), () => M2, {virtual: true});
+      jest.doMock(upath.join(app.cwd, './modules/package/test3.js'), () => M3, {virtual: true});
       app.load = jest.fn();
       app.scan('./modules');
-      expect(app.load).toHaveBeenCalledWith(m1, m2, m3);
+      expect(app.load).toHaveBeenCalledWith(M1, M2, M3);
+      // ensure that names are inferred/used appropriately
+      expect(Metadata.getClassMetaValue(M1.prototype, '@role', 'name')).toBe('test1');
+      expect(Metadata.getClassMetaValue(M2.prototype, '@role', 'name')).toBe('hello');
+      expect(Metadata.getClassMetaValue(M3.prototype, '@role', 'name')).toBe('package.test3');
     });
   });
 });
