@@ -107,12 +107,13 @@ class MissingCityError extends Error {
 /**
  * Our main Module, defining logic for working with Cities
  */
-@inject('moment')
+@inject('moment', '$log')
 @Module('cities')
 class Cities {
-  constructor (moment) {
+  constructor (moment, $log) {
     super();
     this.moment = moment;
+    this.$log = $log
     this.cities = ['Toronto', 'New York', 'Chicago']; // our fake 'database'
   }
 
@@ -127,7 +128,7 @@ class Cities {
         resolve(this.cities[index]);
       } else {
         // Ravel will automatically respond with the appropriate HTTP status code!
-        this.log.warn(`User requested unknown city ${name}`);
+        this.$log.warn(`User requested unknown city ${name}`);
         reject(new MissingCityError(name));
       }
     });
@@ -236,9 +237,9 @@ const app = new require('ravel')();
 // parameters like this can be supplied via a .ravelrc.json file
 app.set('keygrip keys', ['mysecret', 'anothersecret']);
 
-app.modules('./modules'); //import all Modules from a directory
-app.resources('./resources');  //import all Resources from a directory
-app.routes('./routes/index.js');  //import all Routes from a file
+app.scan('./modules'); //import all Modules from a directory
+app.scan('./resources');  //import all Resources from a directory
+app.scan('./routes/index.js');  //import all Routes from a file
 
 // start it up!
 app.start();
@@ -503,27 +504,16 @@ class MyModule {
 module.exports = MyModule;
 ```
 
-The injection name of `another-module` comes from its filename, and can be overriden in `app.js`:
+The injection name of `another-module` is inferred from its filename, but can be overriden via the `@Module('custom-name')` decorator.
 
-*app.js*
-```js
-// ...
-const app = new Ravel();
-// the first argument is the path to the module file.
-// the second is the name you assign for dependency injection.
-app.module('./modules/my-module', 'my-module');
-app.module('./modules/another-module', 'another-module');
-// assigning names manually becomes tedious fast, so Ravel can
-// infer the names from the names of your files when you use
-// app.modules to scan a directory:
-app.modules('./modules'); // this would register modules with the same names as above
-```
+If runnning `app.scan('./modules')`:
+- `'./modules/my-module'` will be injectable as `'my-module'`
+- `'./modules/another-module'` will be injectable as `'another-module'`
+- `'./modules/package/another-module'` will be injectable as `'package.another-module'`
 
 `Module`s are singletons which are instantiated in *dependency-order* (i.e. if `A` depends on `B`, `B` is guaranteed to be constructed first). Cyclical dependencies are detected automatically and result in an `Error`.
 
-`app.module`, `app.modules` and `@inject` also work on files exporting plain classes which do not extend `Ravel.Module`. This makes it easier to create and/or use simple, plain classes which do not need access to the full Ravel framework (i.e. `this.log`, `this.ApplicationError`, etc.).
-
-To further simplify working with imports in Ravel, you can `@inject` core `node` modules and `npm` dependencies (installed in your local `node_modules` or globally) alongside your own `Module`s:
+To further simplify working with imports in Ravel, you can `@inject` Ravel services, the core node API, and `npm` dependencies (installed in your local `node_modules` or globally) alongside your own `Module`s:
 
 ```js
 const Ravel = require('ravel');
@@ -531,9 +521,9 @@ const inject = Ravel.inject;
 const Module = Ravel.Module;
 
 @Module('mymodule')
-@inject('another-module', 'path', 'moment') // anything that can be require()d can be @injected
+@inject('another-module', 'fs', 'moment', '$err') // anything that can be require()d can be @injected
 class MyModule {
-  constructor (another, path, moment) {
+  constructor (another, fs, moment, $err) {
     super();
     // ...
   }
@@ -555,18 +545,18 @@ modules/
     my-module.js
 ```
 
-Then, import the `Module` directory as before, using `app.modules()`:
+Then, import the `Module` directory as before, using `app.scan()`:
 
 *app.js*
 ```js
 // ...
 const app = new Ravel();
-app.modules('./modules');
+app.scan('./modules');
 // core/my-module can now be injected using @inject(core.my-module)!
 // util/my-module can now be injected using @inject(util.my-module)!
 ```
 
-> Essentially, Ravel ignores the path you pass to `app.modules()` and uses any remaining path components to namespace `Module`s.
+> Essentially, Ravel ignores the path you pass to `app.scan()` and uses any remaining path components to namespace `Module`s.
 
 #### Lifecycle Decorators
 > [<small>View API docs &#128366;</small>](http://raveljs.github.io/docs/latest/index.html#Module.postinit)
@@ -644,14 +634,13 @@ module.exports = MyRoutes;
 
 #### Registering Routes
 
-Much like `Module`s, `Routes` can be added to your Ravel application via `app.routes('path/to/routes')`:
+Much like `Module`s, `Routes` can be added to your Ravel application via `app.scan('path/to/routes')`:
 
 *app.js*
 ```js
 // ...
 const app = new Ravel();
-// you must add routes one at a time. Directory scanning is not supported.
-app.routes('./routes/my-routes');
+app.scan('./routes');
 ```
 
 ### Ravel.Resource
@@ -713,14 +702,14 @@ module.exports = PersonResource;
 #### Registering Resources
 > [<small>View API docs &#128366;</small>](http://raveljs.github.io/docs/latest/index.html#Ravel#resources)
 
-Much like `Module`s, `Resource`s can be added to your Ravel application via `app.resources('path/to/resources/directory')`:
+Much like `Module`s, `Resource`s can be added to your Ravel application via `app.scan('path/to/resources/directory')`:
 
 *app.js*
 ```js
 // ...
 const app = new Ravel();
 // directory scanning!
-app.resources('./resources');
+app.scan('./resources');
 ```
 
 ### Response Caching
@@ -856,17 +845,22 @@ Sometimes, you may need to open a transaction outside of a code path triggered b
 *modules/database-initializer.js*
 ```js
 const Module = require('ravel').Module;
+const inject = require('ravel').inject;
 const prelisten = Module.prelisten;
 
 @Module('db-init')
+@inject('$db')
 class DatabaseInitializer {
+  constructor($db) {
+    this.$db = $db;
+  }
 
   @prelisten // trigger db init on application startup
   doDbInit (ctx) {
     const self = this;
     // specify one or more providers to open connections to, or none
     // to open connections to all known DatabaseProviders.
-    this.db.scoped('mysql', async function (ctx) {
+    this.$db.scoped('mysql', async function (ctx) {
       // this async function behaves like koa middleware,
       // so feel free to await on promises!
       await self.createTables(ctx.transaction.mysql);
