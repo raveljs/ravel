@@ -53,16 +53,19 @@ describe('Authentication Integration Test', () => {
         }
 
         handlesClient (client) {
-          return client === 'local';
+          return client === 'local' || client === 'token';
         }
 
         credentialToProfile (session, client) {
           return new Promise((resolve, reject) => {
-            if (client === 'local') {
-              reject(new Ravel.ApplicationError.NotImplemented(
-                'TODO: Implement credentialToProfile in LocalProvider for mobile client support.'));
+            if (client === 'token') {
+              if (session === '123456789') {
+                return resolve({expiry: 60, profile: profile});
+              } else {
+                return reject(new Ravel.ApplicationError.Authentication('Incorrect API token'));
+              }
             } else {
-              reject(new Ravel.ApplicationError.IllegalValue(`LocalProvider does not handle clients of type ${client}`));
+              return reject(new Ravel.ApplicationError.IllegalValue(`LocalProvider does not support token auth for clients of type ${client}`));
             }
           });
         }
@@ -149,9 +152,25 @@ describe('Authentication Integration Test', () => {
         .expect(401);
     });
 
-    it('should reject users on an @authenticated route', async () => {
+    it('should reject unauthenticated users on an @authenticated route', async () => {
       await request(app.callback)
         .get('/app')
+        .expect(401);
+    });
+
+    it('should reject tokenauth users on an @authenticated route when they have the wrong token', async () => {
+      await request(app.callback)
+        .get('/app')
+        .set('x-auth-token', 'bad-token')
+        .set('x-auth-client', 'token')
+        .expect(401);
+    });
+
+    it('should reject tokenauth users on an @authenticated route when their client type is not supported', async () => {
+      await request(app.callback)
+        .get('/app')
+        .set('x-auth-token', '123456789')
+        .set('x-auth-client', 'bad-type')
         .expect(401);
     });
 
@@ -172,6 +191,15 @@ describe('Authentication Integration Test', () => {
       await agent
         .get('/app')
         .set('Cookie', cookies)
+        .expect(200, '<!DOCTYPE html><html></html>');
+    });
+
+    it('should allow access to token-authenticated users on @authenticated routes', async () => {
+      const agent = request.agent(app.server);
+      await agent
+        .get('/app')
+        .set('x-auth-token', '123456789')
+        .set('x-auth-client', 'token')
         .expect(200, '<!DOCTYPE html><html></html>');
     });
 
