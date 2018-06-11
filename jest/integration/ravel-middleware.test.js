@@ -1,8 +1,5 @@
 describe('Ravel end-to-end middleware test', () => {
   let app;
-  beforeEach(() => {
-    process.removeAllListeners('unhandledRejection');
-  });
 
   describe('basic application server consisting of routes', () => {
     beforeEach(async () => {

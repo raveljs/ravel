@@ -1,61 +1,32 @@
-'use strict';
-
-const chai = require('chai');
-const expect = chai.expect;
-chai.use(require('chai-things'));
-chai.use(require('chai-as-promised'));
-const mockery = require('mockery');
-const upath = require('upath');
-const request = require('supertest');
-// const sinon = require('sinon')
-// chai.use(require('sinon-chai'))
-
-let app, agent;
-
-const u = [{id: 1, name: 'Joe'}, {id: 2, name: 'Jane'}];
-
 describe('Ravel end-to-end test', () => {
-  before((done) => {
-    process.removeAllListeners('unhandledRejection');
-    // enable mockery
-    mockery.enable({
-      useCleanCache: true,
-      warnOnReplace: false,
-      warnOnUnregistered: false
-    });
-    done();
-  });
-
-  after((done) => {
-    process.removeAllListeners('unhandledRejection');
-    mockery.deregisterAll();
-    mockery.disable();
-    done();
-  });
+  let app;
+  const u = [{id: 1, name: 'Joe'}, {id: 2, name: 'Jane'}];
 
   describe('#init()', () => {
-    describe('uncaught ES6 Promise errors logging', () => {
-      it('should log unhandled erors within Promises', async () => {
-        const Ravel = require('../../lib/ravel');
-        app = new Ravel();
-        app.set('log level', app.log.NONE);
-        app.set('keygrip keys', ['mysecret']);
-        app.set('port', '9080');
-        await app.init();
-        for (let i = 0; i < 5; i++) {
-          Promise.resolve('promised value').then(() => {
-            throw new Error('error');
-          });
-          Promise.resolve('promised value').then(() => {
-            throw undefined; // eslint-disable-line no-throw-literal
-          });
-        }
-        // TODO actually test that logging occurred
-      });
-    });
+    // describe('uncaught ES6 Promise errors logging', () => {
+    // can't test this in Jest
+    //   it('should log unhandled erors within Promises', async () => {
+    //     const Ravel = require('../../lib/ravel');
+    //     app = new Ravel();
+    //     app.set('log level', app.log.ERROR);
+    //     app.set('keygrip keys', ['mysecret']);
+    //     await app.init();
+    //     const spy = jest.spyOn(app.log, 'error');
+    //     for (let i = 0; i < 5; i++) {
+    //       Promise.resolve('promised value').then(() => {
+    //         throw new Error('error');
+    //       });
+    //       Promise.resolve('promised value').then(() => {
+    //         throw undefined; // eslint-disable-line no-throw-literal
+    //       });
+    //     }
+    //     await new Promise((resolve) => setTimeout(resolve, 10));
+    //     expect(spy).toHaveBeenCalled();
+    //   });
+    // });
 
     describe('basic application server consisting of a module and a resource', () => {
-      before(async () => {
+      beforeEach(async () => {
         const Ravel = require('../../lib/ravel');
         const httpCodes = require('../../lib/util/http_codes');
         const ApplicationError = require('../../lib/util/application_error');
@@ -63,7 +34,13 @@ describe('Ravel end-to-end test', () => {
 
         // stub Module (business logic container)
         const middleware = Ravel.Module.middleware;
-        class Users extends Ravel.Module {
+        @Ravel.Module('users')
+        @inject('$err')
+        class Users {
+          constructor ($err) {
+            this.$err = $err;
+          }
+
           getAllUsers () {
             return Promise.resolve(u);
           }
@@ -72,7 +49,7 @@ describe('Ravel end-to-end test', () => {
             if (userId < u.length) {
               return Promise.resolve(u[userId - 1]);
             } else {
-              return Promise.reject(new this.ApplicationError.NotFound('User id=' + userId + ' does not exist!'));
+              return Promise.reject(new this.$err.NotFound('User id=' + userId + ' does not exist!'));
             }
           }
 
@@ -83,11 +60,12 @@ describe('Ravel end-to-end test', () => {
         // stub Resource (REST interface)
         // have to alias to @pre instead of proper @before, since the latter clashes with mocha
         const pre = Ravel.Resource.before;
-        @inject('users')
-        class UsersResource extends Ravel.Resource {
-          constructor (users) {
-            super('/api/user');
+        @inject('users', '$err')
+        @Ravel.Resource('/api/user')
+        class UsersResource {
+          constructor (users, $err) {
             this.users = users;
+            this.$err = $err;
           }
 
           @pre('some-middleware')
@@ -107,19 +85,16 @@ describe('Ravel end-to-end test', () => {
 
           @pre('some-middleware')
           async post () {
-            throw new this.ApplicationError.DuplicateEntry();
+            throw new this.$err.DuplicateEntry();
           }
         }
 
         // stub Routes (miscellaneous routes, such as templated HTML content)
         const mapping = Ravel.Routes.mapping;
 
+        @Ravel.Routes('/')
         @mapping(Ravel.Routes.DELETE, '/app', Ravel.httpCodes.NOT_IMPLEMENTED)
-        class TestRoutes extends Ravel.Routes {
-          constructor () {
-            super('/');
-          }
-
+        class TestRoutes {
           @mapping(Ravel.Routes.GET, '/app')
           async appHandler (ctx) {
             ctx.body = '<!DOCTYPE html><html></html>';
@@ -136,73 +111,59 @@ describe('Ravel end-to-end test', () => {
         }
 
         app = new Ravel();
-        expect(Ravel).to.have.a.property('httpCodes').that.deep.equals(httpCodes);
-        expect(Ravel).to.have.a.property('Error').that.deep.equals(ApplicationError.General);
+        expect(Ravel.httpCodes).toBe(httpCodes);
+        expect(Ravel.Error).toBe(ApplicationError.General);
         app.set('log level', app.log.NONE);
-        app.set('port', '9080');
-        app.set('koa public directory', 'public');
         app.set('keygrip keys', ['mysecret']);
 
-        mockery.registerMock(upath.join(app.cwd, 'users'), Users);
-        app.module('users', 'users');
-        mockery.registerMock(upath.join(app.cwd, 'usersResource'), UsersResource);
-        app.resource('usersResource');
-        mockery.registerMock(upath.join(app.cwd, 'routes'), TestRoutes);
-        app.routes('routes');
+        app.load(Users, UsersResource, TestRoutes);
         await app.init();
-
-        agent = request.agent(app.server);
-      });
-
-      after((done) => {
-        app = undefined;
-        done();
       });
 
       it('should respond with the list of registered users', (done) => {
-        agent
+        request(app.callback)
           .get('/api/user')
           .expect(200, JSON.stringify(u))
           .end(done);
       });
 
       it('should respond with a single existing user', (done) => {
-        agent
+        request(app.callback)
           .get('/api/user/1')
           .expect(200, JSON.stringify(u[0]))
           .end(done);
       });
 
       it('should respond with HTTP 404 NOT FOUND for non-existent users', (done) => {
-        agent
+        request(app.callback)
           .get('/api/user/3')
           .expect(404)
           .end(done);
       });
 
       it('should respond with CONFLICT 409 for POST users', (done) => {
-        agent
+        request(app.callback)
           .post('/api/user')
           .expect(409)
           .end(done);
       });
 
       it('should respond with html on the route GET /app', (done) => {
-        agent
+        request(app.callback)
           .get('/app')
           .expect(200, '<!DOCTYPE html><html></html>')
           .end(done);
       });
 
       it('should respond with NOT_IMPLEMENTED 501 on the route DELETE /app', (done) => {
-        agent
+        request(app.callback)
           .delete('/app')
           .expect(501)
           .end(done);
       });
 
       it('should respond with html on the route /login', (done) => {
-        agent
+        request(app.callback)
           .get('/login')
           .expect(200, '<!DOCTYPE html><html><head><title>login</title></head></html>')
           .end(done);
