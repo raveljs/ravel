@@ -108,7 +108,8 @@ class MissingCityError extends Error {
  * Our main Module, defining logic for working with Cities
  */
 @inject('moment')
-class Cities extends Module {
+@Module('cities')
+class Cities {
   constructor (moment) {
     super();
     this.moment = moment;
@@ -151,10 +152,10 @@ const inject = Ravel.inject;
 const before = Routes.before; // decorator to add middleware to an endpoint within the Routes
 const mapping = Routes.mapping; // decorator to associate a handler method with an endpoint
 
+@Routes('/') // base path for all routes in this class. Will be prepended to the @mapping.
 @inject('middleware1') // middleware from NPM, or your own modules, etc.
-class ExampleRoutes extends Routes {
+class ExampleRoutes {
   constructor (middleware1) {
-    super('/'); // base path for all routes in this class. Will be prepended to the @mapping.
     this.middleware1 = middleware1;
     // you can also build middleware right here!
     this.middleware2 = async function (next) {
@@ -193,9 +194,9 @@ const before = Resource.before; // decorator to add middleware to an endpoint wi
 
 // using @before at the class level decorates all endpoint methods with middleware
 @inject('cities')
-class CitiesResource extends Resource {
+@Resource('/cities') // base path for all routes in this Resource
+class CitiesResource {
   constructor (cities) {
-    super('/cities'); //base path
     this.cities = cities;
 
     // some other middleware, which you might have injected from a Module or created here
@@ -451,8 +452,9 @@ const inject = Ravel.inject; // Ravel's dependency injection decorator
 const Module = Ravel.Module; // base class for Ravel Modules
 
 // inject a custom ravel Module (or your plain classes) beside npm dependencies!
+@Module('mymodule')
 @inject('path', 'fs', 'custom-module', 'plain-class')
-class MyModule extends Module {
+class MyModule {
   constructor (path, fs, custom, plain) { // @inject'd modules are available here as parameters
     super();
     this.path = path;
@@ -490,8 +492,9 @@ const Ravel = require('ravel');
 const inject = Ravel.inject;
 const Module = Ravel.Module;
 
+@Module('mymodule')
 @inject('another-module') // inject another Module from your project without require()!
-class MyModule extends Module {
+class MyModule {
   constructor (another) { // @inject'd modules are available here as parameters
     super();
     this.another = another;
@@ -527,8 +530,9 @@ const Ravel = require('ravel');
 const inject = Ravel.inject;
 const Module = Ravel.Module;
 
+@Module('mymodule')
 @inject('another-module', 'path', 'moment') // anything that can be require()d can be @injected
-class MyModule extends Module {
+class MyModule {
   constructor (another, path, moment) {
     super();
     // ...
@@ -574,7 +578,8 @@ const Ravel = require('ravel');
 const Module = Ravel.Module;
 const prelisten = Module.prelisten;
 
-class MyInitModule extends Module {
+@Module('init-module')
+class MyInitModule {
   // ...
   @prelisten
   initDBTables () {
@@ -611,12 +616,12 @@ const before = Routes.before;   // Ravel decorator for conneting middleware to a
 
 // you can inject your own Modules and npm dependencies into Routes
 @inject('koa-bodyparser', 'fs', 'custom-module')
-class MyRoutes extends Routes {
+@Routes('/') // base path for all routes in this class
+class MyRoutes {
   // The constructor for a `Routes` class must call `super()` with the base
   // path for all routes within that class. Koa path parameters such as
   // :something are supported.
   constructor (bodyParser, fs, custom) {
-    super('/'); // base path for all routes in this class
     this.bodyParser = bodyParser(); // make bodyParser middleware available
     this.fs = fs;
     this.custom = custom;
@@ -664,9 +669,9 @@ const before = Routes.before;
 
 // you can inject your own Modules and npm dependencies into Resources
 @inject('koa-bodyparser', 'fs', 'custom-module')
-class PersonResource extends Resource {
+@Resource('/person') // base path for all routes in this class
+class PersonResource {
   constructor(convert, bodyParser, fs, custom) {
-    super('/person'); // base path for all routes in this class
     this.bodyParser = bodyParser(); // make bodyParser middleware available
     this.fs = fs;
     this.custom = custom;
@@ -728,11 +733,8 @@ const Routes = require('ravel').Routes;
 const mapping = Routes.mapping;
 const cache = Routes.cache;
 
-class MyRoutes extends Routes {
-  constructor () {
-    super('/');
-  }
-
+@Routes('/')
+class MyRoutes {
   @cache // method-level version only applies to this route
   @mapping(Routes.GET, '/projects/:id')
   async handler (ctx) {
@@ -752,9 +754,9 @@ const cache = Resource.cache;
 // class-level version applies to all routes in class, overriding any
 // method-level instances of the decorator.
 @cache({expire:60, maxLength: 100}) // expire is measured in seconds. maxLength in bytes.
-class MyResource extends Resource {
+@Resource('/')
+class MyResource {
   constructor (bodyParser) {
-    super('/');
     this.bodyParser = bodyParser();
   }
 
@@ -826,11 +828,8 @@ Connections are available within the handler method as an object `ctx.transactio
 const Resource = require('ravel').Resource;
 const transaction = Resource.transaction;
 
-class PersonResource extends Resource {
-  constructor (bodyParser, fs, custom) {
-    super('/person');
-  }
-
+@Resource('/person')
+class PersonResource {
   // maps to GET /person/:id
   @transaction('mysql') // this is the name exposed by ravel-mysql-provider
   async get (ctx) {
@@ -859,7 +858,8 @@ Sometimes, you may need to open a transaction outside of a code path triggered b
 const Module = require('ravel').Module;
 const prelisten = Module.prelisten;
 
-class DatabaseInitializer extends Module {
+@Module('db-init')
+class DatabaseInitializer {
 
   @prelisten // trigger db init on application startup
   doDbInit (ctx) {
@@ -938,8 +938,9 @@ const Module = Ravel.Module;
 const authconfig = Module.authconfig;
 
 @authconfig
+@Module('authconfig')
 @inject('user-profiles')
-class AuthConfig extends Module {
+class AuthConfig {
   constructor (userProfiles) {
     this.userProfiles = userProfiles;
   }
@@ -986,11 +987,8 @@ const mapping = Routes.mapping;
 const authenticated = Routes.authenticated;
 
 @authenticated // protect all endpoints in this Routes class
-class MyRoutes extends Routes {
-  constructor () {
-    super('/');
-  }
-
+@Routes('/')
+class MyRoutes {
   @authenticated({redirect: true}) // protect one endpoint specifically
   @mapping(Routes.GET, 'app')
   async handler (ctx) {
