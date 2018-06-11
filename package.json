@@ -57,7 +57,15 @@
       "lcov",
       "text",
       "html"
-    ]
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 90,
+        "functions": 90,
+        "lines": 90,
+        "statements": 90
+      }
+    }
   },
   "scripts": {
     "clean": "gulp clean",
