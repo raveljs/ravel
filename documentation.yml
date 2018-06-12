@@ -49,6 +49,7 @@ toc:
   - inject
   - name: Core Services
   - Services
+  - HTTPCodes
   - name: Routing and Middleware
   - mapping
   - before
@@ -69,4 +70,3 @@ toc:
   - ApplicationError
   - name: Testing Ravel Applications
     file: docs/testing.md
-  - name: Other Stuff
