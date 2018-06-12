@@ -47,9 +47,12 @@ toc:
   - Resource
   - name: Dependency Injection
   - inject
+  - name: Core Services
+  - Services
   - name: Routing and Middleware
   - mapping
   - before
+  - cache
   - name: Databases and Transaction-Per-Request
   - transaction
   - TransactionFactory
