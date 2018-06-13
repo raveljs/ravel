@@ -882,7 +882,7 @@ module.exports = PersonResource;
 ### Scoped Transactions
 > [<small>View API docs &#128366;</small>](http://raveljs.github.io/docs/latest/index.html#Module#db)
 
-Sometimes, you may need to open a transaction outside of a code path triggered by an HTTP request. Good examples of this might include database initialization at application start-time, or logic triggered by a websocket connection. In these cases, a `Module` class can open a `scoped` transaction using the names of the DatabaseProviders you are interested in, and an `async` function (scope) in which to use the connections. Scoped transactions only exist for the scope of the `async` function and are automatically cleaned up at the end of the function. It is best to view `Module.db.scoped()` as an identical mechanism to `@transaction`, behaving in exactly the same way, with a slightly different API:
+Sometimes, you may need to open a transaction outside of a code path triggered by an HTTP request. Good examples of this might include database initialization at application start-time, or logic triggered by a websocket connection. In these cases, a `Module` class can open a `scoped` transaction using the names of the DatabaseProviders you are interested in, and an `async` function (scope) in which to use the connections. Scoped transactions only exist for the scope of the `async` function and are automatically cleaned up at the end of the function. It is best to view `Module.$db.scoped()` as an identical mechanism to `@transaction`, behaving in exactly the same way, with a slightly different API:
 
 *modules/database-initializer.js*
 ```js
