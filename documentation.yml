@@ -47,6 +47,7 @@ toc:
   - Resource
   - name: Dependency Injection
   - inject
+  - autoinject
   - name: Core Services
   - Services
   - HTTPCodes
