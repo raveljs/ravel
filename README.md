@@ -112,7 +112,6 @@ class MissingCityError extends Error {
 @Module('cities')
 class Cities {
   constructor (moment, $log) {
-    super();
     this.moment = moment;
     this.$log = $log
     this.cities = ['Toronto', 'New York', 'Chicago']; // our fake 'database'
@@ -468,7 +467,6 @@ const Module = Ravel.Module; // base class for Ravel Modules
 @inject('path', 'fs', 'custom-module', 'plain-class')
 class MyModule {
   constructor (path, fs, custom, plain) { // @inject'd modules are available here as parameters
-    super();
     this.path = path;
     this.fs = fs;
     this.custom = custom;
@@ -508,7 +506,6 @@ const Module = Ravel.Module;
 @inject('another-module') // inject another Module from your project without require()!
 class MyModule {
   constructor (another) { // @inject'd modules are available here as parameters
-    super();
     this.another = another;
   }
 }
@@ -535,8 +532,31 @@ const Module = Ravel.Module;
 @inject('another-module', 'fs', 'moment', '$err') // anything that can be require()d can be @injected
 class MyModule {
   constructor (another, fs, moment, $err) {
-    super();
     // ...
+  }
+}
+module.exports = MyModule;
+```
+
+To avoid constructors which simply perform assignments, Ravel includes the `@autoinject` decorator which can perform assignments for you:
+
+*modules/my-module.js*
+```js
+const Ravel = require('ravel');
+const inject = Ravel.inject;
+const Module = Ravel.Module;
+
+@Module('mymodule')
+@inject('another') // you can still mix using @inject!
+@autoinject('fs', 'moment', '$err')
+class MyModule {
+  constructor (another) { // @inject'd modules are available here as parameters
+    this.another = another;
+    // @autoinjection takes place AFTER construction, so fs,
+    // moment and $err are not available here.
+  }
+  method () {
+    // this.fs, this.moment and this.$err are available here
   }
 }
 module.exports = MyModule;
