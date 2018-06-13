@@ -3,27 +3,23 @@ describe('Ravel end-to-end test', () => {
   const u = [{id: 1, name: 'Joe'}, {id: 2, name: 'Jane'}];
 
   describe('#init()', () => {
-    // describe('uncaught ES6 Promise errors logging', () => {
-    // can't test this in Jest
-    //   it('should log unhandled erors within Promises', async () => {
-    //     const Ravel = require('../../lib/ravel');
-    //     app = new Ravel();
-    //     app.set('log level', app.$log.ERROR);
-    //     app.set('keygrip keys', ['mysecret']);
-    //     await app.init();
-    //     const spy = jest.spyOn(app.$log, 'error');
-    //     for (let i = 0; i < 5; i++) {
-    //       Promise.resolve('promised value').then(() => {
-    //         throw new Error('error');
-    //       });
-    //       Promise.resolve('promised value').then(() => {
-    //         throw undefined; // eslint-disable-line no-throw-literal
-    //       });
-    //     }
-    //     await new Promise((resolve) => setTimeout(resolve, 10));
-    //     expect(spy).toHaveBeenCalled();
-    //   });
-    // });
+    describe('uncaught ES6 Promise errors logging', () => {
+      it('should log unhandled erors within Promises', async () => {
+        const process = require('process');
+        const Ravel = require('../../lib/ravel');
+        app = new Ravel();
+        app.set('log level', app.$log.ERROR);
+        app.set('keygrip keys', ['mysecret']);
+        await app.init();
+        const spy = jest.spyOn(app.$log, 'error');
+        for (let i = 0; i < 10; i++) {
+          // fake it
+          process.emit('unhandledRejection', new Error('error'));
+        }
+        await new Promise((resolve) => setTimeout(resolve, 10));
+        expect(spy).toHaveBeenCalled();
+      });
+    });
 
     describe('basic application server consisting of a module and a resource', () => {
       beforeEach(async () => {

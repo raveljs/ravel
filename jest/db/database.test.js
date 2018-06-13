@@ -31,7 +31,6 @@ describe('db/database', () => {
   });
 
   describe('#middleware()', () => {
-
     it('should populate context.transaction with an empty dictionary of database connection objects when no database providers are registered.', async () => {
       @Resource('/')
       class R {

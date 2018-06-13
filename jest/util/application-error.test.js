@@ -48,7 +48,7 @@ describe('util/application_error', () => {
 
   describe('app.$err', () => {
     let app;
-    beforeEach(() =>{
+    beforeEach(() => {
       app = new Ravel();
     });
 
