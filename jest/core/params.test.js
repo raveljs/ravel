@@ -20,8 +20,8 @@ describe('Ravel', () => {
       expect(app.get('test param')).toBe('test value');
     });
 
-    it('should throw a Ravel.ApplicationError.IllegalValue error when a client attempts to set an unknown parameter', async () => {
-      expect(() => app.set('unknown param', 'test value')).toThrow(app.ApplicationError.IllegalValue);
+    it('should throw a Ravel.$err.IllegalValue error when a client attempts to set an unknown parameter', async () => {
+      expect(() => app.set('unknown param', 'test value')).toThrow(app.$err.IllegalValue);
     });
   });
 
@@ -46,22 +46,22 @@ describe('Ravel', () => {
       expect(app.get('test param')).toEqual('test value');
     });
 
-    it('should throw a Ravel.ApplicationError.General error when clients attempt to retrieve a parameter before loading', async () => {
+    it('should throw a Ravel.$err.General error when clients attempt to retrieve a parameter before loading', async () => {
       expect(() => {
         app.registerParameter('test param', true);
         app.get('test param');
-      }).toThrow(app.ApplicationError.General);
+      }).toThrow(app.$err.General);
     });
 
-    it('should throw a Ravel.ApplicationError.NotFound error when clients attempt to retrieve an unregistered parameter', async () => {
+    it('should throw a Ravel.$err.NotFound error when clients attempt to retrieve an unregistered parameter', async () => {
       await app.init();
-      expect(() => app.get('test param')).toThrow(app.ApplicationError.NotFound);
+      expect(() => app.get('test param')).toThrow(app.$err.NotFound);
     });
 
-    it('should throw a Ravel.ApplicationError.NotFound error when clients attempt to retrieve the value of an unset required parameter', async () => {
+    it('should throw a Ravel.$err.NotFound error when clients attempt to retrieve the value of an unset required parameter', async () => {
       app.registerParameter('test param', true);
       await app.init();
-      expect(() => app.get('test param')).toThrow(app.ApplicationError.NotFound);
+      expect(() => app.get('test param')).toThrow(app.$err.NotFound);
     });
   });
 
@@ -157,7 +157,7 @@ describe('Ravel', () => {
       expect(app.get('redis port')).toEqual(6380);
     });
 
-    it('should throw a Ravel.ApplicationError.IllegalValue if an unregistered paramter is specified in the config file', async () => {
+    it('should throw a Ravel.$err.IllegalValue if an unregistered paramter is specified in the config file', async () => {
       conf = {
         'redis port': 1234
       };
@@ -165,7 +165,7 @@ describe('Ravel', () => {
       jest.doMock(upath.join(app.cwd, '.ravelrc'), () => conf, {virtual: true});
 
       app.set('redis port', 6380);
-      await expect(app.init()).rejects.toThrow(app.ApplicationError.IllegalValue);
+      await expect(app.init()).rejects.toThrow(app.$err.IllegalValue);
     });
 
     it('should throw a SyntaxError if a .ravelrc file is found but is malformed', async () => {
@@ -211,7 +211,7 @@ describe('Ravel', () => {
           'redis url': 'redis://$REDIS_USER:$REDIS_PASSWORD@$REDIS_HOST:$REDIS_PORT'
         };
         jest.doMock(upath.join(app.cwd, '.ravelrc'), () => JSON.stringify(conf), {virtual: true});
-        await expect(app.init()).rejects.toThrow(app.ApplicationError.IllegalValue);
+        await expect(app.init()).rejects.toThrow(app.$err.IllegalValue);
       });
     });
   });

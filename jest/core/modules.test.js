@@ -25,23 +25,23 @@ describe('Ravel', () => {
         expect(spy).toHaveBeenCalled();
       });
 
-      it('should throw a Ravel.ApplicationError.IllegalValue error when clients attempt to register a module without a name', async () => {
+      it('should throw a Ravel.$err.IllegalValue error when clients attempt to register a module without a name', async () => {
         @Ravel.Module
         class Test {}
-        expect(() => app.load(Test)).toThrowError(app.ApplicationError.IllegalValue);
+        expect(() => app.load(Test)).toThrowError(app.$err.IllegalValue);
       });
 
-      it('should throw a Ravel.ApplicationError.DuplicateEntry error when clients attempt to register multiple modules with the same name', () => {
+      it('should throw a Ravel.$err.DuplicateEntry error when clients attempt to register multiple modules with the same name', () => {
         @Ravel.Module('test')
         class Test {}
         @Ravel.Module('test')
         class Test2 {}
-        expect(() => app.load(Test, Test2)).toThrowError(app.ApplicationError.DuplicateEntry);
+        expect(() => app.load(Test, Test2)).toThrowError(app.$err.DuplicateEntry);
       });
 
-      it('should throw a Ravel.ApplicationError.IllegalValue error when clients attempt to register a module without appropriate decoration', async () => {
+      it('should throw a Ravel.$err.IllegalValue error when clients attempt to register a module without appropriate decoration', async () => {
         class Test {}
-        expect(() => app.load(Test)).toThrowError(app.ApplicationError.IllegalValue);
+        expect(() => app.load(Test)).toThrowError(app.$err.IllegalValue);
       });
 
       it('should load and instantiate modules, performing dependency injection of core services', async () => {
@@ -62,7 +62,7 @@ describe('Ravel', () => {
         const instance = app.module('test');
         expect(instance).toBeDefined();
         expect(instance.$app).toEqual(app);
-        expect(instance.$err).toEqual(app.ApplicationError);
+        expect(instance.$err).toEqual(app.$err);
         expect(instance.$log).toBeDefined();
         expect(instance.$log).toHaveProperty('trace');
         expect(instance.$log).toHaveProperty('verbose');
@@ -106,7 +106,7 @@ describe('Ravel', () => {
         @Ravel.Module('stub1')
         class Stub1 {}
         app.load(Stub1);
-        await expect(app.init()).rejects.toThrowError(app.ApplicationError.General);
+        await expect(app.init()).rejects.toThrowError(app.$err.General);
       });
 
       it('should instantiate modules in dependency order', async () => {
@@ -155,7 +155,7 @@ describe('Ravel', () => {
         @Ravel.Module('test2')
         class Stub2 {}
         app.load(Stub1, Stub2);
-        await expect(app.init()).rejects.toThrowError(app.ApplicationError.General);
+        await expect(app.init()).rejects.toThrowError(app.$err.General);
       });
 
       it('should detect complex cyclical dependencies between client modules', async () => {
@@ -171,7 +171,7 @@ describe('Ravel', () => {
         @Ravel.Module('test4')
         class Stub4 {}
         app.load(Stub1, Stub2, Stub3, Stub4);
-        await expect(app.init()).rejects.toThrowError(app.ApplicationError.General);
+        await expect(app.init()).rejects.toThrowError(app.$err.General);
       });
 
       it('should load and instantiate modules which support dependency injection of npm modules', async () => {
@@ -204,12 +204,12 @@ describe('Ravel', () => {
         expect(app.module('test').badName).toEqual(someMock);
       });
 
-      it('should throw an ApplicationError.NotFound when a module attempts to inject an unknown module/npm dependency', async () => {
+      it('should throw an $err.NotFound when a module attempts to inject an unknown module/npm dependency', async () => {
         @Ravel.Module('test')
         @Ravel.inject(`${Math.random()}`)
         class Stub1 {}
         app.load(Stub1);
-        await expect(app.init()).rejects.toThrowError(app.ApplicationError.NotFound);
+        await expect(app.init()).rejects.toThrowError(app.$err.NotFound);
       });
 
       it('should perform dependency injection on module factories which works regardless of the order of specified dependencies', async () => {

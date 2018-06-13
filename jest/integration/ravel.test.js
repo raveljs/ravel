@@ -29,7 +29,7 @@ describe('Ravel end-to-end test', () => {
       beforeEach(async () => {
         const Ravel = require('../../lib/ravel');
         const httpCodes = require('../../lib/util/http_codes');
-        const ApplicationError = require('../../lib/util/application_error');
+        const $err = require('../../lib/util/application_error');
         const inject = Ravel.inject;
 
         // stub Module (business logic container)
@@ -112,7 +112,7 @@ describe('Ravel end-to-end test', () => {
 
         app = new Ravel();
         expect(Ravel.httpCodes).toBe(httpCodes);
-        expect(Ravel.Error).toBe(ApplicationError.General);
+        expect(Ravel.Error).toBe($err.General);
         app.set('log level', app.log.NONE);
         app.set('keygrip keys', ['mysecret']);
 

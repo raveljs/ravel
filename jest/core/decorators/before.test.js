@@ -1,5 +1,5 @@
 describe('Ravel', () => {
-  const ApplicationError = require('../../../lib/util/application_error');
+  const $err = require('../../../lib/util/application_error');
   const Metadata = require('../../../lib/util/meta');
   let before;
 
@@ -15,20 +15,20 @@ describe('Ravel', () => {
       expect(Metadata.getClassMetaValue(Stub1.prototype, '@before', 'middleware')).toEqual(['test1', 'test2']);
     });
 
-    it('should throw an ApplicationError.IllegalValue if a non-string type is passed to @before', () => {
+    it('should throw an $err.IllegalValue if a non-string type is passed to @before', () => {
       const test = () => {
         @before([])
         class Stub {} // eslint-disable-line no-unused-vars
       };
-      expect(test).toThrow(ApplicationError.IllegalValue);
+      expect(test).toThrow($err.IllegalValue);
     });
 
-    it('should throw an ApplicationError.NotFound if @before is supplied without an argument', () => {
+    it('should throw an $err.NotFound if @before is supplied without an argument', () => {
       const test = () => {
         @before()
         class Stub {} // eslint-disable-line no-unused-vars
       };
-      expect(test).toThrow(ApplicationError.NotFound);
+      expect(test).toThrow($err.NotFound);
     });
 
     it('should decorate a class with method-specific middleware if @before is applied to a method', () => {

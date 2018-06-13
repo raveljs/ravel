@@ -1,5 +1,5 @@
 describe('Ravel', () => {
-  const ApplicationError = require('../../../lib/util/application_error');
+  const $err = require('../../../lib/util/application_error');
   const Metadata = require('../../../lib/util/meta');
   let transaction;
   beforeEach(() => {
@@ -9,12 +9,12 @@ describe('Ravel', () => {
   });
 
   describe('@transaction()', () => {
-    it('should throw an ApplicationError.IllegalValue if a non-string type is passed to @transaction', () => {
+    it('should throw an $err.IllegalValue if a non-string type is passed to @transaction', () => {
       const test = () => {
         @transaction([])
         class Stub {} // eslint-disable-line no-unused-vars
       };
-      expect(test).toThrow(ApplicationError.IllegalValue);
+      expect(test).toThrow($err.IllegalValue);
     });
 
     it('should indicate that all connections should be opened when used with no arguments', () => {

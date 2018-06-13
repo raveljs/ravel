@@ -62,10 +62,10 @@ describe('Authentication Integration Test', () => {
               if (session === '123456789') {
                 return resolve({expiry: 60, profile: profile});
               } else {
-                return reject(new Ravel.ApplicationError.Authentication('Incorrect API token'));
+                return reject(new Ravel.$err.Authentication('Incorrect API token'));
               }
             } else {
-              return reject(new Ravel.ApplicationError.IllegalValue(`LocalProvider does not support token auth for clients of type ${client}`));
+              return reject(new Ravel.$err.IllegalValue(`LocalProvider does not support token auth for clients of type ${client}`));
             }
           });
         }

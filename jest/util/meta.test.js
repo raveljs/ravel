@@ -1,4 +1,4 @@
-const ApplicationError = require('../../lib/util/application_error');
+const $err = require('../../lib/util/application_error');
 const Metadata = require('../../lib/util/meta');
 
 describe('util/meta', () => {
@@ -16,7 +16,7 @@ describe('util/meta', () => {
       function test () {
         return Metadata.getMeta(Test);
       }
-      expect(test).toThrow(ApplicationError.IllegalValue);
+      expect(test).toThrow($err.IllegalValue);
     });
   });
 

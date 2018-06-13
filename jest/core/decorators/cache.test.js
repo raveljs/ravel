@@ -22,12 +22,12 @@ describe('Ravel', () => {
       cache = Routes.cache;
     });
 
-    it('should throw an ApplicationError.IllegalValue if a non-object type is passed to @cache', () => {
+    it('should throw an $err.IllegalValue if a non-object type is passed to @cache', () => {
       const test = () => {
         @cache('hello world')
         class Stub {} // eslint-disable-line no-unused-vars
       };
-      expect(test).toThrow(app.ApplicationError.IllegalValue);
+      expect(test).toThrow(app.$err.IllegalValue);
     });
 
     it('should indicate that default options should be used when applied with no arguments', () => {

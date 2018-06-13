@@ -34,7 +34,7 @@ describe('Ravel', () => {
       await expect((async () => {
         app.load(Stub1);
         await app.init();
-      })()).rejects.toThrow(app.ApplicationError.DuplicateEntry);
+      })()).rejects.toThrow(app.$err.DuplicateEntry);
     });
   });
 });

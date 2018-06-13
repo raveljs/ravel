@@ -64,16 +64,16 @@ describe('Ravel', () => {
         }
 
         app.load(Stub);
-        await expect(app.init()).rejects.toThrow(app.ApplicationError.General);
+        await expect(app.init()).rejects.toThrow(app.$err.General);
       });
 
-      it('should throw an ApplicationError.NotFound when attempting to inject an unknown module/npm dependency', async () => {
+      it('should throw an $err.NotFound when attempting to inject an unknown module/npm dependency', async () => {
         @Module('stub')
         @inject('unknownModule')
         class Stub {
         }
         app.load(Stub);
-        await expect(app.init()).rejects.toThrow(app.ApplicationError.NotFound);
+        await expect(app.init()).rejects.toThrow(app.$err.NotFound);
       });
     });
 
@@ -119,16 +119,16 @@ describe('Ravel', () => {
         }
 
         app.load(Stub);
-        await expect(app.init()).rejects.toThrow(app.ApplicationError.General);
+        await expect(app.init()).rejects.toThrow(app.$err.General);
       });
 
-      it('should throw an ApplicationError.NotFound when attempting to auto-inject an unknown module/npm dependency', async () => {
+      it('should throw an $err.NotFound when attempting to auto-inject an unknown module/npm dependency', async () => {
         @Module('stub')
         @autoinject('unknownModule')
         class Stub {
         }
         app.load(Stub);
-        await expect(app.init()).rejects.toThrow(app.ApplicationError.NotFound);
+        await expect(app.init()).rejects.toThrow(app.$err.NotFound);
       });
 
       it('should allow mixing @inject and @autinject', async () => {

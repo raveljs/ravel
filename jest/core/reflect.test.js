@@ -135,12 +135,12 @@ describe('Ravel', () => {
       });
     });
 
-    it('should throw an ApplicationError.NotFound if the specified path is not a known Ravel component', async () => {
+    it('should throw an $err.NotFound if the specified path is not a known Ravel component', async () => {
       await app.init();
       function test () {
         app.reflect('test');
       }
-      expect(test).toThrow(app.ApplicationError.NotFound);
+      expect(test).toThrow(app.$err.NotFound);
     });
   });
 

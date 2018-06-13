@@ -1,4 +1,4 @@
-const ApplicationError = require('../../../lib/util/application_error');
+const $err = require('../../../lib/util/application_error');
 const Metadata = require('../../../lib/util/meta');
 
 describe('Ravel', () => {
@@ -23,10 +23,10 @@ describe('Ravel', () => {
       expect(typeof instance.deserializeUser).toBe('function');
       expect(typeof instance.deserializeOrCreateUser).toBe('function');
       expect(typeof instance.verify).toBe('function');
-      await expect(instance.serializeUser()).rejects.toThrow(ApplicationError.NotImplemented);
-      await expect(instance.deserializeUser()).rejects.toThrow(ApplicationError.NotImplemented);
-      await expect(instance.deserializeOrCreateUser()).rejects.toThrow(ApplicationError.NotImplemented);
-      await expect(instance.verify()).rejects.toThrow(ApplicationError.NotImplemented);
+      await expect(instance.serializeUser()).rejects.toThrow($err.NotImplemented);
+      await expect(instance.deserializeUser()).rejects.toThrow($err.NotImplemented);
+      await expect(instance.deserializeOrCreateUser()).rejects.toThrow($err.NotImplemented);
+      await expect(instance.verify()).rejects.toThrow($err.NotImplemented);
     });
 
     it('should retain an existing implementation of serializeUser()', async () => {
@@ -42,9 +42,9 @@ describe('Ravel', () => {
       expect(typeof instance.deserializeOrCreateUser).toBe('function');
       expect(typeof instance.verify).toBe('function');
       await expect(instance.serializeUser({id: 12})).resolves.toBe(12);
-      await expect(instance.deserializeUser()).rejects.toThrow(ApplicationError.NotImplemented);
-      await expect(instance.deserializeOrCreateUser()).rejects.toThrow(ApplicationError.NotImplemented);
-      await expect(instance.verify()).rejects.toThrow(ApplicationError.NotImplemented);
+      await expect(instance.deserializeUser()).rejects.toThrow($err.NotImplemented);
+      await expect(instance.deserializeOrCreateUser()).rejects.toThrow($err.NotImplemented);
+      await expect(instance.verify()).rejects.toThrow($err.NotImplemented);
     });
 
     it('should retain an existing implementation of deserializeUser()', async () => {
@@ -59,10 +59,10 @@ describe('Ravel', () => {
       expect(typeof instance.deserializeUser).toBe('function');
       expect(typeof instance.deserializeOrCreateUser).toBe('function');
       expect(typeof instance.verify).toBe('function');
-      await expect(instance.serializeUser()).rejects.toThrow(ApplicationError.NotImplemented);
+      await expect(instance.serializeUser()).rejects.toThrow($err.NotImplemented);
       await expect(instance.deserializeUser()).resolves.toEqual({});
-      await expect(instance.deserializeOrCreateUser()).rejects.toThrow(ApplicationError.NotImplemented);
-      await expect(instance.verify()).rejects.toThrow(ApplicationError.NotImplemented);
+      await expect(instance.deserializeOrCreateUser()).rejects.toThrow($err.NotImplemented);
+      await expect(instance.verify()).rejects.toThrow($err.NotImplemented);
     });
 
     it('should retain an existing implementation of deserializeOrCreateUser()', async () => {
@@ -77,10 +77,10 @@ describe('Ravel', () => {
       expect(typeof instance.deserializeUser).toBe('function');
       expect(typeof instance.deserializeOrCreateUser).toBe('function');
       expect(typeof instance.verify).toBe('function');
-      await expect(instance.serializeUser()).rejects.toThrow(ApplicationError.NotImplemented);
-      await expect(instance.deserializeUser()).rejects.toThrow(ApplicationError.NotImplemented);
+      await expect(instance.serializeUser()).rejects.toThrow($err.NotImplemented);
+      await expect(instance.deserializeUser()).rejects.toThrow($err.NotImplemented);
       await expect(instance.deserializeOrCreateUser()).resolves.toEqual({});
-      await expect(instance.verify()).rejects.toThrow(ApplicationError.NotImplemented);
+      await expect(instance.verify()).rejects.toThrow($err.NotImplemented);
     });
 
     it('should retain an existing implementation of verify()', async () => {
@@ -95,9 +95,9 @@ describe('Ravel', () => {
       expect(typeof instance.deserializeUser).toBe('function');
       expect(typeof instance.deserializeOrCreateUser).toBe('function');
       expect(typeof instance.verify).toBe('function');
-      await expect(instance.serializeUser()).rejects.toThrow(ApplicationError.NotImplemented);
-      await expect(instance.deserializeUser()).rejects.toThrow(ApplicationError.NotImplemented);
-      await expect(instance.deserializeOrCreateUser()).rejects.toThrow(ApplicationError.NotImplemented);
+      await expect(instance.serializeUser()).rejects.toThrow($err.NotImplemented);
+      await expect(instance.deserializeUser()).rejects.toThrow($err.NotImplemented);
+      await expect(instance.deserializeOrCreateUser()).rejects.toThrow($err.NotImplemented);
       await expect(instance.verify()).resolves.toEqual({});
     });
   });

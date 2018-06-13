@@ -25,43 +25,43 @@ describe('Ravel', () => {
         expect(spy).toHaveBeenCalled();
       });
 
-      it('should throw a Ravel.ApplicationError.IllegalValue error when clients attempt to register a resource module without a basePath', async () => {
+      it('should throw a Ravel.$err.IllegalValue error when clients attempt to register a resource module without a basePath', async () => {
         expect(() => {
           @Ravel.Resource
           class Test {}
           app.load(Test);
-        }).toThrowError(app.ApplicationError.IllegalValue);
+        }).toThrowError(app.$err.IllegalValue);
       });
 
-      it('should throw an ApplicationError.NotImplemented when a client attempts to access @mapping on a Resource', () => {
+      it('should throw an $err.NotImplemented when a client attempts to access @mapping on a Resource', () => {
         const shouldThrow = () => {
           @Ravel.Resource('/')
           @Ravel.Resource.mapping()
           class Test {}
           app.load(Test);
         };
-        expect(shouldThrow).toThrowError(app.ApplicationError.NotImplemented);
+        expect(shouldThrow).toThrowError(app.$err.NotImplemented);
       });
 
-      it('should throw a Ravel.ApplicationError.DuplicateEntry error when clients attempt to register multiple resource modules with the same basePath', () => {
+      it('should throw a Ravel.$err.DuplicateEntry error when clients attempt to register multiple resource modules with the same basePath', () => {
         @Ravel.Resource('/')
         class Test {}
         @Ravel.Resource('/')
         class Test2 {}
-        expect(() => app.load(Test, Test2)).toThrowError(app.ApplicationError.DuplicateEntry);
+        expect(() => app.load(Test, Test2)).toThrowError(app.$err.DuplicateEntry);
       });
 
-      it('should throw a Ravel.ApplicationError.DuplicateEntry error when clients attempt to register multiple resource and routes modules with the same basePath', () => {
+      it('should throw a Ravel.$err.DuplicateEntry error when clients attempt to register multiple resource and routes modules with the same basePath', () => {
         @Ravel.Resource('/')
         class Test {}
         @Ravel.Routes('/')
         class Test2 {}
-        expect(() => app.load(Test, Test2)).toThrowError(app.ApplicationError.DuplicateEntry);
+        expect(() => app.load(Test, Test2)).toThrowError(app.$err.DuplicateEntry);
       });
 
-      it('should throw a Ravel.ApplicationError.IllegalValue error when clients attempt to register a resource module without appropriate decoration', async () => {
+      it('should throw a Ravel.$err.IllegalValue error when clients attempt to register a resource module without appropriate decoration', async () => {
         class Test {}
-        expect(() => app.load(Test)).toThrowError(app.ApplicationError.IllegalValue);
+        expect(() => app.load(Test)).toThrowError(app.$err.IllegalValue);
       });
 
       it('should load and instantiate resource modules, performing dependency injection of core services', async () => {
@@ -82,7 +82,7 @@ describe('Ravel', () => {
         const instance = app.resource('/');
         expect(instance).toBeDefined();
         expect(instance.$app).toEqual(app);
-        expect(instance.$err).toEqual(app.ApplicationError);
+        expect(instance.$err).toEqual(app.$err);
         expect(instance.$log).toBeDefined();
         expect(instance.$log).toHaveProperty('trace');
         expect(instance.$log).toHaveProperty('verbose');

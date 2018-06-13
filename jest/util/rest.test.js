@@ -124,77 +124,77 @@ describe('util/rest', () => {
   });
 
   describe('#errorHandler()', () => {
-    it('should respond with HTTP 404 NOT FOUND when ApplicationError.NotFound is passed as err', async () => {
+    it('should respond with HTTP 404 NOT FOUND when $err.NotFound is passed as err', async () => {
       const message = 'a message';
       koaApp.use(rest.errorHandler());
       koaApp.use(async () => {
-        throw new ravelApp.ApplicationError.NotFound(message);
+        throw new ravelApp.$err.NotFound(message);
       });
       const res = await request(koaApp.callback()).get('/');
       expect(res.status).toBe(404);
       expect(res.text).toBe(message);
     });
 
-    it('should respond with HTTP 403 Forbidden when ApplicationError.Access is passed as err', async () => {
+    it('should respond with HTTP 403 Forbidden when $err.Access is passed as err', async () => {
       const message = 'a message';
       koaApp.use(rest.errorHandler());
       koaApp.use(async () => {
-        throw new ravelApp.ApplicationError.Access(message);
+        throw new ravelApp.$err.Access(message);
       });
       const res = await request(koaApp.callback()).get('/');
       expect(res.status).toBe(403);
       expect(res.text).toBe(message);
     });
 
-    it('should respond with HTTP 405 METHOD NOT ALLOWED when ApplicationError.NotAllowed is passed as err', async () => {
+    it('should respond with HTTP 405 METHOD NOT ALLOWED when $err.NotAllowed is passed as err', async () => {
       const message = 'a message';
       koaApp.use(rest.errorHandler());
       koaApp.use(async () => {
-        throw new ravelApp.ApplicationError.NotAllowed(message);
+        throw new ravelApp.$err.NotAllowed(message);
       });
       const res = await request(koaApp.callback()).get('/');
       expect(res.status).toBe(405);
       expect(res.text).toBe(message);
     });
 
-    it('should respond with HTTP 501 NOT IMPLEMENTED when ApplicationError.NotImplemented is passed as err', async () => {
+    it('should respond with HTTP 501 NOT IMPLEMENTED when $err.NotImplemented is passed as err', async () => {
       const message = 'a message';
       koaApp.use(rest.errorHandler());
       koaApp.use(async () => {
-        throw new ravelApp.ApplicationError.NotImplemented(message);
+        throw new ravelApp.$err.NotImplemented(message);
       });
       const res = await request(koaApp.callback()).get('/');
       expect(res.status).toBe(501);
       expect(res.text).toBe(message);
     });
 
-    it('should respond with HTTP 409 CONFLICT when ApplicationError.DuplicateEntry is passed as err', async () => {
+    it('should respond with HTTP 409 CONFLICT when $err.DuplicateEntry is passed as err', async () => {
       const message = 'a message';
       koaApp.use(rest.errorHandler());
       koaApp.use(async () => {
-        throw new ravelApp.ApplicationError.DuplicateEntry(message);
+        throw new ravelApp.$err.DuplicateEntry(message);
       });
       const res = await request(koaApp.callback()).get('/');
       expect(res.status).toBe(409);
       expect(res.text).toBe(message);
     });
 
-    it('should respond with HTTP 416 REQUESTED_RANGE_NOT_SATISFIABLE when ApplicationError.RangeOutOfBounds is passed as err', async () => {
+    it('should respond with HTTP 416 REQUESTED_RANGE_NOT_SATISFIABLE when $err.RangeOutOfBounds is passed as err', async () => {
       const message = 'a message';
       koaApp.use(rest.errorHandler());
       koaApp.use(async () => {
-        throw new ravelApp.ApplicationError.RangeOutOfBounds(message);
+        throw new ravelApp.$err.RangeOutOfBounds(message);
       });
       const res = await request(koaApp.callback()).get('/');
       expect(res.status).toBe(416);
       expect(res.text).toBe(message);
     });
 
-    it('should respond with HTTP 400 BAD REQUEST when ApplicationError.IllegalValue is passed as err', async () => {
+    it('should respond with HTTP 400 BAD REQUEST when $err.IllegalValue is passed as err', async () => {
       const message = 'a message';
       koaApp.use(rest.errorHandler());
       koaApp.use(async () => {
-        throw new ravelApp.ApplicationError.IllegalValue(message);
+        throw new ravelApp.$err.IllegalValue(message);
       });
       const res = await request(koaApp.callback()).get('/');
       expect(res.status).toBe(400);
@@ -220,7 +220,7 @@ describe('util/rest', () => {
       koaApp.use(rest.respond());
       koaApp.use(async (ctx) => {
         ctx.status = 200;
-        throw new ravelApp.ApplicationError.IllegalValue(message);
+        throw new ravelApp.$err.IllegalValue(message);
       });
       const res = await request(koaApp.callback()).get('/');
       expect(res.status).toBe(400);

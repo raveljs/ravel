@@ -74,9 +74,9 @@ describe('auth/passport_init', () => {
     expect(provider.init).toHaveBeenCalledWith(expect.anything(), passportMock, expect.anything());
   });
 
-  it('should throw ApplicationError.NotFound if an Authentication module is needed and one is not present', async () => {
+  it('should throw $err.NotFound if an Authentication module is needed and one is not present', async () => {
     const provider = new GoogleOAuth2(ravelApp);
     provider.init = jest.fn();
-    await expect(ravelApp.init()).rejects.toThrow(ravelApp.ApplicationError.NotFound);
+    await expect(ravelApp.init()).rejects.toThrow(ravelApp.$err.NotFound);
   });
 });

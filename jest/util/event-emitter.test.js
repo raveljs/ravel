@@ -1,5 +1,5 @@
 const AsyncEventEmitter = require('../../lib/util/event_emitter');
-const ApplicationError = require('../../lib/util/application_error');
+const $err = require('../../lib/util/application_error');
 
 describe('Ravel', () => {
   let emitter;
@@ -9,20 +9,20 @@ describe('Ravel', () => {
 
   describe('AsyncEventEmitter', () => {
     describe('defaultMaxListeners', () => {
-      it('should throw ApplicationError.NotImplemented', async () => {
-        expect(() => { AsyncEventEmitter.defaultMaxListeners; }).toThrow(ApplicationError.NotImplemented);
+      it('should throw $err.NotImplemented', async () => {
+        expect(() => { AsyncEventEmitter.defaultMaxListeners; }).toThrow($err.NotImplemented);
       });
     });
 
     describe('#getMaxListeners', () => {
-      it('should throw ApplicationError.NotImplemented', async () => {
-        expect(() => { emitter.getMaxListeners(); }).toThrow(ApplicationError.NotImplemented);
+      it('should throw $err.NotImplemented', async () => {
+        expect(() => { emitter.getMaxListeners(); }).toThrow($err.NotImplemented);
       });
     });
 
     describe('#setMaxListeners', () => {
-      it('should throw ApplicationError.NotImplemented', async () => {
-        expect(() => { emitter.setMaxListeners(); }).toThrow(ApplicationError.NotImplemented);
+      it('should throw $err.NotImplemented', async () => {
+        expect(() => { emitter.setMaxListeners(); }).toThrow($err.NotImplemented);
       });
     });
 
@@ -107,14 +107,14 @@ describe('Ravel', () => {
     });
 
     describe('#prependListener', () => {
-      it('should throw ApplicationError.NotImplemented', async () => {
-        expect(() => { emitter.prependListener(); }).toThrow(ApplicationError.NotImplemented);
+      it('should throw $err.NotImplemented', async () => {
+        expect(() => { emitter.prependListener(); }).toThrow($err.NotImplemented);
       });
     });
 
     describe('#prependOnceListener', () => {
-      it('should throw ApplicationError.NotImplemented', async () => {
-        expect(() => { emitter.prependOnceListener(); }).toThrow(ApplicationError.NotImplemented);
+      it('should throw $err.NotImplemented', async () => {
+        expect(() => { emitter.prependOnceListener(); }).toThrow($err.NotImplemented);
       });
     });
 

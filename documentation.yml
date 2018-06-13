@@ -68,6 +68,6 @@ toc:
   - name: Built-in Error Types
     description: |
       Built-in error types are automatically translated into standard HTTP response status codes when thrown.
-  - ApplicationError
+  - $err
   - name: Testing Ravel Applications
     file: docs/testing.md

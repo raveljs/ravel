@@ -41,7 +41,7 @@ describe('Ravel lifeycle test', () => {
         if (userId < u.length) {
           return Promise.resolve(u[userId - 1]);
         } else {
-          return Promise.reject(new this.ApplicationError.NotFound('User id=' + userId + ' does not exist!'));
+          return Promise.reject(new this.$err.NotFound('User id=' + userId + ' does not exist!'));
         }
       }
 
@@ -167,8 +167,8 @@ describe('Ravel lifeycle test', () => {
   });
 
   describe('#listen()', () => {
-    it('should throw Ravel.ApplicationError.NotAllowed if called before init()', async () => {
-      await expect(app.listen()).rejects.toThrow(app.ApplicationError.NotAllowed);
+    it('should throw Ravel.$err.NotAllowed if called before init()', async () => {
+      await expect(app.listen()).rejects.toThrow(app.$err.NotAllowed);
     });
 
     it('should start the underlying HTTP server when called after init()', async () => {

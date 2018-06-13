@@ -1,5 +1,5 @@
 describe('Ravel', () => {
-  const ApplicationError = require('../../../lib/util/application_error');
+  const $err = require('../../../lib/util/application_error');
   const Metadata = require('../../../lib/util/meta');
   let autoinject;
 
@@ -23,20 +23,20 @@ describe('Ravel', () => {
       expect(Metadata.getClassMetaValue(Stub1.prototype, '@autoinject', 'dependencies')).toEqual(['test1', 'test2', 'test3']);
     });
 
-    it('should throw an ApplicationError.IllegalValue if a non-string type is passed to @autoinject', () => {
+    it('should throw an $err.IllegalValue if a non-string type is passed to @autoinject', () => {
       const test = () => {
         @autoinject([])
         class Stub {} // eslint-disable-line no-unused-vars
       };
-      expect(test).toThrow(ApplicationError.IllegalValue);
+      expect(test).toThrow($err.IllegalValue);
     });
 
-    it('should throw an ApplicationError.NotFound if @autoinject is supplied without an argument', () => {
+    it('should throw an $err.NotFound if @autoinject is supplied without an argument', () => {
       const test = () => {
         @autoinject()
         class Stub {} // eslint-disable-line no-unused-vars
       };
-      expect(test).toThrow(ApplicationError.NotFound);
+      expect(test).toThrow($err.NotFound);
     });
   });
 });

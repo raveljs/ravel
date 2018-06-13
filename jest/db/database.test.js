@@ -115,7 +115,7 @@ describe('db/database', () => {
       class R {
         @Resource.transaction
         getAll (ctx) {
-          throw new ravelApp.ApplicationError.NotFound();
+          throw new ravelApp.$err.NotFound();
         }
       }
       ravelApp.load(R);

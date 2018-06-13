@@ -46,72 +46,72 @@ describe('util/application_error', () => {
     });
   });
 
-  describe('app.ApplicationError', () => {
+  describe('app.$err', () => {
     let app;
     beforeEach(() =>{
       app = new Ravel();
     });
 
     it('should provide .Access', () => {
-      expect(typeof app.ApplicationError.Access).toBe('function');
-      const err = new app.ApplicationError.Access('test');
-      expect(err).toBeInstanceOf(app.ApplicationError.General);
+      expect(typeof app.$err.Access).toBe('function');
+      const err = new app.$err.Access('test');
+      expect(err).toBeInstanceOf(app.$err.General);
       expect(err.message).toBe('test');
       expect(err.code).toBe(httpCodes.FORBIDDEN);
     });
 
     it('should provide .Authentication', () => {
-      expect(typeof app.ApplicationError.Authentication).toBe('function');
-      const err = new app.ApplicationError.Authentication('test');
-      expect(err).toBeInstanceOf(app.ApplicationError.General);
+      expect(typeof app.$err.Authentication).toBe('function');
+      const err = new app.$err.Authentication('test');
+      expect(err).toBeInstanceOf(app.$err.General);
       expect(err.message).toBe('test');
       expect(err.code).toBe(httpCodes.UNAUTHORIZED);
     });
 
     it('should provide .DuplicateEntry', () => {
-      expect(typeof app.ApplicationError.DuplicateEntry).toBe('function');
-      const err = new app.ApplicationError.DuplicateEntry('test');
-      expect(err).toBeInstanceOf(app.ApplicationError.General);
+      expect(typeof app.$err.DuplicateEntry).toBe('function');
+      const err = new app.$err.DuplicateEntry('test');
+      expect(err).toBeInstanceOf(app.$err.General);
       expect(err.message).toBe('test');
       expect(err.code).toBe(httpCodes.CONFLICT);
     });
 
     it('should provide .IllegalValue', () => {
-      expect(typeof app.ApplicationError.IllegalValue).toBe('function');
-      const err = new app.ApplicationError.IllegalValue('test');
-      expect(err).toBeInstanceOf(app.ApplicationError.General);
+      expect(typeof app.$err.IllegalValue).toBe('function');
+      const err = new app.$err.IllegalValue('test');
+      expect(err).toBeInstanceOf(app.$err.General);
       expect(err.message).toBe('test');
       expect(err.code).toBe(httpCodes.BAD_REQUEST);
     });
 
     it('should provide .NotAllowed', () => {
-      expect(typeof app.ApplicationError.NotAllowed).toBe('function');
-      const err = new app.ApplicationError.NotAllowed('test');
-      expect(err).toBeInstanceOf(app.ApplicationError.General);
+      expect(typeof app.$err.NotAllowed).toBe('function');
+      const err = new app.$err.NotAllowed('test');
+      expect(err).toBeInstanceOf(app.$err.General);
       expect(err.message).toBe('test');
       expect(err.code).toBe(httpCodes.METHOD_NOT_ALLOWED);
     });
 
     it('should provide .NotFound', () => {
-      expect(typeof app.ApplicationError.NotFound).toBe('function');
-      const err = new app.ApplicationError.NotFound('test');
-      expect(err).toBeInstanceOf(app.ApplicationError.General);
+      expect(typeof app.$err.NotFound).toBe('function');
+      const err = new app.$err.NotFound('test');
+      expect(err).toBeInstanceOf(app.$err.General);
       expect(err.message).toBe('test');
       expect(err.code).toBe(httpCodes.NOT_FOUND);
     });
 
     it('should provide .NotImplemented', () => {
-      expect(typeof app.ApplicationError.NotImplemented).toBe('function');
-      const err = new app.ApplicationError.NotImplemented('test');
-      expect(err).toBeInstanceOf(app.ApplicationError.General);
+      expect(typeof app.$err.NotImplemented).toBe('function');
+      const err = new app.$err.NotImplemented('test');
+      expect(err).toBeInstanceOf(app.$err.General);
       expect(err.message).toBe('test');
       expect(err.code).toBe(httpCodes.NOT_IMPLEMENTED);
     });
 
     it('should provide .RangeOutOfBounds', () => {
-      expect(typeof app.ApplicationError.RangeOutOfBounds).toBe('function');
-      const err = new app.ApplicationError.RangeOutOfBounds('test');
-      expect(err).toBeInstanceOf(app.ApplicationError.General);
+      expect(typeof app.$err.RangeOutOfBounds).toBe('function');
+      const err = new app.$err.RangeOutOfBounds('test');
+      expect(err).toBeInstanceOf(app.$err.General);
       expect(err.message).toBe('test');
       expect(err.code).toBe(httpCodes.REQUESTED_RANGE_NOT_SATISFIABLE);
     });

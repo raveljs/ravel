@@ -27,31 +27,31 @@ describe('auth/authentication_provider', () => {
       expect(typeof provider.credentialToProfile).toBe('function');
       expect(typeof provider.log).toBe('object');
       expect(typeof provider.ravelInstance).toBe('object');
-      expect(typeof provider.ApplicationError).toBe('function');
+      expect(typeof provider.$err).toBe('function');
     });
 
     it('should require clients to supply a name for the provider', () => {
       expect(() => {
         new Ravel.AuthenticationProvider(ravelApp); // eslint-disable-line no-new
-      }).toThrow(ravelApp.ApplicationError.NotImplemented);
+      }).toThrow(ravelApp.$err.NotImplemented);
     });
   });
 
   describe('#init()', () => {
-    it('should throw ravelApp.ApplicationError.NotImplemented, since this is a template', () => {
-      expect(() => provider.init()).toThrow(ravelApp.ApplicationError.NotImplemented);
+    it('should throw ravelApp.$err.NotImplemented, since this is a template', () => {
+      expect(() => provider.init()).toThrow(ravelApp.$err.NotImplemented);
     });
   });
 
   describe('#handlesClient()', () => {
-    it('should throw ravelApp.ApplicationError.NotImplemented, since this is a template', () => {
-      expect(() => provider.handlesClient()).toThrow(ravelApp.ApplicationError.NotImplemented);
+    it('should throw ravelApp.$err.NotImplemented, since this is a template', () => {
+      expect(() => provider.handlesClient()).toThrow(ravelApp.$err.NotImplemented);
     });
   });
 
   describe('#credentialToProfile()', () => {
-    it('should throw ravelApp.ApplicationError.NotImplemented, since this is a template', async () => {
-      await expect(provider.credentialToProfile()).rejects.toThrow(ravelApp.ApplicationError.NotImplemented);
+    it('should throw ravelApp.$err.NotImplemented, since this is a template', async () => {
+      await expect(provider.credentialToProfile()).rejects.toThrow(ravelApp.$err.NotImplemented);
     });
   });
 
@@ -79,7 +79,7 @@ describe('auth/authentication_provider', () => {
     it('should require clients to supply a name for the provider', () => {
       expect(() => {
         new Ravel.AuthenticationProvider(ravelApp); // eslint-disable-line no-new
-      }).toThrow(ravelApp.ApplicationError.NotImplemented);
+      }).toThrow(ravelApp.$err.NotImplemented);
     });
   });
 });
