@@ -11,15 +11,15 @@ describe('util/rest', () => {
 
   describe('RedisSessionStore', () => {
     describe('#connected()', () => {
-      it('should return the connection status of the internal kvstore', async () => {
-        expect(store.connected).toBe(app.kvstore.connected);
+      it('should return the connection status of the internal.$kvstore', async () => {
+        expect(store.connected).toBe(app.$kvstore.connected);
       });
     });
 
     describe('#get()', () => {
       it('should return a Promise which resolves with a JSON object representing the user\'s session', async () => {
         const session = {'username': 'smcintyre'};
-        app.kvstore.set('koa:sess:1234', JSON.stringify(session));
+        app.$kvstore.set('koa:sess:1234', JSON.stringify(session));
         await expect(store.get('koa:sess:1234')).resolves.toEqual(session);
       });
 
@@ -30,8 +30,8 @@ describe('util/rest', () => {
       it('should return a Promise which rejects if redis calls back with an error', async () => {
         const session = {'username': 'smcintyre'};
         const getError = new Error('getError');
-        app.kvstore.get = jest.fn(function (key, cb) { cb(getError); });
-        app.kvstore.set('koa:sess:1234', JSON.stringify(session));
+        app.$kvstore.get = jest.fn(function (key, cb) { cb(getError); });
+        app.$kvstore.set('koa:sess:1234', JSON.stringify(session));
         await expect(store.get('koa:sess:1234')).rejects.toThrow(getError);
       });
     });
@@ -46,25 +46,25 @@ describe('util/rest', () => {
       it('should return a Promise which resolves after storing the user\'s session with a ttl', async () => {
         const session = {'username': 'smcintyre'};
         // setex from redis-mock sets a timeout, which stops test from exiting cleanly. Just stub it as set.
-        app.kvstore.setex = jest.fn(function (key, ttl, value, cb) {
-          app.kvstore.set(key, value, cb);
+        app.$kvstore.setex = jest.fn(function (key, ttl, value, cb) {
+          app.$kvstore.set(key, value, cb);
         });
         await expect(store.set('koa:sess:1234', session, 1000 * 1000)).resolves;
         await expect(store.get('koa:sess:1234')).resolves.toEqual(session);
-        expect(app.kvstore.setex).toHaveBeenCalledWith('koa:sess:1234', 1000, JSON.stringify(session), expect.any(Function));
+        expect(app.$kvstore.setex).toHaveBeenCalledWith('koa:sess:1234', 1000, JSON.stringify(session), expect.any(Function));
       });
 
       it('should return a Promise which rejects if redis calls back with an error', async () => {
         const session = {'username': 'smcintyre'};
         const setError = new Error();
-        app.kvstore.set = jest.fn(function (key, value, cb) { cb(setError); });
+        app.$kvstore.set = jest.fn(function (key, value, cb) { cb(setError); });
         await expect(store.set('koa:sess:1234', session)).rejects.toThrow(setError);
       });
 
       it('should return a Promise which rejects if redis calls back with an error (ttl version)', async () => {
         const session = {'username': 'smcintyre'};
         const setexError = new Error();
-        app.kvstore.setex = jest.fn(function (key, value, ttl, cb) { cb(setexError); });
+        app.$kvstore.setex = jest.fn(function (key, value, ttl, cb) { cb(setexError); });
         await expect(store.set('koa:sess:1234', session, 1000 * 1000)).rejects.toThrow(setexError);
       });
     });
@@ -80,7 +80,7 @@ describe('util/rest', () => {
 
       it('should return a Promise which rejects if redis calls back with an error (ttl version)', async () => {
         const delError = new Error();
-        app.kvstore.del = jest.fn(function (key, cb) { cb(delError); });
+        app.$kvstore.del = jest.fn(function (key, cb) { cb(delError); });
         await expect(store.destroy('koa:sess:1234')).rejects.toThrow(delError);
       });
     });

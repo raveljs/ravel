@@ -225,8 +225,8 @@ describe('Ravel end-to-end test', () => {
     });
 
     it('should gracefully handle caching errors coming from redis', async () => {
-      const origSet = app.kvstore.set;
-      app.kvstore.set = jest.fn(function (key, value, cb) {
+      const origSet = app.$kvstore.set;
+      app.$kvstore.set = jest.fn(function (key, value, cb) {
         return cb(new Error(), null);
       });
       await request(app.callback)
@@ -236,7 +236,7 @@ describe('Ravel end-to-end test', () => {
         .get('/api/routes/cacheerror')
         .expect(200, 'cache error');
       expect(cacheErrorBody).toHaveBeenCalledTimes(2);
-      app.kvstore.set = origSet;
+      app.$kvstore.set = origSet;
     });
   });
 });

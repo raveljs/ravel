@@ -73,7 +73,7 @@ describe('Ravel', () => {
         expect(instance.$log).toHaveProperty('warn');
         expect(instance.$log).toHaveProperty('error');
         expect(instance.$log).toHaveProperty('critical');
-        expect(instance.$kvstore).toEqual(app.kvstore);
+        expect(instance.$kvstore).toEqual(app.$kvstore);
         expect(instance.$params).toBeDefined();
         expect(instance.$params).toHaveProperty('get');
         expect(instance.$db).toHaveProperty('scoped');

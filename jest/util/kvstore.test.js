@@ -70,37 +70,37 @@ describe('Ravel', () => {
 
       it('should prevent use of quit()', () => {
         expect(() => {
-          app.kvstore.quit(() => {});
+          app.$kvstore.quit(() => {});
         }).toThrow(app.$err.General);
       });
 
       it('should prevent use of qsubscribeuit()', () => {
         expect(() => {
-          app.kvstore.subscribe('chan');
+          app.$kvstore.subscribe('chan');
         }).toThrow(app.$err.General);
       });
 
       it('should prevent use of psubscribe()', () => {
         expect(() => {
-          app.kvstore.psubscribe('chan');
+          app.$kvstore.psubscribe('chan');
         }).toThrow(app.$err.General);
       });
 
       it('should prevent use of unsubscribe()', () => {
         expect(() => {
-          app.kvstore.unsubscribe('chan');
+          app.$kvstore.unsubscribe('chan');
         }).toThrow(app.$err.General);
       });
 
       it('should prevent use of punsubscribe()', () => {
         expect(() => {
-          app.kvstore.punsubscribe('chan');
+          app.$kvstore.punsubscribe('chan');
         }).toThrow(app.$err.General);
       });
 
       describe('#clone()', () => {
         beforeEach(() => {
-          clone = app.kvstore.clone();
+          clone = app.$kvstore.clone();
         });
         it('should support the use of quit()', () => {
           expect(clone.quit).not.toThrow(app.$err.General);
