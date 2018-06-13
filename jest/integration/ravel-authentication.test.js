@@ -9,7 +9,7 @@ describe('Authentication Integration Test', () => {
   beforeEach(async () => {
     Ravel = require('../../lib/ravel');
     app = new Ravel();
-    app.set('log level', app.log.NONE);
+    app.set('log level', app.$log.NONE);
     app.set('keygrip keys', ['mysecret']);
   });
 
@@ -210,7 +210,7 @@ describe('Authentication Integration Test', () => {
       // https://github.com/facebook/jest/issues/3547
       // https://github.com/visionmedia/supertest/issues/460
       // https://github.com/facebook/jest/issues/2549
-      const spy = jest.spyOn(app.log, 'warn');
+      const spy = jest.spyOn(app.$log, 'warn');
       const agent = request.agent(app.server);
       const res = await agent
         .post('/auth/local')

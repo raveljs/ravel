@@ -887,16 +887,12 @@ Sometimes, you may need to open a transaction outside of a code path triggered b
 *modules/database-initializer.js*
 ```js
 const Module = require('ravel').Module;
-const inject = require('ravel').inject;
+const autoinject = require('ravel').autoinject;
 const prelisten = Module.prelisten;
 
 @Module('db-init')
-@inject('$db')
+@autoinject('$db','$log')
 class DatabaseInitializer {
-  constructor($db) {
-    this.$db = $db;
-  }
-
   @prelisten // trigger db init on application startup
   doDbInit (ctx) {
     const self = this;
@@ -911,7 +907,7 @@ class DatabaseInitializer {
       // from @transaction! It's just a hash of open, named connections
       // to the DatabaseProviders specified.
     }).catch((err) => {
-      self.log.error(err.stack);
+      self.$log.error(err.stack);
       process.exit(1); // in this case, we might want to kill our app if db init fails!
     });
   }

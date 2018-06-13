@@ -4,7 +4,7 @@ describe('db/database_provider', () => {
     const Ravel = require('../../lib/ravel');
     app = new Ravel();
     app.set('keygrip keys', ['abc']);
-    app.set('log level', app.log.NONE);
+    app.set('log level', app.$log.NONE);
     DatabaseProvider = Ravel.DatabaseProvider;
     provider = new DatabaseProvider(app, 'name');
   });
@@ -18,14 +18,14 @@ describe('db/database_provider', () => {
     });
 
     it('should provide a DatabaseProvider with a logger for use in its methods', async () => {
-      expect(typeof provider.log).toBe('object');
-      expect(typeof provider.log.trace).toBe('function');
-      expect(typeof provider.log.verbose).toBe('function');
-      expect(typeof provider.log.debug).toBe('function');
-      expect(typeof provider.log.info).toBe('function');
-      expect(typeof provider.log.warn).toBe('function');
-      expect(typeof provider.log.error).toBe('function');
-      expect(typeof provider.log.critical).toBe('function');
+      expect(typeof provider.$log).toBe('object');
+      expect(typeof provider.$log.trace).toBe('function');
+      expect(typeof provider.$log.verbose).toBe('function');
+      expect(typeof provider.$log.debug).toBe('function');
+      expect(typeof provider.$log.info).toBe('function');
+      expect(typeof provider.$log.warn).toBe('function');
+      expect(typeof provider.$log.error).toBe('function');
+      expect(typeof provider.$log.critical).toBe('function');
     });
   });
 

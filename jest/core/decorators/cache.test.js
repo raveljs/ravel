@@ -18,7 +18,7 @@ describe('Ravel', () => {
       Routes = Ravel.Routes;
       app = new Ravel();
       app.set('keygrip keys', ['mysecret']);
-      app.set('log level', app.log.NONE);
+      app.set('log level', app.$log.NONE);
       cache = Routes.cache;
     });
 

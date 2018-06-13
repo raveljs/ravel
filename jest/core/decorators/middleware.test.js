@@ -8,7 +8,7 @@ describe('Ravel', () => {
       Module = Ravel.Module;
       app = new Ravel();
       app.set('keygrip keys', ['mysecret']);
-      app.set('log level', app.log.NONE);
+      app.set('log level', app.$log.NONE);
       middleware = Module.middleware;
     });
 

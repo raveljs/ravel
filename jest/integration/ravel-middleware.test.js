@@ -28,7 +28,7 @@ describe('Ravel end-to-end middleware test', () => {
       }
 
       app = new Ravel();
-      app.set('log level', app.log.NONE);
+      app.set('log level', app.$log.NONE);
       app.set('keygrip keys', ['mysecret']);
 
       app.load(TestModule, TestRoutes);

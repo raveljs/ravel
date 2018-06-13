@@ -8,10 +8,10 @@ describe('Ravel end-to-end test', () => {
     //   it('should log unhandled erors within Promises', async () => {
     //     const Ravel = require('../../lib/ravel');
     //     app = new Ravel();
-    //     app.set('log level', app.log.ERROR);
+    //     app.set('log level', app.$log.ERROR);
     //     app.set('keygrip keys', ['mysecret']);
     //     await app.init();
-    //     const spy = jest.spyOn(app.log, 'error');
+    //     const spy = jest.spyOn(app.$log, 'error');
     //     for (let i = 0; i < 5; i++) {
     //       Promise.resolve('promised value').then(() => {
     //         throw new Error('error');
@@ -113,7 +113,7 @@ describe('Ravel end-to-end test', () => {
         app = new Ravel();
         expect(Ravel.httpCodes).toBe(httpCodes);
         expect(Ravel.Error).toBe($err.General);
-        app.set('log level', app.log.NONE);
+        app.set('log level', app.$log.NONE);
         app.set('keygrip keys', ['mysecret']);
 
         app.load(Users, UsersResource, TestRoutes);

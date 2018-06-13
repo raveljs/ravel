@@ -87,7 +87,7 @@ describe('Routes', () => {
         }
         const app = new Ravel();
         app.set('keygrip keys', ['abc']);
-        app.set('log level', app.log.NONE);
+        app.set('log level', app.$log.NONE);
         app.load(Stub);
         await app.init();
         const res = await request(app.callback).get('/app/path');
@@ -103,7 +103,7 @@ describe('Routes', () => {
         }
         const app = new Ravel();
         app.set('keygrip keys', ['abc']);
-        app.set('log level', app.log.NONE);
+        app.set('log level', app.$log.NONE);
         app.load(Stub);
         await app.init();
         const res = await request(app.callback).get('/app/path');

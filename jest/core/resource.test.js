@@ -5,7 +5,7 @@ describe('Ravel', () => {
     Ravel = require('../../lib/ravel');
     app = new Ravel();
     app.set('keygrip keys', ['abc']);
-    app.set('log level', app.log.NONE);
+    app.set('log level', app.$log.NONE);
   });
   // Testing how Ravel loads resources
   describe('load', () => {

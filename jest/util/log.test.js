@@ -1,4 +1,4 @@
-describe('Ravel.Log', () => {
+describe('Ravel.$log', () => {
   let app, intel, intelLogger;
   beforeEach(async () => {
     jest.resetModules();
@@ -45,7 +45,7 @@ describe('Ravel.Log', () => {
 
   describe('#setLevel()', () => {
     it('should allow clients to set the logging level', async () => {
-      app.set('log level', app.log.TRACE);
+      app.set('log level', app.$log.TRACE);
       await app.init();
       expect(intel.setLevel).toHaveBeenCalledTimes(1);
       expect(intel.setLevel).toHaveBeenCalledWith(intel.TRACE);
@@ -61,7 +61,7 @@ describe('Ravel.Log', () => {
     it('should allow logging at the trace level', async () => {
       await app.init();
       const message = 'a message';
-      app.log.trace(message);
+      app.$log.trace(message);
       expect(intelLogger.trace).toHaveBeenCalledWith(message);
     });
   });
@@ -70,7 +70,7 @@ describe('Ravel.Log', () => {
     it('should allow logging at the verbose level', async () => {
       await app.init();
       const message = 'a message';
-      app.log.verbose(message);
+      app.$log.verbose(message);
       expect(intelLogger.verbose).toHaveBeenCalledWith(message);
     });
   });
@@ -79,7 +79,7 @@ describe('Ravel.Log', () => {
     it('should allow logging at the debug level', async () => {
       await app.init();
       const message = 'a message';
-      app.log.debug(message);
+      app.$log.debug(message);
       expect(intelLogger.debug).toHaveBeenCalledWith(message);
     });
   });
@@ -88,7 +88,7 @@ describe('Ravel.Log', () => {
     it('should allow logging at the info level', async () => {
       await app.init();
       const message = 'a message';
-      app.log.info(message);
+      app.$log.info(message);
       expect(intelLogger.info).toHaveBeenCalledWith(message);
     });
   });
@@ -97,7 +97,7 @@ describe('Ravel.Log', () => {
     it('should allow logging at the warn level', async () => {
       await app.init();
       const message = 'a message';
-      app.log.warn(message);
+      app.$log.warn(message);
       expect(intelLogger.warn).toHaveBeenCalledWith(message);
     });
   });
@@ -106,7 +106,7 @@ describe('Ravel.Log', () => {
     it('should allow logging at the error level', async () => {
       await app.init();
       const message = 'a message';
-      app.log.error(message);
+      app.$log.error(message);
       expect(intelLogger.error).toHaveBeenCalledWith(message);
     });
   });
@@ -115,7 +115,7 @@ describe('Ravel.Log', () => {
     it('should allow logging at the critical level', async () => {
       await app.init();
       const message = 'a message';
-      app.log.critical(message);
+      app.$log.critical(message);
       expect(intelLogger.critical).toHaveBeenCalledWith(message);
     });
   });
@@ -123,7 +123,7 @@ describe('Ravel.Log', () => {
   describe('#getLogger()', () => {
     it('should return a named logger with identical logging methods to the root logger', async () => {
       await app.init();
-      const logger = app.log.getLogger('name');
+      const logger = app.$log.getLogger('name');
       const message = 'a message';
       expect(typeof logger.trace).toBe('function');
       logger.trace(message);
@@ -157,7 +157,7 @@ describe('Ravel.Log', () => {
     });
 
     it('should set the client selected log level on \'start\' if one was specified via Ravel.set(\'log level\')', async () => {
-      app.set('log level', app.log.ERROR);
+      app.set('log level', app.$log.ERROR);
       await app.init();
       expect(intel.setLevel).toHaveBeenCalledTimes(1);
       expect(intel.setLevel).toHaveBeenCalledWith(intel.ERROR);

@@ -23,7 +23,7 @@ describe('Some test', () => {
     const Ravel = new require('ravel');
     app = new Ravel();
     app.set('keygrip keys', ['abc']); // required parameter
-    app.set('log level', app.log.NONE); // if you want to silence logging
+    app.set('log level', app.$log.NONE); // if you want to silence logging
     // load your app components
     app.scan('../src/modules', '../src/resources', '../src/routes');
     await app.init();
@@ -67,7 +67,7 @@ beforeEach(() => async () => {
     const Ravel = new require('ravel');
     app = new Ravel();
     app.set('keygrip keys', ['abc']); // required parameter
-    app.set('log level', app.log.NONE); // if you want to silence logging
+    app.set('log level', app.$log.NONE); // if you want to silence logging
     // You want to test IsolatedModule, which depends on AnotherModule
     const IsolatedModule = require('../src/path/to/module');
     // You can either require AnotherModule, or use a mock:

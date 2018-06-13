@@ -12,7 +12,7 @@ describe('Ravel KeyGrip Keys Rotation', () => {
       const initialKeys = ['one', 'two'];
       const Ravel = require('../../lib/ravel');
       const app = new Ravel();
-      app.set('log level', app.log.NONE);
+      app.set('log level', app.$log.NONE);
       app.set('keygrip keys', initialKeys);
       await app.init();
       const session = `${Math.random()}`;

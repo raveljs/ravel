@@ -114,7 +114,7 @@ describe('Ravel lifeycle test', () => {
     }
 
     app = new Ravel();
-    app.set('log level', app.log.NONE);
+    app.set('log level', app.$log.NONE);
     app.set('keygrip keys', ['mysecret']);
     app.set('koa public directory', '/public');
     app.set('koa favicon path', '/favicon.ico');

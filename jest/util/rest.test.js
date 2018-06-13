@@ -5,7 +5,7 @@ describe('util/rest', () => {
   beforeEach(async () => {
     ravelApp = new (require('../../lib/ravel'))();
     ravelApp.set('keygrip keys', ['abc']);
-    ravelApp.set('log level', ravelApp.log.NONE);
+    ravelApp.set('log level', ravelApp.$log.NONE);
     await ravelApp.init();
     // we'll test the rest middleware in isolation, using koa directly
     const Koa = require('koa');

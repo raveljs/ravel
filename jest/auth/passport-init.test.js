@@ -31,7 +31,7 @@ describe('auth/passport_init', () => {
 
     Ravel = require('../../lib/ravel');
     ravelApp = new Ravel();
-    ravelApp.set('log level', ravelApp.log.NONE);
+    ravelApp.set('log level', ravelApp.$log.NONE);
     ravelApp.set('keygrip keys', ['abc']);
     authconfig = Ravel.Module.authconfig;
   });

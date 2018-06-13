@@ -11,7 +11,7 @@ describe('Ravel', () => {
     autoinject = require('../../lib/ravel').autoinject;
     app = new Ravel();
     app.set('keygrip keys', ['abc']);
-    app.set('log level', app.log.NONE);
+    app.set('log level', app.$log.NONE);
   });
 
   describe('#inject()', () => {

@@ -4,7 +4,7 @@ describe('db/database', () => {
     const Ravel = require('../../lib/ravel');
     ravelApp = new Ravel();
     ravelApp.set('keygrip keys', ['abc']);
-    ravelApp.set('log level', ravelApp.log.NONE);
+    ravelApp.set('log level', ravelApp.$log.NONE);
     DatabaseProvider = Ravel.DatabaseProvider;
     Resource = Ravel.Resource;
     Module = Ravel.Module;

@@ -3,7 +3,7 @@ describe('auth/authentication_provider', () => {
   beforeEach(() => {
     Ravel = require('../../lib/ravel');
     ravelApp = new Ravel();
-    ravelApp.log.setLevel(ravelApp.log.NONE); // because we won't init
+    ravelApp.$log.setLevel(ravelApp.$log.NONE); // because we won't init
     class TestProvider extends Ravel.AuthenticationProvider {
       get name () {
         return 'test';
@@ -25,7 +25,7 @@ describe('auth/authentication_provider', () => {
       expect(typeof provider.init).toBe('function');
       expect(typeof provider.handlesClient).toBe('function');
       expect(typeof provider.credentialToProfile).toBe('function');
-      expect(typeof provider.log).toBe('object');
+      expect(typeof provider.$log).toBe('object');
       expect(typeof provider.ravelInstance).toBe('object');
       expect(typeof provider.$err).toBe('function');
     });
