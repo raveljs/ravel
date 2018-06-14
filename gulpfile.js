@@ -6,16 +6,9 @@ const del = require('del');
 const exec = require('child_process').exec;
 
 const babelConfig = {
-  'retainLines': true
+  'retainLines': true,
+  'plugins': ['transform-decorators-legacy']
 };
-
-if (process.execArgv.indexOf('test')) {
-  console.log('Transpiling async/await...');
-  babelConfig.plugins = ['transform-decorators-legacy', 'istanbul'];
-} else {
-  console.log('Using native async/await...');
-  babelConfig.plugins = ['transform-decorators-legacy'];
-}
 
 gulp.task('lint', function () {
   return gulp.src(['./lib/**/*.js', './test/**/*.js', 'gulpfile.js'])
@@ -42,7 +35,7 @@ gulp.task('docs', function (done) {
 
 gulp.task('clean', function () {
   return del([
-    'coverage', 'docs', 'test-dist'
+    'coverage', 'docs-dist', 'test-dist'
   ]);
 });
 

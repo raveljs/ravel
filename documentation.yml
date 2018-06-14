@@ -1,6 +1,7 @@
 name: Ravel API
-version: 0.25.1
+version: 0.26.0
 versions:
+  - 0.26.0
   - 0.25.1
   - 0.25.0
   - 0.24.1
@@ -46,9 +47,14 @@ toc:
   - Resource
   - name: Dependency Injection
   - inject
+  - autoinject
+  - name: Core Services
+  - Services
+  - HTTPCodes
   - name: Routing and Middleware
   - mapping
   - before
+  - cache
   - name: Databases and Transaction-Per-Request
   - transaction
   - TransactionFactory
@@ -62,5 +68,6 @@ toc:
   - name: Built-in Error Types
     description: |
       Built-in error types are automatically translated into standard HTTP response status codes when thrown.
-  - ApplicationError
-  - name: Other Stuff
+  - $err
+  - name: Testing Ravel Applications
+    file: docs/testing.md

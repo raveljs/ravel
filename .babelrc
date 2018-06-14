@@ -2,9 +2,6 @@
   "retainLines": true,
   "env": {
     "test": {
-      "plugins": ["transform-decorators-legacy", "istanbul"]
-    },
-    "test-no-cov": {
       "plugins": ["transform-decorators-legacy"]
     }
   },

@@ -8,26 +8,28 @@
           "name": "Debug test suite",
           "type": "node2",
           "request": "launch",
-          "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
-          "args": ["--no-timeouts", "--require", "babel-register", "--recursive", "--exit", "${workspaceFolder}/test"],
+          "program": "${workspaceRoot}/node_modules/jest/bin/jest.js",
+          "args": ["--runInBand"],
           "console": "integratedTerminal",
           "internalConsoleOptions": "neverOpen",
           "env": {
-            "NODE_ENV": "test-no-cov"
+            "NODE_ENV": "test"
           },
+          "cwd": "${workspaceRoot}",
           "smartStep": true
         },
         {
           "name": "Debug current file",
           "type": "node2",
           "request": "launch",
-          "program": "${workspaceRoot}/node_modules/mocha/bin/_mocha",
-          "args": ["--no-timeouts", "--require", "babel-register", "--exit", "${file}"],
+          "program": "${workspaceRoot}/node_modules/jest/bin/jest.js",
+          "args": ["--runInBand", "-i", "${file}"],
           "console": "integratedTerminal",
           "internalConsoleOptions": "neverOpen",
           "env": {
-            "NODE_ENV": "test-no-cov"
+            "NODE_ENV": "test"
           },
+          "cwd": "${workspaceRoot}",
           "smartStep": true
         }
     ]
