@@ -3,12 +3,31 @@ const Metadata = require('../../lib/util/meta');
 
 describe('Ravel', () => {
   beforeEach(() => {
+    jest.restoreAllMocks();
     jest.resetModules();
+    jest.clearAllMocks();
   });
 
   // Testing how Ravel loads things from a directory
   describe('scan', () => {
-    // TODO include routes and resources
+    it('should fail with an IllegalValue error if a target directory does not exist', () => {
+      const app = new (require('../../lib/ravel'))();
+      app.load = jest.fn();
+      expect(() => app.scan(`./${Math.random()}`)).toThrow(app.$err.IllegalValue);
+    });
+
+    it('should fail with an IllegalValue error if a target directory is not a directory', () => {
+      const fs = require('fs');
+      jest.spyOn(fs, 'lstatSync').mockImplementation(function () {
+        return {
+          isDirectory: function () { return false; }
+        };
+      });
+      const app = new (require('../../lib/ravel'))();
+      app.load = jest.fn();
+      expect(() => app.scan(`./${Math.random()}`)).toThrow(app.$err.IllegalValue);
+    });
+
     it('should attempt to load classes from files within a directory', () => {
       jest.doMock('fs-readdir-recursive', () => {
         return () => ['test1.js', 'test2.js', '.eslintrc', 'package/test3.js'];
