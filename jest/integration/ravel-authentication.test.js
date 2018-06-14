@@ -117,6 +117,12 @@ describe('Authentication Integration Test', () => {
           ctx.body = ctx.passport.user;
           ctx.status = 200;
         }
+
+        @authenticated({redirect: true})
+        @mapping(Ravel.Routes.GET, '/redirect')
+        async redirectHandlerl (ctx) {
+          ctx.body = 'hello';
+        }
       }
 
       new LocalProvider(app); // eslint-disable-line no-new
@@ -156,6 +162,13 @@ describe('Authentication Integration Test', () => {
       await request(app.callback)
         .get('/app')
         .expect(401);
+    });
+
+    it('should redirect unauthenticated users on an @authenticated route with redirect:true', async () => {
+      await request(app.callback)
+        .get('/redirect')
+        .expect(302)
+        .expect('Location', app.get('login route'));
     });
 
     it('should reject tokenauth users on an @authenticated route when they have the wrong token', async () => {
