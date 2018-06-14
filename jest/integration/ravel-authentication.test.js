@@ -9,7 +9,7 @@ describe('Authentication Integration Test', () => {
   beforeEach(async () => {
     Ravel = require('../../lib/ravel');
     app = new Ravel();
-    app.set('log level', app.$log.INFO);
+    app.set('log level', app.$log.NONE);
     app.set('keygrip keys', ['mysecret']);
   });
 
@@ -113,24 +113,12 @@ describe('Authentication Integration Test', () => {
 
       @Ravel.Routes('/')
       @Ravel.autoinject('$err', '$log')
-      @Ravel.inject('koa-bodyparser')
       @mapping(Ravel.Routes.DELETE, '/app', Ravel.httpCodes.NOT_IMPLEMENTED)
       class TestRoutes {
-        constructor (bodyParser) {
-          this['body-parser'] = bodyParser();
-        }
         @authenticated
         @mapping(Ravel.Routes.GET, '/app')
         async appHandler (ctx) {
           ctx.body = '<!DOCTYPE html><html></html>';
-          ctx.status = 200;
-        }
-
-        @Ravel.Routes.before('body-parser')
-        @mapping(Ravel.Routes.POST, '/travis')
-        async travisHandler (ctx) {
-          this.$log.critical(JSON.stringify(ctx.request.body));
-          this.$log.critical(ctx.headers);
           ctx.status = 200;
         }
 
@@ -222,7 +210,7 @@ describe('Authentication Integration Test', () => {
         .expect(401);
     });
 
-    it.only('should allow access to authenticated users on @authenticated routes', async () => {
+    it('should allow access to authenticated users on @authenticated routes', async () => {
       // TODO remove workaround.
       // cookies are busted in jest due to bugs:
       // https://github.com/visionmedia/supertest/issues/336
@@ -236,12 +224,10 @@ describe('Authentication Integration Test', () => {
         .send({ username: profile.name, password: profile.password })
         .expect(200);
       // trying cookiejar workaround
-      const cookies = res.headers['set-cookie'][0].split(',').map(item => item.split(';')[0]);
-      cookies.forEach(c => agent.jar.setCookie(c));
-      await agent.post('/travis')
-        .type('application/json')
-        .send({orig: res.headers['set-cookie'], new: cookies})
-        .expect(200);
+      res.headers['set-cookie'][0]
+        .split(',')
+        .map(item => item.split(';')[0])
+        .forEach(c => agent.jar.setCookie(c));
       await agent
         .get('/app')
         .expect(200, '<!DOCTYPE html><html></html>');
