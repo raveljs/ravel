@@ -113,8 +113,12 @@ describe('Authentication Integration Test', () => {
 
       @Ravel.Routes('/')
       @Ravel.autoinject('$err', '$log')
+      @Ravel.inject('koa-bodyparser')
       @mapping(Ravel.Routes.DELETE, '/app', Ravel.httpCodes.NOT_IMPLEMENTED)
       class TestRoutes {
+        constructor (bodyParser) {
+          this['body-parser'] = bodyParser();
+        }
         @authenticated
         @mapping(Ravel.Routes.GET, '/app')
         async appHandler (ctx) {
@@ -122,8 +126,10 @@ describe('Authentication Integration Test', () => {
           ctx.status = 200;
         }
 
-        @mapping(Ravel.Routes.GET, '/travis')
+        @Ravel.Routes.before('body-parser')
+        @mapping(Ravel.Routes.POST, '/travis')
         async travisHandler (ctx) {
+          this.$log.critical(JSON.stringify(ctx.request.body));
           this.$log.critical(ctx.headers);
           ctx.status = 200;
         }
@@ -216,7 +222,7 @@ describe('Authentication Integration Test', () => {
         .expect(401);
     });
 
-    it('should allow access to authenticated users on @authenticated routes', async () => {
+    it.only('should allow access to authenticated users on @authenticated routes', async () => {
       // TODO remove workaround.
       // cookies are busted in jest due to bugs:
       // https://github.com/visionmedia/supertest/issues/336
@@ -232,7 +238,10 @@ describe('Authentication Integration Test', () => {
       const cookies = res.headers['set-cookie'].length === 1
         ? res.headers['set-cookie'][0].split(',').map(item => item.split(';')[0]).join(';')
         : res.headers['set-cookie'].map(item => item.split(';')[0]);
-      await agent.get('/travis').set('Cookie', cookies).expect(200);
+      await agent.post('/travis')
+        .type('application/json')
+        .send(res.headers['set-cookie'])
+        .set('Cookie', cookies).expect(200);
       await agent
         .get('/app')
         .set('Cookie', cookies)
