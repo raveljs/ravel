@@ -224,6 +224,7 @@ describe('Authentication Integration Test', () => {
         .send({ username: profile.name, password: profile.password })
         .expect(200);
       const cookies = (res.headers['set-cookie'].length === 1 ? res.headers['set-cookie'][0].split(',') : res.headers['set-cookie']).map(item => item.split(';')[0]).join(';');
+      expect(cookies).toMatch(/^koa.sid=[\w-]+;koa.sid.sig=[\w-]+$/);
       await agent
         .get('/app')
         .set('Cookie', cookies)
@@ -269,6 +270,7 @@ describe('Authentication Integration Test', () => {
         .type('application/json')
         .send({ username: profile.name, password: profile.password });
       const cookies = (res.headers['set-cookie'].length === 1 ? res.headers['set-cookie'][0].split(',') : res.headers['set-cookie']).map(item => item.split(';')[0]).join(';');
+      expect(cookies).toMatch(/^koa.sid=[\w-]+;koa.sid.sig=[\w-]+$/);
       await agent
         .get('/deprecated')
         .set('Cookie', cookies)
