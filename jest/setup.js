@@ -19,3 +19,5 @@ EventEmitter.prototype.on = addListener;
 
 global.upath = require('upath');
 global.request = require('supertest');
+
+jest.setTimeout(20000);
