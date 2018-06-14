@@ -217,7 +217,7 @@ describe('Authentication Integration Test', () => {
       // https://github.com/facebook/jest/issues/3547
       // https://github.com/visionmedia/supertest/issues/460
       // https://github.com/facebook/jest/issues/2549
-      const agent = request.agent(app.server);
+      const agent = request.agent(app.callback);
       const res = await agent
         .post('/auth/local')
         .type('application/json')
@@ -231,7 +231,7 @@ describe('Authentication Integration Test', () => {
     });
 
     it('should allow access to token-authenticated users on @authenticated routes', async () => {
-      const agent = request.agent(app.server);
+      const agent = request.agent(app.callback);
       await agent
         .get('/app')
         .set('x-auth-token', '123456789')
@@ -263,7 +263,7 @@ describe('Authentication Integration Test', () => {
       // https://github.com/visionmedia/supertest/issues/460
       // https://github.com/facebook/jest/issues/2549
       const spy = jest.spyOn(app.$log, 'warn');
-      const agent = request.agent(app.server);
+      const agent = request.agent(app.callback);
       const res = await agent
         .post('/auth/local')
         .type('application/json')
