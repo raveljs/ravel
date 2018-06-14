@@ -235,12 +235,12 @@ describe('Authentication Integration Test', () => {
         .type('application/json')
         .send({ username: profile.name, password: profile.password })
         .expect(200);
-      const cookies = res.headers['set-cookie'].length === 1
-        ? res.headers['set-cookie'][0].split(',').map(item => item.split(';')[0]).join(';')
-        : res.headers['set-cookie'].map(item => item.split(';')[0]);
+      const cookies = `${process.env.CI}` === 'true'
+        ? res.headers['set-cookie'][0].split(',').map(item => item.split(';')[0])
+        : res.headers['set-cookie'][0].split(',').map(item => item.split(';')[0]).join(';');
       await agent.post('/travis')
         .type('application/json')
-        .send(res.headers['set-cookie'])
+        .send({orig: res.headers['set-cookie'], new: cookies})
         .set('Cookie', cookies).expect(200);
       await agent
         .get('/app')
