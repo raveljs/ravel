@@ -223,8 +223,9 @@ describe('Authentication Integration Test', () => {
         .type('application/json')
         .send({ username: profile.name, password: profile.password })
         .expect(200);
-      const cookies = (res.headers['set-cookie'].length === 1 ? res.headers['set-cookie'][0].split(',') : res.headers['set-cookie']).map(item => item.split(';')[0]).join(';');
-      expect(cookies).toMatch(/^koa.sid=[\w-]+;koa.sid.sig=[\w-]+$/);
+      const cookies = res.headers['set-cookie'].length === 1
+        ? res.headers['set-cookie'][0].split(',').map(item => item.split(';')[0]).join(';')
+        : res.headers['set-cookie'].map(item => item.split(';')[0]);
       await agent
         .get('/app')
         .set('Cookie', cookies)
@@ -257,23 +258,11 @@ describe('Authentication Integration Test', () => {
     });
 
     it('should log a deprecation message for use of ctx.passport', async () => {
-      // TODO remove workaround.
-      // cookies are busted in jest due to bugs:
-      // https://github.com/visionmedia/supertest/issues/336
-      // https://github.com/facebook/jest/issues/3547
-      // https://github.com/visionmedia/supertest/issues/460
-      // https://github.com/facebook/jest/issues/2549
       const spy = jest.spyOn(app.$log, 'warn');
-      const agent = request.agent(app.callback);
-      const res = await agent
-        .post('/auth/local')
-        .type('application/json')
-        .send({ username: profile.name, password: profile.password });
-      const cookies = (res.headers['set-cookie'].length === 1 ? res.headers['set-cookie'][0].split(',') : res.headers['set-cookie']).map(item => item.split(';')[0]).join(';');
-      expect(cookies).toMatch(/^koa.sid=[\w-]+;koa.sid.sig=[\w-]+$/);
-      await agent
+      await request(app.callback)
         .get('/deprecated')
-        .set('Cookie', cookies)
+        .set('x-auth-token', '123456789')
+        .set('x-auth-client', 'token')
         .expect(200);
       expect(spy).toHaveBeenCalledWith('ctx.passport is deprecated. Please use ctx.state instead.');
     });

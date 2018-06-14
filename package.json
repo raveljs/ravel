@@ -72,7 +72,7 @@
     "clean": "gulp clean",
     "docs": "gulp docs",
     "watch": "gulp watch",
-    "test": "cross-env NODE_ENV=test npm run lint && npm run lint:jest && npm run jest",
+    "test": "cross-env NODE_ENV=test npm run lint && npm run jest",
     "test-windows": "npm test",
     "lint": "npm run lint:lib && npm run lint:jest",
     "lint:lib": "eslint ./lib",
