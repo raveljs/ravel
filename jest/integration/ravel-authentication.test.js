@@ -9,7 +9,7 @@ describe('Authentication Integration Test', () => {
   beforeEach(async () => {
     Ravel = require('../../lib/ravel');
     app = new Ravel();
-    app.set('log level', app.$log.NONE);
+    // app.set('log level', app.$log.NONE);
     app.set('keygrip keys', ['mysecret']);
   });
 
@@ -112,12 +112,13 @@ describe('Authentication Integration Test', () => {
       const authenticated = Ravel.Routes.authenticated;
 
       @Ravel.Routes('/')
-      @Ravel.autoinject('$err')
+      @Ravel.autoinject('$err', '$log')
       @mapping(Ravel.Routes.DELETE, '/app', Ravel.httpCodes.NOT_IMPLEMENTED)
       class TestRoutes {
         @authenticated
         @mapping(Ravel.Routes.GET, '/app')
         async appHandler (ctx) {
+          this.$log.critical(ctx.headers);
           ctx.body = '<!DOCTYPE html><html></html>';
           ctx.status = 200;
         }
