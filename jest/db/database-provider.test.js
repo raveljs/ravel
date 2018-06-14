@@ -6,12 +6,12 @@ describe('db/database_provider', () => {
     app.set('keygrip keys', ['abc']);
     app.set('log level', app.$log.NONE);
     DatabaseProvider = Ravel.DatabaseProvider;
-    provider = new DatabaseProvider(app, 'name');
+    provider = app.registerProvider(DatabaseProvider, 'name');
   });
 
   describe('constructor', () => {
     it('should allow clients to implement a database provider which has a name and several methods', async () => {
-      provider = new DatabaseProvider(app, 'mysql');
+      provider = app.registerProvider(DatabaseProvider, 'mysql');
       expect(provider.name).toBe('mysql');
       expect(typeof provider.getTransactionConnection).toBe('function');
       expect(typeof provider.exitTransaction).toBe('function');

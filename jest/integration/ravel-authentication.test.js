@@ -148,7 +148,7 @@ describe('Authentication Integration Test', () => {
         }
       }
 
-      new LocalProvider(app); // eslint-disable-line no-new
+      app.registerProvider(LocalProvider);
       app.load(AuthConfig, TestRoutes);
       await app.init();
     });

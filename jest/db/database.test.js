@@ -10,8 +10,8 @@ describe('db/database', () => {
     Module = Ravel.Module;
     inject = Ravel.inject;
     // mock a couple of providers for us to use
-    mysqlProvider = new DatabaseProvider(ravelApp, 'mysql');
-    postgresProvider = new DatabaseProvider(ravelApp, 'postgres');
+    mysqlProvider = ravelApp.registerProvider(DatabaseProvider, 'mysql');
+    postgresProvider = ravelApp.registerProvider(DatabaseProvider, 'postgres');
 
     // mock stuff
     mysqlConnection = Object.create(null);
