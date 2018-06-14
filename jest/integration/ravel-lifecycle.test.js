@@ -155,9 +155,9 @@ describe('Ravel lifeycle test', () => {
       expect(useSpy).toHaveBeenCalledWith(session);
       expect(gzipSpy).toHaveBeenCalled();
       expect(useSpy).toHaveBeenCalledWith(gzip);
-      expect(staticSpy).toHaveBeenCalledWith(upath.join(app.cwd, app.get('koa public directory')), expect.any(Object));
+      expect(staticSpy).toHaveBeenCalledWith(upath.toUnix(upath.posix.join(app.cwd, app.get('koa public directory'))), expect.any(Object));
       expect(useSpy).toHaveBeenCalledWith(staticMiddleware);
-      expect(faviconSpy).toHaveBeenCalledWith(upath.join(app.cwd, app.get('koa favicon path')));
+      expect(faviconSpy).toHaveBeenCalledWith(upath.toUnix(upath.posix.join(app.cwd, app.get('koa favicon path'))));
       expect(useSpy).toHaveBeenCalledWith(favicon);
       expect(app.initialized).toBeTruthy();
       expect(postinitHandlerCalled).toBe(1);
