@@ -84,14 +84,14 @@ describe('Ravel', () => {
   });
 
   describe('validateParameters', () => {
-    it('should throw app.$err.NotFound when a required parameter is not present', async () =>  {
+    it('should throw app.$err.NotFound when a required parameter is not present', async () => {
       app.registerParameter('test param', true);
       await app.init();
       await expect(app.listen()).rejects.toThrow(app.$err.NotFound);
       await app.close();
     });
 
-    it('should rethrow errors when app.get throws a non-NotFound Error', async () =>  {
+    it('should rethrow errors when app.get throws a non-NotFound Error', async () => {
       app.registerParameter('test param', true);
       await app.init();
       app.get = jest.fn(() => { throw new Error(); });

@@ -88,6 +88,16 @@ describe('Authentication Integration Test', () => {
             return Promise.reject(new this.$err.Authentication('User session cannot be found.'));
           }
         }
+        deserializeOrCreateUser (userId) {
+          if (userId !== profile.id) {
+            const newProfile = {
+              id: userId,
+              name: profile.name,
+              password: profile.password
+            };
+            return Promise.resolve(newProfile);
+          }
+        }
         verify (provider, username, password) {
           if (username === profile.name && password === profile.password) {
             return Promise.resolve(profile);
@@ -120,7 +130,13 @@ describe('Authentication Integration Test', () => {
 
         @authenticated({redirect: true})
         @mapping(Ravel.Routes.GET, '/redirect')
-        async redirectHandlerl (ctx) {
+        async redirectHandler (ctx) {
+          ctx.body = 'hello';
+        }
+
+        @authenticated({allowRegistration: true})
+        @mapping(Ravel.Routes.GET, '/autoregister')
+        async autoRegisterHandler (ctx) {
           ctx.body = 'hello';
         }
       }
@@ -214,6 +230,14 @@ describe('Authentication Integration Test', () => {
         .set('x-auth-token', '123456789')
         .set('x-auth-client', 'token')
         .expect(200, '<!DOCTYPE html><html></html>');
+    });
+
+    it('should allow auto registration when allowRegistration:true', async () => {
+      await request(app.callback)
+        .get('/autoregister')
+        .set('x-auth-token', '123456789')
+        .set('x-auth-client', 'token')
+        .expect(200, 'hello');
     });
 
     it('should log a deprecation message for use of ctx.passport', async () => {
