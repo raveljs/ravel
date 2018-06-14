@@ -11,13 +11,13 @@ describe('Ravel end-to-end test', () => {
         app.set('log level', app.$log.ERROR);
         app.set('keygrip keys', ['mysecret']);
         await app.init();
-        const spy = jest.spyOn(app.$log, 'error');
+        app.$log.error = jest.fn();
         for (let i = 0; i < 10; i++) {
           // fake it
           process.emit('unhandledRejection', new Error('error'));
         }
         await new Promise((resolve) => setTimeout(resolve, 10));
-        expect(spy).toHaveBeenCalled();
+        expect(app.$log.error).toHaveBeenCalled();
       });
     });
 

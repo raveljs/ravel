@@ -112,6 +112,7 @@ describe('Authentication Integration Test', () => {
       const authenticated = Ravel.Routes.authenticated;
 
       @Ravel.Routes('/')
+      @Ravel.autoinject('$err')
       @mapping(Ravel.Routes.DELETE, '/app', Ravel.httpCodes.NOT_IMPLEMENTED)
       class TestRoutes {
         @authenticated
@@ -138,6 +139,12 @@ describe('Authentication Integration Test', () => {
         @mapping(Ravel.Routes.GET, '/autoregister')
         async autoRegisterHandler (ctx) {
           ctx.body = 'hello';
+        }
+
+        @authenticated
+        @mapping(Ravel.Routes.GET, '/err')
+        async errorHandler (ctx) {
+          throw new this.$err.IllegalValue();
         }
       }
 
@@ -238,6 +245,14 @@ describe('Authentication Integration Test', () => {
         .set('x-auth-token', '123456789')
         .set('x-auth-client', 'token')
         .expect(200, 'hello');
+    });
+
+    it('should allow rethrow non-auth errors from handler', async () => {
+      await request(app.callback)
+        .get('/err')
+        .set('x-auth-token', '123456789')
+        .set('x-auth-client', 'token')
+        .expect(400);
     });
 
     it('should log a deprecation message for use of ctx.passport', async () => {
