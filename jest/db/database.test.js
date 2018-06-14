@@ -60,6 +60,8 @@ describe('db/database', () => {
       ravelApp.load(R);
       await ravelApp.init();
       await request(ravelApp.callback).get('/');
+      await ravelApp.listen();
+      await ravelApp.close();
     });
 
     it('should populate req.transaction with a dictionary of only the correct open database connections when providers are requested by name', async () => {
