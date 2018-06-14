@@ -74,7 +74,7 @@
     "watch": "gulp watch",
     "test": "cross-env NODE_ENV=test npm run lint && npm run jest",
     "test-no-cov": "cross-env NODE_ENV=test npm run lint && npm run jest-no-cov",
-    "test-windows": "npm test-no-cov",
+    "test-windows": "npm run test-no-cov",
     "lint": "npm run lint:lib && npm run lint:jest",
     "lint:lib": "eslint ./lib",
     "lint:jest": "eslint ./jest",
