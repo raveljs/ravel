@@ -35,7 +35,7 @@ gulp.task('docs', function (done) {
 
 gulp.task('clean', function () {
   return del([
-    'coverage', 'docs', 'test-dist'
+    'coverage', 'docs-dist', 'test-dist'
   ]);
 });
 

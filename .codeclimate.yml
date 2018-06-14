@@ -17,3 +17,5 @@ exclude_paths:
 - documentation_theme/
 - test/
 - gulpfile.js
+- jest/
+- node_modules/
