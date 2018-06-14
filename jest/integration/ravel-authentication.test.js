@@ -9,7 +9,7 @@ describe('Authentication Integration Test', () => {
   beforeEach(async () => {
     Ravel = require('../../lib/ravel');
     app = new Ravel();
-    // app.set('log level', app.$log.NONE);
+    app.set('log level', app.$log.INFO);
     app.set('keygrip keys', ['mysecret']);
   });
 
@@ -118,8 +118,13 @@ describe('Authentication Integration Test', () => {
         @authenticated
         @mapping(Ravel.Routes.GET, '/app')
         async appHandler (ctx) {
-          this.$log.critical(ctx.headers);
           ctx.body = '<!DOCTYPE html><html></html>';
+          ctx.status = 200;
+        }
+
+        @mapping(Ravel.Routes.GET, '/travis')
+        async travisHandler (ctx) {
+          this.$log.critical(ctx.headers);
           ctx.status = 200;
         }
 
@@ -227,6 +232,7 @@ describe('Authentication Integration Test', () => {
       const cookies = res.headers['set-cookie'].length === 1
         ? res.headers['set-cookie'][0].split(',').map(item => item.split(';')[0]).join(';')
         : res.headers['set-cookie'].map(item => item.split(';')[0]);
+      await agent.get('/travis').set('Cookie', cookies).expect(200);
       await agent
         .get('/app')
         .set('Cookie', cookies)
