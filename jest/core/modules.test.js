@@ -7,8 +7,17 @@ describe('Ravel', () => {
     app.set('keygrip keys', ['abc']);
     app.set('log level', app.$log.NONE);
   });
+  describe('#module', () => {
+    it('should throw an exception if called before app.init()', () => {
+      @Ravel.Module('test')
+      class Test {}
+      app.load(Test);
+      expect(() => app.module('test')).toThrow(app.$err.General);
+    });
+  });
+
   // Testing how Ravel loads modules
-  describe('load', () => {
+  describe('#load', () => {
     describe('@Module', () => {
       it('should register modules for instantiation and initialization in Ravel.init', async () => {
         const spy = jest.fn();

@@ -64,8 +64,8 @@ describe('db/database', () => {
 
     it('should populate req.transaction with a dictionary of only the correct open database connections when providers are requested by name', async () => {
       @Resource('/')
+      @Resource.transaction('postgres')
       class R {
-        @Resource.transaction('postgres')
         getAll (ctx) {
           expect(mysqlProvider.getTransactionConnection).not.toHaveBeenCalled;
           expect(postgresProvider.getTransactionConnection).toHaveBeenCalled;

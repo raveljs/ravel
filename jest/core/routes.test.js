@@ -7,8 +7,18 @@ describe('Ravel', () => {
     app.set('keygrip keys', ['abc']);
     app.set('log level', app.$log.NONE);
   });
+
+  describe('#routes', () => {
+    it('should throw an exception if called before app.init()', () => {
+      @Ravel.Routes('/')
+      class Test {}
+      app.load(Test);
+      expect(() => app.routes('/')).toThrow(app.$err.General);
+    });
+  });
+
   // Testing how Ravel loads routes
-  describe('load', () => {
+  describe('#load', () => {
     describe('@Routes', () => {
       it('should register Routes modules for instantiation and initialization in Ravel.init', async () => {
         const spy = jest.fn();
