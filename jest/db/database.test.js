@@ -1,7 +1,7 @@
 describe('db/database', () => {
-  let DatabaseProvider, ravelApp, Resource, Module, inject, mysqlProvider, postgresProvider, mysqlConnection, postgresConnection;
+  let Ravel, DatabaseProvider, ravelApp, Resource, Module, inject, mysqlProvider, postgresProvider, mysqlConnection, postgresConnection;
   beforeEach(() => {
-    const Ravel = require('../../lib/ravel');
+    Ravel = require('../../lib/ravel');
     ravelApp = new Ravel();
     ravelApp.set('keygrip keys', ['abc']);
     ravelApp.set('log level', ravelApp.$log.NONE);
@@ -295,6 +295,23 @@ describe('db/database', () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
       expect(mysqlProvider.exitTransaction).toHaveBeenCalledWith(mysqlConnection, false);
       expect(postgresProvider.exitTransaction).toHaveBeenCalledWith(postgresConnection, false);
+    });
+
+    it('should populate req.transaction with an empty dictionary if no providers are registered', async () => {
+      ravelApp = new Ravel();
+      ravelApp.set('keygrip keys', ['abc']);
+      ravelApp.set('log level', ravelApp.$log.NONE);
+      @Resource('/')
+      @Resource.transaction('postgres')
+      class R {
+        getAll (ctx) {
+          expect(ctx.transaction).toEqual({});
+        }
+      }
+      ravelApp.load(R);
+      await ravelApp.init();
+
+      await request(ravelApp.callback).get('/');
     });
   });
 });
