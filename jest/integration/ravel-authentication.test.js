@@ -223,7 +223,7 @@ describe('Authentication Integration Test', () => {
         .type('application/json')
         .send({ username: profile.name, password: profile.password })
         .expect(200);
-      const cookies = res.headers['set-cookie'][0].split(',').map(item => item.split(';')[0]).join(';');
+      const cookies = (res.headers['set-cookie'].length === 1 ? res.headers['set-cookie'][0].split(',') : res.headers['set-cookie']).map(item => item.split(';')[0]).join(';');
       await agent
         .get('/app')
         .set('Cookie', cookies)
@@ -268,7 +268,7 @@ describe('Authentication Integration Test', () => {
         .post('/auth/local')
         .type('application/json')
         .send({ username: profile.name, password: profile.password });
-      const cookies = res.headers['set-cookie'][0].split(',').map(item => item.split(';')[0]).join(';');
+      const cookies = (res.headers['set-cookie'].length === 1 ? res.headers['set-cookie'][0].split(',') : res.headers['set-cookie']).map(item => item.split(';')[0]).join(';');
       await agent
         .get('/deprecated')
         .set('Cookie', cookies)
