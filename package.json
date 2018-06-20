@@ -81,6 +81,7 @@
     "jest": "cross-env NODE_ENV=test jest --coverage --silent",
     "jest-no-cov": "cross-env NODE_ENV=test jest --silent",
     "show-coverage": "gulp show-coverage",
+    "show-docs": "gulp show-docs",
     "dist": "gulp dist",
     "prepare": "gulp dist"
   },

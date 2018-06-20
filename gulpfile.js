@@ -55,4 +55,9 @@ gulp.task('show-coverage', function () {
     .pipe(plugins.open());
 });
 
+gulp.task('show-docs', ['docs'], function () {
+  return gulp.src('./docs-dist/index.html')
+    .pipe(plugins.open());
+});
+
 gulp.task('default', ['watch']);
