@@ -106,11 +106,12 @@ describe('Ravel', () => {
         'redis port': 6379,
         'redis max retries': 10,
         'redis keepalive interval': 1000,
+        'redis websocket channel prefix': 'ravel.ws',
         'port': 8080,
         'app route': '/',
         'login route': '/login',
         'keygrip keys': ['123abc'],
-        'session key': 'koa.sid',
+        'session key': 'ravel.sid',
         'session max age': null,
         'log level': 'NONE' // not a default, but we've set this in beforeEach
       };

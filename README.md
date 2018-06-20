@@ -402,12 +402,12 @@ app.set('redis port', 6379);
 app.set('redis password', undefined);
 app.set('redis max retries', 10); // connection retries
 app.set('port', 8080); // port the app will run on
-app.set('session key', 'koa.sid'); // the cookie name to use for sessions
+app.set('session key', 'ravel.sid'); // the cookie name to use for sessions
 app.set('session max age', null); // session maxAge (default never expires)
 app.set('app route', '/'); // if you have a UI, this is the path users will be sent to when they are logged in
 app.set('login route', '/login'); // if users aren't logged in and you redirect them, this is where they'll be sent
-app.set('koa public directory', undefined); // if you want to statically serve a directory
-app.set('koa favicon path', undefined); // favicon middleware configuration
+app.set('public directory', undefined); // if you want to statically serve a directory
+app.set('favicon path', undefined); // favicon middleware configuration
 ```
 
 #### .ravelrc.json
