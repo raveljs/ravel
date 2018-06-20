@@ -46,6 +46,10 @@ describe('Websocket Integration Test', () => {
         async subHandler (ctx) {
           ctx.body = await this.$ws.subscribe('a.channel', ctx);
         }
+        @Ravel.Routes.mapping(Ravel.Routes.POST, 'subscribeBad')
+        async badSubHandler (ctx) {
+          ctx.body = await this.$ws.subscribe('a/channel', ctx);
+        }
         @Ravel.Routes.mapping(Ravel.Routes.DELETE, 'subscribe')
         async unsubHandler (ctx) {
           ctx.body = await this.$ws.unsubscribe('a.channel', ctx);
@@ -95,6 +99,22 @@ describe('Websocket Integration Test', () => {
       await agent.post('/ws/publish').expect(201);
       await new Promise((resolve) => setTimeout(resolve, 100));
       expect(messageSpy).toHaveBeenCalled();
+    });
+
+    it('should allow clients to unsubscribe from topics and stop receiving messages', async () => {
+      const messageSpy = jest.fn();
+      ws.on('message', messageSpy);
+      await agent.post('/ws/subscribe').expect(201);
+      await agent.post('/ws/publish').expect(201);
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      await agent.delete('/ws/subscribe').expect(200);
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      await agent.post('/ws/publish').expect(201);
+      expect(messageSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw an error when clients attempt to subscribe to a non-dot-separated topic', async () => {
+      await agent.post('/ws/subscribeBad').expect(400);
     });
   });
 });
