@@ -69,5 +69,7 @@ toc:
     description: |
       Built-in error types are automatically translated into standard HTTP response status codes when thrown.
   - $err
+  - name: WebSockets
+    file: docs/ws.md
   - name: Testing Ravel Applications
     file: docs/testing.md
