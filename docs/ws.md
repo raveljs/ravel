@@ -53,3 +53,5 @@ class WSMessages {
 ```
 
 Then, on the client, the [ws](https://github.com/websockets/ws) library can be used normally to connect to the Ravel server and listen for the `on('message')` event.
+
+WebSockets can be disabled via `app.set('enable websockets', false)`.
