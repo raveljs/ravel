@@ -1032,6 +1032,9 @@ class MyRoutes {
 }
 ```
 
+### WebSockets
+> [<small>View API docs &#128366;</small>](http://raveljs.github.io/docs/latest/index.html#websockets)
+
 ## Deployment and Scaling
 
 Ravel is designed for horizontal scaling, and helps you avoid common pitfalls when designing your node.js backend application. In particular:

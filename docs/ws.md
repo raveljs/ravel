@@ -17,7 +17,7 @@ To utilize WebSockets, define your own endpoints (and logic) which allow clients
  */
 @Ravel.Resource('/ws/mytopic/subscription')
 @Ravel.autoinject('$ws')
-class WS {
+class WSSubscriptions {
   // user would send an empty POST to /ws/mytopic/subscription
   // to subscribe to my.topic
   async post (ctx) {
@@ -39,7 +39,7 @@ class WS {
 @Ravel.Resource('/ws/mytopic')
 @Ravel.inject('koa-bodyparser')
 @Ravel.autoinject('$ws')
-class WS {
+class WSMessages {
   constructor(bodyparser) {
     this['body-parser']  = bodyparser();
   }
