@@ -36,6 +36,21 @@ describe('Websocket Integration Test', () => {
     });
   });
 
+  describe('disabling websockets', () => {
+    beforeEach(async () => {
+      app.set('enable websockets', false);
+      await app.init();
+      await app.listen();
+    });
+
+    it('should allow clients to disable websockets', async () => {
+      const ws = new WebSocket(`ws://0.0.0.0:${app.get('port')}`);
+      await expect(new Promise((resolve, reject) => {
+        ws.on('error', () => reject(new Error()));
+      })).rejects.toThrow(Error);
+    });
+  });
+
   describe('subscription', () => {
     let ws, agent;
 

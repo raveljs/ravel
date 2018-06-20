@@ -397,6 +397,7 @@ Ravel has several core parameters:
 app.set('keygrip keys', ['my super secret key', 'another super secret key']);
 
 // these are optional (default values are shown):
+app.set('enable websockets', true); // set to false to disable websocket server
 app.set('redis host', undefined); // set to point to an external redis server (required for horizontal scaling).
 app.set('redis port', 6379);
 app.set('redis password', undefined);
