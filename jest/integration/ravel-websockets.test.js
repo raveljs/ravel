@@ -5,6 +5,8 @@ describe('Websocket Integration Test', () => {
     WebSocket = require('ws');
     Ravel = require('../../lib/ravel');
     app = new Ravel();
+    // choose random port to support jest parallelization
+    app.set('port', Math.floor(Math.random() * 10000) + 10000);
     app.set('log level', app.$log.NONE);
     app.set('keygrip keys', ['mysecret']);
   });
@@ -20,7 +22,7 @@ describe('Websocket Integration Test', () => {
     });
 
     it('should allow clients to establish a connection, setting a session cookie for identification', async () => {
-      const ws = new WebSocket('ws://0.0.0.0:8080');
+      const ws = new WebSocket(`ws://0.0.0.0:${app.get('port')}`);
       let cookies;
       await new Promise((resolve, reject) => {
         ws.on('upgrade', (response) => {
@@ -64,7 +66,7 @@ describe('Websocket Integration Test', () => {
       await app.init();
       await app.listen();
       // establish client connection
-      ws = new WebSocket('ws://0.0.0.0:8080');
+      ws = new WebSocket(`ws://0.0.0.0:${app.get('port')}`);
       let wsResponseCookies;
       await new Promise((resolve, reject) => {
         ws.on('upgrade', (response) => {
@@ -101,6 +103,17 @@ describe('Websocket Integration Test', () => {
       expect(messageSpy).toHaveBeenCalled();
     });
 
+    it('should not react differently to multiple subscriptions to the same topic', async () => {
+      const messageSpy = jest.fn();
+      ws.on('message', messageSpy);
+      await agent.post('/ws/subscribe').expect(201);
+      await agent.post('/ws/subscribe').expect(201);
+      await agent.post('/ws/subscribe').expect(201);
+      await agent.post('/ws/publish').expect(201);
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      expect(messageSpy).toHaveBeenCalledTimes(1);
+    });
+
     it('should allow clients to unsubscribe from topics and stop receiving messages', async () => {
       const messageSpy = jest.fn();
       ws.on('message', messageSpy);
@@ -113,8 +126,34 @@ describe('Websocket Integration Test', () => {
       expect(messageSpy).toHaveBeenCalledTimes(1);
     });
 
+    it('should allow clients to unsubscribe from topics they haven not subscribed to', async () => {
+      const messageSpy = jest.fn();
+      ws.on('message', messageSpy);
+      await agent.post('/ws/publish').expect(201);
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      await agent.delete('/ws/subscribe').expect(200);
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      await agent.post('/ws/publish').expect(201);
+      expect(messageSpy).toHaveBeenCalledTimes(0);
+    });
+
     it('should throw an error when clients attempt to subscribe to a non-dot-separated topic', async () => {
       await agent.post('/ws/subscribeBad').expect(400);
+    });
+
+    it('should throw an error when clients attempt to subscribe without a websocket cookie', async () => {
+      await request(app.callback).post('/ws/subscribe').expect(500);
+    });
+
+    it('should clean up after itself when handling publishes', async () => {
+      const messageSpy = jest.fn();
+      ws.on('message', messageSpy);
+      await agent.post('/ws/subscribe').expect(201);
+      ws.close();
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      await agent.post('/ws/publish').expect(201);
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      expect(messageSpy).toHaveBeenCalledTimes(0);
     });
   });
 });

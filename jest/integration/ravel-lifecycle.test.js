@@ -114,6 +114,8 @@ describe('Ravel lifeycle test', () => {
     }
 
     app = new Ravel();
+    // choose random port to support jest parallelization
+    app.set('port', Math.floor(Math.random() * 10000) + 10000);
     app.set('log level', app.$log.NONE);
     app.set('keygrip keys', ['mysecret']);
     app.set('public directory', '/public');
