@@ -16,6 +16,7 @@ Ravel is a [tiny](https://npm.anvaka.com/#/view/2d/ravel), sometimes-opinionated
 - [Installation](#installation)
 - [Architecture](#architecture)
   - [Modules (and Errors)](#modules-and-errors)
+  - [Middleware](#middleware)
   - [Routes](#routes)
   - [Resources](#resources)
   - [Bringing it all together](#bringing-it-all-together)
@@ -34,6 +35,7 @@ Ravel is a [tiny](https://npm.anvaka.com/#/view/2d/ravel), sometimes-opinionated
   - [Scoped Transactions](#scoped-transactions)
   - [Authentication Providers](#authentication-providers)
   - [Authentication](#authentication)
+  - [WebSockets](#websockets)
 - [Deployment and Scaling](#deployment-and-scaling)
 
 <!-- /TOC -->
