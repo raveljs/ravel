@@ -1,3 +1,3 @@
 if (`${process.env.CI}` === 'true') {
-  jest.setTimeout(20000);
+  jest.setTimeout(60000);
 }

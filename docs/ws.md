@@ -6,7 +6,7 @@ WebSockets in Ravel:
 - Are automatically safe for horizontal scaling, using `redis` to synchronize between different replicas of your application.
 - Are essentially **one-way**. Browser clients receive messages, but make HTTP requests to "send" them. This allows you to 1. set the rules for who can publish what and when, and 2. leverage existing Ravel functionality like `@authenticated` when defining your own publish endpoints. This also avoids the introduction of a custom message protocol such as STOMP and keeps things as straightforward as possible.
 
-To utilize WebSockets, define your own endpoints (and logic) which allow clients to subscribe to topics, for example:
+To utilize WebSockets, inject `$ws` into any `Module`, `Resource` or `Routes` class, and define your own endpoints (and/or logic) which allow clients to subscribe to topics, for example:
 
 ```js
 /**
