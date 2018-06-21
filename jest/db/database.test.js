@@ -3,6 +3,8 @@ describe('db/database', () => {
   beforeEach(() => {
     Ravel = require('../../lib/ravel');
     ravelApp = new Ravel();
+    // choose random port to support jest parallelization
+    ravelApp.set('port', Math.floor(Math.random() * 10000) + 10000);
     ravelApp.set('keygrip keys', ['abc']);
     ravelApp.set('log level', ravelApp.$log.NONE);
     DatabaseProvider = Ravel.DatabaseProvider;

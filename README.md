@@ -3,7 +3,7 @@
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/raveljs/ravel/master/LICENSE) [![npm version](https://badge.fury.io/js/ravel.svg)](http://badge.fury.io/js/ravel) [![Dependency Status](https://david-dm.org/raveljs/ravel.svg)](https://david-dm.org/raveljs/ravel) [![npm](https://img.shields.io/npm/dm/ravel.svg?maxAge=2592000)](https://www.npmjs.com/package/ravel) [![Build Status](https://travis-ci.org/raveljs/ravel.svg?branch=master)](https://travis-ci.org/raveljs/ravel) [![Build status](https://ci.appveyor.com/api/projects/status/5kx5j2d1fhyn9yn3/branch/master?svg=true)](https://ci.appveyor.com/project/Ghnuberath/ravel/branch/master) [![Test Coverage](https://codeclimate.com/github/raveljs/ravel/badges/coverage.svg)](https://codeclimate.com/github/raveljs/ravel/coverage) [![js-semistandard-style](https://img.shields.io/badge/code%20style-semistandard-brightgreen.svg?style=flat-square)](https://github.com/Flet/semistandard)
 
-Ravel is a tiny, sometimes-opinionated foundation for creating organized, maintainable, and scalable web applications in [node.js](https://github.com/joyent/node) with [ES2016/2017](http://kangax.github.io/compat-table/esnext/).
+Ravel is a [tiny](https://npm.anvaka.com/#/view/2d/ravel), sometimes-opinionated foundation for creating organized, maintainable, and scalable web applications in [node.js](https://github.com/joyent/node) with [ES2016/2017](http://kangax.github.io/compat-table/esnext/).
 
 **Note:** The `master` branch may be in an unstable or even broken state during development. Please use [releases](https://github.com/raveljs/ravel/releases) instead of the `master` branch to explore stable code.
 
@@ -52,6 +52,8 @@ And a few other features, plucked from popular back-end frameworks:
 - Transaction-per-request
 - Simple authentication and authentication configuration (no complex [passport](https://github.com/jaredhanson/passport) setup)
 - (Optional) externalized session storage for horizontal scalability
+
+Ravel is deliberately designed to [minimize unnecessary dependencies](https://npm.anvaka.com/#/view/2d/ravel) and have a small, well-documented codebase, making it easier to create secure and robust applications you and your users can trust.
 
 Ravel is layered on top of, and designed to be used with, awesome technologies, including:
 - [koa](http://koajs.com/)
@@ -397,17 +399,18 @@ Ravel has several core parameters:
 app.set('keygrip keys', ['my super secret key', 'another super secret key']);
 
 // these are optional (default values are shown):
+app.set('enable websockets', true); // set to false to disable websocket server
 app.set('redis host', undefined); // set to point to an external redis server (required for horizontal scaling).
 app.set('redis port', 6379);
 app.set('redis password', undefined);
 app.set('redis max retries', 10); // connection retries
 app.set('port', 8080); // port the app will run on
-app.set('session key', 'koa.sid'); // the cookie name to use for sessions
+app.set('session key', 'ravel.sid'); // the cookie name to use for sessions
 app.set('session max age', null); // session maxAge (default never expires)
 app.set('app route', '/'); // if you have a UI, this is the path users will be sent to when they are logged in
 app.set('login route', '/login'); // if users aren't logged in and you redirect them, this is where they'll be sent
-app.set('koa public directory', undefined); // if you want to statically serve a directory
-app.set('koa favicon path', undefined); // favicon middleware configuration
+app.set('public directory', undefined); // if you want to statically serve a directory
+app.set('favicon path', undefined); // favicon middleware configuration
 ```
 
 #### .ravelrc.json
@@ -1028,6 +1031,9 @@ class MyRoutes {
   }
 }
 ```
+
+### WebSockets
+> [<small>View API docs &#128366;</small>](http://raveljs.github.io/docs/latest/index.html#websockets)
 
 ## Deployment and Scaling
 

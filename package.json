@@ -81,6 +81,7 @@
     "jest": "cross-env NODE_ENV=test jest --coverage --silent",
     "jest-no-cov": "cross-env NODE_ENV=test jest --silent",
     "show-coverage": "gulp show-coverage",
+    "show-docs": "gulp show-docs",
     "dist": "gulp dist",
     "prepare": "gulp dist"
   },
@@ -98,15 +99,16 @@
     "node-fs": "0.1.7",
     "passport": "0.4.0",
     "redis": "2.8.0",
-    "redis-mock": "0.21.0",
-    "upath": "1.0.4"
+    "redis-mock": "0.27.0",
+    "upath": "1.0.4",
+    "ws": "5.2.0"
   },
   "devDependencies": {
     "cross-env": "5.1.1",
     "documentation": "4.0.0-rc.1",
     "yamljs": "0.3.0",
     "jest": "23.1.0",
-    "redis-mock": "0.21.0",
+    "redis-mock": "0.27.0",
     "eslint": "4.2.0",
     "eslint-config-standard": "10.2.1",
     "eslint-config-semistandard": "11.0.0",

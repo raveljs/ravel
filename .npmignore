@@ -12,5 +12,6 @@ gulpfile.js
 /.vscode
 jsconfig.json
 /lib
-/documentation-theme
+/documentation_theme
 /resources
+vendor.yml

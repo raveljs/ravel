@@ -114,10 +114,12 @@ describe('Ravel lifeycle test', () => {
     }
 
     app = new Ravel();
+    // choose random port to support jest parallelization
+    app.set('port', Math.floor(Math.random() * 10000) + 10000);
     app.set('log level', app.$log.NONE);
     app.set('keygrip keys', ['mysecret']);
-    app.set('koa public directory', '/public');
-    app.set('koa favicon path', '/favicon.ico');
+    app.set('public directory', '/public');
+    app.set('favicon path', '/favicon.ico');
 
     app.load(Users, UsersResource, TestRoutes);
   });
@@ -155,9 +157,9 @@ describe('Ravel lifeycle test', () => {
       expect(useSpy).toHaveBeenCalledWith(session);
       expect(gzipSpy).toHaveBeenCalled();
       expect(useSpy).toHaveBeenCalledWith(gzip);
-      expect(staticSpy).toHaveBeenCalledWith(upath.toUnix(upath.posix.join(app.cwd, app.get('koa public directory'))), expect.any(Object));
+      expect(staticSpy).toHaveBeenCalledWith(upath.toUnix(upath.posix.join(app.cwd, app.get('public directory'))), expect.any(Object));
       expect(useSpy).toHaveBeenCalledWith(staticMiddleware);
-      expect(faviconSpy).toHaveBeenCalledWith(upath.toUnix(upath.posix.join(app.cwd, app.get('koa favicon path'))));
+      expect(faviconSpy).toHaveBeenCalledWith(upath.toUnix(upath.posix.join(app.cwd, app.get('favicon path'))));
       expect(useSpy).toHaveBeenCalledWith(favicon);
       expect(app.initialized).toBeTruthy();
       expect(postinitHandlerCalled).toBe(1);
