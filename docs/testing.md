@@ -19,7 +19,7 @@ Having done so, bootstrap your application the same way you run it:
 ```js
 describe('Some test', () => {
   let app;
-  beforeEach(() => async () => {
+  beforeEach(async () => {
     const Ravel = new require('ravel');
     app = new Ravel();
     app.set('keygrip keys', ['abc']); // required parameter
@@ -63,7 +63,7 @@ it('should respond in some way', async () => {
 If you wish to test an individual `Module`, `Resource` or `Routes` class without bootstrapping your entire application, you can leverage `app.load()` to load or mock components:
 
 ```js
-beforeEach(() => async () => {
+beforeEach(async () => {
     const Ravel = new require('ravel');
     app = new Ravel();
     app.set('keygrip keys', ['abc']); // required parameter
