@@ -1,4 +1,6 @@
 let app;
+let postinjectHandlerCalled = 0;
+let anotherPostinjectHandlerCalled = 0;
 let postinitHandlerCalled = 0;
 let anotherPostinitHandlerCalled = 0;
 let prelistenHandlerCalled = 0;
@@ -15,12 +17,15 @@ describe('Ravel lifeycle test', () => {
     jest.resetModules();
     const Ravel = require('../../lib/ravel');
     const inject = Ravel.inject;
+    const postinject = Ravel.Module.postinject;
     const postinit = Ravel.Module.postinit;
     const prelisten = Ravel.Module.prelisten;
     const postlisten = Ravel.Module.postlisten;
     const interval = Ravel.Module.interval;
     const preclose = Ravel.Module.preclose;
     const koaconfig = Ravel.Module.koaconfig;
+    postinjectHandlerCalled = 0;
+    anotherPostinjectHandlerCalled = 0;
     postinitHandlerCalled = 0;
     anotherPostinitHandlerCalled = 0;
     prelistenHandlerCalled = 0;
@@ -30,8 +35,16 @@ describe('Ravel lifeycle test', () => {
 
     const u = [{id: 1, name: 'Joe'}, {id: 2, name: 'Jane'}];
 
+    @Ravel.Module('another')
+    class Another {
+      constructor () {
+        this.test = 'hello world';
+      }
+    }
+
     // stub Module (business logic container)
     @Ravel.Module('users')
+    @Ravel.autoinject('another')
     class Users {
       getAllUsers () {
         return Promise.resolve(u);
@@ -43,6 +56,18 @@ describe('Ravel lifeycle test', () => {
         } else {
           return Promise.reject(new this.$err.NotFound('User id=' + userId + ' does not exist!'));
         }
+      }
+
+      @postinject
+      doPostInject () {
+        expect(this.another.test).toBe('hello world');
+        postinjectHandlerCalled += 1;
+      }
+
+      @postinject
+      doAnotherPostInject () {
+        expect(this.another.test).toBe('hello world');
+        anotherPostinjectHandlerCalled += 1;
       }
 
       @postinit
@@ -121,7 +146,7 @@ describe('Ravel lifeycle test', () => {
     app.set('public directory', '/public');
     app.set('favicon path', '/favicon.ico');
 
-    app.load(Users, UsersResource, TestRoutes);
+    app.load(Another, Users, UsersResource, TestRoutes);
   });
 
   describe('#init()', () => {
@@ -162,6 +187,8 @@ describe('Ravel lifeycle test', () => {
       expect(faviconSpy).toHaveBeenCalledWith(upath.toUnix(upath.posix.join(app.cwd, app.get('favicon path'))));
       expect(useSpy).toHaveBeenCalledWith(favicon);
       expect(app.initialized).toBeTruthy();
+      expect(postinjectHandlerCalled).toBe(1);
+      expect(anotherPostinjectHandlerCalled).toBe(1);
       expect(postinitHandlerCalled).toBe(1);
       expect(anotherPostinitHandlerCalled).toBe(1);
       expect(intervalCalled).toBe(0);
@@ -175,7 +202,9 @@ describe('Ravel lifeycle test', () => {
 
     it('should start the underlying HTTP server when called after init()', async () => {
       await app.init();
+      expect(postinjectHandlerCalled).toBe(1);
       expect(anotherPostinitHandlerCalled).toBe(1);
+      expect(anotherPostinjectHandlerCalled).toBe(1);
       expect(postinitHandlerCalled).toBe(1);
       expect(intervalCalled).toBe(0);
       app.server.listen = jest.fn(function (port, callback) {
@@ -214,6 +243,8 @@ describe('Ravel lifeycle test', () => {
       await app.init();
       await app.listen();
       await app.close();
+      expect(postinjectHandlerCalled).toBe(1);
+      expect(anotherPostinjectHandlerCalled).toBe(1);
       expect(postinitHandlerCalled).toBe(1);
       expect(anotherPostinitHandlerCalled).toBe(1);
       expect(prelistenHandlerCalled).toBe(1);
