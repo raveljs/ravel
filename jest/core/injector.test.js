@@ -101,13 +101,13 @@ describe('Ravel', () => {
         jest.doMock('moment', () => stubMoment, {virtual: true});
 
         @Module('stub')
-        @autoinject('moment')
+        @autoinject({'moment': 'myMoment'})
         class Stub {
         }
         app.load(Stub);
         await app.init();
-        expect(typeof app.module('stub').moment).toBe('object');
-        expect(app.module('stub').moment).toBe(stubMoment);
+        expect(typeof app.module('stub').myMoment).toBe('object');
+        expect(app.module('stub').myMoment).toBe(stubMoment);
       });
 
       it('should throw an error when attempting to auto-inject an npm dependency with an error in it', async () => {
@@ -131,7 +131,7 @@ describe('Ravel', () => {
         await expect(app.init()).rejects.toThrow(app.$err.NotFound);
       });
 
-      it('should allow mixing @inject and @autinject', async () => {
+      it('should allow mixing @inject and @autoinject', async () => {
         @Module('stub1')
         class Stub1 {
           method () {}
