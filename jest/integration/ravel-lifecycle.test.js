@@ -146,7 +146,7 @@ describe('Ravel lifeycle test', () => {
     app.set('public directory', '/public');
     app.set('favicon path', '/favicon.ico');
 
-    app.load(Another, Users, UsersResource, TestRoutes);
+    app.load(Users, UsersResource, TestRoutes, Another);
   });
 
   describe('#init()', () => {
