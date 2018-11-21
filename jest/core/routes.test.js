@@ -268,6 +268,36 @@ describe('Ravel', () => {
         expect(response.body).toEqual({id: '3', name: 'sean'});
       });
 
+      it('should support the use of @before with parameritized middleware', async () => {
+        const middleware1 = (params) => {
+          return async function (ctx, next) { ctx.body = {id: params.id}; await next(); };
+        };
+        const middleware2 = (params) => {
+          return async function (ctx, next) { ctx.body.name = params.name; await next(); };
+        };
+
+        @Ravel.Routes('/api')
+        @Ravel.Routes.before({middleware1: {id: '4'}})
+        class Test {
+          constructor () {
+            this.middleware1 = middleware1;
+            this.middleware2 = middleware2;
+          }
+
+          @Ravel.Routes.mapping(Ravel.Routes.GET, '/test/:id')
+          @Ravel.Routes.before({'middleware2': {name: 'adam'}})
+          async pathHandler (ctx) {
+            ctx.status = 200;
+          }
+        }
+        app.load(Test);
+        await app.init();
+
+        const response = await request(app.callback).get('/api/test/4');
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual({id: '4', name: 'adam'});
+      });
+
       it('should support the use of @mapping without @before', async () => {
         @Ravel.Routes('/api')
         class Test {
