@@ -9,13 +9,15 @@ describe('Ravel', () => {
 
   describe('@before()', () => {
     it('should decorate a class with middleware that should precede every endpoint defined within', () => {
-      @before('test1', 'test2')
+      const test3 = {'test3': {param1: 'param1', param2: 'param2'}};
+      const test4 = {test4: 4};
+      @before('test1', 'test2', test3, test4)
       class Stub1 {
       }
-      expect(Metadata.getClassMetaValue(Stub1.prototype, '@before', 'middleware')).toEqual(['test1', 'test2']);
+      expect(Metadata.getClassMetaValue(Stub1.prototype, '@before', 'middleware')).toEqual(['test1', 'test2', test3, test4]);
     });
 
-    it('should throw an $err.IllegalValue if a non-string type is passed to @before', () => {
+    it('should throw an $err.IllegalValue if a non-string and non-object type is passed to @before', () => {
       const test = () => {
         @before([])
         class Stub {} // eslint-disable-line no-unused-vars
@@ -34,14 +36,6 @@ describe('Ravel', () => {
     it('should throw an $err.IllegalValue if an empty object literal is passed to @before', () => {
       const test = () => {
         @before({})
-        class Stub {} // eslint-disable-line no-unused-vars
-      };
-      expect(test).toThrow($err.IllegalValue);
-    });
-
-    it('should throw an $err.IllegalValue if an object literal is passed to @before without an object literal value', () => {
-      const test = () => {
-        @before({'middleware1': 'not an object literal'})
         class Stub {} // eslint-disable-line no-unused-vars
       };
       expect(test).toThrow($err.IllegalValue);
