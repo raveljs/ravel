@@ -179,7 +179,6 @@ const mapping = Routes.mapping; // decorator to associate a handler method with 
 
 @Routes('/') // base path for all routes in this class. Will be prepended to the @mapping.
 class ExampleRoutes {
-  constructor (middleware1) {
   // bind this method to an endpoint and verb with @mapping. This one will become GET /app
   @mapping(Routes.GET, 'app')
   @before('custom-middleware') // use @before to place multiple middleware (comma-separated names) before appHandler - these could be npm modules, functions on this scope, or defined via @middleware
