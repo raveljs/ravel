@@ -10,5 +10,4 @@ test-dist/*
 .vimrc
 *.swp
 dist/*
-package-lock.json
 .nyc_output
