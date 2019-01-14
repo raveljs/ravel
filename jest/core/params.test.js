@@ -104,6 +104,7 @@ describe('Ravel', () => {
     it('should load defaults if no configuration files are present', async () => {
       const oldParams = {
         'enable websockets': true,
+        'max websocket payload bytes': 104857600,
         'redis port': 6379,
         'redis max retries': 10,
         'redis keepalive interval': 1000,
