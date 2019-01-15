@@ -4,8 +4,6 @@ cache: npm
 sudo: false
 node_js:
   - "10"
-before_install:
-  - npm install
 script:
   - mkdir coverage
   - npm test
