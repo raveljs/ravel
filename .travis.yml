@@ -1,15 +1,13 @@
 language: node_js
 dist: xenial
-cache:
-  directories:
-    - node_modules
+cache: npm
 sudo: false
 node_js:
   - "10"
 before_install:
   - npm install
 script:
-  - npm run test-no-cov
+  - mkdir coverage
   - npm test
 after_script:
   - codeclimate-test-reporter < coverage/lcov.info
