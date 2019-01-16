@@ -11,6 +11,7 @@ describe('Authentication Integration Test', () => {
     app = new Ravel();
     app.set('log level', app.$log.NONE);
     app.set('keygrip keys', ['mysecret']);
+    app.set('session secure', false);
   });
 
   describe('Simulated Local Auth Provider', () => {
