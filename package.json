@@ -1,6 +1,6 @@
 {
   "name": "ravel",
-  "version": "1.0.0-rc.4",
+  "version": "1.0.0-rc.5",
   "author": "Sean McIntyre <s.mcintyre@xverba.ca>",
   "description": "Ravel Rapid Application Development Framework",
   "engines": {
@@ -58,15 +58,7 @@
       "lcov",
       "text",
       "html"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 98,
-        "functions": 99,
-        "lines": 99,
-        "statements": 99
-      }
-    }
+    ]
   },
   "scripts": {
     "clean": "gulp clean",
@@ -88,27 +80,26 @@
   "dependencies": {
     "fs-readdir-recursive": "1.1.0",
     "intel": "1.2.0",
-    "keygrip": "1.0.2",
-    "koa": "2.5.0",
-    "koa-compress": "2.0.0",
-    "koa-favicon": "2.0.0",
-    "koa-passport": "4.0.1",
+    "keygrip": "1.0.3",
+    "koa": "2.6.2",
+    "koa-compress": "3.0.0",
+    "koa-favicon": "2.0.1",
+    "koa-passport": "4.1.1",
     "koa-router": "7.4.0",
-    "koa-session": "5.8.1",
-    "koa-static": "4.0.2",
+    "koa-session": "5.10.1",
+    "koa-static": "5.0.0",
     "node-fs": "0.1.7",
     "passport": "0.4.0",
     "redis": "2.8.0",
-    "redis-mock": "0.27.0",
-    "upath": "1.0.4",
+    "redis-mock": "0.42.0",
+    "upath": "1.1.0",
     "ws": "5.2.0"
   },
   "devDependencies": {
     "cross-env": "5.1.1",
     "documentation": "4.0.0-rc.1",
     "yamljs": "0.3.0",
-    "jest": "23.1.0",
-    "redis-mock": "0.27.0",
+    "jest": "23.6.0",
     "eslint": "4.2.0",
     "eslint-config-standard": "10.2.1",
     "eslint-config-semistandard": "11.0.0",
@@ -119,9 +110,8 @@
     "eslint-plugin-jsdoc": "3.1.1",
     "supertest": "3.0.0",
     "passport-local": "1.0.0",
-    "koa-bodyparser": "4.2.0",
+    "koa-bodyparser": "4.2.1",
     "lodash": "4.17.5",
-    "codeclimate-test-reporter": "0.5.0",
     "del": "3.0.0",
     "gulp": "3.9.1",
     "gulp-env": "0.4.0",

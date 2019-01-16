@@ -400,7 +400,6 @@ Ravel has several core parameters:
 app.set('keygrip keys', ['my super secret key', 'another super secret key']);
 
 // these are optional (default values are shown):
-app.set('enable websockets', true); // set to false to disable websocket server
 app.set('redis host', undefined); // set to point to an external redis server (required for horizontal scaling).
 app.set('redis port', 6379);
 app.set('redis password', undefined);
@@ -412,6 +411,9 @@ app.set('app route', '/'); // if you have a UI, this is the path users will be s
 app.set('login route', '/login'); // if users aren't logged in and you redirect them, this is where they'll be sent
 app.set('public directory', undefined); // if you want to statically serve a directory
 app.set('favicon path', undefined); // favicon middleware configuration
+app.set('enable websockets', true); // set to false to disable websocket server
+app.set('max websocket payload bytes', 100 * 1024 * 1024); // max payload size (in bytes) of a websocket message
+app.set('redis websocket channel prefix', 'ravel.ws'); // default key prefix for websocket redis channels
 ```
 
 #### .ravelrc.json
