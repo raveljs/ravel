@@ -21,6 +21,43 @@ describe('Ravel end-to-end test', () => {
       });
     });
 
+    describe('session option parameters', () => {
+      let app;
+
+      beforeEach(async () => {
+        const Ravel = require('../../lib/ravel');
+        const mapping = Ravel.Routes.mapping;
+        @Ravel.Routes('/')
+        class TestRoutes {
+          @mapping(Ravel.Routes.GET, '/session-options')
+          sessionOptionsHandler (ctx) {
+            return Promise.resolve().then(() => {
+              ctx.body = ctx.sessionOptions;
+              ctx.status = 200;
+            });
+          }
+        }
+        app = new Ravel();
+        app.load(TestRoutes);
+      });
+
+      it('should set session to insecure when session security set to false', async () => {
+        app.set('session secure', false);
+        await app.init();
+        const res = await request(app.callback).get('/session-options');
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual(expect.objectContaining({secure: false}));
+      });
+
+      it('should not set session to insecure when session security not set to false', async () => {
+        app.set('session secure', 'secure');
+        await app.init();
+        const res = await request(app.callback).get('/session-options');
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual(expect.not.objectContaining({secure: false}));
+      });
+    });
+
     describe('basic application server consisting of a module and a resource', () => {
       beforeEach(async () => {
         const Ravel = require('../../lib/ravel');
