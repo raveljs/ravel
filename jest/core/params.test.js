@@ -110,6 +110,8 @@ describe('Ravel', () => {
         'redis keepalive interval': 1000,
         'redis websocket channel prefix': 'ravel.ws',
         'port': 8080,
+        'https': false,
+        'https options': {},
         'app route': '/',
         'login route': '/login',
         'keygrip keys': ['123abc'],

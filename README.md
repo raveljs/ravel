@@ -405,6 +405,8 @@ app.set('redis port', 6379);
 app.set('redis password', undefined);
 app.set('redis max retries', 10); // connection retries
 app.set('port', 8080); // port the app will run on
+app.set('https', false) // listen for https instead of http
+app.set('https options', {}) // any options to pass to the https server app.set('https', true). Supports options from https://nodejs.org/api/tls.html#tls_tls_createserver_options_secureconnectionlistener
 app.set('session key', 'ravel.sid'); // the cookie name to use for sessions
 app.set('session max age', null); // session maxAge (default never expires)
 app.set('app route', '/'); // if you have a UI, this is the path users will be sent to when they are logged in
@@ -1048,6 +1050,8 @@ Ravel is designed for horizontal scaling, and helps you avoid common pitfalls wh
  - While it is possible to color outside the lines, Ravel provides a framework for developing **stateless** backend applications, where all stateful data is stored in external caches or databases.
 
 It is strongly encouraged that you containerize your Ravel app using an [Alpine-based docker container](https://hub.docker.com/r/mhart/alpine-node/), and then explore technologies such as [docker-compose](https://www.docker.com/products/docker-compose) or [kubernetes](http://kubernetes.io/) to appropriately scale out and link to (at least) the [official redis container](https://hub.docker.com/_/redis/). An example project with a reference `docker-compose` environment for Ravel can be found in the [starter project](https://github.com/raveljs/ravel-github-mariadb-starter).
+
+Ravel apps may either be TLS-terminated by the proxy in front of them, or communicate with that proxy over TLS via `app.set('https', true)`. When enabling `https` support, `app.get('port')` refers to the port which will now listen for `https` traffic. `app.set('https options', {})` may be used in conjunction with options from [here](https://nodejs.org/api/tls.html#tls_tls_createserver_options_secureconnectionlistener) to set keys, certificates, etc. Ravel _does not_ support exposing endpoints over `http` and `https` simultaneously, as it is recommended to exclusively use `https` via a terminating proxy or, if necessary, directly against the app.
 
 Ravel does not explicitly require [hiredis](https://github.com/redis/hiredis-node), but is is highly recommended that you install it alongside Ravel for improved redis performance.
 
