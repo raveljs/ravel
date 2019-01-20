@@ -202,6 +202,7 @@ describe('Ravel lifeycle test', () => {
 
     it('should start the underlying HTTP server when called after init()', async () => {
       await app.init();
+      expect(app.server).toBeInstanceOf(require('net').Server);
       expect(postinjectHandlerCalled).toBe(1);
       expect(anotherPostinitHandlerCalled).toBe(1);
       expect(anotherPostinjectHandlerCalled).toBe(1);
@@ -219,6 +220,18 @@ describe('Ravel lifeycle test', () => {
       expect(intervalCalled).toBeGreaterThanOrEqual(1);
       await new Promise((resolve) => setTimeout(resolve, 1200));
       expect(intervalCalled).toBeGreaterThanOrEqual(2);
+      await app.close();
+    });
+
+    it('should start the underlying HTTPS server when called after init()', async () => {
+      app.set('https', true);
+      await app.init();
+      expect(app.server).toBeInstanceOf(require('tls').Server);
+      app.server.listen = jest.fn(function (port, callback) {
+        callback();
+      });
+      await app.listen();
+      expect(app.server.listen).toHaveBeenCalledWith(app.get('port'), expect.any(Function));
       await app.close();
     });
   });
