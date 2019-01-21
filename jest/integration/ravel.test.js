@@ -57,23 +57,6 @@ describe('Ravel end-to-end test', () => {
         expect(res.status).toBe(200);
         expect(res.body).toEqual(expect.not.objectContaining({secure: false}));
       });
-
-      it('should not set session to insecure when session security set to non-strict falsey', async () => {
-        const falseyValue = undefined;
-        app.set('session secure', falseyValue);
-        await app.init();
-        const res = await request(app.callback).get('/session-options');
-        expect(res.status).toBe(200);
-        expect(res.body).toEqual(expect.not.objectContaining({secure: false}));
-      });
-
-      it('should set session secure to undefined when session security set to undefined', async () => {
-        app.set('session secure', undefined);
-        await app.init();
-        const res = await request(app.callback).get('/session-options');
-        expect(res.status).toBe(200);
-        expect(res.body).not.toHaveProperty('secure');
-      });
     });
 
     describe('basic application server consisting of a module and a resource', () => {
