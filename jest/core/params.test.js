@@ -118,6 +118,7 @@ describe('Ravel', () => {
         'session key': 'ravel.sid',
         'session max age': null,
         'session secure': true,
+        'session rolling': false,
         'log level': 'NONE' // not a default, but we've set this in beforeEach
       };
       app.set('keygrip keys', ['123abc']);
