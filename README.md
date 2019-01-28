@@ -409,9 +409,8 @@ app.set('https', false) // listen for https instead of http
 app.set('https options', {}) // any options to pass to the https server app.set('https', true). Supports options from https://nodejs.org/api/tls.html#tls_tls_createserver_options_secureconnectionlistener
 app.set('session key', 'ravel.sid'); // the cookie name to use for sessions
 app.set('session max age', null); // session maxAge (default never expires)
-app.set('session rolling', false); // Force a session identifier cookie to be set on every response.
-                                   // The expiration is reset to the original maxAge, resetting the expiration
-                                   // countdown.
+app.set('session secure', true); // toggles Secure attribute for session cookies. true by default, and always true when app.get('https') is true.
+app.set('session rolling', false); // force a session identifier cookie to be set on every response. The expiration is reset to the original maxAge, resetting the expiration countdown.
 app.set('app route', '/'); // if you have a UI, this is the path users will be sent to when they are logged in
 app.set('login route', '/login'); // if users aren't logged in and you redirect them, this is where they'll be sent
 app.set('public directory', undefined); // if you want to statically serve a directory
