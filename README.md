@@ -145,7 +145,7 @@ module.exports = Cities;
 
 ### Middleware
 
-`Ravel` middleware takes the form of an `async funtion` and is defined within `Modules`:
+`Ravel` middleware takes the form of an `async function` and is defined within `Modules`:
 
 *modules/cities.js*
 ```js
