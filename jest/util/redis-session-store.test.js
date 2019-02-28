@@ -67,6 +67,25 @@ describe('util/rest', () => {
         app.$kvstore.setex = jest.fn(function (key, value, ttl, cb) { cb(setexError); });
         await expect(store.set('koa:sess:1234', session, 1000 * 1000)).rejects.toThrow(setexError);
       });
+
+      it('should only update the expire on unchanged session', async () => {
+        const session = { 'username': 'smcintyre' };
+        await expect(store.set('koa:sess:1234', session)).resolves;
+
+        app.$kvstore.expire = jest.fn(function (key, ttl, cb) { });
+
+        const secondSession = { 'username': 'plaliberte' };
+        await expect(store.set('koa:sess:1234', secondSession, 1000 * 1000, { changed: false })).resolves;
+        await expect(store.get('koa:sess:1234')).resolves.toEqual(session);
+        expect(app.$kvstore.expire).toHaveBeenCalledWith('koa:sess:1234', 1000, expect.any(Function));
+      });
+
+      it('should not create a blank sessions when flagged as unchaged', async () => {
+        const session = { 'username': 'smcintyre' };
+        await expect(store.get('koa:sess:1234')).resolves.toBe(null);
+        await expect(store.set('koa:sess:1234', session, 1000 * 1000, { changed: false })).resolves;
+        await expect(store.get('koa:sess:1234')).resolves.toBe(null);
+      });
     });
 
     describe('#destroy()', () => {
