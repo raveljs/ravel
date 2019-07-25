@@ -22,7 +22,21 @@ describe('Ravel', () => {
         @middleware('some-middleware')
         async someMiddleware () {}
       }
-      expect(typeof Metadata.getClassMetaValue(Stub1.prototype, '@middleware', 'some-middleware')).toBe('function');
+      const metavalue = Metadata.getClassMetaValue(Stub1.prototype, '@middleware', 'some-middleware');
+      expect(typeof metavalue).toBe('object');
+      expect(typeof metavalue.fn).toBe('function');
+    });
+
+    it('should register a Module method as injectable middleware with options', () => {
+      @Ravel.Module('test')
+      class Stub1 {
+        @middleware('some-middleware', { someOption: true })
+        async someMiddleware () {}
+      }
+      const metavalue = Metadata.getClassMetaValue(Stub1.prototype, '@middleware', 'some-middleware');
+      expect(typeof metavalue).toBe('object');
+      expect(typeof metavalue.fn).toBe('function');
+      expect(metavalue.options).toEqual({ someOption: true });
     });
 
     it('should throw a DuplicateEntry error when middleware is registered with the same name as a module', async () => {
