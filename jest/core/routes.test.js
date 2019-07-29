@@ -332,5 +332,26 @@ describe('Ravel', () => {
       expect(response.statusCode).toBe(200);
       expect(response.body).toEqual({id: 3});
     });
+
+    it('should throw a Ravel.$err.IllegalValueError error when clients attempt to use a middleware factory with fewer than the required number of arguments', async () => {
+      @Ravel.Module('/')
+      class TestModule {
+        @Ravel.Module.middleware('middleware1')
+        middlewareFactory (one, two) {
+          return async function () {};
+        }
+      }
+      @Ravel.Routes('/')
+      class TestRoutes {
+        @Ravel.Routes.mapping(Ravel.Routes.GET, '/test')
+        @Ravel.Routes.before('middleware1', 'arg1')
+        pathHandler (ctx) {
+          ctx.status = 200;
+        }
+      }
+      app.load(TestModule, TestRoutes);
+      expect.assertions(1);
+      await expect(app.init()).rejects.toThrow(app.$err.IllegalValueError);
+    });
   });
 });

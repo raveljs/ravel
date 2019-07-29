@@ -16,13 +16,27 @@ describe('Ravel end-to-end middleware test', () => {
           ctx.body = 'Hello';
           await next();
         }
+
+        @middleware('another-middleware', true)
+        anotherMiddlewareFactory (word) {
+          return async function (ctx, next) {
+            ctx.body = word;
+            await next();
+          };
+        }
       }
 
       @Ravel.Routes('/api/routes')
       class TestRoutes {
         @pre('some-middleware')
-        @mapping(Ravel.Routes.GET, '/')
+        @mapping(Ravel.Routes.GET, '/some')
         getHandler (ctx) {
+          ctx.body += ' World!';
+        }
+
+        @pre('another-middleware', 'Goodbye')
+        @mapping(Ravel.Routes.GET, '/another')
+        anotherHandler (ctx) {
           ctx.body += ' World!';
         }
       }
@@ -37,8 +51,14 @@ describe('Ravel end-to-end middleware test', () => {
 
     it('@middleware should make a module method available as middleware for use with @before', () => {
       return request(app.callback)
-        .get('/api/routes')
+        .get('/api/routes/some')
         .expect(200, 'Hello World!');
+    });
+
+    it('@middleware should make a module factory method available as middleware for use with @before', () => {
+      return request(app.callback)
+        .get('/api/routes/another')
+        .expect(200, 'Goodbye World!');
     });
   });
 });

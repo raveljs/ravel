@@ -145,7 +145,7 @@ module.exports = Cities;
 
 ### Middleware
 
-`Ravel` middleware takes the form of an `async function` and is defined within `Modules`:
+`Ravel` middleware takes the form of an `async function` and is defined within `Modules`, either directly or via a factory pattern:
 
 *modules/cities.js*
 ```js
@@ -159,6 +159,15 @@ class MyMiddleware {
     // ... do something before the next middleware runs
     await next();
     // ... do something after the next middlware runs
+  }
+
+  // this middleware is also available elsewhere by name,
+  // but is a factory that can receive two arguments
+  @middleware('another-middleware', true)
+  anotherMiddlewareFactory (arg1, arg2) {
+    return async (ctx, next) {
+      await next();
+    }
   }
 }
 ```
@@ -186,6 +195,12 @@ class ExampleRoutes {
     // ctx is just a koa context! Have a look at the koa docs to see what methods and properties are available.
     ctx.body = '<!DOCTYPE html><html><body>Hello World!</body></html>';
     ctx.status = 200;
+  }
+
+  @mapping(Routes.GET, 'log')
+  @before('another-middleware', 1, 2, 'custom-middleware') // use @before to instantiate middleware which accepts arguments, alongside middleware which doesn't.
+  async logHandler (ctx) {
+    // ...
   }
 }
 
@@ -222,6 +237,7 @@ class CitiesResource {
   }
 
   @before('custom-middleware') // using @before at the method level decorates this method with middleware
+  @before('another-middleware', 1, 2) // use @before multiple times for clarity, if desired
   async get (ctx) { // get routes automatically receive an endpoint of /cities/:id (in this case).
     ctx.body = await this.cities.getCity(ctx.params.id);
   }
