@@ -17,7 +17,7 @@ describe('Ravel end-to-end middleware test', () => {
           await next();
         }
 
-        @middleware('another-middleware', true)
+        @middleware('another-middleware', { factory: true })
         anotherMiddlewareFactory (word) {
           return async function (ctx, next) {
             ctx.body = word;

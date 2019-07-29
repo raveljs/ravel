@@ -31,7 +31,7 @@ describe('Ravel', () => {
     it('should register a Module method as injectable middleware factory', () => {
       @Ravel.Module('test')
       class Stub1 {
-        @middleware('some-middleware', true)
+        @middleware('some-middleware', { factory: true })
         someMiddlewareFactory (one, two) {
           return async function () {};
         }

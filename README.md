@@ -163,7 +163,7 @@ class MyMiddleware {
 
   // this middleware is also available elsewhere by name,
   // but is a factory that can receive two arguments
-  @middleware('another-middleware', true)
+  @middleware('another-middleware', { factory: true })
   anotherMiddlewareFactory (arg1, arg2) {
     return async (ctx, next) {
       await next();

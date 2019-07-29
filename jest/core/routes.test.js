@@ -336,7 +336,7 @@ describe('Ravel', () => {
     it('should throw a Ravel.$err.IllegalValueError error when clients attempt to use a middleware factory with fewer than the required number of arguments', async () => {
       @Ravel.Module('/')
       class TestModule {
-        @Ravel.Module.middleware('middleware1', true)
+        @Ravel.Module.middleware('middleware1', { factory: true })
         middlewareFactory (one, two) {
           return async function () {};
         }
