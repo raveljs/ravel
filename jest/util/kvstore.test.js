@@ -1,7 +1,45 @@
 
 describe('Ravel', () => {
-  let app;
+  let app, intelLogger, intel;
   beforeEach(async () => {
+    jest.resetModules();
+    jest.restoreAllMocks();
+    jest.clearAllMocks();
+    // we have to completely mock intel because its
+    // methods are read-only, so sinon can't touch them :(
+    intelLogger = {
+      trace: jest.fn(),
+      verbose: jest.fn(),
+      debug: jest.fn(),
+      info: jest.fn(),
+      warn: jest.fn(),
+      error: jest.fn(),
+      critical: jest.fn()
+    };
+    intel = {
+      TRACE: 'TRACE',
+      VERBOSE: 'VERBOSE',
+      DEBUG: 'DEBUG',
+      INFO: 'INFO',
+      WARN: 'WARN',
+      ERROR: 'ERROR',
+      CRITICAL: 'CRITICAL',
+      NONE: 'NONE',
+      ALL: 'ALL',
+      getLogger: jest.fn(() => {
+        return intelLogger;
+      }),
+      setLevel: jest.fn(),
+      basicConfig: jest.fn(),
+      trace: jest.fn(),
+      verbose: jest.fn(),
+      debug: jest.fn(),
+      info: jest.fn(),
+      warn: jest.fn(),
+      error: jest.fn(),
+      critical: jest.fn()
+    };
+    jest.doMock('intel', () => intel);
     const Ravel = require('../../lib/ravel');
     app = new Ravel();
     app.set('keygrip keys', ['abc']);
@@ -15,6 +53,16 @@ describe('Ravel', () => {
         const retryStrategy = require('../../lib/util/kvstore').retryStrategy(app);
         expect(typeof retryStrategy).toBe('function');
         expect(retryStrategy({error: {code: 'ECONNREFUSED'}})).toBeInstanceOf(app.$err.General);
+      });
+
+      it('should log any errors on a connection', async () => {
+        await app.init();
+        try {
+          app.$kvstore.emit('error');
+        } catch (err) {
+          // do nothing - Node thinks this is an unhandled error, but it isn't
+        }
+        expect(intelLogger.error).toHaveBeenCalledTimes(1);
       });
 
       it('should return an error when the maximum number of retries is exceeded', async () => {
