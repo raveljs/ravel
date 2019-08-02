@@ -18,7 +18,7 @@ describe('util/rest', () => {
 
     describe('#get()', () => {
       it('should return a Promise which resolves with a JSON object representing the user\'s session', async () => {
-        const session = {'username': 'smcintyre'};
+        const session = { username: 'smcintyre' };
         app.$kvstore.set('koa:sess:1234', JSON.stringify(session));
         await expect(store.get('koa:sess:1234')).resolves.toEqual(session);
       });
@@ -28,7 +28,7 @@ describe('util/rest', () => {
       });
 
       it('should return a Promise which rejects if redis calls back with an error', async () => {
-        const session = {'username': 'smcintyre'};
+        const session = { username: 'smcintyre' };
         const getError = new Error('getError');
         app.$kvstore.get = jest.fn(function (key, cb) { cb(getError); });
         app.$kvstore.set('koa:sess:1234', JSON.stringify(session));
@@ -38,13 +38,13 @@ describe('util/rest', () => {
 
     describe('#set()', () => {
       it('should return a Promise which resolves after storing the user\'s session', async () => {
-        const session = {'username': 'smcintyre'};
+        const session = { username: 'smcintyre' };
         await expect(store.set('koa:sess:1234', session)).resolves;
         await expect(store.get('koa:sess:1234')).resolves.toEqual(session);
       });
 
       it('should return a Promise which resolves after storing the user\'s session with a ttl', async () => {
-        const session = {'username': 'smcintyre'};
+        const session = { username: 'smcintyre' };
         // setex from redis-mock sets a timeout, which stops test from exiting cleanly. Just stub it as set.
         app.$kvstore.setex = jest.fn(function (key, ttl, value, cb) {
           app.$kvstore.set(key, value, cb);
@@ -55,33 +55,33 @@ describe('util/rest', () => {
       });
 
       it('should return a Promise which rejects if redis calls back with an error', async () => {
-        const session = {'username': 'smcintyre'};
+        const session = { username: 'smcintyre' };
         const setError = new Error();
         app.$kvstore.set = jest.fn(function (key, value, cb) { cb(setError); });
         await expect(store.set('koa:sess:1234', session)).rejects.toThrow(setError);
       });
 
       it('should return a Promise which rejects if redis calls back with an error (ttl version)', async () => {
-        const session = {'username': 'smcintyre'};
+        const session = { username: 'smcintyre' };
         const setexError = new Error();
         app.$kvstore.setex = jest.fn(function (key, value, ttl, cb) { cb(setexError); });
         await expect(store.set('koa:sess:1234', session, 1000 * 1000)).rejects.toThrow(setexError);
       });
 
       it('should only update the expire on unchanged session', async () => {
-        const session = { 'username': 'smcintyre' };
+        const session = { username: 'smcintyre' };
         await expect(store.set('koa:sess:1234', session)).resolves;
 
         app.$kvstore.expire = jest.fn(function (key, ttl, cb) { });
 
-        const secondSession = { 'username': 'plaliberte' };
+        const secondSession = { username: 'plaliberte' };
         await expect(store.set('koa:sess:1234', secondSession, 1000 * 1000, { changed: false })).resolves;
         await expect(store.get('koa:sess:1234')).resolves.toEqual(session);
         expect(app.$kvstore.expire).toHaveBeenCalledWith('koa:sess:1234', 1000, expect.any(Function));
       });
 
       it('should not create a blank sessions when flagged as unchaged', async () => {
-        const session = { 'username': 'smcintyre' };
+        const session = { username: 'smcintyre' };
         await expect(store.get('koa:sess:1234')).resolves.toBe(null);
         await expect(store.set('koa:sess:1234', session, 1000 * 1000, { changed: false })).resolves;
         await expect(store.get('koa:sess:1234')).resolves.toBe(null);
@@ -90,7 +90,7 @@ describe('util/rest', () => {
 
     describe('#destroy()', () => {
       it('should remove a session from redis', async () => {
-        const session = {'username': 'smcintyre'};
+        const session = { username: 'smcintyre' };
         await expect(store.set('koa:sess:1234', session)).resolves;
         await expect(store.get('koa:sess:1234')).resolves.toEqual(session);
         await expect(store.destroy('koa:sess:1234')).resolves;

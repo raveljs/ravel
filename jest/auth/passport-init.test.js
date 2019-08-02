@@ -53,9 +53,11 @@ describe('auth/passport_init', () => {
       deserializeUser () {
         return Promise.resolve({});
       }
+
       deserializeOrCreateUser () {
         return Promise.resolve({});
       }
+
       verify () {
         return Promise.resolve({});
       }

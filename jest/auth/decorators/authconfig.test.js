@@ -41,7 +41,7 @@ describe('Ravel', () => {
       expect(typeof instance.deserializeUser).toBe('function');
       expect(typeof instance.deserializeOrCreateUser).toBe('function');
       expect(typeof instance.verify).toBe('function');
-      await expect(instance.serializeUser({id: 12})).resolves.toBe(12);
+      await expect(instance.serializeUser({ id: 12 })).resolves.toBe(12);
       await expect(instance.deserializeUser()).rejects.toThrow($err.NotImplemented);
       await expect(instance.deserializeOrCreateUser()).rejects.toThrow($err.NotImplemented);
       await expect(instance.verify()).rejects.toThrow($err.NotImplemented);

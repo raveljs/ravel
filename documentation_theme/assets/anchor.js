@@ -29,7 +29,7 @@
 
     /**
      * Assigns options to the internal options object, and provides defaults.
-     * @param {Object} opts - Options object
+     * @param {object} opts - Options object
      */
     function _applyRemainingDefaultOptions(opts) {
       opts.icon = opts.hasOwnProperty('icon') ? opts.icon : '\ue9cb'; // Accepts characters (and also URLs?), like  '#', '¶', '❡', or '§'.

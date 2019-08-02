@@ -61,7 +61,7 @@ describe('Authentication Integration Test', () => {
           return new Promise((resolve, reject) => {
             if (client === 'token') {
               if (session === '123456789') {
-                return resolve({expiry: 60, profile: profile});
+                return resolve({ expiry: 60, profile: profile });
               } else {
                 return reject(new Ravel.$err.Authentication('Incorrect API token'));
               }
@@ -79,9 +79,11 @@ describe('Authentication Integration Test', () => {
         constructor ($err) {
           this.$err = $err;
         }
+
         serializeUser (profile) {
           return Promise.resolve(profile.id);
         }
+
         deserializeUser (userId) {
           if (userId === profile.id) {
             return Promise.resolve(profile);
@@ -89,6 +91,7 @@ describe('Authentication Integration Test', () => {
             return Promise.reject(new this.$err.Authentication('User session cannot be found.'));
           }
         }
+
         deserializeOrCreateUser (userId) {
           if (userId !== profile.id) {
             const newProfile = {
@@ -99,6 +102,7 @@ describe('Authentication Integration Test', () => {
             return Promise.resolve(newProfile);
           }
         }
+
         verify (provider, username, password) {
           if (username === profile.name && password === profile.password) {
             return Promise.resolve(profile);
@@ -130,13 +134,13 @@ describe('Authentication Integration Test', () => {
           ctx.status = 200;
         }
 
-        @authenticated({redirect: true})
+        @authenticated({ redirect: true })
         @mapping(Ravel.Routes.GET, '/redirect')
         async redirectHandler (ctx) {
           ctx.body = 'hello';
         }
 
-        @authenticated({allowRegistration: true})
+        @authenticated({ allowRegistration: true })
         @mapping(Ravel.Routes.GET, '/autoregister')
         async autoRegisterHandler (ctx) {
           ctx.body = 'hello';

@@ -156,6 +156,7 @@ describe('db/database', () => {
         constructor ($db) {
           this.$db = $db;
         }
+
         method () {
           return this.$db.scoped(async function (ctx) {
             expect(mysqlProvider.getTransactionConnection).toHaveBeenCalled;
@@ -179,6 +180,7 @@ describe('db/database', () => {
         constructor ($db) {
           this.$db = $db;
         }
+
         method () {
           return this.$db.scoped('postgres', async function (ctx) {
             expect(mysqlProvider.getTransactionConnection).not.toHaveBeenCalled;
@@ -205,6 +207,7 @@ describe('db/database', () => {
         constructor ($db) {
           this.$db = $db;
         }
+
         method () {
           return this.$db.scoped('mysql', async function (ctx) {
             expect(mysqlProvider.getTransactionConnection).toHaveBeenCalled;
@@ -227,6 +230,7 @@ describe('db/database', () => {
         constructor ($db) {
           this.$db = $db;
         }
+
         method () {
           return this.$db.scoped(async function (ctx) {
             expect(mysqlProvider.getTransactionConnection).toHaveBeenCalled;
@@ -252,6 +256,7 @@ describe('db/database', () => {
         constructor ($db) {
           this.$db = $db;
         }
+
         method () {
           return this.$db.scoped(async function (ctx) {
             expect(mysqlProvider.getTransactionConnection).toHaveBeenCalled;
@@ -285,6 +290,7 @@ describe('db/database', () => {
         constructor ($db) {
           this.$db = $db;
         }
+
         method () {
           return this.$db.scoped(async function (ctx) {});
         }

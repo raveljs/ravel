@@ -63,14 +63,17 @@ describe('Websocket Integration Test', () => {
         async subHandler (ctx) {
           ctx.body = await this.$ws.subscribe('a.channel', ctx);
         }
+
         @Ravel.Routes.mapping(Ravel.Routes.POST, 'subscribeBad')
         async badSubHandler (ctx) {
           ctx.body = await this.$ws.subscribe('a/channel', ctx);
         }
+
         @Ravel.Routes.mapping(Ravel.Routes.DELETE, 'subscribe')
         async unsubHandler (ctx) {
           ctx.body = await this.$ws.unsubscribe('a.channel', ctx);
         }
+
         @Ravel.Routes.mapping(Ravel.Routes.POST, 'publish')
         async publishHandler (ctx) {
           ctx.body = await this.$ws.publish('a.channel', 'message');

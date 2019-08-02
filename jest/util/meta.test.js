@@ -79,13 +79,13 @@ describe('util/meta', () => {
       expect(Metadata.getMeta(Test.prototype)).toEqual({
         class: {
           '@inject': {
-            'mykey': 'myvalue'
+            mykey: 'myvalue'
           }
         },
         method: {}
       });
       expect(Metadata.getClassMeta(Test.prototype, '@inject')).toEqual({
-        'mykey': 'myvalue'
+        mykey: 'myvalue'
       });
       expect(Metadata.getClassMeta(Test.prototype, '@inject')).toBe(
         Metadata.getMeta(Test.prototype).class['@inject']
@@ -111,15 +111,15 @@ describe('util/meta', () => {
       expect(Metadata.getMeta(Test.prototype)).toEqual({
         class: {},
         method: {
-          'methodName': {
+          methodName: {
             '@before': {
-              'mykey': 'myvalue'
+              mykey: 'myvalue'
             }
           }
         }
       });
       expect(Metadata.getMethodMeta(Test.prototype, 'methodName', '@before')).toEqual({
-        'mykey': 'myvalue'
+        mykey: 'myvalue'
       });
       expect(Metadata.getMethodMeta(Test.prototype, 'methodName', '@before')).toBe(
         Metadata.getMeta(Test.prototype).method.methodName['@before']
@@ -132,10 +132,10 @@ describe('util/meta', () => {
       expect(Metadata.getMeta(Test.prototype)).toEqual({
         class: {},
         method: {
-          'methodName': {
+          methodName: {
             '@before': {
-              'mykey': 'myvalue',
-              'anotherkey': 'anothervalue'
+              mykey: 'myvalue',
+              anotherkey: 'anothervalue'
             }
           }
         }

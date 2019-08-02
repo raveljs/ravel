@@ -109,8 +109,8 @@ describe('Ravel', () => {
         'redis max retries': 10,
         'redis keepalive interval': 1000,
         'redis websocket channel prefix': 'ravel.ws',
-        'port': 8080,
-        'https': false,
+        port: 8080,
+        https: false,
         'https options': {},
         'app route': '/',
         'login route': '/login',
@@ -131,7 +131,7 @@ describe('Ravel', () => {
       conf = {
         'redis port': 1234
       };
-      jest.doMock(upath.toUnix(upath.posix.join(app.cwd, '.ravelrc')), () => conf, {virtual: true});
+      jest.doMock(upath.toUnix(upath.posix.join(app.cwd, '.ravelrc')), () => conf, { virtual: true });
       await app.init();
       expect(app.get('redis port')).toEqual(conf['redis port']);
     });
@@ -144,7 +144,7 @@ describe('Ravel', () => {
       const root = (os.platform() === 'win32') ? process.cwd().split(upath.sep)[0] : upath.sep;
       parent = parent.length > 0 ? parent : root;
       const joined = upath.toUnix(upath.posix.join(parent, '.ravelrc'));
-      jest.doMock(joined, () => conf, {virtual: true});
+      jest.doMock(joined, () => conf, { virtual: true });
       await app.init();
       expect(app.get('redis port')).toEqual(conf['redis port']);
     });
@@ -156,7 +156,7 @@ describe('Ravel', () => {
       const root = (os.platform() === 'win32') ? process.cwd().split(upath.sep)[0] : upath.sep;
       // can't use extension on mock because mockery only works with exact matches
       const joined = upath.toUnix(upath.posix.join(root, '.ravelrc'));
-      jest.doMock(joined, () => conf, {virtual: true});
+      jest.doMock(joined, () => conf, { virtual: true });
       await app.init();
       expect(app.get('redis port')).toEqual(conf['redis port']);
     });
@@ -165,7 +165,7 @@ describe('Ravel', () => {
       conf = {
         'redis port': 1234
       };
-      jest.doMock(upath.toUnix(upath.posix.join(app.cwd, '.ravelrc')), () => JSON.stringify(conf), {virtual: true});
+      jest.doMock(upath.toUnix(upath.posix.join(app.cwd, '.ravelrc')), () => JSON.stringify(conf), { virtual: true });
       await app.init();
       expect(app.get('redis port')).toEqual(conf['redis port']);
     });
@@ -174,7 +174,7 @@ describe('Ravel', () => {
       conf = {
         'redis port': 1234
       };
-      jest.doMock(upath.toUnix(upath.posix.join(app.cwd, '.ravelrc')), () => conf, {virtual: true});
+      jest.doMock(upath.toUnix(upath.posix.join(app.cwd, '.ravelrc')), () => conf, { virtual: true });
 
       app.set('redis port', 6380);
       await app.init();
@@ -186,14 +186,14 @@ describe('Ravel', () => {
         'redis port': 1234
       };
       conf[Math.random().toString()] = false;
-      jest.doMock(upath.toUnix(upath.posix.join(app.cwd, '.ravelrc')), () => conf, {virtual: true});
+      jest.doMock(upath.toUnix(upath.posix.join(app.cwd, '.ravelrc')), () => conf, { virtual: true });
 
       app.set('redis port', 6380);
       await expect(app.init()).rejects.toThrow(app.$err.IllegalValue);
     });
 
     it('should throw a SyntaxError if a .ravelrc file is found but is malformed', async () => {
-      jest.doMock(upath.toUnix(upath.posix.join(app.cwd, '.ravelrc')), () => { throw new SyntaxError(); }, {virtual: true});
+      jest.doMock(upath.toUnix(upath.posix.join(app.cwd, '.ravelrc')), () => { throw new SyntaxError(); }, { virtual: true });
       await expect(app.init()).rejects.toThrow(SyntaxError);
     });
 
@@ -213,7 +213,7 @@ describe('Ravel', () => {
           'redis host': '$REDIS_HOST',
           'redis port': '$REDIS_PORT'
         };
-        jest.doMock(upath.toUnix(upath.posix.join(app.cwd, '.ravelrc')), () => JSON.stringify(conf), {virtual: true});
+        jest.doMock(upath.toUnix(upath.posix.join(app.cwd, '.ravelrc')), () => JSON.stringify(conf), { virtual: true });
         await app.init();
         expect(app.get('redis port')).toEqual('9999');
         expect(app.get('redis host')).toEqual('localhost');
@@ -224,7 +224,7 @@ describe('Ravel', () => {
         conf = {
           'redis url': 'redis://$REDIS_HOST:$REDIS_PORT'
         };
-        jest.doMock(upath.toUnix(upath.posix.join(app.cwd, '.ravelrc')), () => JSON.stringify(conf), {virtual: true});
+        jest.doMock(upath.toUnix(upath.posix.join(app.cwd, '.ravelrc')), () => JSON.stringify(conf), { virtual: true });
         await app.init();
         expect(app.get('redis url')).toEqual('redis://localhost:9999');
       });
@@ -234,7 +234,7 @@ describe('Ravel', () => {
         conf = {
           'redis url': 'redis://$REDIS_USER:$REDIS_PASSWORD@$REDIS_HOST:$REDIS_PORT'
         };
-        jest.doMock(upath.toUnix(upath.posix.join(app.cwd, '.ravelrc')), () => JSON.stringify(conf), {virtual: true});
+        jest.doMock(upath.toUnix(upath.posix.join(app.cwd, '.ravelrc')), () => JSON.stringify(conf), { virtual: true });
         await expect(app.init()).rejects.toThrow(app.$err.IllegalValue);
       });
     });

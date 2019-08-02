@@ -1,6 +1,6 @@
 describe('Ravel end-to-end test', () => {
   let app;
-  const u = [{id: 1, name: 'Joe'}, {id: 2, name: 'Jane'}];
+  const u = [{ id: 1, name: 'Joe' }, { id: 2, name: 'Jane' }];
 
   describe('#init()', () => {
     describe('uncaught ES6 Promise errors logging', () => {
@@ -46,7 +46,7 @@ describe('Ravel end-to-end test', () => {
         await app.init();
         const res = await request(app.callback).get('/session-options');
         expect(res.status).toBe(200);
-        expect(res.body).toEqual(expect.objectContaining({secure: false}));
+        expect(res.body).toEqual(expect.objectContaining({ secure: false }));
       });
 
       it('should not set session to insecure when using https', async () => {
@@ -55,7 +55,7 @@ describe('Ravel end-to-end test', () => {
         await app.init();
         const res = await request(app.callback).get('/session-options');
         expect(res.status).toBe(200);
-        expect(res.body).toEqual(expect.not.objectContaining({secure: false}));
+        expect(res.body).toEqual(expect.not.objectContaining({ secure: false }));
       });
     });
 
