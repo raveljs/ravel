@@ -276,26 +276,20 @@ app.start();
 Since decorators are not yet available in Node, you will need to use a transpiler to convert them into ES2016-compliant code. We have chosen [Babel](https://babeljs.io/) as our recommended transpiler.
 
 ```bash
-$ npm install gulp-sourcemaps@1.6.0 babel-core@6.18.2 babel-plugin-transform-decorators-legacy@1.3.4 gulp-babel@6.1.2
-# Note, please add babel-plugin-transform-async-to-generator@6.16.0 if you are using Node v6 instead of v7.
+$ npm install @babel/core@7.5.5 @babel/plugin-proposal-decorators@7.4.4 gulp-babel@8.0.0
 ```
 
 *gulpfile.js*
 ```js
 const babelConfig = {
-  'retainLines': true,
-  'plugins': ['transform-decorators-legacy'] // add 'transform-async-to-generator' if you are using Node v6 instead of v7
+  'plugins': [['@babel/plugin-proposal-decorators', { 'legacy': true }]]
 };
 gulp.task('transpile', function () {
   return gulp.src('src/**/*.js') // point it at your source directory, containing Modules, Resources and Routes
-      .pipe(plugins.sourcemaps.init())
       .pipe(plugins.babel(babelConfig))
-      .pipe(plugins.sourcemaps.write('.'))
       .pipe(gulp.dest('dist'));  // your transpiled Ravel app will appear here!
 });
 ```
-
-Check out the [starter project](https://github.com/raveljs/ravel-github-mariadb-starter) to see a working example of this build process.
 
 ### Running the Application
 
