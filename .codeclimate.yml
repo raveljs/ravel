@@ -1,5 +1,5 @@
----
-engines:
+version: "2"
+plugins:
   duplication:
     enabled: true
     config:
@@ -10,13 +10,11 @@ engines:
     enabled: false
   fixme:
     enabled: true
-method-lines:
-  config:
-    threshold: 30
-ratings:
-  paths:
-  - "**.js"
-exclude_paths:
+checks:
+  method-lines:
+    config:
+      threshold: 30
+exclude_patterns:
 - documentation_theme/
 - test/
 - gulpfile.js
