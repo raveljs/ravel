@@ -97,7 +97,7 @@
   },
   "devDependencies": {
     "cross-env": "5.2.0",
-    "documentation": "4.0.0-rc.1",
+    "documentation": "12.1.1",
     "yamljs": "0.3.0",
     "jest": "23.6.0",
     "eslint": "4.2.0",

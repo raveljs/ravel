@@ -1,30 +1,23 @@
 <!doctype html>
 <html>
 <head>
-  <meta charset='utf-8' />
-  <title><%- config['name'] %> <%- config['project-version'] %> | Documentation</title>
+  <meta charset='utf-8'>
+  <title><%- config['project-name'] %> <%- config['project-version'] %> | Documentation</title><% if (config['project-description']) { %>
+  <meta name='description' content='<%- config['project-description'] %>'><% } %>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
-  <link href='assets/bass.css' type='text/css' rel='stylesheet' />
-  <link href='assets/style.css' type='text/css' rel='stylesheet' />
-  <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.10.0/styles/atom-one-dark.min.css">
+  <link href='assets/bass.css' rel='stylesheet'>
+  <link href='assets/style.css' rel='stylesheet'>
+  <link href='assets/github.css' rel='stylesheet'>
+  <link href='assets/split.css' rel='stylesheet'><% if (config['favicon']) { %>
+  <link href='<%- config['favicon'] %>' rel='icon' ><% } %>
 </head>
-<body class='documentation'>
-  <div class='max-width-4 mx-auto'>
-    <div class='clearfix md-mxn2'>
-      <div class='fixed xs-hide fix-3 overflow-auto max-height-100'>
+<body class='documentation m0'>
+    <div class='flex'>
+      <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <img src="assets/logo.png" width="90" class="logo">
-          <h3 class='mb0 no-anchor'><%- config['name'] %>
-            <select class="ml1" onchange="goToDoc(this)">
-              <% config['versions'].forEach(function(v) { %>
-                <% if (v === config['project-version']) { %>
-                  <option value="<%- v %>" selected><%- v %></option>
-                <% } else { %>
-                  <option value="<%- v %>"><%- v %></option>
-                <% } %>
-              <% }) %>
-            </select>
-          </h3>
+          <h3 class='mb0 no-anchor'><%- config['project-name'] %></h3>
+          <div class='mb1'><code><%- config['project-version'] %></code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -47,7 +40,7 @@
                     <li class='h5'><span>Static members</span></li>
                     <% doc.members.static.forEach(function(member) { %>
                       <li><a
-                        href='#<%=member.namespace%>'
+                        href='#<%=slug(member.namespace)%>'
                         class='regular pre-open'>
                         .<%- member.name %>
                       </a></li>
@@ -59,7 +52,7 @@
                       <li class='h5'><span>Instance members</span></li>
                       <% doc.members.instance.forEach(function(member) { %>
                       <li><a
-                        href='#<%=member.namespace%>'
+                        href='#<%=slug(member.namespace)%>'
                         class='regular pre-open'>
                         #<%- member.name %>
                       </a></li>
@@ -71,7 +64,7 @@
                       <li class='h5'><span>Inner members</span></li>
                       <% doc.members.inner.forEach(function(member) { %>
                       <li><a
-                        href='#<%=member.namespace%>'
+                        href='#<%=slug(member.namespace)%>'
                         class='regular pre-open'>
                         #<%- member.name %>
                       </a></li>
@@ -83,7 +76,7 @@
                       <li class='h5'>Events</li>
                       <% doc.members.events.forEach(function(member) { %>
                         <li><a
-                          href='#<%=member.namespace%>'
+                          href='#<%=slug(member.namespace)%>'
                           class='regular pre-open'>
                           ⓔ <%- member.name %>
                         </a></li>
@@ -97,31 +90,27 @@
             </ul>
           </div>
           <div class='mt1 h6 quiet'>
-            <a href='http://documentation.js.org/reading-documentation.html'>Need help reading this?</a>
+            <a href='https://documentation.js.org/reading-documentation.html'>Need help reading this?</a>
           </div>
         </div>
       </div>
-      <div class='fix-margin-3'>
+      <div id='split-right' class='relative overflow-auto height-viewport-100'>
         <% docs.forEach(function(s) { %>
-          <% if (s.kind !== 'note') { %>
-            <%= renderSection({
-              section: s,
-              renderSection: renderSection,
-              renderSectionList: renderSectionList
-            }) %>
-          <% } else { %>
+          <% if (s.kind === 'note' && !s.children) { %>
             <div class='keyline-top-not py2'><%=renderNote({ note: s })%></div>
+          <% } else { %>
+          <%= renderSection({
+            section: s,
+            renderSection: renderSection,
+            renderSectionList: renderSectionList,
+            renderParamProperty: renderParamProperty
+          }) %>
           <% } %>
         <% }) %>
       </div>
     </div>
-  </div>
   <script src='assets/anchor.js'></script>
+  <script src='assets/split.js'></script>
   <script src='assets/site.js'></script>
-  <script>
-    function goToDoc(e) {
-      window.location.href = '../' + e.value + '/';
-    }
-  </script>
 </body>
 </html>
