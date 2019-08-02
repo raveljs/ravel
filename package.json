@@ -36,30 +36,6 @@
     "url": "https://github.com/raveljs/ravel.git"
   },
   "main": "dist/ravel.js",
-  "jest": {
-    "setupFiles": [
-      "./jest/setup.js"
-    ],
-    "setupTestFrameworkScriptFile": "./jest/timeout.js",
-    "moduleFileExtensions": [
-      "js"
-    ],
-    "moduleDirectories": [
-      "node_modules"
-    ],
-    "transform": {
-      "^.+\\.jsx?$": "babel-jest"
-    },
-    "collectCoverageFrom": [
-      "lib/**/*.{js}"
-    ],
-    "coverageReporters": [
-      "json",
-      "lcov",
-      "text",
-      "html"
-    ]
-  },
   "scripts": {
     "clean": "gulp clean",
     "docs": "gulp docs",
@@ -99,7 +75,7 @@
     "cross-env": "5.2.0",
     "documentation": "12.1.1",
     "yamljs": "0.3.0",
-    "jest": "23.6.0",
+    "jest": "24.8.0",
     "eslint": "4.2.0",
     "eslint-config-standard": "10.2.1",
     "eslint-config-semistandard": "11.0.0",
@@ -121,6 +97,7 @@
     "gulp-replace": "1.0.0",
     "gulp-babel": "6.1.3",
     "babel-core": "6.26.3",
+    "babel-jest": "23.6.0",
     "babel-eslint": "7.2.3",
     "babel-plugin-transform-decorators-legacy": "1.3.5"
   }
