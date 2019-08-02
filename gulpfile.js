@@ -6,8 +6,10 @@ const del = require('del');
 const exec = require('child_process').exec;
 
 const babelConfig = {
-  'retainLines': true,
-  'plugins': ['transform-decorators-legacy']
+  presets: [
+    // {'retainLines': true} // broken in babel 7 with decorators
+  ],
+  'plugins': [['@babel/plugin-proposal-decorators', { 'legacy': true }]]
 };
 
 gulp.task('lint', gulp.series(function lint () {

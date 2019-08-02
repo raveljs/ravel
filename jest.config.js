@@ -10,7 +10,7 @@ module.exports = {
     'node_modules'
   ],
   'transform': {
-    '^.+\\.jsx?$': require.resolve('babel-jest') // force babel 6
+    '^.+\\.jsx?$': 'babel-jest'
   },
   'collectCoverage': true,
   'collectCoverageFrom': [
