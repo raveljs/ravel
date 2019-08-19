@@ -36,30 +36,6 @@
     "url": "https://github.com/raveljs/ravel.git"
   },
   "main": "dist/ravel.js",
-  "jest": {
-    "setupFiles": [
-      "./jest/setup.js"
-    ],
-    "setupTestFrameworkScriptFile": "./jest/timeout.js",
-    "moduleFileExtensions": [
-      "js"
-    ],
-    "moduleDirectories": [
-      "node_modules"
-    ],
-    "transform": {
-      "^.+\\.jsx?$": "babel-jest"
-    },
-    "collectCoverageFrom": [
-      "lib/**/*.{js}"
-    ],
-    "coverageReporters": [
-      "json",
-      "lcov",
-      "text",
-      "html"
-    ]
-  },
   "scripts": {
     "clean": "gulp clean",
     "docs": "gulp docs",
@@ -80,50 +56,48 @@
   "dependencies": {
     "fs-readdir-recursive": "1.1.0",
     "intel": "1.2.0",
-    "keygrip": "1.0.3",
-    "koa": "2.6.2",
+    "keygrip": "1.1.0",
+    "koa": "2.8.1",
     "koa-compress": "3.0.0",
     "koa-favicon": "2.0.1",
-    "koa-passport": "4.1.1",
+    "koa-passport": "4.1.3",
     "koa-router": "7.4.0",
-    "koa-session": "5.10.1",
+    "koa-session": "5.12.2",
     "koa-static": "5.0.0",
     "node-fs": "0.1.7",
     "passport": "0.4.0",
     "redis": "2.8.0",
-    "redis-mock": "0.42.0",
-    "upath": "1.1.0",
-    "ws": "5.2.0"
+    "redis-mock": "0.46.0",
+    "upath": "1.1.2",
+    "ws": "7.1.2"
   },
   "devDependencies": {
-    "cross-env": "5.1.1",
-    "documentation": "4.0.0-rc.1",
+    "cross-env": "5.2.0",
+    "documentation": "12.1.1",
     "yamljs": "0.3.0",
-    "jest": "23.6.0",
-    "eslint": "4.2.0",
-    "eslint-config-standard": "10.2.1",
-    "eslint-config-semistandard": "11.0.0",
-    "eslint-plugin-import": "2.7.0",
-    "eslint-plugin-node": "5.1.0",
-    "eslint-plugin-standard": "3.0.1",
-    "eslint-plugin-promise": "3.5.0",
-    "eslint-plugin-jsdoc": "3.1.1",
-    "supertest": "3.0.0",
+    "jest": "24.9.0",
+    "eslint": "6.1.0",
+    "eslint-config-standard": "13.0.1",
+    "eslint-config-semistandard": "14.0.0",
+    "eslint-plugin-import": "2.18.2",
+    "eslint-plugin-node": "9.1.0",
+    "eslint-plugin-standard": "4.0.0",
+    "eslint-plugin-promise": "4.2.1",
+    "eslint-plugin-jsdoc": "15.8.1",
+    "supertest": "4.0.2",
     "passport-local": "1.0.0",
     "koa-bodyparser": "4.2.1",
-    "lodash": "4.17.5",
+    "lodash": "4.17.15",
     "del": "3.0.0",
-    "gulp": "3.9.1",
+    "gulp": "4.0.2",
     "gulp-env": "0.4.0",
-    "gulp-eslint": "4.0.0",
-    "gulp-load-plugins": "1.5.0",
-    "gulp-open": "2.0.0",
-    "gulp-replace": "0.6.1",
-    "gulp-babel": "6.1.2",
-    "babel-core": "6.26.0",
-    "babel-eslint": "7.2.3",
-    "babel-plugin-transform-async-to-generator": "6.24.1",
-    "babel-plugin-transform-decorators-legacy": "1.3.4",
-    "babel-register": "6.26.0"
+    "gulp-eslint": "6.0.0",
+    "gulp-load-plugins": "2.0.1",
+    "gulp-open": "3.0.1",
+    "gulp-replace": "1.0.0",
+    "gulp-babel": "8.0.0",
+    "@babel/core": "7.5.5",
+    "babel-eslint": "10.0.2",
+    "@babel/plugin-proposal-decorators": "7.4.4"
   }
 }

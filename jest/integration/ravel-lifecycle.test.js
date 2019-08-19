@@ -33,7 +33,7 @@ describe('Ravel lifeycle test', () => {
     koaconfigHandlerCalled = 0;
     endHandlerCalled = 0;
 
-    const u = [{id: 1, name: 'Joe'}, {id: 2, name: 'Jane'}];
+    const u = [{ id: 1, name: 'Joe' }, { id: 2, name: 'Jane' }];
 
     @Ravel.Module('another')
     class Another {

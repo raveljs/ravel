@@ -1,5 +1,5 @@
----
-engines:
+version: "2"
+plugins:
   duplication:
     enabled: true
     config:
@@ -7,13 +7,14 @@ engines:
         javascript:
           mass_threshold: 90
   eslint:
-    enabled: true
+    enabled: false
   fixme:
     enabled: true
-ratings:
-  paths:
-  - "**.js"
-exclude_paths:
+checks:
+  method-lines:
+    config:
+      threshold: 30
+exclude_patterns:
 - documentation_theme/
 - test/
 - gulpfile.js

@@ -45,9 +45,9 @@ describe('Ravel', () => {
       class M2 {}
       @Ravel.Module
       class M3 {}
-      jest.doMock(upath.toUnix(upath.posix.join(app.cwd, './modules/test1.js')), () => M1, {virtual: true});
-      jest.doMock(upath.toUnix(upath.posix.join(app.cwd, './modules/test2.js')), () => M2, {virtual: true});
-      jest.doMock(upath.toUnix(upath.posix.join(app.cwd, './modules/package/test3.js')), () => M3, {virtual: true});
+      jest.doMock(upath.toUnix(upath.posix.join(app.cwd, './modules/test1.js')), () => M1, { virtual: true });
+      jest.doMock(upath.toUnix(upath.posix.join(app.cwd, './modules/test2.js')), () => M2, { virtual: true });
+      jest.doMock(upath.toUnix(upath.posix.join(app.cwd, './modules/package/test3.js')), () => M3, { virtual: true });
       app.load = jest.fn();
       app.scan('./modules');
       expect(app.load).toHaveBeenCalledWith(M1, M2, M3);
@@ -74,9 +74,9 @@ describe('Ravel', () => {
       class M2 {}
       @Ravel.Resource('/')
       class R1 {}
-      jest.doMock('/modules/test1.js', () => M1, {virtual: true});
-      jest.doMock('/modules/test2.js', () => M2, {virtual: true});
-      jest.doMock('/modules/package/test3.js', () => R1, {virtual: true});
+      jest.doMock('/modules/test1.js', () => M1, { virtual: true });
+      jest.doMock('/modules/test2.js', () => M2, { virtual: true });
+      jest.doMock('/modules/package/test3.js', () => R1, { virtual: true });
       app.load = jest.fn();
       app.scan('/modules');
       expect(app.load).toHaveBeenCalledWith(M1, M2, R1);

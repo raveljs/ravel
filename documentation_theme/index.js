@@ -1,5 +1,3 @@
-'use strict';
-
 var fs = require('fs'),
   path = require('path'),
   File = require('vinyl'),
@@ -11,16 +9,23 @@ var fs = require('fs'),
   LinkerStack = require('documentation').util.LinkerStack,
   hljs = require('highlight.js');
 
-module.exports = function(
-  comments /*: Array<Comment> */,
-  config /*: DocumentationConfig */
-) {
-  var linkerStack = new LinkerStack(
-    config
-  ).namespaceResolver(comments, function(namespace) {
-    var slugger = new GithubSlugger();
-    return '#' + slugger.slug(namespace);
-  });
+function isFunction(section) {
+  return (
+    section.kind === 'function' ||
+    (section.kind === 'typedef' &&
+      section.type.type === 'NameExpression' &&
+      section.type.name === 'Function')
+  );
+}
+
+module.exports = function(comments, config) {
+  var linkerStack = new LinkerStack(config).namespaceResolver(
+    comments,
+    function(namespace) {
+      var slugger = new GithubSlugger();
+      return '#' + slugger.slug(namespace);
+    }
+  );
 
   var formatters = createFormatters(linkerStack.link);
 
@@ -36,7 +41,7 @@ module.exports = function(
         var prefix = '';
         if (section.kind === 'class') {
           prefix = 'new ';
-        } else if (section.kind !== 'function') {
+        } else if (!isFunction(section)) {
           return section.name;
         }
         return prefix + section.name + formatters.parameters(section, true);
@@ -46,7 +51,7 @@ module.exports = function(
         var prefix = '';
         if (section.kind === 'class') {
           prefix = 'new ';
-        } else if (section.kind !== 'function') {
+        } else if (!isFunction(section)) {
           return section.name;
         }
         if (section.returns.length) {
@@ -91,6 +96,10 @@ module.exports = function(
     fs.readFileSync(path.join(__dirname, 'note._'), 'utf8'),
     sharedImports
   );
+  sharedImports.imports.renderParamProperty = _.template(
+    fs.readFileSync(path.join(__dirname, 'paramProperty._'), 'utf8'),
+    sharedImports
+  );
 
   var pageTemplate = _.template(
     fs.readFileSync(path.join(__dirname, 'index._'), 'utf8'),
@@ -108,7 +117,7 @@ module.exports = function(
               contents: new Buffer(
                 pageTemplate({
                   docs: comments,
-                  config: config
+                  config
                 }),
                 'utf8'
               )

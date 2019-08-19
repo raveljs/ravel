@@ -104,7 +104,7 @@ describe('Ravel', () => {
           @Ravel.Routes.before('middleware1', 'middleware2')
           async pathHandler (ctx) {
             ctx.status = 200;
-            ctx.body = {id: 3};
+            ctx.body = { id: 3 };
           }
         }
         app.load(Test);
@@ -112,7 +112,7 @@ describe('Ravel', () => {
 
         const response = await request(app.callback).get('/api/test');
         expect(response.statusCode).toBe(200);
-        expect(response.body).toEqual({id: 3});
+        expect(response.body).toEqual({ id: 3 });
       });
 
       it('should facilitate the creation of GET routes via @mapping with different status codes', async () => {
@@ -130,7 +130,7 @@ describe('Ravel', () => {
           @Ravel.Routes.before('middleware1', 'middleware2')
           async pathHandler (ctx) {
             ctx.status = 201;
-            ctx.body = {id: 3};
+            ctx.body = { id: 3 };
           }
         }
 
@@ -139,7 +139,7 @@ describe('Ravel', () => {
 
         const response = await request(app.callback).get('/api/test');
         expect(response.statusCode).toBe(201);
-        expect(response.body).toEqual({id: 3});
+        expect(response.body).toEqual({ id: 3 });
       });
 
       it('should facilitate the creation of POST routes via @mapping', async () => {
@@ -156,7 +156,7 @@ describe('Ravel', () => {
           @Ravel.Routes.mapping(Ravel.Routes.POST, '/test')
           @Ravel.Routes.before('middleware1', 'middleware2')
           async pathHandler (ctx) {
-            ctx.body = {id: 1};
+            ctx.body = { id: 1 };
           }
         }
         app.load(Test);
@@ -164,7 +164,7 @@ describe('Ravel', () => {
 
         const response = await request(app.callback).post('/api/test');
         expect(response.statusCode).toBe(201);
-        expect(response.body).toEqual({id: 1});
+        expect(response.body).toEqual({ id: 1 });
       });
 
       it('should facilitate the creation of PUT routes via @mapping', async () => {
@@ -181,7 +181,7 @@ describe('Ravel', () => {
           @Ravel.Routes.mapping(Ravel.Routes.PUT, '/test')
           @Ravel.Routes.before('middleware1', 'middleware2')
           async pathHandler (ctx) {
-            ctx.body = {id: 1};
+            ctx.body = { id: 1 };
           }
         }
         app.load(Test);
@@ -189,7 +189,7 @@ describe('Ravel', () => {
 
         const response = await request(app.callback).put('/api/test');
         expect(response.statusCode).toBe(200);
-        expect(response.body).toEqual({id: 1});
+        expect(response.body).toEqual({ id: 1 });
       });
 
       it('should facilitate the creation of PATCH routes via @mapping', async () => {
@@ -206,7 +206,7 @@ describe('Ravel', () => {
           @Ravel.Routes.mapping(Ravel.Routes.PATCH, '/test')
           @Ravel.Routes.before('middleware1', 'middleware2')
           async pathHandler (ctx) {
-            ctx.body = {id: 1};
+            ctx.body = { id: 1 };
           }
         }
         app.load(Test);
@@ -214,7 +214,7 @@ describe('Ravel', () => {
 
         const response = await request(app.callback).patch('/api/test');
         expect(response.statusCode).toBe(200);
-        expect(response.body).toEqual({id: 1});
+        expect(response.body).toEqual({ id: 1 });
       });
 
       it('should facilitate the creation of DELETE routes via @mapping', async () => {
@@ -231,7 +231,7 @@ describe('Ravel', () => {
           @Ravel.Routes.mapping(Ravel.Routes.DELETE, '/test')
           @Ravel.Routes.before('middleware1', 'middleware2')
           async pathHandler (ctx) {
-            ctx.body = {id: 1};
+            ctx.body = { id: 1 };
           }
         }
         app.load(Test);
@@ -239,11 +239,11 @@ describe('Ravel', () => {
 
         const response = await request(app.callback).delete('/api/test');
         expect(response.statusCode).toBe(200);
-        expect(response.body).toEqual({id: 1});
+        expect(response.body).toEqual({ id: 1 });
       });
 
       it('should support the use of @before at the method and class levels', async () => {
-        const middleware1 = async function (ctx, next) { ctx.body = {id: ctx.params.id}; await next(); };
+        const middleware1 = async function (ctx, next) { ctx.body = { id: ctx.params.id }; await next(); };
         const middleware2 = async function (ctx, next) { ctx.body.name = 'sean'; await next(); };
 
         @Ravel.Routes('/api')
@@ -265,7 +265,7 @@ describe('Ravel', () => {
 
         const response = await request(app.callback).get('/api/test/3');
         expect(response.statusCode).toBe(200);
-        expect(response.body).toEqual({id: '3', name: 'sean'});
+        expect(response.body).toEqual({ id: '3', name: 'sean' });
       });
 
       it('should support the use of @mapping without @before', async () => {
@@ -322,7 +322,7 @@ describe('Ravel', () => {
         @Ravel.Routes.before('middleware1', 'middleware2')
         pathHandler (ctx) {
           ctx.status = 200;
-          ctx.body = {id: 3};
+          ctx.body = { id: 3 };
         }
       }
       app.load(Test);
@@ -330,7 +330,7 @@ describe('Ravel', () => {
 
       const response = await request(app.callback).get('/api/test');
       expect(response.statusCode).toBe(200);
-      expect(response.body).toEqual({id: 3});
+      expect(response.body).toEqual({ id: 3 });
     });
 
     it('should throw a Ravel.$err.IllegalValueError error when clients attempt to use a middleware factory with fewer than the required number of arguments', async () => {

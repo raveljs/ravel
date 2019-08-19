@@ -6,18 +6,20 @@ const del = require('del');
 const exec = require('child_process').exec;
 
 const babelConfig = {
-  'retainLines': true,
-  'plugins': ['transform-decorators-legacy']
+  presets: [
+    // {'retainLines': true} // broken in babel 7 with decorators
+  ],
+  'plugins': [['@babel/plugin-proposal-decorators', { 'legacy': true }]]
 };
 
-gulp.task('lint', function () {
+gulp.task('lint', gulp.series(function lint () {
   return gulp.src(['./lib/**/*.js', './test/**/*.js', 'gulpfile.js'])
     .pipe(plugins.eslint())
     .pipe(plugins.eslint.format())
     .pipe(plugins.eslint.failAfterError());
-});
+}));
 
-gulp.task('docs', function (done) {
+gulp.task('docs', gulp.series(function docs (done) {
   exec(`node ./node_modules/documentation/bin/documentation.js build lib/ravel.js -f html -o docs-dist -c documentation.yml --theme ./documentation_theme`, (err, stdout, stderr) => {
     console.log(stdout);
     console.log(stderr);
@@ -31,33 +33,34 @@ gulp.task('docs', function (done) {
         .on('end', done);
     }
   });
-});
+}));
 
-gulp.task('clean', function () {
+gulp.task('clean', gulp.series(function clean () {
   return del([
     'coverage', 'docs-dist', 'test-dist'
   ]);
-});
+}));
 
-gulp.task('dist', ['clean'], function () {
+// TODO broken babel reference
+gulp.task('dist', gulp.series('clean', function dist () {
   return gulp.src('lib/**/*.js')
     .pipe(plugins.babel(babelConfig))
     .pipe(gulp.dest('dist'));
-});
+}));
 
-gulp.task('watch', ['lint', 'docs'], function () {
-  gulp.watch(['README.md', './lib/**/*.js', './docs/**/*.md', 'documentation.yml', './documentation_theme/**'], ['lint', 'docs']);
-  gulp.watch(['gulpfile.js', './test/**/*.js'], ['lint']);
-});
+gulp.task('watch', gulp.series(gulp.parallel('lint', 'docs'), function watch () {
+  gulp.watch(['README.md', './lib/**/*.js', './docs/**/*.md', 'documentation.yml', './documentation_theme/**'], gulp.parallel('lint', 'docs'));
+  gulp.watch(['gulpfile.js', './test/**/*.js'], gulp.parallel('lint'));
+}));
 
-gulp.task('show-coverage', function () {
+gulp.task('show-coverage', gulp.series(function showCoverage () {
   return gulp.src('./coverage/lcov-report/index.html')
     .pipe(plugins.open());
-});
+}));
 
-gulp.task('show-docs', ['docs'], function () {
+gulp.task('show-docs', gulp.series('docs', function showDocs () {
   return gulp.src('./docs-dist/index.html')
     .pipe(plugins.open());
-});
+}));
 
-gulp.task('default', ['watch']);
+gulp.task('default', gulp.series('watch'));

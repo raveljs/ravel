@@ -52,7 +52,7 @@ describe('Ravel', () => {
         await app.init();
         const retryStrategy = require('../../lib/util/kvstore').retryStrategy(app);
         expect(typeof retryStrategy).toBe('function');
-        expect(retryStrategy({error: {code: 'ECONNREFUSED'}})).toBeInstanceOf(app.$err.General);
+        expect(retryStrategy({ error: { code: 'ECONNREFUSED' } })).toBeInstanceOf(app.$err.General);
       });
 
       it('should log any errors on a connection', async () => {
@@ -70,7 +70,7 @@ describe('Ravel', () => {
         app.set('redis max retries', 10);
         await app.init();
         const options = {
-          error: {code: 'something'},
+          error: { code: 'something' },
           attempt: app.get('redis max retries') + 1
         };
         expect(retryStrategy(options)).toBeInstanceOf(app.$err.General);
@@ -92,7 +92,7 @@ describe('Ravel', () => {
         app.set('redis max retries', 10);
         await app.init();
         const options = {
-          error: {code: 'something'},
+          error: { code: 'something' },
           attempt: 1
         };
         expect(retryStrategy(options)).toBe(100);

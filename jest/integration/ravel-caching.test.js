@@ -1,11 +1,11 @@
 describe('Ravel end-to-end test', () => {
   const cacheWithoutExpiry = jest.fn(() => 'cache without expiry');
-  const cacheWithExpiry = jest.fn(() => { return {message: 'cache with expiry'}; });
+  const cacheWithExpiry = jest.fn(() => { return { message: 'cache with expiry' }; });
   const classCache = jest.fn(() => Buffer.from('class-level cache'));
   const postCache = jest.fn(() => 'post cache');
   const maxlengthStringCache = jest.fn(() => 'max length');
   const maxlengthBufferCache = jest.fn(() => Buffer.from('max length'));
-  const maxlengthJSONCache = jest.fn(() => { return {message: 'max length'}; });
+  const maxlengthJSONCache = jest.fn(() => { return { message: 'max length' }; });
   const streamBody = jest.fn(function () {
     const Readable = require('stream').Readable;
     const stream = new Readable();
@@ -38,7 +38,7 @@ describe('Ravel end-to-end test', () => {
           ctx.body = cacheWithoutExpiry();
         }
 
-        @cache({expire: 1})
+        @cache({ expire: 1 })
         get (ctx) {
           ctx.body = cacheWithExpiry();
         }
@@ -56,19 +56,19 @@ describe('Ravel end-to-end test', () => {
           ctx.response.lastModified = new Date();
         }
 
-        @cache({maxLength: 2})
+        @cache({ maxLength: 2 })
         @mapping(Ravel.Routes.GET, '/maxlengthstring')
         getMaxLengthStringHandler (ctx) {
           ctx.body = maxlengthStringCache();
         }
 
-        @cache({maxLength: 2})
+        @cache({ maxLength: 2 })
         @mapping(Ravel.Routes.GET, '/maxlengthbuffer')
         getMaxLengthBufferHandler (ctx) {
           ctx.body = maxlengthBufferCache();
         }
 
-        @cache({maxLength: 2})
+        @cache({ maxLength: 2 })
         @mapping(Ravel.Routes.GET, '/maxlengthjson')
         getMaxLengthJSONHandler (ctx) {
           ctx.body = maxlengthJSONCache();
@@ -123,16 +123,16 @@ describe('Ravel end-to-end test', () => {
     it('method-level @cache with expiry should respond with the appropriate string and then cache the response temporarily', async () => {
       await request(app.callback)
         .get('/api/resource/1')
-        .expect(200, {message: 'cache with expiry'});
+        .expect(200, { message: 'cache with expiry' });
       expect(cacheWithExpiry).toHaveBeenCalledTimes(1);
       await request(app.callback)
         .get('/api/resource/1')
-        .expect(200, {message: 'cache with expiry'});
+        .expect(200, { message: 'cache with expiry' });
       expect(cacheWithExpiry).toHaveBeenCalledTimes(1);
       await new Promise((resolve) => setTimeout(resolve, 2000));
       await request(app.callback)
         .get('/api/resource/1')
-        .expect(200, {message: 'cache with expiry'});
+        .expect(200, { message: 'cache with expiry' });
       expect(cacheWithExpiry).toHaveBeenCalledTimes(2);
     });
 
@@ -183,11 +183,11 @@ describe('Ravel end-to-end test', () => {
     it('should not cache json bodies which exceed the specified max length', async () => {
       await request(app.callback)
         .get('/api/routes/maxlengthjson')
-        .expect(200, {message: 'max length'});
+        .expect(200, { message: 'max length' });
       expect(maxlengthJSONCache).toHaveBeenCalledTimes(1);
       await request(app.callback)
         .get('/api/routes/maxlengthjson')
-        .expect(200, {message: 'max length'});
+        .expect(200, { message: 'max length' });
       expect(maxlengthJSONCache).toHaveBeenCalledTimes(2);
     });
 

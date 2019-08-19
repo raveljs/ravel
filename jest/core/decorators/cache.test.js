@@ -48,10 +48,10 @@ describe('Ravel', () => {
 
     it('should store options when used with an options argument', () => {
       class Stub1 {
-        @cache({expire: 60})
+        @cache({ expire: 60 })
         get () {}
       }
-      expect(Metadata.getMethodMetaValue(Stub1.prototype, 'get', '@cache', 'options')).toEqual({expire: 60});
+      expect(Metadata.getMethodMetaValue(Stub1.prototype, 'get', '@cache', 'options')).toEqual({ expire: 60 });
     });
 
     it('should be available at the class-level as well, indicating that default options should be used when applied with no arguments', () => {
@@ -71,11 +71,11 @@ describe('Ravel', () => {
     });
 
     it('should be available at the class-level as well, indicating which options should be used when applied with arguments', () => {
-      @cache({expire: 60})
+      @cache({ expire: 60 })
       class Stub1 {
         get () {}
       }
-      expect(Metadata.getClassMetaValue(Stub1.prototype, '@cache', 'options')).toEqual({expire: 60});
+      expect(Metadata.getClassMetaValue(Stub1.prototype, '@cache', 'options')).toEqual({ expire: 60 });
     });
 
     it('should insert caching middleware before Route handlers (method-level)', async () => {
@@ -93,7 +93,7 @@ describe('Ravel', () => {
 
     it('should insert caching middleware before Route handlers (class-level)', async () => {
       @Routes('/app/another/path')
-      @cache({expire: 60})
+      @cache({ expire: 60 })
       class Stub2 {
         @Routes.mapping(Routes.GET, '')
         handler () {}

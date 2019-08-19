@@ -40,7 +40,7 @@ describe('Ravel', () => {
         const stubMoment = {
           method: () => {}
         };
-        jest.doMock('moment', () => stubMoment, {virtual: true});
+        jest.doMock('moment', () => stubMoment, { virtual: true });
 
         @Module('stub')
         @inject('moment')
@@ -56,7 +56,7 @@ describe('Ravel', () => {
       });
 
       it('should throw an error when attempting to inject an npm dependency with an error in it', async () => {
-        jest.doMock('badModule', () => { throw new SyntaxError(); }, {virtual: true});
+        jest.doMock('badModule', () => { throw new SyntaxError(); }, { virtual: true });
 
         @Module('stub')
         @inject('badModule')
@@ -98,10 +98,10 @@ describe('Ravel', () => {
         const stubMoment = {
           method: () => {}
         };
-        jest.doMock('moment', () => stubMoment, {virtual: true});
+        jest.doMock('moment', () => stubMoment, { virtual: true });
 
         @Module('stub')
-        @autoinject({'moment': 'myMoment'})
+        @autoinject({ moment: 'myMoment' })
         class Stub {
         }
         app.load(Stub);
@@ -111,7 +111,7 @@ describe('Ravel', () => {
       });
 
       it('should throw an error when attempting to auto-inject an npm dependency with an error in it', async () => {
-        jest.doMock('badModule', () => { throw new SyntaxError(); }, {virtual: true});
+        jest.doMock('badModule', () => { throw new SyntaxError(); }, { virtual: true });
 
         @Module('stub')
         @autoinject('badModule')
@@ -140,7 +140,7 @@ describe('Ravel', () => {
         const stubMoment = {
           method: () => {}
         };
-        jest.doMock('moment', () => stubMoment, {virtual: true});
+        jest.doMock('moment', () => stubMoment, { virtual: true });
         @Module('stub2')
         @inject('stub1')
         @autoinject('moment')

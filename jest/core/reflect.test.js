@@ -13,7 +13,7 @@ describe('Ravel', () => {
 
   describe('#reflect()', () => {
     it('should allow clients to retrieve metadata from Modules', async () => {
-      jest.doMock('another', () => {}, {virtual: true});
+      jest.doMock('another', () => {}, { virtual: true });
       @Ravel.Module('test')
       @Ravel.inject('another')
       class Test {
@@ -25,10 +25,10 @@ describe('Ravel', () => {
       const meta = app.reflect('test').metadata;
       expect(meta).toEqual({
         class: {
-          'ravel': { 'instance': app },
+          ravel: { instance: app },
           '@inject': { dependencies: ['another'] },
-          '@role': { 'name': 'test', 'type': 'Module' },
-          source: { 'name': 'test' }
+          '@role': { name: 'test', type: 'Module' },
+          source: { name: 'test' }
         },
         method: {}
       });
@@ -37,8 +37,8 @@ describe('Ravel', () => {
     it('should allow clients to retrieve metadata from Routes', async () => {
       const middleware1 = async function (ctx, next) { await next(); };
       const middleware2 = async function (ctx, next) { await next(); };
-      jest.doMock('middleware1', () => middleware1, {virtual: true});
-      jest.doMock('middleware2', () => middleware2, {virtual: true});
+      jest.doMock('middleware1', () => middleware1, { virtual: true });
+      jest.doMock('middleware2', () => middleware2, { virtual: true });
       @Ravel.Routes('/app')
       @Ravel.Routes.before('middleware1')
       @Ravel.Routes.mapping(Ravel.Routes.GET, '/path', 404)
@@ -54,7 +54,7 @@ describe('Ravel', () => {
       const meta = app.reflect('/app').metadata;
       expect(meta).toEqual({
         class: {
-          'ravel': { 'instance': app },
+          ravel: { instance: app },
           '@before': { middleware: ['middleware1'] },
           '@mapping': {
             'Symbol(get) /path': {
@@ -88,8 +88,8 @@ describe('Ravel', () => {
     it('should allow clients to retrieve metadata from Resources', async () => {
       const middleware1 = async function (ctx, next) { await next(); };
       const middleware2 = async function (ctx, next) { await next(); };
-      jest.doMock('middleware1', () => middleware1, {virtual: true});
-      jest.doMock('middleware2', () => middleware2, {virtual: true});
+      jest.doMock('middleware1', () => middleware1, { virtual: true });
+      jest.doMock('middleware2', () => middleware2, { virtual: true });
       const Resource = Ravel.Resource;
       const before = Resource.before;
 
@@ -107,7 +107,7 @@ describe('Ravel', () => {
 
       expect(meta).toEqual({
         class: {
-          'ravel': { 'instance': app },
+          ravel: { instance: app },
           '@before': { middleware: ['middleware1'] },
           '@role': { name: '/api', type: 'Resource' },
           '@mapping': {
@@ -147,7 +147,7 @@ describe('Ravel', () => {
   describe('#knownComponents()', () => {
     it('should respond with an Array<String> of known class file paths', async () => {
       const inject = Ravel.inject;
-      jest.doMock('another', () => {}, {virtual: true});
+      jest.doMock('another', () => {}, { virtual: true });
       @Ravel.Module('test')
       @inject('another')
       class Stub {
