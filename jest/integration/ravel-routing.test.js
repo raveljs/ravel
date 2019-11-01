@@ -35,6 +35,12 @@ describe('Ravel end-to-end routing test', () => {
           callCounter += 'a';
           ctx.body = '';
         }
+
+        @mapping(Ravel.Routes.GET, '/another')
+        yetAnotherHandler (ctx) {
+          callCounter += 'a';
+          ctx.body = '';
+        }
       }
 
       app = new Ravel();
@@ -68,5 +74,18 @@ describe('Ravel end-to-end routing test', () => {
         .expect(500);
       expect(callCounter).toEqual('aa');
     });
+
+    it('Should be fast', async () => {
+      const cb = app.callback;
+      const p = [];
+      const start = process.hrtime.bigint();
+      for (let i = 0; i < 1000; i++) {
+        p.push(request(cb).get('/second/another').expect(500));
+      }
+      await Promise.all(p);
+      const end = process.hrtime.bigint();
+      const perReq = (end - start) / BigInt(1000); // eslint-disable-line no-undef
+      console.log(`Nanoseconds per request: ${perReq}`);
+    }, 10000);
   });
 });
