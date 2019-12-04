@@ -3,7 +3,6 @@ const $err = require('../../lib/util/application_error');
 
 describe('util/route-tree', () => {
   beforeEach(async () => {
-
   });
 
   afterEach(async () => {
@@ -30,16 +29,50 @@ describe('util/route-tree', () => {
 
   describe('RouteTree', () => {
     describe('#addRoute', () => {
+      let tree;
+      beforeEach(async () => {
+        tree = new RouteTreeRoot();
+      });
+
       it('Should throw an exception for unknown methods', () => {
-        const tree = new RouteTreeRoot();
         expect(() => {
           tree.addRoute('Test', '/foo', []);
         }).toThrow($err.IllegalValue);
       });
 
       it('Should support the definition of simple routes', () => {
-        const tree = new RouteTreeRoot();
-        tree.addRoute(Methods.GET, '/foo/bar', []);
+        const middleware = ['middleware'];
+        tree.addRoute(Methods.GET, '/foo/bar', middleware);
+        tree.sort();
+        const match = tree.match(Methods.GET, '/foo/bar');
+        expect(match).not.toBeNull();
+        expect(match.middleware).toBe(middleware);
+        expect(match.params).toEqual({});
+      });
+
+      it('Should support the definition of parameterized routes', () => {
+        const middleware = ['middleware'];
+        tree.addRoute(Methods.GET, '/foo/:id', middleware);
+        tree.sort();
+        const match = tree.match(Methods.GET, '/foo/bar');
+        expect(match).not.toBeNull();
+        expect(match.middleware).toBe(middleware);
+        expect(match.params).toEqual({ id: 'bar' });
+      });
+
+      it('Should support the definition of partially overlapping routes', () => {
+        const middleware = ['middleware'];
+        tree.addRoute(Methods.GET, '/foo/bar/:id', middleware);
+        tree.addRoute(Methods.GET, '/foo/car/:name', middleware);
+        tree.sort();
+        let match = tree.match(Methods.GET, '/foo/bar/1');
+        expect(match).not.toBeNull();
+        expect(match.middleware).toBe(middleware);
+        expect(match.params).toEqual({ id: '1' });
+        match = tree.match(Methods.GET, '/foo/car/civic');
+        expect(match).not.toBeNull();
+        expect(match.middleware).toBe(middleware);
+        expect(match.params).toEqual({ name: 'civic' });
       });
     });
   });
