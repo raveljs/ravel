@@ -60,6 +60,21 @@ describe('util/route-tree', () => {
         expect(match.params).toEqual({ id: 'bar' });
       });
 
+      it('Should support the definition of non-overlapping routes', () => {
+        const middleware = ['middleware'];
+        tree.addRoute(Methods.GET, '/foo/bar/:id', middleware);
+        tree.addRoute(Methods.GET, '/bar/car/:name', middleware);
+        tree.sort();
+        let match = tree.match(Methods.GET, '/foo/bar/1');
+        expect(match).not.toBeNull();
+        expect(match.middleware).toBe(middleware);
+        expect(match.params).toEqual({ id: '1' });
+        match = tree.match(Methods.GET, '/bar/car/civic');
+        expect(match).not.toBeNull();
+        expect(match.middleware).toBe(middleware);
+        expect(match.params).toEqual({ name: 'civic' });
+      });
+
       it('Should support the definition of partially overlapping routes', () => {
         const middleware = ['middleware'];
         tree.addRoute(Methods.GET, '/foo/bar/:id', middleware);
@@ -82,6 +97,21 @@ describe('util/route-tree', () => {
         expect(() => {
           tree.addRoute(Methods.GET, '/foo/:name', middleware2);
         }).toThrow($err.DuplicateEntry);
+      });
+
+      it('Non-parameterized route components should be prioritized over parameterized ones', () => {
+        const middleware = ['middleware'];
+        tree.addRoute(Methods.GET, '/foo/:id', middleware);
+        tree.addRoute(Methods.GET, '/:foo/:name', middleware);
+        tree.sort();
+        let match = tree.match(Methods.GET, '/foo/1');
+        expect(match).not.toBeNull();
+        expect(match.middleware).toBe(middleware);
+        expect(match.params).toEqual({ id: '1' });
+        match = tree.match(Methods.GET, '/bar/civic');
+        expect(match).not.toBeNull();
+        expect(match.middleware).toBe(middleware);
+        expect(match.params).toEqual({ foo: 'bar', name: 'civic' });
       });
     });
   });
