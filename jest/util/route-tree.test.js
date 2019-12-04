@@ -74,6 +74,15 @@ describe('util/route-tree', () => {
         expect(match.middleware).toBe(middleware);
         expect(match.params).toEqual({ name: 'civic' });
       });
+
+      it('Should throw an exception if supplied two functionally identical routes', () => {
+        const middleware1 = ['middleware1'];
+        const middleware2 = ['middleware2'];
+        tree.addRoute(Methods.GET, '/foo/:id', middleware1);
+        expect(() => {
+          tree.addRoute(Methods.GET, '/foo/:name', middleware2);
+        }).toThrow($err.DuplicateEntry);
+      });
     });
   });
 });
