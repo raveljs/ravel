@@ -1,6 +1,8 @@
 const { Methods, RouteTreeNode, RouteTreeRoot } = require('../../lib/util/route-tree'); // eslint-disable-line no-unused-vars
 const $err = require('../../lib/util/application_error');
 
+const mw = async (ctx, next) => { if (next) await next(); };
+
 describe('util/route-tree', () => {
   beforeEach(async () => {
   });
@@ -40,8 +42,18 @@ describe('util/route-tree', () => {
         }).toThrow($err.IllegalValue);
       });
 
+      it('Should support the definition of a root path', () => {
+        const middleware = [mw];
+        tree.addRoute(Methods.GET, '/', middleware);
+        tree.sort();
+        const match = tree.match(Methods.GET, '/');
+        expect(match).not.toBeNull();
+        expect(match.middleware).toBe(middleware);
+        expect(match.params).toEqual({});
+      });
+
       it('Should support the definition of simple routes', () => {
-        const middleware = ['middleware'];
+        const middleware = [mw];
         tree.addRoute(Methods.GET, '/foo/bar', middleware);
         tree.sort();
         const match = tree.match(Methods.GET, '/foo/bar');
@@ -50,8 +62,18 @@ describe('util/route-tree', () => {
         expect(match.params).toEqual({});
       });
 
+      it('Should ignore multiple slashes in paths', () => {
+        const middleware = [mw];
+        tree.addRoute(Methods.GET, '/foo//bar', middleware);
+        tree.sort();
+        const match = tree.match(Methods.GET, '/foo/bar');
+        expect(match).not.toBeNull();
+        expect(match.middleware).toBe(middleware);
+        expect(match.params).toEqual({});
+      });
+
       it('Should support the definition of parameterized routes', () => {
-        const middleware = ['middleware'];
+        const middleware = [mw];
         tree.addRoute(Methods.GET, '/foo/:id', middleware);
         tree.sort();
         const match = tree.match(Methods.GET, '/foo/bar');
@@ -60,8 +82,35 @@ describe('util/route-tree', () => {
         expect(match.params).toEqual({ id: 'bar' });
       });
 
+      it('Should support the definition of overlapping routes', () => {
+        const middleware1 = [mw];
+        const middleware2 = [mw, mw];
+        tree.addRoute(Methods.GET, '/foo/bar', middleware1);
+        tree.addRoute(Methods.GET, '/foo/bar/:id', middleware2);
+        tree.sort();
+        let match = tree.match(Methods.GET, '/foo/bar');
+        expect(match).not.toBeNull();
+        expect(match.middleware).toBe(middleware1);
+        match = tree.match(Methods.GET, '/foo/bar/12');
+        expect(match).not.toBeNull();
+        expect(match.middleware).toBe(middleware2);
+        expect(match.params).toEqual({ id: '12' });
+        // try other way
+        tree = new RouteTreeRoot();
+        tree.addRoute(Methods.GET, '/foo/bar/:id', middleware2);
+        tree.addRoute(Methods.GET, '/foo/bar', middleware1);
+        tree.sort();
+        match = tree.match(Methods.GET, '/foo/bar');
+        expect(match).not.toBeNull();
+        expect(match.middleware).toBe(middleware1);
+        match = tree.match(Methods.GET, '/foo/bar/12');
+        expect(match).not.toBeNull();
+        expect(match.middleware).toBe(middleware2);
+        expect(match.params).toEqual({ id: '12' });
+      });
+
       it('Should support the definition of parameterized routes with multiple parameters and custom regexes', () => {
-        const middleware = ['middleware'];
+        const middleware = [mw];
         tree.addRoute(Methods.GET, '/foo/:id(\\d+)-:name(\\w+)', middleware);
         tree.sort();
         const match = tree.match(Methods.GET, '/foo/12-bar');
@@ -71,7 +120,7 @@ describe('util/route-tree', () => {
       });
 
       it('Should support the definition of non-overlapping routes', () => {
-        const middleware = ['middleware'];
+        const middleware = [mw];
         tree.addRoute(Methods.GET, '/foo/bar/:id', middleware);
         tree.addRoute(Methods.GET, '/bar/car/:name', middleware);
         tree.sort();
@@ -86,7 +135,7 @@ describe('util/route-tree', () => {
       });
 
       it('Should support the definition of partially overlapping routes', () => {
-        const middleware = ['middleware'];
+        const middleware = [mw];
         tree.addRoute(Methods.GET, '/foo/bar/:id', middleware);
         tree.addRoute(Methods.GET, '/foo/car/:name', middleware);
         tree.sort();
@@ -101,8 +150,8 @@ describe('util/route-tree', () => {
       });
 
       it('Should throw an exception if supplied two identical routes', () => {
-        const middleware1 = ['middleware1'];
-        const middleware2 = ['middleware2'];
+        const middleware1 = [mw];
+        const middleware2 = [mw, mw];
         tree.addRoute(Methods.GET, '/foo/:id', middleware1);
         expect(() => {
           tree.addRoute(Methods.GET, '/foo/:id', middleware2);
@@ -110,8 +159,8 @@ describe('util/route-tree', () => {
       });
 
       it('Should throw an exception if supplied two functionally identical routes', () => {
-        const middleware1 = ['middleware1'];
-        const middleware2 = ['middleware2'];
+        const middleware1 = [mw];
+        const middleware2 = [mw, mw];
         tree.addRoute(Methods.GET, '/foo/:id', middleware1);
         expect(() => {
           tree.addRoute(Methods.GET, '/foo/:name', middleware2);
@@ -119,7 +168,7 @@ describe('util/route-tree', () => {
       });
 
       it('Should not match an empty route', () => {
-        const middleware1 = ['middleware1'];
+        const middleware1 = [mw];
         tree.addRoute(Methods.GET, '/foo/:id', middleware1);
         tree.sort();
         expect(tree.match(Methods.GET, '')).toBeNull();
@@ -127,16 +176,16 @@ describe('util/route-tree', () => {
 
       it('Should throw an exception if repeated route components are used', () => {
         expect(() => {
-          tree.addRoute(Methods.GET, '/:foo+', ['middleware']);
+          tree.addRoute(Methods.GET, '/:foo+', [mw]);
         }).toThrow($err.IllegalValue);
         expect(() => {
-          tree.addRoute(Methods.GET, '/:foo*', ['middleware']);
+          tree.addRoute(Methods.GET, '/:foo*', [mw]);
         }).toThrow($err.IllegalValue);
       });
 
       it('Should prioritize non-parameterized route components over parameterized ones', () => {
-        const middleware1 = ['middleware1'];
-        const middleware2 = ['middleware2'];
+        const middleware1 = [mw];
+        const middleware2 = [mw, mw];
         tree.addRoute(Methods.GET, '/:foo/:name', middleware2);
         tree.addRoute(Methods.GET, '/foo/:id', middleware1);
         tree.sort();
@@ -151,8 +200,8 @@ describe('util/route-tree', () => {
       });
 
       it('Should search other matching branches to find a route match', () => {
-        const middleware = ['middleware'];
-        tree.addRoute(Methods.GET, '/foo/bar/:id', ['hello']);
+        const middleware = [mw];
+        tree.addRoute(Methods.GET, '/foo/bar/:id', [mw, mw]);
         tree.addRoute(Methods.GET, '/:foo/car/:name', middleware);
         tree.sort();
         const match = tree.match(Methods.GET, '/foo/car/civic');
@@ -162,8 +211,8 @@ describe('util/route-tree', () => {
       });
 
       it('Should prioritize non-optional route components over optional ones', () => {
-        const middleware1 = ['middleware1'];
-        const middleware2 = ['middleware2'];
+        const middleware1 = [mw];
+        const middleware2 = [mw, mw];
         tree.addRoute(Methods.GET, '/:foo?/:name', middleware1);
         tree.addRoute(Methods.GET, '/:foo/:id', middleware2);
         tree.sort();
@@ -183,8 +232,8 @@ describe('util/route-tree', () => {
       });
 
       it('Should prioritize prefixed route components over non-prefixed ones', () => {
-        const middleware1 = ['middleware1'];
-        const middleware2 = ['middleware2'];
+        const middleware1 = [mw];
+        const middleware2 = [mw, mw];
         tree.addRoute(Methods.GET, '/:foo/:name', middleware1);
         tree.addRoute(Methods.GET, '/ab-:foo/:id', middleware2);
         tree.sort();
@@ -204,8 +253,8 @@ describe('util/route-tree', () => {
       });
 
       it('Should prioritize route components in declaration order if all other qualities are equal', () => {
-        const middleware1 = ['middleware1'];
-        const middleware2 = ['middleware2'];
+        const middleware1 = [mw];
+        const middleware2 = [mw, mw];
         tree.addRoute(Methods.GET, '/:foo/bar', middleware1);
         tree.addRoute(Methods.GET, '/:bar/car', middleware2);
         tree.sort();

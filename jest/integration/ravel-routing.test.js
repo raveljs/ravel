@@ -54,25 +54,32 @@ describe('Ravel end-to-end routing test', () => {
     it('Only one matching route should be executed', async () => {
       await request(app.callback)
         .get('/first/some')
-        .expect(500);
+        .expect(204);
       expect(callCounter.length).toEqual(1);
     });
 
     it('The most specific route should be chosen', async () => {
       await request(app.callback)
         .get('/first/some')
-        .expect(500);
+        .expect(204);
       expect(callCounter).toEqual('a');
     });
 
     it('The most specific route should be chosen, regardless of declaration order', async () => {
       await request(app.callback)
         .get('/first/some')
-        .expect(500);
+        .expect(204);
       await request(app.callback)
         .get('/second/some')
-        .expect(500);
+        .expect(204);
       expect(callCounter).toEqual('aa');
+    });
+
+    it('Should return a list of supported methods when queried with OPTIONS', async () => {
+      await request(app.callback)
+        .options('/first/some')
+        .expect(200)
+        .expect('Allow', 'OPTIONS, GET');
     });
 
     it('Should be fast', async () => {
@@ -80,7 +87,7 @@ describe('Ravel end-to-end routing test', () => {
       const p = [];
       const start = process.hrtime.bigint();
       for (let i = 0; i < 1000; i++) {
-        p.push(request(cb).get('/second/another').expect(500));
+        p.push(request(cb).get('/second/another').expect(204));
       }
       await Promise.all(p);
       const end = process.hrtime.bigint();
