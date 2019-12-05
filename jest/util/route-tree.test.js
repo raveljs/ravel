@@ -252,7 +252,7 @@ describe('util/route-tree', () => {
         expect(match.params).toEqual({ foo: 'foo', name: '1' });
       });
 
-      it('Should prioritize route components in declaration order if all other qualities are equal', () => {
+      it('Should search alternate subtrees for matching routes if the first matching path fails', () => {
         const middleware1 = [mw];
         const middleware2 = [mw, mw];
         tree.addRoute(Methods.GET, '/:foo/bar', middleware1);
