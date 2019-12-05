@@ -118,7 +118,7 @@ describe('Authentication Integration Test', () => {
 
       @Ravel.Routes('/')
       @Ravel.autoinject('$err', '$log')
-      @mapping(Ravel.Routes.DELETE, '/app', Ravel.httpCodes.NOT_IMPLEMENTED)
+      @mapping(Ravel.Routes.DELETE, '/app', { status: Ravel.httpCodes.NOT_IMPLEMENTED })
       class TestRoutes {
         @authenticated
         @mapping(Ravel.Routes.GET, '/app')

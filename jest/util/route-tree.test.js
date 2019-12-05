@@ -267,6 +267,60 @@ describe('util/route-tree', () => {
         expect(match.middleware).toBe(middleware2);
         expect(match.params).toEqual({ bar: 'foo' });
       });
+
+      it('Should support catch-all routes, which match everything below a certain prefix', () => {
+        const middleware1 = [mw];
+        tree.addRoute(Methods.GET, '/foo/:bar', middleware1, true);
+        tree.sort();
+        let match = tree.match(Methods.GET, '/foo/bar');
+        expect(match).not.toBeNull();
+        expect(match.middleware).toBe(middleware1);
+        expect(match.params).toEqual({ bar: 'bar' });
+        match = tree.match(Methods.GET, '/foo/car/something/else');
+        expect(match).not.toBeNull();
+        expect(match.middleware).toBe(middleware1);
+        expect(match.params).toEqual({ bar: 'car' });
+      });
+
+      it('Should prioritize non-catch-all routes over catch-all routes', () => {
+        const middleware1 = [mw];
+        const middleware2 = [mw, mw];
+        tree.addRoute(Methods.GET, '/foo/bar', middleware1, true);
+        tree.addRoute(Methods.GET, '/foo/bar/something', middleware2, false);
+        tree.sort();
+        let match = tree.match(Methods.GET, '/foo/bar');
+        expect(match).not.toBeNull();
+        expect(match.middleware).toBe(middleware1);
+        expect(match.params).toEqual({});
+        match = tree.match(Methods.GET, '/foo/bar/something');
+        expect(match).not.toBeNull();
+        expect(match.middleware).toBe(middleware2);
+        expect(match.params).toEqual({});
+        match = tree.match(Methods.GET, '/foo/bar/something/else');
+        expect(match).not.toBeNull();
+        expect(match.middleware).toBe(middleware1);
+        expect(match.params).toEqual({});
+      });
+
+      it('Should prioritize non-catch-all parameterized routes over catch-all parameterized routes', () => {
+        const middleware1 = [mw];
+        const middleware2 = [mw, mw];
+        tree.addRoute(Methods.GET, '/foo/:bar', middleware1, true);
+        tree.addRoute(Methods.GET, '/foo/:car/something', middleware2, false);
+        tree.sort();
+        let match = tree.match(Methods.GET, '/foo/bar');
+        expect(match).not.toBeNull();
+        expect(match.middleware).toBe(middleware1);
+        expect(match.params).toEqual({ bar: 'bar' });
+        match = tree.match(Methods.GET, '/foo/car/something');
+        expect(match).not.toBeNull();
+        expect(match.middleware).toBe(middleware2);
+        expect(match.params).toEqual({ car: 'car' });
+        match = tree.match(Methods.GET, '/foo/car/something/else');
+        expect(match).not.toBeNull();
+        expect(match.middleware).toBe(middleware1);
+        expect(match.params).toEqual({ bar: 'car' });
+      });
     });
 
     describe('#match', () => {

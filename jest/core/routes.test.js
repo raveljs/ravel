@@ -242,6 +242,68 @@ describe('Ravel', () => {
         expect(response.body).toEqual({ id: 1 });
       });
 
+      it('should facilitate the creation of catch-all routes via @mapping', async () => {
+        const middleware1 = async function (ctx, next) { await next(); };
+        const middleware2 = async function (ctx, next) { await next(); };
+
+        @Ravel.Routes('/api')
+        class Test {
+          constructor () {
+            this.middleware1 = middleware1;
+            this.middleware2 = middleware2;
+          }
+
+          @Ravel.Routes.mapping(Ravel.Routes.GET, '/test', { catchAll: true })
+          @Ravel.Routes.before('middleware1', 'middleware2')
+          async pathHandler (ctx) {
+            ctx.body = { id: 1 };
+          }
+        }
+        app.load(Test);
+        await app.init();
+
+        const response = await request(app.callback).get('/api/test/something/else');
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual({ id: 1 });
+      });
+
+      it('should prevent catch-all routes from eating overlapping non-catch-all ones', async () => {
+        const middleware1 = async function (ctx, next) { await next(); };
+        const middleware2 = async function (ctx, next) { await next(); };
+
+        @Ravel.Routes('/api')
+        class Test {
+          constructor () {
+            this.middleware1 = middleware1;
+            this.middleware2 = middleware2;
+          }
+
+          @Ravel.Routes.mapping(Ravel.Routes.GET, '/test', { catchAll: true })
+          @Ravel.Routes.before('middleware1', 'middleware2')
+          async pathHandler (ctx) {
+            ctx.body = { id: 1 };
+          }
+
+          @Ravel.Routes.mapping(Ravel.Routes.GET, '/test/something')
+          @Ravel.Routes.before('middleware1', 'middleware2')
+          async anotherPathHandler (ctx) {
+            ctx.body = { id: 2 };
+          }
+        }
+        app.load(Test);
+        await app.init();
+
+        let response = await request(app.callback).get('/api/test/something/else');
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual({ id: 1 });
+        response = await request(app.callback).get('/api/test/something');
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual({ id: 2 });
+        response = await request(app.callback).get('/api/test');
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual({ id: 1 });
+      });
+
       it('should support the use of @before at the method and class levels', async () => {
         const middleware1 = async function (ctx, next) { ctx.body = { id: ctx.params.id }; await next(); };
         const middleware2 = async function (ctx, next) { ctx.body.name = 'sean'; await next(); };
@@ -293,7 +355,7 @@ describe('Ravel', () => {
       it('should support the use of @mapping at the class level as well, to denote unsupported routes', async () => {
         @Ravel.Routes('/api')
         @Ravel.Routes.mapping(Ravel.Routes.GET, '/path') // should respond with NOT_IMPLEMENTED
-        @Ravel.Routes.mapping(Ravel.Routes.POST, '/another', 404) // should respond with 404
+        @Ravel.Routes.mapping(Ravel.Routes.POST, '/another', { status: 404 }) // should respond with 404
         class Test {
         }
 
@@ -351,6 +413,33 @@ describe('Ravel', () => {
       }
       app.load(TestModule, TestRoutes);
       await expect(app.init()).rejects.toThrow(app.$err.IllegalValueError);
+    });
+
+    it('should throw a Ravel.$err.IllegalValueError error when clients attempt to apply a status to method-level middleware', async () => {
+      expect(() => {
+        @Ravel.Routes('/')
+        class TestRoutes {
+          @Ravel.Routes.mapping(Ravel.Routes.GET, '/test', { status: 500 })
+          pathHandler (ctx) {
+            ctx.status = 200;
+          }
+        }
+        app.load(TestRoutes);
+      }).toThrow(app.$err.IllegalValueError);
+    });
+
+    it('should throw a Ravel.$err.IllegalValueError error when clients attempt to apply catchAll to class-level middleware', async () => {
+      expect(() => {
+        @Ravel.Routes('/')
+        @Ravel.Routes.mapping(Ravel.Routes.GET, '/foobar', { catchAll: true })
+        class TestRoutes {
+          @Ravel.Routes.mapping(Ravel.Routes.GET, '/test')
+          pathHandler (ctx) {
+            ctx.status = 200;
+          }
+        }
+        app.load(TestRoutes);
+      }).toThrow(app.$err.IllegalValueError);
     });
   });
 });
