@@ -276,5 +276,17 @@ describe('util/route-tree', () => {
         }).toThrow($err.IllegalValue);
       });
     });
+
+    describe('#allowedMethods', () => {
+      it('Should return a list of supported methods in the tree, in a standard order', () => {
+        tree.addRoute(Methods.POST, '/foo', [mw]);
+        tree.addRoute(Methods.DELETE, '/foo', [mw]);
+        tree.addRoute(Methods.GET, '/foo', [mw]);
+        tree.addRoute(Methods.PATCH, '/foo', [mw]);
+        tree.addRoute(Methods.PUT, '/foo', [mw]);
+        tree.sort();
+        expect(tree.allowedMethods()).toStrictEqual(['GET', 'PATCH', 'POST', 'PUT', 'DELETE']);
+      });
+    });
   });
 });
