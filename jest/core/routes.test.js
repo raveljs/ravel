@@ -395,6 +395,54 @@ describe('Ravel', () => {
       expect(response.body).toEqual({ id: 3 });
     });
 
+    it('should respond with 404 NOT FOUND if the specified route does not exist', async () => {
+      const middleware1 = async function (ctx, next) { await next(); };
+      const middleware2 = async function (ctx, next) { await next(); };
+
+      @Ravel.Routes('/api')
+      class Test {
+        constructor () {
+          this.middleware1 = middleware1;
+          this.middleware2 = middleware2;
+        }
+
+        @Ravel.Routes.mapping(Ravel.Routes.GET, '/test')
+        @Ravel.Routes.before('middleware1', 'middleware2')
+        pathHandler (ctx) {
+          ctx.status = 200;
+          ctx.body = { id: 3 };
+        }
+      }
+      app.load(Test);
+      await app.init();
+      const response = await request(app.callback).get('/api/foobar');
+      expect(response.statusCode).toBe(404);
+    });
+
+    it('should respond with 405 METHOD NOT ALLOWED if the given verb is not supported by Ravel', async () => {
+      const middleware1 = async function (ctx, next) { await next(); };
+      const middleware2 = async function (ctx, next) { await next(); };
+
+      @Ravel.Routes('/api')
+      class Test {
+        constructor () {
+          this.middleware1 = middleware1;
+          this.middleware2 = middleware2;
+        }
+
+        @Ravel.Routes.mapping(Ravel.Routes.GET, '/test')
+        @Ravel.Routes.before('middleware1', 'middleware2')
+        pathHandler (ctx) {
+          ctx.status = 200;
+          ctx.body = { id: 3 };
+        }
+      }
+      app.load(Test);
+      await app.init();
+      const response = await request(app.callback).head('/api/test');
+      expect(response.statusCode).toBe(405);
+    });
+
     it('should throw a Ravel.$err.IllegalValueError error when clients attempt to use a middleware factory with fewer than the required number of arguments', async () => {
       @Ravel.Module('/')
       class TestModule {

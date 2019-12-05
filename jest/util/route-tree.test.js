@@ -320,6 +320,23 @@ describe('util/route-tree', () => {
         expect(match).not.toBeNull();
         expect(match.middleware).toBe(middleware1);
         expect(match.params).toEqual({ bar: 'car' });
+        // try other way
+        tree = new RouteTreeRoot();
+        tree.addRoute(Methods.GET, '/foo/:car/something', middleware2, false);
+        tree.addRoute(Methods.GET, '/foo/:bar', middleware1, true);
+        tree.sort();
+        match = tree.match(Methods.GET, '/foo/bar');
+        expect(match).not.toBeNull();
+        expect(match.middleware).toBe(middleware1);
+        expect(match.params).toEqual({ bar: 'bar' });
+        match = tree.match(Methods.GET, '/foo/car/something');
+        expect(match).not.toBeNull();
+        expect(match.middleware).toBe(middleware2);
+        expect(match.params).toEqual({ car: 'car' });
+        match = tree.match(Methods.GET, '/foo/car/something/else');
+        expect(match).not.toBeNull();
+        expect(match.middleware).toBe(middleware1);
+        expect(match.params).toEqual({ bar: 'car' });
       });
     });
 
