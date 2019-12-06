@@ -1,3 +1,4 @@
+
 describe('Ravel', () => {
   let Ravel, app;
   beforeEach(() => {
@@ -123,9 +124,9 @@ describe('Ravel', () => {
             ctx.body = { id: 3 };
           }
         }
+
         app.load(Test);
         await app.init();
-
         const response = await request(app.callback).get('/api/test');
         expect(response.statusCode).toBe(200);
         expect(response.body).toEqual({ id: 3 });

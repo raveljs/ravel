@@ -41,7 +41,7 @@ describe('Ravel', () => {
       jest.doMock('middleware2', () => middleware2, { virtual: true });
       @Ravel.Routes('/app')
       @Ravel.Routes.before('middleware1')
-      @Ravel.Routes.mapping(Ravel.Routes.GET, '/path', 404)
+      @Ravel.Routes.mapping(Ravel.Routes.GET, '/path', { status: 404 })
       class Stub {
         @Ravel.Routes.mapping(Ravel.Routes.PUT, '/path')
         @Ravel.Routes.before('middleware2')
@@ -111,12 +111,12 @@ describe('Ravel', () => {
           '@before': { middleware: ['middleware1'] },
           '@role': { name: '/api', type: 'Resource' },
           '@mapping': {
-            'Symbol(get) /': { verb: Ravel.Routes.GET, path: '/', status: 501, suppressLog: true },
-            'Symbol(put) /': { verb: Ravel.Routes.PUT, path: '/', status: 501, suppressLog: true },
-            'Symbol(delete) /': { verb: Ravel.Routes.DELETE, path: '/', status: 501, suppressLog: true },
-            'Symbol(post) /': { verb: Ravel.Routes.POST, path: '/', status: 501, suppressLog: true },
-            'Symbol(put) /:id': { verb: Ravel.Routes.PUT, path: '/:id', status: 501, suppressLog: true },
-            'Symbol(delete) /:id': { verb: Ravel.Routes.DELETE, path: '/:id', status: 501, suppressLog: true }
+            'Symbol(get) /': { verb: Ravel.Routes.GET, path: '/', status: 501, suppressLog: undefined },
+            'Symbol(put) /': { verb: Ravel.Routes.PUT, path: '/', status: 501, suppressLog: undefined },
+            'Symbol(delete) /': { verb: Ravel.Routes.DELETE, path: '/', status: 501, suppressLog: undefined },
+            'Symbol(post) /': { verb: Ravel.Routes.POST, path: '/', status: 501, suppressLog: undefined },
+            'Symbol(put) /:id': { verb: Ravel.Routes.PUT, path: '/:id', status: 501, suppressLog: undefined },
+            'Symbol(delete) /:id': { verb: Ravel.Routes.DELETE, path: '/:id', status: 501, suppressLog: undefined }
           }
         },
         method: {
@@ -124,6 +124,7 @@ describe('Ravel', () => {
             '@before': { middleware: ['middleware2'] },
             '@mapping': {
               info: {
+                catchAll: undefined,
                 endpoint: meta.method.get['@mapping'].info.endpoint,
                 path: '/:id',
                 verb: Ravel.Routes.GET,
@@ -159,7 +160,7 @@ describe('Ravel', () => {
       const mapping = Routes.mapping;
       @Routes('/app')
       @before('middleware1')
-      @mapping(Routes.GET, '/path', 404)
+      @mapping(Routes.GET, '/path', { status: 404 })
       class Stub2 {
         @mapping(Routes.PUT, '/path')
         @before('middleware2')

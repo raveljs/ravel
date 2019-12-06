@@ -659,6 +659,8 @@ Like `Module`s, `Routes` classes support dependency injection, allowing easy con
 
 Endpoints are created within a `Routes` class by creating an `async` method and then decorating it with [`@mapping`](http://raveljs.github.io/docs/latest/index.html#Routes.mapping). The `@mapping` decorator indicates the subpath for the route (concatenated with the base path passed to `super()` in the `constructor`), as well as the HTTP verb. The method handler accepts a single argument `ctx` which is a [koa context](http://koajs.com/#context). Savvy readers with `koa` experience will note that, within the handler, `this` refers to the instance of the Routes class (to make it easy to access injected `Module`s), and the passed `ctx` argument is a reference to the `koa` context.
 
+Unlike `@koa/router`, Ravel's internal router attempts to ensure predictability at runtime, by sorting routes predictably according to a set of [rules](http://raveljs.github.io/docs/latest/#routes). As a result, declaration order should have significantly less impact on the function of your routes, which is critical given that that order is not immediately obvious due to Ravel's dependency-injection-focused approach.
+
 *routes/my-routes.js*
 ```js
 const inject = require('ravel').inject;

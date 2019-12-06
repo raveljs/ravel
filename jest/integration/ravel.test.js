@@ -127,7 +127,7 @@ describe('Ravel end-to-end test', () => {
         const mapping = Ravel.Routes.mapping;
 
         @Ravel.Routes('/')
-        @mapping(Ravel.Routes.DELETE, '/app', Ravel.httpCodes.NOT_IMPLEMENTED)
+        @mapping(Ravel.Routes.DELETE, '/app', { status: Ravel.httpCodes.NOT_IMPLEMENTED })
         class TestRoutes {
           @mapping(Ravel.Routes.GET, '/app')
           async appHandler (ctx) {
