@@ -111,12 +111,13 @@ describe('Ravel', () => {
           '@before': { middleware: ['middleware1'] },
           '@role': { name: '/api', type: 'Resource' },
           '@mapping': {
-            'Symbol(get) /': { verb: Ravel.Routes.GET, path: '/', status: 501, suppressLog: undefined },
-            'Symbol(put) /': { verb: Ravel.Routes.PUT, path: '/', status: 501, suppressLog: undefined },
-            'Symbol(delete) /': { verb: Ravel.Routes.DELETE, path: '/', status: 501, suppressLog: undefined },
-            'Symbol(post) /': { verb: Ravel.Routes.POST, path: '/', status: 501, suppressLog: undefined },
-            'Symbol(put) /:id': { verb: Ravel.Routes.PUT, path: '/:id', status: 501, suppressLog: undefined },
-            'Symbol(delete) /:id': { verb: Ravel.Routes.DELETE, path: '/:id', status: 501, suppressLog: undefined }
+            /* suppressLog:true generated for routes in this Resource that are not explicitly overridden by the user */
+            'Symbol(get) /': { verb: Ravel.Routes.GET, path: '/', status: 501, suppressLog: true },
+            'Symbol(put) /': { verb: Ravel.Routes.PUT, path: '/', status: 501, suppressLog: true },
+            'Symbol(delete) /': { verb: Ravel.Routes.DELETE, path: '/', status: 501, suppressLog: true },
+            'Symbol(post) /': { verb: Ravel.Routes.POST, path: '/', status: 501, suppressLog: true },
+            'Symbol(put) /:id': { verb: Ravel.Routes.PUT, path: '/:id', status: 501, suppressLog: true },
+            'Symbol(delete) /:id': { verb: Ravel.Routes.DELETE, path: '/:id', status: 501, suppressLog: true }
           }
         },
         method: {
