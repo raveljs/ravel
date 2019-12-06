@@ -267,6 +267,31 @@ describe('Ravel', () => {
         expect(response.body).toEqual({ id: 1 });
       });
 
+      it('should deliver query parameters to ctx.query', async () => {
+        const middleware1 = async function (ctx, next) { await next(); };
+        const middleware2 = async function (ctx, next) { await next(); };
+
+        @Ravel.Routes('/api')
+        class Test {
+          constructor () {
+            this.middleware1 = middleware1;
+            this.middleware2 = middleware2;
+          }
+
+          @Ravel.Routes.mapping(Ravel.Routes.GET, '/test')
+          @Ravel.Routes.before('middleware1', 'middleware2')
+          async pathHandler (ctx) {
+            ctx.body = ctx.query;
+          }
+        }
+        app.load(Test);
+        await app.init();
+
+        const response = await request(app.callback).get('/api/test?param1=foo&param2=bar');
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual({ param1: 'foo', param2: 'bar' });
+      });
+
       it('should prevent catch-all routes from eating overlapping non-catch-all ones', async () => {
         const middleware1 = async function (ctx, next) { await next(); };
         const middleware2 = async function (ctx, next) { await next(); };
