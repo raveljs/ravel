@@ -11,7 +11,7 @@
   <link href='assets/split.css' rel='stylesheet'><% if (config['favicon']) { %>
   <link href='<%- config['favicon'] %>' rel='icon' ><% } %>
 </head>
-<body class='documentation m0'>
+<body class='documentation'>
     <div class='flex'>
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
