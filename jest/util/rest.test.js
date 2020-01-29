@@ -45,7 +45,7 @@ describe('util/rest', () => {
 
       const res = await request(koaApp.callback()).post('/entity').set('origin', 'http://localhost:8080/');
       expect(res.headers['content-type']).toBe('application/json; charset=utf-8');
-      expect(res.headers['location']).toBe('http://localhost:8080/entity/1');
+      expect(res.headers.location).toBe('http://localhost:8080/entity/1');
       expect(res.status).toBe(201);
     });
 
