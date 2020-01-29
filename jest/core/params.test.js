@@ -119,7 +119,9 @@ describe('Ravel', () => {
         'session max age': null,
         'session secure': true,
         'session rolling': false,
-        'log level': 'NONE' // not a default, but we've set this in beforeEach
+        'log level': 'NONE', // not a default, but we've set this in beforeEach
+        'log colors': true,
+        'log format': '[%(date)s] %(name)s.%(levelname)s: %(message)s'
       };
       app.set('keygrip keys', ['123abc']);
       await app.init();
