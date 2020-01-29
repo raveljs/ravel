@@ -13,7 +13,9 @@ describe('Ravel.$log', () => {
       info: jest.fn(),
       warn: jest.fn(),
       error: jest.fn(),
-      critical: jest.fn()
+      critical: jest.fn(),
+      removeAllHandlers: jest.fn(),
+      addHandler: jest.fn()
     };
     intel = {
       TRACE: 'TRACE',
@@ -30,6 +32,16 @@ describe('Ravel.$log', () => {
       }),
       setLevel: jest.fn(),
       basicConfig: jest.fn(),
+      config: jest.fn(),
+      handlers: {
+        Console: jest.fn(() => {
+          return {
+            setFormatter: jest.fn()
+          };
+        })
+      },
+      removeAllHandlers: jest.fn(),
+      Formatter: jest.fn(),
       trace: jest.fn(),
       verbose: jest.fn(),
       debug: jest.fn(),

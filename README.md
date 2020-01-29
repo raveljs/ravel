@@ -417,6 +417,9 @@ app.set('redis max retries', 10); // connection retries
 app.set('port', 8080); // port the app will run on
 app.set('https', false) // listen for https instead of http
 app.set('https options', {}) // any options to pass to the https server app.set('https', true). Supports options from https://nodejs.org/api/tls.html#tls_tls_createserver_options_secureconnectionlistener
+app.set('log level', true, app.$log.DEBUG); // minimum log level
+app.set('log format', true, '[%(date)s] %(name)s.%(levelname)s: %(message)s'); // log message format (see https://seanmonstar.github.io/intel/#logrecord for more details)
+app.set('log colors', true, true); // whether or not to colorize log output
 app.set('session key', 'ravel.sid'); // the cookie name to use for sessions
 app.set('session max age', null); // session maxAge (default never expires)
 app.set('session secure', true); // toggles Secure attribute for session cookies. true by default, and always true when app.get('https') is true.
