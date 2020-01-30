@@ -12,6 +12,15 @@ describe('Ravel', () => {
     app.set('log level', app.$log.NONE);
   });
 
+  describe('#registerParamter()', () => {
+    it('should throw if a client attempts to register a parameter with a deliberately undefined default value', () => {
+      expect(() => {
+        const undefinedEnvironmentVariable = undefined;
+        app.registerParameter('my param', true, undefinedEnvironmentVariable);
+      }).toThrow(app.$err.IllegalValue);
+    });
+  });
+
   describe('#set()', () => {
     it('should allow clients to set the value of a parameter', async () => {
       app.registerParameter('test param', false);
