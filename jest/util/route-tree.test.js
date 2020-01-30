@@ -158,6 +158,15 @@ describe('util/route-tree', () => {
         }).toThrow($err.DuplicateEntry);
       });
 
+      it('Should throw an exception if supplied two identical wildcard routes', () => {
+        const middleware1 = [mw];
+        const middleware2 = [mw, mw];
+        tree.addRoute(Methods.GET, '/a/b', middleware1, true);
+        expect(() => {
+          tree.addRoute(Methods.GET, '/a/b', middleware2, true);
+        }).toThrow($err.DuplicateEntry);
+      });
+
       it('Should throw an exception if supplied two functionally identical routes', () => {
         const middleware1 = [mw];
         const middleware2 = [mw, mw];
@@ -280,6 +289,20 @@ describe('util/route-tree', () => {
         expect(match).not.toBeNull();
         expect(match.middleware).toBe(middleware1);
         expect(match.params).toEqual({ bar: 'car' });
+      });
+
+      it('Should support the definition of multiple wildcard routes', () => {
+        const middleware1 = [mw];
+        const middleware2 = [mw, mw];
+        tree.addRoute(Methods.GET, '/a/b', middleware1, true);
+        tree.addRoute(Methods.GET, '/a/c', middleware2, true);
+        tree.sort();
+        let match = tree.match(Methods.GET, '/a/b/foo/bar');
+        expect(match).not.toBeNull();
+        expect(match.middleware).toBe(middleware1);
+        match = tree.match(Methods.GET, '/a/c/foo/bar');
+        expect(match).not.toBeNull();
+        expect(match.middleware).toBe(middleware2);
       });
 
       it('Should prioritize non-catch-all routes over catch-all routes', () => {
