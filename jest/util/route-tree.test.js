@@ -376,10 +376,11 @@ describe('util/route-tree', () => {
         tree.addRoute(Methods.POST, '/foo', [mw]);
         tree.addRoute(Methods.DELETE, '/foo', [mw]);
         tree.addRoute(Methods.GET, '/foo', [mw]);
+        tree.addRoute(Methods.HEAD, '/foo', [mw]);
         tree.addRoute(Methods.PATCH, '/foo', [mw]);
         tree.addRoute(Methods.PUT, '/foo', [mw]);
         tree.sort();
-        expect(tree.allowedMethods()).toStrictEqual(['GET', 'PATCH', 'POST', 'PUT', 'DELETE']);
+        expect(tree.allowedMethods()).toStrictEqual(['HEAD', 'GET', 'PATCH', 'POST', 'PUT', 'DELETE']);
       });
     });
   });
