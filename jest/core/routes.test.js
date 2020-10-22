@@ -142,6 +142,31 @@ describe('Ravel', () => {
         expect(response.body).toEqual({ id: 3 });
       });
 
+      it('should facilitate the creation of HEAD routes via @mapping', async () => {
+        const middleware1 = async function (ctx, next) { await next(); };
+        const middleware2 = async function (ctx, next) { await next(); };
+
+        @Ravel.Routes('/api')
+        class Test {
+          constructor () {
+            this.middleware1 = middleware1;
+            this.middleware2 = middleware2;
+          }
+
+          @Ravel.Routes.mapping(Ravel.Routes.HEAD, '/test')
+          @Ravel.Routes.before('middleware1', 'middleware2')
+          async pathHandler (ctx) {
+            ctx.status = 200;
+          }
+        }
+
+        app.load(Test);
+        await app.init();
+
+        const response = await request(app.callback).head('/api/test');
+        expect(response.statusCode).toBe(200);
+      });
+
       it('should facilitate the creation of POST routes via @mapping', async () => {
         const middleware1 = async function (ctx, next) { await next(); };
         const middleware2 = async function (ctx, next) { await next(); };
@@ -513,6 +538,39 @@ describe('Ravel', () => {
         }
         app.load(TestRoutes);
       }).toThrow(app.$err.IllegalValueError);
+    });
+
+    it('should throw Ravel.$err.General if ctx.response.body is used in a HEAD route', async () => {
+      @Ravel.Routes('/api')
+      class Test {
+        @Ravel.Routes.mapping(Ravel.Routes.HEAD, '/test')
+        async pathHandler (ctx) {
+          ctx.status = 200;
+          ctx.body = { id: 3 };
+        }
+      }
+
+      app.load(Test);
+      await app.init();
+
+      const response = await request(app.callback).head('/api/test');
+      expect(response.statusCode).toBe(500);
+    });
+
+    it('Non-Ravel errors in a HEAD route should produce an HTTP 500', async () => {
+      @Ravel.Routes('/api')
+      class Test {
+        @Ravel.Routes.mapping(Ravel.Routes.HEAD, '/test')
+        async pathHandler (ctx) {
+          throw new Error('something went wrong!');
+        }
+      }
+
+      app.load(Test);
+      await app.init();
+
+      const response = await request(app.callback).head('/api/test');
+      expect(response.statusCode).toBe(500);
     });
   });
 });
