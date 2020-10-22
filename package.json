@@ -67,7 +67,7 @@
     "node-fs": "0.1.7",
     "passport": "0.4.1",
     "path-to-regexp": "5.0.0",
-    "redis": "3.0.2",
+    "redis": "2.8.0",
     "redis-mock": "0.52.0",
     "upath": "2.0.0",
     "ws": "7.3.1"
