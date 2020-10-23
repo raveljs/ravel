@@ -205,11 +205,11 @@ describe('Ravel end-to-end test', () => {
     it('should not support unsupported body types', async () => {
       await request(app.callback)
         .get('/api/routes/symbolbody')
-        .expect(204);
+        .expect(500);
       expect(symbolBody).toHaveBeenCalledTimes(1);
       await request(app.callback)
         .get('/api/routes/symbolbody')
-        .expect(204);
+        .expect(500);
       expect(streamBody).toHaveBeenCalledTimes(2);
     });
 
