@@ -9,6 +9,7 @@
 - Keep Ravel small. If some piece of functionality can fit in a separate `ravel-*` module, then it probably should
 - Code coverage should strictly be enforced at 100%
 - Please follow the JavaScript coding style exemplified by existing source files and enforced by Ravel's `.eslintrc.json` configuration.
+- Active contributors will be included in the `contributors` section of `package.json`
 
 ## Sign-off your Commits
 
