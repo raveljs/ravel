@@ -157,6 +157,52 @@ describe('Ravel', () => {
         expect(response.body).toEqual({ id: '3' });
       });
 
+      it('should facilitate the creation of HEAD routes headAll()', async () => {
+        const middleware1 = async function (ctx, next) { await next(); };
+        const middleware2 = async function (ctx, next) { await next(); };
+
+        @Ravel.Resource('/api/test')
+        class Test {
+          constructor () {
+            this.middleware1 = middleware1;
+            this.middleware2 = middleware2;
+          }
+
+          @Ravel.Resource.before('middleware1', 'middleware2')
+          async headAll (ctx) {
+            ctx.status = 200;
+          }
+        }
+
+        app.load(Test);
+        await app.init();
+        const response = await request(app.callback).head('/api/test');
+        expect(response.statusCode).toBe(200);
+      });
+
+      it('should facilitate the creation of HEAD routes head()', async () => {
+        const middleware1 = async function (ctx, next) { await next(); };
+        const middleware2 = async function (ctx, next) { await next(); };
+
+        @Ravel.Resource('/api/test')
+        class Test {
+          constructor () {
+            this.middleware1 = middleware1;
+            this.middleware2 = middleware2;
+          }
+
+          @Ravel.Resource.before('middleware1', 'middleware2')
+          async head (ctx) {
+            ctx.status = 200;
+          }
+        }
+        app.load(Test);
+        await app.init();
+
+        const response = await request(app.callback).head('/api/test/3');
+        expect(response.statusCode).toBe(200);
+      });
+
       it('should facilitate the creation of POST routes via post()', async () => {
         const middleware1 = async function (ctx, next) { await next(); };
         const middleware2 = async function (ctx, next) { await next(); };
@@ -225,6 +271,54 @@ describe('Ravel', () => {
         await app.init();
 
         const response = await request(app.callback).put('/api/test/3');
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual({ id: '3' });
+      });
+
+      it('should facilitate the creation of PATCH routes via patchAll()', async () => {
+        const middleware1 = async function (ctx, next) { await next(); };
+        const middleware2 = async function (ctx, next) { await next(); };
+
+        @Ravel.Resource('/api/test')
+        class Test {
+          constructor () {
+            this.middleware1 = middleware1;
+            this.middleware2 = middleware2;
+          }
+
+          @Ravel.Resource.before('middleware1', 'middleware2')
+          async patchAll (ctx) {
+            ctx.body = { id: 1 };
+          }
+        }
+        app.load(Test);
+        await app.init();
+
+        const response = await request(app.callback).patch('/api/test');
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual({ id: 1 });
+      });
+
+      it('should facilitate the creation of PATCH routes via patch()', async () => {
+        const middleware1 = async function (ctx, next) { await next(); };
+        const middleware2 = async function (ctx, next) { await next(); };
+
+        @Ravel.Resource('/api/test')
+        class Test {
+          constructor () {
+            this.middleware1 = middleware1;
+            this.middleware2 = middleware2;
+          }
+
+          @Ravel.Resource.before('middleware1', 'middleware2')
+          async patch (ctx) {
+            ctx.body = { id: ctx.params.id };
+          }
+        }
+        app.load(Test);
+        await app.init();
+
+        const response = await request(app.callback).patch('/api/test/3');
         expect(response.statusCode).toBe(200);
         expect(response.body).toEqual({ id: '3' });
       });
@@ -357,6 +451,30 @@ describe('Ravel', () => {
         await app.init();
 
         expect((await request(app.callback).get('/api/test')).statusCode).toBe(204);
+      });
+
+      it('should throw Ravel.$err.General if ctx.response.body is used in a HEAD route', async () => {
+        const middleware1 = async function (ctx, next) { await next(); };
+        const middleware2 = async function (ctx, next) { await next(); };
+
+        @Ravel.Resource('/api/test')
+        class Test {
+          constructor () {
+            this.middleware1 = middleware1;
+            this.middleware2 = middleware2;
+          }
+
+          @Ravel.Resource.before('middleware1', 'middleware2')
+          async headAll (ctx) {
+            ctx.status = 200;
+            ctx.body = { id: 3 };
+          }
+        }
+
+        app.load(Test);
+        await app.init();
+        const response = await request(app.callback).head('/api/test');
+        expect(response.statusCode).toBe(500);
       });
     });
   });

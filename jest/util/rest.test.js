@@ -17,7 +17,7 @@ describe('util/rest', () => {
     it('should produce a response with HTTP 204 NO CONTENT if no body is supplied', async () => {
       koaApp.use(rest.respond());
       koaApp.use(async function (ctx) {
-        ctx.body = undefined;
+        ctx.response.body = '';
       });
       const res = await request(koaApp.callback()).get('/');
       expect(res.status).toBe(204);

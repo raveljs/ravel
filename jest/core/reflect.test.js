@@ -113,10 +113,14 @@ describe('Ravel', () => {
           '@mapping': {
             /* suppressLog:true generated for routes in this Resource that are not explicitly overridden by the user */
             'Symbol(get) /': { verb: Ravel.Routes.GET, path: '/', status: 501, suppressLog: true },
+            'Symbol(head) /': { verb: Ravel.Routes.HEAD, path: '/', status: 501, suppressLog: true },
             'Symbol(put) /': { verb: Ravel.Routes.PUT, path: '/', status: 501, suppressLog: true },
+            'Symbol(patch) /': { verb: Ravel.Routes.PATCH, path: '/', status: 501, suppressLog: true },
             'Symbol(delete) /': { verb: Ravel.Routes.DELETE, path: '/', status: 501, suppressLog: true },
             'Symbol(post) /': { verb: Ravel.Routes.POST, path: '/', status: 501, suppressLog: true },
+            'Symbol(head) /:id': { verb: Ravel.Routes.HEAD, path: '/:id', status: 501, suppressLog: true },
             'Symbol(put) /:id': { verb: Ravel.Routes.PUT, path: '/:id', status: 501, suppressLog: true },
+            'Symbol(patch) /:id': { verb: Ravel.Routes.PATCH, path: '/:id', status: 501, suppressLog: true },
             'Symbol(delete) /:id': { verb: Ravel.Routes.DELETE, path: '/:id', status: 501, suppressLog: true }
           }
         },

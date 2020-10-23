@@ -174,7 +174,7 @@ class MyMiddleware {
 
 ### Routes
 
-`Routes` are `Ravel`'s lower-level wrapper for `koa` (`Resource`s are the higher-level one). They support GET, POST, PUT and DELETE requests, and middleware, via decorators. Like `Module`s, they also support dependency injection. Though `Routes` can do everything `Resources` can do, they are most useful for implementing non-REST things, such as static content serving, proxying, etc. If you want to build a REST API, use `Resource`s instead (they're up next!).
+`Routes` are `Ravel`'s lower-level wrapper for `koa` (`Resource`s are the higher-level one). They support HEAD, GET, POST, PUT, PATCH and DELETE requests, and middleware, via decorators. Like `Module`s, they also support dependency injection. Though `Routes` can do everything `Resources` can do, they are most useful for implementing non-REST things, such as static content serving, proxying, etc. If you want to build a REST API, use `Resource`s instead (they're up next!).
 
 For more information about `Routes`, look at [Ravel.Routes](#ravelroutes) below.
 
@@ -210,7 +210,7 @@ module.exports = ExampleRoutes;
 
 ### Resources
 
-What might be referred to as a *controller* in other frameworks, a `Resource` module defines HTTP methods on an endpoint, supporting the session-per-request transaction pattern via Ravel middleware. `Resource`s also support dependency injection, allowing for the easy creation of RESTful interfaces to your `Module`-based application logic. Resources are really just a thin wrapper around `Routes`, using specially-named handler functions (`get`, `getAll`, `post`, `put`, `putAll`, `delete`, `deleteAll`) instead of `@mapping`. This convention-over-configuration approach makes it easier to write proper REST APIs with less code, and is recommended over "carefully chosen" `@mapping`s in a `Routes` class.
+What might be referred to as a *controller* in other frameworks, a `Resource` module defines HTTP methods on an endpoint, supporting the session-per-request transaction pattern via Ravel middleware. `Resource`s also support dependency injection, allowing for the easy creation of RESTful interfaces to your `Module`-based application logic. Resources are really just a thin wrapper around `Routes`, using specially-named handler functions (`get`, `getAll`, `head`, `headAll`, `post`, `put`, `putAll`, `patch`, `patchAll`, `delete`, `deleteAll`) instead of `@mapping`. This convention-over-configuration approach makes it easier to write proper REST APIs with less code, and is recommended over "carefully chosen" `@mapping`s in a `Routes` class.
 
 For more information about `Resource`s, look at [Ravel.Resource](#ravelresouce) below.
 
