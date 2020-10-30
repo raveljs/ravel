@@ -2,7 +2,7 @@
 
 ## Rules
 
-- PR everything. Commits made directly to master are prohibited, except under specific circumstances
+- PR everything. Commits made directly to `main` are prohibited, except under specific circumstances
 - Use feature branches. **Create an issue for every single feature or bug** and **label** it. If you are a core contributor, create a branch named feature/[issue #] to resolve the issue. If you are not a core contributor, fork and branch.
 - Try to label issues and PRs as accurately as possible, especially in the case of PRs, where `semver-major`, `semver-minor` and `semver-patch` labels are available. Labels on issues should be a subset of the labels on the corresponding pull request; the milestones should match.
 - Use github "Fixes #[issue]" syntax on your PRs to indicate which issues you are attempting to resolve
