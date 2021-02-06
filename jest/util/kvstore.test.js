@@ -61,11 +61,11 @@ describe('Ravel', () => {
 
   describe('util/kvstore', () => {
     describe('retryStrategy', () => {
-      it('should return an error when redis refuses the connection', async () => {
+      it.only('should return an error when redis refuses the connection, and maximum retries have been exceeded', async () => {
         await app.init();
         const retryStrategy = require('../../lib/util/kvstore').retryStrategy(app);
         expect(typeof retryStrategy).toBe('function');
-        expect(retryStrategy({ error: { code: 'ECONNREFUSED' } })).toBeInstanceOf(app.$err.General);
+        expect(retryStrategy({ error: { code: 'ECONNREFUSED' }, attempt: app.get('redis max retries') + 1 })).toBeInstanceOf(app.$err.General);
       });
 
       it('should log any errors on a connection', async () => {

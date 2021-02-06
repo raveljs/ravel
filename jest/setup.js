@@ -1,11 +1,12 @@
 // from https://gist.github.com/vlasky/2ea30ce9923bd06c2ee100f2924991cc
+process.setMaxListeners(50);
 const EventEmitter = require('events').EventEmitter;
 const originalAddListener = EventEmitter.prototype.addListener;
 const addListener = function (type) {
   originalAddListener.apply(this, arguments);
 
   const numListeners = this.listeners(type).length;
-  const max = typeof this._maxListeners === 'number' ? this._maxListeners : 10;
+  const max = typeof this._maxListeners === 'number' ? this._maxListeners : 50;
 
   if (max !== 0 && numListeners > max) {
     const error = new Error('Too many listeners of type "' + type + '" added to EventEmitter. Max is ' + max + " and we've added " + numListeners + '.');
