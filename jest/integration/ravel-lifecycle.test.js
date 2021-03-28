@@ -1,3 +1,5 @@
+const { fail } = require('assert');
+
 let app;
 let postinjectHandlerCalled = 0;
 let anotherPostinjectHandlerCalled = 0;
@@ -59,20 +61,49 @@ describe('Ravel lifeycle test', () => {
       }
 
       @postinject
-      doPostInject () {
+      async doPostInject () {
         expect(this.another.test).toBe('hello world');
-        postinjectHandlerCalled += 1;
+        try {
+          await request('localhost:8080').get('').expect(200);
+          fail('Ravel application should not be listening at this lifecycle stage.');
+        } catch (err) {}
+        await new Promise((resolve) => {
+          process.nextTick(() => {
+            postinjectHandlerCalled += 1;
+            expect(postinitHandlerCalled).toBe(0);
+            expect(anotherPostinitHandlerCalled).toBe(0);
+            resolve();
+          });
+        });
       }
 
       @postinject
-      doAnotherPostInject () {
+      async doAnotherPostInject () {
         expect(this.another.test).toBe('hello world');
-        anotherPostinjectHandlerCalled += 1;
+        await new Promise((resolve) => {
+          process.nextTick(() => {
+            anotherPostinjectHandlerCalled += 1;
+            expect(postinitHandlerCalled).toBe(0);
+            expect(anotherPostinitHandlerCalled).toBe(0);
+            resolve();
+          });
+        });
       }
 
       @postinit
-      doPostInit () {
-        postinitHandlerCalled += 1;
+      async doPostInit () {
+        try {
+          await request('localhost:8080').get('').expect(200);
+          fail('Ravel application should not be listening at this lifecycle stage.');
+        } catch (err) {}
+        expect(postinjectHandlerCalled).toBe(1);
+        expect(anotherPostinjectHandlerCalled).toBe(1);
+        await new Promise((resolve) => {
+          process.nextTick(() => {
+            postinitHandlerCalled += 1;
+            resolve();
+          });
+        });
       }
 
       @postinit
@@ -81,12 +112,16 @@ describe('Ravel lifeycle test', () => {
       }
 
       @prelisten
-      doPreListen () {
+      async doPreListen () {
+        try {
+          await request('localhost:8080').get('').expect(200);
+          fail('Ravel application should not be listening at this lifecycle stage.');
+        } catch (err) {}
         prelistenHandlerCalled += 1;
       }
 
       @postlisten
-      doPostListen () {
+      async doPostListen () {
         postlistenHandlerCalled += 1;
       }
 

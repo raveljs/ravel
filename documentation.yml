@@ -1,7 +1,8 @@
 name: Ravel API
-version: 1.0.0-rc.13
+version: 1.0.0-rc.14
 favicon: assets/logo.png
 versions:
+  - 1.0.0-rc.14
   - 1.0.0-rc.13
   - 1.0.0-rc.12
   - 1.0.0-rc.11
