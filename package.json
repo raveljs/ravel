@@ -70,7 +70,7 @@
     "redis": "3.0.2",
     "redis-mock": "0.56.3",
     "upath": "2.0.1",
-    "ws": "7.4.3"
+    "ws": "7.4.6"
   },
   "devDependencies": {
     "cross-env": "7.0.3",
